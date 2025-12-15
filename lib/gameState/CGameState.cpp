@@ -77,6 +77,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 std::shared_mutex CGameState::mutex;
 
+static std::optional<EventCondition> findSimpleControlLossCondition(const EventExpression & expr);
+
 const Services * GameStateEnvironment::services() const
 {
 	return LIBRARY;
@@ -232,6 +234,7 @@ void CGameState::init(const IMapService * mapService, StartInfo * si, IGameRando
 
 	logGlobal->debug("\tChecking objectives");
 	map->checkForObjectives(); //needs to be run when all objects are properly placed
+	initializeTrackedControlLossObjects();
 }
 
 void CGameState::updateEntity(Metatype metatype, int32_t index, const JsonNode & data)
@@ -397,10 +400,10 @@ void CGameState::initDifficulty()
 	logGlobal->debug("\tLoading difficulty settings");
 	JsonNode config = JsonUtils::assembleFromFiles("config/difficulty.json");
 	config.setModScope(ModScope::scopeGame()); // FIXME: should be set to actual mod
-	
+
 	const JsonNode & difficultyAI(config["ai"][GameConstants::DIFFICULTY_NAMES[scenarioOps->difficulty]]);
 	const JsonNode & difficultyHuman(config["human"][GameConstants::DIFFICULTY_NAMES[scenarioOps->difficulty]]);
-	
+
 	auto setDifficulty = [this](PlayerState & state, const JsonNode & json)
 	{
 		//set starting resources
@@ -409,17 +412,17 @@ void CGameState::initDifficulty()
 		//handicap
 		const PlayerSettings &ps = scenarioOps->getIthPlayersSettings(state.color);
 		state.resources += ps.handicap.startBonus;
-		
+
 		//set global bonuses
 		for(auto & jsonBonus : json["globalBonuses"].Vector())
 			if(auto bonus = JsonUtils::parseBonus(jsonBonus))
 				state.addNewBonus(bonus);
-		
+
 		//set battle bonuses
 		for(auto & jsonBonus : json["battleBonuses"].Vector())
 			if(auto bonus = JsonUtils::parseBonus(jsonBonus))
 				state.battleBonuses.push_back(*bonus);
-		
+
 	};
 
 	for (auto & elem : players)
@@ -519,6 +522,25 @@ void CGameState::randomizeMapObjects(IGameRandomizer & gameRandomizer)
 	for(auto & obj : map->getObjects<CGPandoraBox>())
 		if (!obj->presentOnDifficulties.contains(getStartInfo()->getDifficulty()))
 			map->eraseObject(obj->id);
+}
+
+void CGameState::initializeTrackedControlLossObjects()
+{
+	for(const TriggeredEvent & event : map->triggeredEvents)
+	{
+		if(event.effect.type != EventEffect::DEFEAT)
+			continue;
+
+		const auto controlCondition = findSimpleControlLossCondition(event.trigger);
+		if(!controlCondition || controlCondition->objectID == ObjectInstanceID::NONE)
+			continue;
+
+		for(const auto & [playerColor, _] : players)
+		{
+			if(checkForVictory(playerColor, *controlCondition))
+				markObjectControlled(playerColor, controlCondition->objectID);
+		}
+	}
 }
 
 void CGameState::initOwnedObjects()
@@ -1076,7 +1098,7 @@ BattleField CGameState::battleGetBattlefieldType(int3 tile, vstd::RNG & randomGe
 
 	if(map->isCoastalTile(tile)) //coastal tile is always ground
 		return BattleField(*LIBRARY->identifiers()->getIdentifier("core", "battlefield.sand_shore"));
-	
+
 	auto currentLayer = map->mapLayers.at(tile.z);
 	const auto & terrainBattlefields = t.getTerrain()->battleFields;
 
@@ -1206,6 +1228,47 @@ bool CGameState::isVisibleFor(const CGObjectInstance * obj, PlayerColor player) 
 	);
 }
 
+static std::optional<EventCondition> findSimpleControlLossCondition(const EventExpression & expr)
+{
+	using Expr    = EventExpression;
+	using Value   = Expr::Value;
+	using All     = Expr::OperatorAll;
+	using None    = Expr::OperatorNone;
+	using Variant = Expr::Variant;
+
+	std::function<std::optional<EventCondition>(const Variant &)> impl;
+	impl = [&](const Variant & var) -> std::optional<EventCondition>
+	{
+		if(const auto * none = std::get_if<None>(&var))
+		{
+			if(none->expressions.size() != 1)
+				return std::nullopt;
+
+			const auto * cond = std::get_if<Value>(&none->expressions.front());
+			if(!cond || cond->condition != EventCondition::CONTROL)
+				return std::nullopt;
+
+			return *cond;
+		}
+
+		if(const auto * all = std::get_if<All>(&var))
+		{
+			if(all->expressions.size() != 2)
+				return std::nullopt;
+
+			const auto * first = std::get_if<Value>(&all->expressions.front());
+			if(!first || first->condition != EventCondition::IS_HUMAN)
+				return std::nullopt;
+
+			return impl(all->expressions[1]);
+		}
+
+		return std::nullopt;
+	};
+
+	return impl(expr.get());
+}
+
 EVictoryLossCheckResult CGameState::checkForVictoryAndLoss(const PlayerColor & player) const
 {
 	const MetaString messageWonSelf = MetaString::createFromTextID("core.genrltxt.659");
@@ -1227,14 +1290,28 @@ EVictoryLossCheckResult CGameState::checkForVictoryAndLoss(const PlayerColor & p
 	if (p->enteredLosingCheatCode)
 		return EVictoryLossCheckResult::defeat(messageLostSelf, messageLostOther);
 
-	for (const TriggeredEvent & event : map->triggeredEvents)
+	for(const TriggeredEvent & event : map->triggeredEvents)
 	{
-		if (event.trigger.test(evaluateEvent))
+		if(event.effect.type == EventEffect::VICTORY)
 		{
-			if (event.effect.type == EventEffect::VICTORY)
+			if(event.trigger.test(evaluateEvent))
 				return EVictoryLossCheckResult::victory(event.onFulfill, event.effect.toOtherMessage);
+		}
+		else if(event.effect.type == EventEffect::DEFEAT)
+		{
+			// Special handling for "lose town/hero" style conditions:
+			// triggers built as NONE(CONTROL(...)), optionally wrapped into ALL(IS_HUMAN, ...).
+			if(auto ctrlOpt = findSimpleControlLossCondition(event.trigger))
+			{
+				if(isControlLossTriggered(player, *ctrlOpt))
+					return EVictoryLossCheckResult::defeat(event.onFulfill, event.effect.toOtherMessage);
 
-			if (event.effect.type == EventEffect::DEFEAT)
+				// If our custom logic says "no loss yet", do NOT fall through to generic .test()
+				continue;
+			}
+
+			// All other defeat events: generic evaluation
+			if(event.trigger.test(evaluateEvent))
 				return EVictoryLossCheckResult::defeat(event.onFulfill, event.effect.toOtherMessage);
 		}
 	}
@@ -1414,7 +1491,7 @@ bool CGameState::checkForStandardLoss(const PlayerColor & player) const
 
 void CGameState::obtainPlayersStats(SThievesGuildInfo & tgi, int level) const
 {
-	auto playerInactive = [&](const PlayerColor & color) 
+	auto playerInactive = [&](const PlayerColor & color)
 	{
 		 return color == PlayerColor::NEUTRAL || players.at(color).status != EPlayerStatus::INGAME;
 	};
@@ -1564,6 +1641,8 @@ void CGameState::restoreBonusSystemTree()
 
 	if (campaign)
 		campaign->setGamestate(this);
+
+	initializeTrackedControlLossObjects();
 
 	// WORKAROUND FOR 1.6 SAVES
 	static_assert(ESerializationVersion::RELEASE_160 == ESerializationVersion::MINIMAL, "Please remove this code after dropping 1.6 save compat");

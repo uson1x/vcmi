@@ -140,6 +140,10 @@ public:
 	PlayerColor checkForStandardWin() const; //returns color of player that accomplished standard victory conditions or 255 (NEUTRAL) if no winner
 	bool checkForStandardLoss(const PlayerColor & player) const; //checks if given player lost the game
 
+	void markObjectControlled(PlayerColor player, ObjectInstanceID id);
+	bool hasEverControlled(PlayerColor player, ObjectInstanceID id) const;
+	bool isControlLossTriggered(const PlayerColor & player, const EventCondition & cond) const;
+
 	//fills tgi with info about other players that is available at given level of thieves' guild
 	void obtainPlayersStats(SThievesGuildInfo & tgi, int level) const;
 	const IGameSettings & getSettings() const override;
@@ -208,6 +212,10 @@ public:
 		h & globalEffects;
 		h & currentRumor;
 		h & campaign;
+		if(h.hasFeature(Handler::Version::CONTROL_LOSS_TRACKING))
+			h & everControlledObjects;
+		else if(!h.saving)
+			everControlledObjects = {};
 		if (!h.hasFeature(Handler::Version::RANDOMIZATION_REWORK))
 		{
 			std::map<ArtifactID, int> allocatedArtifactsUnused;
@@ -231,6 +239,7 @@ private:
 	void initRandomFactionsForPlayers(vstd::RNG & randomGenerator);
 	void initOwnedObjects();
 	void randomizeMapObjects(IGameRandomizer & gameRandomizer);
+	void initializeTrackedControlLossObjects();
 	void initPlayerStates();
 	void placeStartingHeroes(vstd::RNG & randomGenerator);
 	void placeStartingHero(const PlayerColor & playerColor, const HeroTypeID & heroTypeId, int3 townPos);
@@ -262,6 +271,8 @@ private:
 
 	// ---- data -----
 	Services * services;
+
+	std::array<std::set<ObjectInstanceID>, PlayerColor::PLAYER_LIMIT_I> everControlledObjects;
 
 	/// Pointer to campaign state manager. Nullptr for single scenarios
 	std::unique_ptr<CGameStateCampaign> campaign;
