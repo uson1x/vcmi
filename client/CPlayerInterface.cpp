@@ -116,6 +116,8 @@
 
 #include "../lib/texts/TextOperations.h"
 
+#include "../lib/filesystem/Filesystem.h"
+
 #include <boost/lexical_cast.hpp>
 
 // The macro below is used to mark functions that are called by client when game state changes.
@@ -145,6 +147,7 @@ CPlayerInterface::CPlayerInterface(PlayerColor Player):
 	isAutoFightOn = false;
 	isAutoFightEndBattle = false;
 	ignoreEvents = false;
+	hasQuickSave = checkQuickLoadingGame();
 }
 
 CPlayerInterface::~CPlayerInterface()
@@ -665,15 +668,7 @@ void CPlayerInterface::battleStart(const BattleID & battleID, const CCreatureSet
 
 	if ((replayAllowed && useQuickCombat) || forceQuickCombat)
 	{
-		autofightingAI = CDynLibHandler::getNewBattleAI(settings["server"]["friendlyAI"].String());
-
-		AutocombatPreferences autocombatPreferences = AutocombatPreferences();
-		autocombatPreferences.enableSpellsUsage = settings["battle"]["enableAutocombatSpells"].Bool();
-
-		autofightingAI->initBattleInterface(env, cb, autocombatPreferences);
-		autofightingAI->battleStart(battleID, army1, army2, tile, hero1, hero2, side, false);
-		isAutoFightOn = true;
-		registerBattleInterface(autofightingAI);
+		prepareAutoFightingAI(battleID, army1, army2, tile, hero1, hero2, side);
 	}
 
 	waitForAllDialogs();
@@ -1800,6 +1795,60 @@ void CPlayerInterface::proposeLoadingGame()
 	);
 }
 
+void CPlayerInterface::quickSaveGame()
+{
+	// notify player about saving
+	MetaString txt;
+	txt.appendTextID("vcmi.adventureMap.savingQuickSave");	
+	txt.replaceTextID(QUICKSAVE_PATH);
+	GAME->server().getGameChat().sendMessageGameplay(txt.toString());
+	GAME->interface()->cb->save(QUICKSAVE_PATH);
+	hasQuickSave = true;
+	if(adventureInt)
+		adventureInt->updateActiveState();
+}
+
+bool CPlayerInterface::checkQuickLoadingGame(bool verbose)
+{
+	if(!CResourceHandler::get("local")->existsResource(ResourcePath(QUICKSAVE_PATH, EResType::SAVEGAME)))
+	{
+		if(verbose)
+			logGlobal->error("No quicksave file found at %s", QUICKSAVE_PATH);
+		else
+			logGlobal->trace("No quicksave file found at %s", QUICKSAVE_PATH);
+		hasQuickSave = false;
+		if(cb && adventureInt)
+			adventureInt->updateActiveState();
+		return false;
+	}
+	auto error = GAME->server().canQuickLoadGame(QUICKSAVE_PATH);
+	if(error)
+	{
+		if(verbose)
+			logGlobal->error("Cannot quick load game at %s: %s", QUICKSAVE_PATH, *error);
+		else
+			logGlobal->trace("Cannot quick load game at %s: %s", QUICKSAVE_PATH, *error);
+		hasQuickSave = false;
+		if(cb && adventureInt)
+			adventureInt->updateActiveState();
+		return false;
+	}
+	return true;
+}
+
+void CPlayerInterface::proposeQuickLoadingGame()
+{
+	if(!checkQuickLoadingGame(true))
+		return;
+
+	auto onYes = [this]() -> void
+	{
+		GAME->server().quickLoadGame(QUICKSAVE_PATH);
+	};
+
+	GAME->interface()->showYesNoDialog(LIBRARY->generaltexth->translate("vcmi.adventureMap.confirmQuickLoadGame"), onYes, nullptr);
+}
+
 bool CPlayerInterface::capturedAllEvents()
 {
 	if(movementController->isHeroMoving())
@@ -1818,6 +1867,19 @@ bool CPlayerInterface::capturedAllEvents()
 	}
 
 	return false;
+}
+
+void CPlayerInterface::prepareAutoFightingAI(const BattleID &bid, const CCreatureSet *army1, const CCreatureSet *army2, int3 tile, const CGHeroInstance *hero1, const CGHeroInstance *hero2, BattleSide side)
+{
+	autofightingAI = CDynLibHandler::getNewBattleAI(settings["server"]["friendlyAI"].String());
+
+	AutocombatPreferences autocombatPreferences = AutocombatPreferences();
+	autocombatPreferences.enableSpellsUsage = settings["battle"]["enableAutocombatSpells"].Bool();
+
+	autofightingAI->initBattleInterface(env, cb, autocombatPreferences);
+	autofightingAI->battleStart(bid, army1, army2, tile, hero1, hero2, side, false);
+	isAutoFightOn = true;
+	registerBattleInterface(autofightingAI);
 }
 
 void CPlayerInterface::showWorldViewEx(const std::vector<ObjectPosInfo>& objectPositions, bool showTerrain)

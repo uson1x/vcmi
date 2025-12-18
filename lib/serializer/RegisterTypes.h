@@ -110,7 +110,7 @@ void registerTypes(Serializer &s)
 	s.template registerType<AllOfLimiter>(61);
 	s.template registerType<CCreatureTypeLimiter>(62);
 	s.template registerType<HasAnotherBonusLimiter>(63);
-	s.template registerType<CreatureTerrainLimiter>(64);
+	s.template registerType<TerrainLimiter>(64);
 	s.template registerType<FactionLimiter>(65);
 	s.template registerType<CreatureLevelLimiter>(66);
 	s.template registerType<CreatureAlignmentLimiter>(67);
@@ -297,6 +297,7 @@ void registerTypes(Serializer &s)
 	s.template registerType<BattleEnded>(255);
 	s.template registerType<RequestStatistic>(256);
 	s.template registerType<ResponseStatistic>(257);
+	s.template registerType<LobbyQuickLoadGame>(258);
 }
 
 VCMI_LIB_NAMESPACE_END

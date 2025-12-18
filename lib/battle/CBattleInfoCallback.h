@@ -34,6 +34,11 @@ namespace spells
 {
 	class Caster;
 	class Spell;
+
+	namespace effects
+	{
+		struct SpellEffectValue;
+	}
 }
 
 struct DLL_LINKAGE AttackableTiles
@@ -58,9 +63,12 @@ struct ForcedAction {
 	const battle::Unit * target;
 };
 
+using SpellEffectValUptr = std::unique_ptr<spells::effects::SpellEffectValue>;
+
 class DLL_LINKAGE CBattleInfoCallback : public virtual CBattleInfoEssentials
 {
 public:
+
 	std::optional<BattleSide> battleIsFinished() const override; //return none if battle is ongoing; otherwise the victorious side (0/1) or 2 if it is a draw
 
 	std::vector<std::shared_ptr<const CObstacleInstance>> battleGetAllObstaclesOnPos(const BattleHex & tile, bool onlyBlocking = true) const override;
@@ -123,6 +131,15 @@ public:
 	DamageEstimation battleEstimateDamage(const battle::Unit * attacker, const battle::Unit * defender, const BattleHex & attackerPosition, DamageEstimation * retaliationDmg = nullptr) const;
 	DamageEstimation battleEstimateDamage(const battle::Unit * attacker, const battle::Unit * defender, int getMovementRange, DamageEstimation * retaliationDmg = nullptr) const;
 
+	/// preview of damage / restored HP and units killed or raised/summoned for given parameters
+	/// returns hpDelta and unitsDelta
+	SpellEffectValUptr getSpellEffectValue(const CSpell * spell, const spells::Caster * caster, const spells::Mode spellMode, const BattleHex & targetHex) const;
+
+	/// damage estimation for spell-like-attack case, eg. Death Cloud
+	DamageEstimation estimateSpellLikeAttackDamage(const battle::Unit * shooter, const CSpell * spell,const BattleHex & aimHex) const;
+
+	int64_t getFirstAidHealValue(const CGHeroInstance * owner, const battle::Unit * target) const;
+
 	bool battleIsInsideWalls(const BattleHex & from) const;
 	bool battleHasPenaltyOnLine(const BattleHex & from, const BattleHex & dest, bool checkWall, bool checkMoat) const;
 	bool battleHasDistancePenalty(const IBonusBearer * shooter, const BattleHex & shooterPosition, const BattleHex & destHex) const;
@@ -141,7 +158,7 @@ public:
 	ESpellCastProblem battleCanCastSpell(const spells::Caster * caster, spells::Mode mode) const; //returns true if there are no general issues preventing from casting a spell
 
 	SpellID getRandomBeneficialSpell(vstd::RNG & rand, const battle::Unit * caster, const battle::Unit * target) const;
-	SpellID getRandomCastedSpell(vstd::RNG & rand, const CStack * caster) const; //called at the beginning of turn for Faerie Dragon
+	SpellID getRandomCastedSpell(vstd::RNG & rand, const CStack * caster, bool includeAllowed = false) const; //called at the beginning of turn for Faerie Dragon
 
 	std::vector<PossiblePlayerBattleAction> getClientActionsForStack(const CStack * stack, const BattleClientInterfaceData & data);
 	PossiblePlayerBattleAction getCasterAction(const CSpell * spell, const spells::Caster * caster, spells::Mode mode) const;

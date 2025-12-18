@@ -41,6 +41,14 @@
 #include "../lib/serializer/GameConnection.h"
 #include "../lib/texts/CGeneralTextHandler.h"
 
+void ApplyOnLobbyHandlerNetPackVisitor::visitLobbyQuickLoadGame(LobbyQuickLoadGame & pack)
+{
+	assert(handler.getState() == EClientState::GAMEPLAY);
+
+	handler.restartGameplay();
+	handler.sendStartGame();
+}
+
 void ApplyOnLobbyHandlerNetPackVisitor::visitLobbyClientConnected(LobbyClientConnected & pack)
 {
 	result = false;

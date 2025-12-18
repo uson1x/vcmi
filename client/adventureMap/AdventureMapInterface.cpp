@@ -603,7 +603,9 @@ void AdventureMapInterface::onTileHovered(const int3 &targetPosition)
 {
 	if(!shortcuts->optionMapViewActive())
 		return;
-
+	//if the player is not ingame (loser, winner, wrong) we are in a shutdown process
+	if (!GAME->interface()->cb || GAME->interface()->cb->getPlayerStatus(GAME->interface()->playerID) != EPlayerStatus::INGAME)
+		return;
 	//may occur just at the start of game (fake move before full initialization)
 	if(!GAME->interface()->localState->getCurrentArmy())
 		return;
@@ -931,4 +933,9 @@ bool AdventureMapInterface::isValidAdventureSpellTarget(int3 targetPosition) con
 	spells::detail::ProblemImpl problem;
 
 	return spellBeingCasted->getAdventureMechanics().canBeCastAt(problem, GAME->interface()->cb.get(), GAME->interface()->localState->getCurrentHero(), targetPosition);
+}
+
+void AdventureMapInterface::updateActiveState()
+{
+	widget->updateActiveState();
 }

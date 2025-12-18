@@ -106,6 +106,10 @@ BattleWindow::BattleWindow(BattleInterface & Owner)
 	addShortcut(EShortcut::BATTLE_TOGGLE_HEROES_STATS, [this](){ this->toggleStickyHeroWindowsVisibility();});
 	addShortcut(EShortcut::BATTLE_USE_CREATURE_SPELL, [this](){ this->owner.actionsController->enterCreatureCastingMode(); });
 	addShortcut(EShortcut::GLOBAL_CANCEL, [this](){ this->owner.actionsController->endCastingSpell(); });
+	addShortcut(EShortcut::ADVENTURE_QUICK_LOAD, [this](){
+		//allow quick load only on player turn while no animations are ongoing
+		if (!this->owner.hasAnimations() && this->owner.stacksController->getActiveStack())
+			GAME->interface()->proposeQuickLoadingGame(); });
 
 	build(config);
 	
@@ -652,15 +656,7 @@ void BattleWindow::bAutofightf()
 		owner.curInt->isAutoFightOn = true;
 		blockUI(true);
 
-		auto ai = CDynLibHandler::getNewBattleAI(settings["server"]["friendlyAI"].String());
-
-		AutocombatPreferences autocombatPreferences = AutocombatPreferences();
-		autocombatPreferences.enableSpellsUsage = settings["battle"]["enableAutocombatSpells"].Bool();
-
-		ai->initBattleInterface(owner.curInt->env, owner.curInt->cb, autocombatPreferences);
-		ai->battleStart(owner.getBattleID(), owner.army1, owner.army2, int3(0,0,0), owner.attackingHeroInstance, owner.defendingHeroInstance, owner.getBattle()->battleGetMySide(), false);
-		owner.curInt->registerBattleInterface(ai);
-
+		owner.curInt->prepareAutoFightingAI(owner.getBattleID(), owner.army1, owner.army2, int3(0,0,0), owner.attackingHeroInstance, owner.defendingHeroInstance, owner.getBattle()->battleGetMySide());
 		owner.requestAutofightingAIToTakeAction();
 	}
 }
@@ -829,17 +825,8 @@ void BattleWindow::endWithAutocombat()
 		[this]()
 		{
 			owner.curInt->isAutoFightEndBattle = true;
+			owner.curInt->prepareAutoFightingAI(owner.getBattleID(), owner.army1, owner.army2, int3(0,0,0), owner.attackingHeroInstance, owner.defendingHeroInstance, owner.getBattle()->battleGetMySide());
 
-			auto ai = CDynLibHandler::getNewBattleAI(settings["server"]["friendlyAI"].String());
-
-			AutocombatPreferences autocombatPreferences = AutocombatPreferences();
-			autocombatPreferences.enableSpellsUsage = settings["battle"]["enableAutocombatSpells"].Bool();
-
-			ai->initBattleInterface(owner.curInt->env, owner.curInt->cb, autocombatPreferences);
-			ai->battleStart(owner.getBattleID(), owner.army1, owner.army2, int3(0,0,0), owner.attackingHeroInstance, owner.defendingHeroInstance, owner.getBattle()->battleGetMySide(), false);
-
-			owner.curInt->isAutoFightOn = true;
-			owner.curInt->registerBattleInterface(ai);
 			owner.requestAutofightingAIToTakeAction();
 
 			close();

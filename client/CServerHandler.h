@@ -13,6 +13,8 @@
 
 #include "../lib/network/NetworkInterface.h"
 #include "../lib/StartInfo.h"
+#include "../lib/mapping/CMapInfo.h"
+#include "../lib/mapping/CMapHeader.h"
 #include "../lib/gameState/GameStatistics.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -89,7 +91,7 @@ public:
 	virtual void setExtraOptionsInfo(const ExtraOptionsInfo & info) const = 0;
 	virtual void sendMessage(const std::string & txt) const = 0;
 	virtual void sendGuiAction(ui8 action) const = 0; // TODO: possibly get rid of it?
-	virtual void sendStartGame(bool allowOnlyAI = false) const = 0;
+	virtual void sendStartGame(bool allowOnlyAI = false, bool verify = true) const = 0;
 	virtual void sendRestartGame() const = 0;
 };
 
@@ -201,13 +203,15 @@ public:
 	void sendMessage(const std::string & txt) const override;
 	void sendGuiAction(ui8 action) const override;
 	void sendRestartGame() const override;
-	void sendStartGame(bool allowOnlyAI = false) const override;
+	void sendStartGame(bool allowOnlyAI = false, bool verify = true) const override;
 
 	void startMapAfterConnection(std::shared_ptr<CMapInfo> to);
 	bool validateGameStart(bool allowOnlyAI = false) const;
 	void debugStartTest(std::string filename, bool save = false);
 
 	void startGameplay(std::shared_ptr<CGameState> gameState);
+	std::optional<std::string> canQuickLoadGame(const std::string & path) const; // returns reason why not compatible, or nullopt if can
+	void quickLoadGame(const std::string & path);
 	void showHighScoresAndEndGameplay(PlayerColor player, bool victory, const StatisticDataSet & statistic);
 	void endNetwork();
 	void endGameplay();
