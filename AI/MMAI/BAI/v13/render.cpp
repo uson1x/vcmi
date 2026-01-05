@@ -22,8 +22,6 @@
 #include "BAI/v13/render.h"
 #include "common.h"
 
-#include <algorithm>
-
 #include "schema/v13/constants.h"
 #include "schema/v13/types.h"
 
@@ -96,9 +94,9 @@ namespace
 		std::map<const CStack *, ReachabilityInfo> rinfos;
 	};
 
-	std::array<const CStack *, 7> getAllStacksForSide(const Context & ctx, bool side)
+	std::vector<const CStack *> getAllStacksForSide(const Context & ctx, bool side)
 	{
-		return side ? ctx.r_CStacks : ctx.l_CStacks;
+		return side ? ctx.r_CStacksAll : ctx.l_CStacksAll;
 	}
 
 	// Return (attr == N/A), but after performing some checks
@@ -827,8 +825,12 @@ void Verify(const State * state) // NOSONAR - function used for debugging only
 									: ensureValueMatch(vf, cstack->hasBonusOfType(BonusType::NOT_ACTIVE), "HEX.STACK_FLAGS1.SLEEPING");
 								break;
 							case SF1::BLOCKED:
-								ensureValueMatch(vf, cstack->canShoot() && battle->battleIsUnitBlocked(cstack), "HEX.STACK_FLAGS1.TWO_HEX_ATTACK_BREATH");
-								break;
+							{
+								auto want = cstack->canShoot() && battle->battleIsUnitBlocked(cstack) && !cstack->hasBonusOfType(BonusType::FREE_SHOOTING)
+										 && !cstack->hasBonusOfType(BonusType::SIEGE_WEAPON);
+								ensureValueMatch(vf, want, "HEX.STACK_FLAGS1.BLOCKED");
+							}
+							break;
 							case SF1::BLOCKING:
 							{
 								auto adjUnits = battle->battleAdjacentUnits(cstack);
