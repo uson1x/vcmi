@@ -59,6 +59,11 @@ bool Unit::isAmmoCart() const
 	return unitType()->warMachine == ArtifactID::AMMO_CART;
 }
 
+bool Unit::isSummoned() const
+{
+	return unitSlot() == SlotID::SUMMONED_SLOT_PLACEHOLDER;
+}
+
 bool Unit::isMeleeAttacker() const
 {
 	//exclude war machines

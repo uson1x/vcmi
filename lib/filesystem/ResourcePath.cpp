@@ -130,7 +130,7 @@ EResType EResTypeHelper::getTypeFromExtension(std::string extension)
 		{".VSGM1", EResType::SAVEGAME},
 		{".VMAP",  EResType::MAP},
 		{".VCMP",  EResType::CAMPAIGN},
-		{".LUA",   EResType::LUA},
+		{".LUA",   EResType::LUA_SCRIPT},
 		{".ONNX",  EResType::AI_MODEL}
 	};
 
@@ -165,6 +165,7 @@ std::string EResTypeHelper::getEResTypeAsString(EResType type)
 		MAP_ENUM(PALETTE)
 		MAP_ENUM(SAVEGAME)
 		MAP_ENUM(DIRECTORY)
+		MAP_ENUM(LUA_SCRIPT)
 		MAP_ENUM(OTHER)
 	};
 
