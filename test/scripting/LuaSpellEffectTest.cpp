@@ -20,8 +20,6 @@
 
 #include "../../lib/GameLibrary.h"
 #include "../../lib/json/JsonUtils.h"
-#include "../../lib/ScriptHandler.h"
-#include "../../lib/CScriptingModule.h"
 
 namespace test
 {

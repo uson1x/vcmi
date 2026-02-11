@@ -265,6 +265,10 @@ set(lib_MAIN_SRCS
 	serializer/JsonUpdater.cpp
 	serializer/SerializerReflection.cpp
 
+	scripting/ScriptPool.cpp
+	scripting/ScriptHandler.cpp
+	scripting/ScriptImpl.cpp
+
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
 	spells/BonusCaster.cpp
@@ -320,7 +324,6 @@ set(lib_MAIN_SRCS
 	ConditionalWait.cpp
 	CPlayerState.cpp
 	CRandomGenerator.cpp
-	CScriptingModule.cpp
 	CSkillHandler.cpp
 	CStack.cpp
 	ExceptionsCommon.cpp
@@ -334,7 +337,6 @@ set(lib_MAIN_SRCS
 	RiverHandler.cpp
 	RoadHandler.cpp
 	MapLayerHandler.cpp
-	ScriptHandler.cpp
 	TerrainHandler.cpp
 	TurnTimerInfo.cpp
 	GameLibrary.cpp
@@ -745,6 +747,13 @@ set(lib_MAIN_HEADERS
 	serializer/Serializeable.h
 	serializer/SerializerReflection.h
 
+	scripting/ScriptPool.h
+	scripting/ScriptContext.h
+	scripting/ScriptDefines.h
+	scripting/ScriptHandler.h
+	scripting/ScriptImpl.h
+	scripting/ScriptModule.h
+
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
 	spells/BonusCaster.h
@@ -802,7 +811,6 @@ set(lib_MAIN_HEADERS
 	Color.h
 	CPlayerState.h
 	CRandomGenerator.h
-	CScriptingModule.h
 	CSkillHandler.h
 	CSoundBase.h
 	CStack.h
@@ -826,7 +834,6 @@ set(lib_MAIN_HEADERS
 	RiverHandler.h
 	RoadHandler.h
 	MapLayerHandler.h
-	ScriptHandler.h
 	ScopeGuard.h
 	StartInfo.h
 	TerrainHandler.h
