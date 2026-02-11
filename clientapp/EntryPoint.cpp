@@ -274,6 +274,15 @@ int main(int argc, char * argv[])
 	// Init special testing settings
 	setSettingInteger("session/serverport", "serverport", 0);
 	setSettingInteger("general/saveFrequency", "savefrequency", 1);
+	session["forcedAIs"].Vector().clear();
+	if(vm.count("ai"))
+	{
+		const auto & forcedAIs = vm["ai"].as<std::vector<std::string>>();
+		auto & sessionForcedAIs = session["forcedAIs"].Vector();
+		sessionForcedAIs.resize(forcedAIs.size());
+		for(size_t i = 0; i < forcedAIs.size(); ++i)
+			sessionForcedAIs[i].String() = forcedAIs[i];
+	}
 
 	// Initialize logging based on settings
 	logConfigurator.configure();

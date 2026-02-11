@@ -243,6 +243,9 @@ void CClient::initPlayerEnvironments()
 
 void CClient::initPlayerInterfaces()
 {
+	const auto & forcedAIs = settings["session"]["forcedAIs"].Vector();
+	size_t forcedAIIndex = 0;
+
 	for(const auto & playerInfo : gameState().getStartInfo()->playerInfos)
 	{
 		PlayerColor color = playerInfo.first;
@@ -259,7 +262,23 @@ void CClient::initPlayerInterfaces()
 					if (gameState().getPlayerTeam(allyInfo.first) == gameState().getPlayerTeam(playerInfo.first) && allyInfo.second.isControlledByHuman())
 						alliedToHuman = true;
 
-				auto AiToGive = aiNameForPlayer(playerInfo.second, false, alliedToHuman);
+				std::string AiToGive;
+				if(forcedAIIndex < forcedAIs.size() && forcedAIs[forcedAIIndex].isString())
+				{
+					const auto & forcedAIName = forcedAIs[forcedAIIndex].String();
+					if(!forcedAIName.empty())
+					{
+						const boost::filesystem::path aiPath = VCMIDirs::get().fullLibraryPath("AI", forcedAIName);
+						if(boost::filesystem::exists(aiPath))
+							AiToGive = forcedAIName;
+						else
+							logNetwork->warn("Requested AI '%s' for player %s was not found at %s, falling back to default", forcedAIName, color.toString(), aiPath.string());
+					}
+				}
+				forcedAIIndex++;
+
+				if(AiToGive.empty())
+					AiToGive = aiNameForPlayer(playerInfo.second, false, alliedToHuman);
 				logNetwork->info("Player %s will be lead by %s", color.toString(), AiToGive);
 				installNewPlayerInterface(CDynLibHandler::getNewAI(AiToGive), color);
 			}
