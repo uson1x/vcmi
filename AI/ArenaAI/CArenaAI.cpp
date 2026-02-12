@@ -4,7 +4,10 @@
 #include "../../lib/callback/CCallback.h"
 #include "../../lib/battle/BattleAction.h"
 #include "../../lib/constants/Enumerations.h"
+#include "../../lib/GameConstants.h"
+#include "../../lib/IGameSettings.h"
 #include "../../lib/entities/building/CBuilding.h"
+#include "../../lib/entities/hero/CHero.h"
 #include "../../lib/json/JsonNode.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGObjectInstance.h"
@@ -37,6 +40,7 @@ constexpr int MAX_VISIBLE_OBJECTS = 48;
 constexpr int MAX_MOVE_OPTIONS = 24;
 constexpr int MAX_BUILD_OPTIONS = 36;
 constexpr int MAX_RECRUIT_OPTIONS = 36;
+constexpr int MAX_RECRUIT_HERO_OPTIONS = 8;
 
 std::string sideFromPlayer(const PlayerColor & player)
 {
@@ -548,6 +552,58 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		legalActions.Vector().push_back(recruitGroup);
 	}
 
+	JsonNode recruitHeroGroup;
+	recruitHeroGroup["type"].String() = "RECRUIT_HERO";
+	JsonNode recruitHeroOptions;
+	recruitHeroOptions.setType(JsonNode::JsonType::DATA_VECTOR);
+	int recruitHeroEmitted = 0;
+	const int heroCount = cb->getHeroCount(playerID, true);
+	const int onMapCap = cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_ON_MAP_CAP);
+	const int totalCap = cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_TOTAL_CAP);
+	const bool heroCapReached = heroCount >= onMapCap || heroCount >= totalCap;
+	const bool canAffordHero = cb->getResourceAmount(EGameResID::GOLD) >= GameConstants::HERO_GOLD_COST;
+	if(canAffordHero && !heroCapReached)
+	{
+		for(const auto * town : towns)
+		{
+			if(town == nullptr)
+				continue;
+			if(!town->hasBuilt(BuildingID::TAVERN))
+				continue;
+			if(town->getVisitingHero() && town->getUpperArmy() && town->getUpperArmy()->stacksCount() > 0)
+				continue;
+
+			const auto offeredHeroes = cb->getAvailableHeroes(town);
+			for(const auto * offeredHero : offeredHeroes)
+			{
+				if(recruitHeroEmitted >= MAX_RECRUIT_HERO_OPTIONS)
+					break;
+				if(offeredHero == nullptr || !offeredHero->getHeroTypeID().isValid())
+					continue;
+
+				const int townIdNum = town->id.getNum();
+				const int heroTypeIdNum = offeredHero->getHeroTypeID().getNum();
+				JsonNode option;
+				option["option_id"].String() = "recruit_hero_t_" + std::to_string(townIdNum)
+					+ "_h_" + std::to_string(heroTypeIdNum);
+				option["town_id"].String() = townToken(townIdNum);
+				option["hero_type_id"].Integer() = heroTypeIdNum;
+				option["hero_name"].String() = offeredHero->getNameTranslated();
+				if(const auto * heroType = offeredHero->getHeroTypeID().toHeroType())
+					option["hero"].String() = heroType->getJsonKey();
+				recruitHeroOptions.Vector().push_back(option);
+				++recruitHeroEmitted;
+			}
+			if(recruitHeroEmitted >= MAX_RECRUIT_HERO_OPTIONS)
+				break;
+		}
+	}
+	if(!recruitHeroOptions.Vector().empty())
+	{
+		recruitHeroGroup["options"] = recruitHeroOptions;
+		legalActions.Vector().push_back(recruitHeroGroup);
+	}
+
 	payload["legal_actions"] = legalActions;
 	payload["decision_budget"]["timeout_ms"].Integer() = std::max(100, std::min(decisionTimeoutMs, turnRemainingMs));
 	payload["decision_budget"]["turn_remaining_ms"].Integer() = std::max(0, turnRemainingMs);
@@ -910,6 +966,61 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 		int finalCount = requestedCount.value_or(maxLegalCount);
 		finalCount = std::max(1, std::min(finalCount, maxLegalCount));
 		cb->recruitCreatures(town, town, CreatureID(*creatureId), static_cast<ui32>(finalCount), matchedLevel);
+		return true;
+	}
+
+	if(actionType == "RECRUIT_HERO")
+	{
+		std::optional<int> townId;
+		if(selectedAction.isStruct() && selectedAction["town_id"].isString())
+			townId = parseOptionValue(selectedAction["town_id"].String());
+		if(!townId && !optionId.empty())
+			townId = parseTaggedOptionValue(optionId, "_t_");
+		if(!townId)
+			return false;
+
+		const CGTownInstance * town = findTownById(*townId);
+		if(town == nullptr)
+			return false;
+		if(!town->hasBuilt(BuildingID::TAVERN))
+			return false;
+		if(cb->getResourceAmount(EGameResID::GOLD) < GameConstants::HERO_GOLD_COST)
+			return false;
+
+		std::optional<int> heroTypeId = selectedAction.isStruct() ? jsonInt(selectedAction["hero_type_id"]) : std::nullopt;
+		if(!heroTypeId && !optionId.empty())
+			heroTypeId = parseTaggedOptionValue(optionId, "_h_");
+
+		std::string heroTokenValue;
+		if(selectedAction.isStruct() && selectedAction["hero"].isString())
+			heroTokenValue = selectedAction["hero"].String();
+
+		const auto offeredHeroes = cb->getAvailableHeroes(town);
+		const CGHeroInstance * selectedHero = nullptr;
+		for(const auto * offeredHero : offeredHeroes)
+		{
+			if(offeredHero == nullptr || !offeredHero->getHeroTypeID().isValid())
+				continue;
+			const int offeredHeroTypeId = offeredHero->getHeroTypeID().getNum();
+			if(heroTypeId && offeredHeroTypeId == *heroTypeId)
+			{
+				selectedHero = offeredHero;
+				break;
+			}
+			if(!heroTokenValue.empty())
+			{
+				const auto * heroType = offeredHero->getHeroTypeID().toHeroType();
+				if(heroType && (heroType->getJsonKey() == heroTokenValue || offeredHero->getNameTranslated() == heroTokenValue))
+				{
+					selectedHero = offeredHero;
+					break;
+				}
+			}
+		}
+		if(selectedHero == nullptr)
+			return false;
+
+		cb->recruitHero(town, selectedHero);
 		return true;
 	}
 
