@@ -265,9 +265,7 @@ set(lib_MAIN_SRCS
 	serializer/JsonUpdater.cpp
 	serializer/SerializerReflection.cpp
 
-	scripting/ScriptPool.cpp
 	scripting/ScriptHandler.cpp
-	scripting/ScriptImpl.cpp
 
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
@@ -747,11 +745,7 @@ set(lib_MAIN_HEADERS
 	serializer/Serializeable.h
 	serializer/SerializerReflection.h
 
-	scripting/ScriptPool.h
-	scripting/ScriptDefines.h
 	scripting/ScriptHandler.h
-	scripting/ScriptImpl.h
-	scripting/ScriptModule.h
 
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
