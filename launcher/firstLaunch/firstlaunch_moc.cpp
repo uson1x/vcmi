@@ -364,7 +364,7 @@ QString FirstLaunchView::checkFileMagic(const QString &filename, const QString &
     logGlobal->info("Checking %s with size: %llu", realFilename.toStdString(), fileSize);
 
 #if defined(VCMI_MOBILE)
-    if(!realFilename.endsWith(".exe", Qt::CaseInsensitive))
+    if(!realFilename.endsWith(ext, Qt::CaseInsensitive))
         return tr("You need to select a %1 file!", "param is file extension").arg(ext);
 #endif
 
