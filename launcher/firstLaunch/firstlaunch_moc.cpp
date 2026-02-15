@@ -359,14 +359,17 @@ QString FirstLaunchView::checkFileMagic(const QString &filename, const QString &
     QFileInfo fileInfo(filename);
     quint64 fileSize = fileInfo.size();
 
-    logGlobal->info("Checking %s with size: %llu", filename.toStdString(), fileSize);
+	QString realFilename = Helper::getRealPath(filename);
+
+    logGlobal->info("Checking %s with size: %llu", realFilename.toStdString(), fileSize);
 
 #if defined(VCMI_MOBILE)
-    if(fileInfo.suffix().compare(ext, Qt::CaseInsensitive) != 0)
+    if(!realFilename.endsWith(".exe", Qt::CaseInsensitive))
         return tr("You need to select a %1 file!", "param is file extension").arg(ext);
 #endif
 
-    if(fileInfo.suffix().compare("exe", Qt::CaseInsensitive) == 0){
+    if(realFilename.endsWith(".exe", Qt::CaseInsensitive))
+	{
         if(fileSize > 1500000) // 1.5MB
         {
             logGlobal->info("Unknown installer selected: %s", filename.toStdString());
