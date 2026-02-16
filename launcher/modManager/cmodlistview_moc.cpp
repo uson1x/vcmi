@@ -577,6 +577,15 @@ void CModListView::dataChanged(const QModelIndex & topleft, const QModelIndex & 
 	selectMod(ui->allModsView->currentIndex());
 }
 
+static void scrollTextBrowserToTop(QTextBrowser* browser)
+{
+	QTimer::singleShot(0, browser, [browser]()
+	{
+		browser->moveCursor(QTextCursor::Start);
+		browser->verticalScrollBar()->setValue(0);
+	});
+}
+
 void CModListView::selectMod(const QModelIndex & index)
 {
 	ui->tabWidget->setCurrentIndex(0);
@@ -598,6 +607,9 @@ void CModListView::selectMod(const QModelIndex & index)
 
 		Helper::enableScrollBySwiping(ui->modInfoBrowser);
 		Helper::enableScrollBySwiping(ui->changelogBrowser);
+
+		scrollTextBrowserToTop(ui->modInfoBrowser);
+		scrollTextBrowserToTop(ui->changelogBrowser);
 
 		auto state = buttonEnabledState(modName, mod);
 
