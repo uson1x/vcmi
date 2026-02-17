@@ -208,7 +208,7 @@ void Initializer::initialize(CGArtifact * o)
 		auto a = controller.map()->createScroll(*RandomGeneratorUtil::nextItem(out, CRandomGenerator::getDefault()));
 		o->setArtifactInstance(a);
 	}
-	else if(o->ID == Obj::ARTIFACT || (o->ID >= Obj::RANDOM_ART && o->ID <= Obj::RANDOM_RELIC_ART))
+	else if(o->ID == Obj::ARTIFACT || MapObjectID::isRandomArtifact(o->ID))
 	{
 		auto instance = controller.map()->createArtifact(o->getArtifactType());
 		o->setArtifactInstance(instance);
@@ -379,6 +379,9 @@ void Inspector::updateProperties(CGArtifact * o)
 	if(!o) return;
 
 	addProperty(QObject::tr("Message"), o->message, false);
+
+	if(MapObjectID::isRandomArtifact(o->ID))
+		return;
 
 	const CArtifactInstance * instance = o->getArtifactInstance();
 	if(instance && o->ID == Obj::SPELL_SCROLL)
