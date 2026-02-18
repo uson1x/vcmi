@@ -1408,7 +1408,7 @@ void CModListView::doInstallMod(const QString & modName)
 
 void CModListView::doUninstallMod(const QString & modName, bool silent)
 {
-	if(modStateModel->isModExists(modName) && modStateModel->getMod(modName).isInstalled())
+	if(!modStateModel->isModExists(modName) || !modStateModel->getMod(modName).isInstalled())
 		return;
 
 	if(!silent)
