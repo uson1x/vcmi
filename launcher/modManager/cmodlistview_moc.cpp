@@ -1121,7 +1121,6 @@ void CModListView::installMods(QStringList archives)
 				modsToEnable.push_back(mod);
 
 			doUninstallMod(mod, true);
-			reload(mod);
 		}
 		else
 		{
