@@ -55,9 +55,9 @@ std::string CFilesystemLoader::getMountPoint() const
 
 std::optional<boost::filesystem::path> CFilesystemLoader::getResourceName(const ResourcePath & resourceName) const
 {
-	std::lock_guard lock(fileListGuard);
 	assert(existsResource(resourceName));
 
+	std::lock_guard lock(fileListGuard);
 	return baseDirectory / fileList.at(resourceName);
 }
 
