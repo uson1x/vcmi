@@ -15,8 +15,9 @@
 	"vcmi.adventureMap.monsterLevel"            : "\n\nÚroveň %LEVEL, %TOWN\nJednotka %ATTACK_TYPE",
 	"vcmi.adventureMap.monsterMeleeType"        : "útočí zblízka",
 	"vcmi.adventureMap.monsterRangedType"       : "útočí na dálku",
-	"vcmi.adventureMap.search.hover"            : "Vyhledat",
-	"vcmi.adventureMap.search.help"             : "Vyberte objekt na mapě k vyhledání.",
+	"vcmi.adventureMap.search.hover"            : "Vyhledat objekt na mapě",
+	"vcmi.adventureMap.search.help"             : "{Vyhledat objekt na mapě}\n\nUmožňuje vyhledat objekt na mapě dobrodružství a zobrazit jeho polohu.",
+	"vcmi.adventureMap.search.tip"              : "Vyberte objekt k vyhledání na mapě",
 	"vcmi.adventureMap.layer.hover"             : "Přepnout vrstvu  -  %s (%d) na %s (%d)",
 	"vcmi.adventureMap.layer.help"              : "{Přepnout vrstvu}\n\nPřepne mapu dobrodružství mezi jednotlivými vrstvami\n\nPřepnout %s (%d) na %s (%d)",
 

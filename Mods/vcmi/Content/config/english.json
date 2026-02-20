@@ -15,8 +15,9 @@
 	"vcmi.adventureMap.monsterLevel"            : "\n\nLevel %LEVEL %TOWN %ATTACK_TYPE unit",
 	"vcmi.adventureMap.monsterMeleeType"        : "melee",
 	"vcmi.adventureMap.monsterRangedType"       : "ranged",
-	"vcmi.adventureMap.search.hover"            : "Search map object",
-	"vcmi.adventureMap.search.help"             : "Select object to search on map.",
+	"vcmi.adventureMap.search.hover"            : "Search Map Object",
+	"vcmi.adventureMap.search.help"             : "{Search Map Object}\n\nAllows you to search for an object on the adventure map and display its location.",
+	"vcmi.adventureMap.search.tip"              : "Select object to find on the map.",
 	"vcmi.adventureMap.layer.hover"             : "Switch Layer  -  %s (%d) to %s (%d)",
 	"vcmi.adventureMap.layer.help"              : "{Switch Layer}\n\nSwitches the adventure map between map layers\n\nSwitch %s (%d) to %s (%d)",
 
