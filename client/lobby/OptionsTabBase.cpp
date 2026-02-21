@@ -319,7 +319,7 @@ void OptionsTabBase::recreate(bool campaign)
 	auto const & generateSimturnsDurationText = [](int days) -> std::string
 	{
 		int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
-		int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
+		int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_WEEKS_PER_MONTH) * daysPerWeek;
 
 		if (days == 0)
 			return LIBRARY->generaltexth->translate("core.genrltxt.523");

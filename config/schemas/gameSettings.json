@@ -39,7 +39,7 @@
 			"additionalProperties" : false,
 			"properties" : {
 				"daysPerWeek" :  { "type" : "number" },
-				"daysPerMonth" : { "type" : "number" }
+				"weeksPerMonth" : { "type" : "number" }
 			}
 		},
 		"heroes" : {

@@ -878,7 +878,7 @@
 		"general" :
 		{
 			"daysPerWeek"  :  7,
-			"daysPerMonth" : 28
+			"weeksPerMonth" : 4
 		}
 	}
 }

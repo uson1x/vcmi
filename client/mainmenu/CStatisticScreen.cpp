@@ -477,7 +477,7 @@ LineChart::LineChart(Rect position, std::string title, TData data, TIcons icons,
 
 	// draw grid (vertical lines)
 	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
-	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
+	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_WEEKS_PER_MONTH) * daysPerWeek;
 	int dayGridInterval = maxDay < 700 ? daysPerWeek : daysPerMonth;
 	if(maxDay > 1)
 	{

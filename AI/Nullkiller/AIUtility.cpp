@@ -608,7 +608,7 @@ bool isWeeklyRevisitable(const Nullkiller * ai, const CGObjectInstance * obj)
 
 	//TODO: allow polling of remaining creatures in dwelling
 	if(const auto * rewardable = dynamic_cast<const CRewardableObject *>(obj))
-		return rewardable->configuration.getResetDuration() == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
+		return rewardable->configuration.getResetDuration() == 7;
 
 	if(dynamic_cast<const CGDwelling *>(obj))
 		return true;

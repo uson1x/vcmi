@@ -661,9 +661,12 @@ NewTurn NewTurnProcessor::generateNewTurnPack()
 	n.creatureid = CreatureID::NONE;
 	n.day = gameHandler->gameState().day + 1;
 
+	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
+	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_WEEKS_PER_MONTH) * daysPerWeek;
+
 	bool firstTurn = !gameHandler->gameInfo().getDate(Date::DAY);
-	bool newWeek = gameHandler->gameInfo().getDate(Date::DAY_OF_WEEK) == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK); //day numbers are confusing, as day was not yet switched
-	bool newMonth = gameHandler->gameInfo().getDate(Date::DAY_OF_MONTH) == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
+	bool newWeek = gameHandler->gameInfo().getDate(Date::DAY_OF_WEEK) == daysPerWeek; //day numbers are confusing, as day was not yet switched
+	bool newMonth = gameHandler->gameInfo().getDate(Date::DAY_OF_MONTH) == daysPerMonth;
 
 	int additionalGrowth = 0;
 
@@ -706,9 +709,12 @@ void NewTurnProcessor::onNewTurn()
 {
 	NewTurn n = generateNewTurnPack();
 
+	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
+	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_WEEKS_PER_MONTH) * daysPerWeek;
+
 	bool firstTurn = !gameHandler->gameInfo().getDate(Date::DAY);
-	bool newWeek = gameHandler->gameInfo().getDate(Date::DAY_OF_WEEK) == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK); //day numbers are confusing, as day was not yet switched
-	bool newMonth = gameHandler->gameInfo().getDate(Date::DAY_OF_MONTH) == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
+	bool newWeek = gameHandler->gameInfo().getDate(Date::DAY_OF_WEEK) == daysPerWeek; //day numbers are confusing, as day was not yet switched
+	bool newMonth = gameHandler->gameInfo().getDate(Date::DAY_OF_MONTH) == daysPerMonth;
 
 	gameHandler->sendAndApply(n);
 
