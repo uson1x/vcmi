@@ -1381,6 +1381,7 @@ void CModListView::loadScreenshots()
 			// managed to load cached image
 			QIcon icon(pixmap);
 			auto * item = new QListWidgetItem(icon, QString(tr("Screenshot %1")).arg(ui->screenshotsList->count() + 1));
+			item->setData(Qt::UserRole, fullPath);
 			ui->screenshotsList->addItem(item);
 		}
 	}
@@ -1390,9 +1391,17 @@ void CModListView::on_screenshotsList_clicked(const QModelIndex & index)
 {
 	if(index.isValid())
 	{
-		QIcon icon = ui->screenshotsList->item(index.row())->icon();
-		auto pixmap = icon.pixmap(icon.availableSizes()[0]);
-		ImageViewer::showPixmap(pixmap, this);
+		QStringList imagePaths;
+		for(int i = 0; i < ui->screenshotsList->count(); ++i)
+		{
+			auto * item = ui->screenshotsList->item(i);
+			const auto path = item->data(Qt::UserRole).toString();
+			if(!path.isEmpty())
+				imagePaths.push_back(path);
+		}
+
+		if(!imagePaths.empty())
+			ImageViewer::showImages(imagePaths, index.row(), this);
 	}
 }
 
