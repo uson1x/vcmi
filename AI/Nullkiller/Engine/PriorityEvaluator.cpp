@@ -1168,7 +1168,7 @@ public:
 		Goals::BuildThis & buildThis = dynamic_cast<Goals::BuildThis &>(*task);
 		auto & bi = buildThis.buildingInfo;
 		
-		evaluationContext.goldReward += 7 * bi.dailyIncome.marketValue() / 2; // 7 day income but half we already have
+		evaluationContext.goldReward += LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK) * bi.dailyIncome.marketValue() / 2; // 7 day income but half we already have
 		evaluationContext.heroRole = HeroRole::MAIN;
 		evaluationContext.movementCostByRole[evaluationContext.heroRole] += bi.prerequisitesCount;
 		int32_t cost = bi.buildCost[EGameResID::GOLD];
@@ -1382,7 +1382,7 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 		dangerThreshold *= evaluationContext.powerRatio > 0 ? evaluationContext.powerRatio : 1.0;
 
 		bool arriveNextWeek = false;
-		if (ai->cb->getDate(Date::DAY_OF_WEEK) + evaluationContext.turn > 7 && priorityTier < PriorityTier::FAR_KILL)
+		if (ai->cb->getDate(Date::DAY_OF_WEEK) + evaluationContext.turn > LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK) && priorityTier < PriorityTier::FAR_KILL)
 			arriveNextWeek = true;
 
 #if NKAI_TRACE_LEVEL >= 2

@@ -673,7 +673,7 @@ void CGameHandler::onNewTurn()
 	logGlobal->trace("Turn %d", gameState().day+1);
 
 	bool firstTurn = !gameInfo().getDate(Date::DAY);
-	bool newMonth = gameInfo().getDate(Date::DAY_OF_MONTH) == 28;
+	bool newMonth = gameInfo().getDate(Date::DAY_OF_MONTH) == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
 
 	if (firstTurn)
 	{

@@ -34,6 +34,7 @@
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/texts/TextOperations.h"
 #include "../../lib/GameLibrary.h"
+#include "../../lib/IGameSettings.h"
 
 #include <vstd/DateUtils.h>
 
@@ -475,7 +476,9 @@ LineChart::LineChart(Rect position, std::string title, TData data, TIcons icons,
 	niceMaxVal = std::max(1, niceMaxVal); // avoid zero size Y axis (if all values are 0)
 
 	// draw grid (vertical lines)
-	int dayGridInterval = maxDay < 700 ? 7 : 28;
+	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
+	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
+	int dayGridInterval = maxDay < 700 ? daysPerWeek : daysPerMonth;
 	if(maxDay > 1)
 	{
 		for(const auto & line : data)

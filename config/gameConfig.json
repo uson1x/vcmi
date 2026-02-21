@@ -873,6 +873,12 @@
 		{
 			// build town cheat without grail
 			"buildWithoutGrail" : false
+		},
+
+		"general" :
+		{
+			"daysPerWeek"  :  7,
+			"daysPerMonth" : 28
 		}
 	}
 }

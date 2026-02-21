@@ -125,27 +125,31 @@ HeroTypeID CGameState::pickUnusedHeroTypeRandomly(vstd::RNG & randomGenerator, c
 
 int CGameState::getDate(int d, Date mode)
 {
+	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
+	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
+	int weeksPerMonth = daysPerMonth / daysPerWeek;
+
 	int temp;
 	switch (mode)
 	{
 	case Date::DAY:
 		return d;
 	case Date::DAY_OF_WEEK: //day of week
-		temp = (d)%7; // 1 - Monday, 7 - Sunday
-		return temp ? temp : 7;
+		temp = (d)%daysPerWeek; // 1 - Monday, 7 - Sunday
+		return temp ? temp : daysPerWeek;
 	case Date::WEEK:  //current week
-		temp = ((d-1)/7)+1;
-		if (!(temp%4))
-			return 4;
+		temp = ((d-1)/daysPerWeek)+1;
+		if (!(temp%weeksPerMonth))
+			return weeksPerMonth;
 		else
-			return (temp%4);
+			return (temp%weeksPerMonth);
 	case Date::MONTH: //current month
-		return ((d-1)/28)+1;
+		return ((d-1)/daysPerMonth)+1;
 	case Date::DAY_OF_MONTH: //day of month
-		temp = (d)%28;
+		temp = (d)%daysPerMonth;
 		if (temp)
 			return temp;
-		else return 28;
+		else return daysPerMonth;
 	}
 	return 0;
 }

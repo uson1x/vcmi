@@ -34,6 +34,14 @@
 				"inTheWakeOfGods" :      { "type" : "object" }
 			}
 		},
+		"general": {
+			"type" : "object",
+			"additionalProperties" : false,
+			"properties" : {
+				"daysPerWeek" :  { "type" : "number" },
+				"daysPerMonth" : { "type" : "number" }
+			}
+		},
 		"heroes" : {
 			"type" : "object",
 			"additionalProperties" : false,
