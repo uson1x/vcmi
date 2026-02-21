@@ -127,7 +127,6 @@ int CGameState::getDate(int d, Date mode)
 {
 	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
 	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_MONTH);
-	int weeksPerMonth = daysPerMonth / daysPerWeek;
 
 	int temp;
 	switch (mode)
@@ -138,11 +137,8 @@ int CGameState::getDate(int d, Date mode)
 		temp = (d)%daysPerWeek; // 1 - Monday, 7 - Sunday
 		return temp ? temp : daysPerWeek;
 	case Date::WEEK:  //current week
-		temp = ((d-1)/daysPerWeek)+1;
-		if (!(temp%weeksPerMonth))
-			return weeksPerMonth;
-		else
-			return (temp%weeksPerMonth);
+		temp = ((d - 1) % daysPerMonth) + 1;
+		return ((temp - 1) / daysPerWeek) + 1;
 	case Date::MONTH: //current month
 		return ((d-1)/daysPerMonth)+1;
 	case Date::DAY_OF_MONTH: //day of month

@@ -98,7 +98,9 @@ AnimationPath CInfoBar::VisibleDateInfo::getNewDayName()
 	if(GAME->interface()->cb->getDate(Date::DAY_OF_WEEK) != 1)
 		return AnimationPath::builtin("NEWDAY");
 
-	switch(GAME->interface()->cb->getDate(Date::WEEK))
+	int week = GAME->interface()->cb->getDate(Date::WEEK);
+	int wrappedWeek = ((week - 1) % 4) + 1;
+	switch(wrappedWeek)
 	{
 	case 1:
 		return AnimationPath::builtin("NEWWEEK1");
