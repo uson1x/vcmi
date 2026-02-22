@@ -877,6 +877,7 @@
 
 		"general" :
 		{
+			// adjusting day and month length; not fully supported yet (e.g. weekly-visitable buildings, AI actions, dayOfWeek limiter, ...)
 			"daysPerWeek"  :  7,
 			"weeksPerMonth" : 4
 		}
