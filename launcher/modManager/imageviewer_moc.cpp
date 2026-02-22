@@ -77,9 +77,6 @@ ImageViewer::ImageViewer(QWidget * parent)
 
 	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
-	ui->imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-	ui->imageLabel->setMinimumSize(0, 0);
-
 	setFocusPolicy(Qt::StrongFocus);
 	setAttribute(Qt::WA_AcceptTouchEvents, true);
 	ui->imageLabel->setAttribute(Qt::WA_AcceptTouchEvents, true);
