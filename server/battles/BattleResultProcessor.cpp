@@ -345,19 +345,28 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 		if(strongestHero->id == finishingBattle->loserId && strongestHero->level > 5)
 			gameHandler->statistics->getPlayerAccumulator(finishingBattle->victor).lastDefeatedStrongestHeroDay = gameHandler->gameState().getDate(Date::DAY);
 	}
-	if(battle.sideToPlayer(BattleSide::ATTACKER) == PlayerColor::NEUTRAL || battle.sideToPlayer(BattleSide::DEFENDER) == PlayerColor::NEUTRAL)
+
+	auto attackerPlayer = battle.sideToPlayer(BattleSide::ATTACKER);
+	auto defenderPlayer = battle.sideToPlayer(BattleSide::DEFENDER);
+	auto winnerPlayer = battle.sideToPlayer(finishingBattle->winnerSide);
+	auto isAttackerNeutral = attackerPlayer == PlayerColor::NEUTRAL;
+	auto isDefenderNeutral = defenderPlayer == PlayerColor::NEUTRAL;
+	auto isWinnerNeutral = winnerPlayer == PlayerColor::NEUTRAL;
+	if(isAttackerNeutral || isDefenderNeutral)
 	{
-		gameHandler->statistics->getPlayerAccumulator(battle.sideToPlayer(BattleSide::ATTACKER)).numBattlesNeutral++;
-		gameHandler->statistics->getPlayerAccumulator(battle.sideToPlayer(BattleSide::DEFENDER)).numBattlesNeutral++;
-		if(!finishingBattle->isDraw())
-			gameHandler->statistics->getPlayerAccumulator(battle.sideToPlayer(finishingBattle->winnerSide)).numWinBattlesNeutral++;
+		if(!isAttackerNeutral)
+			gameHandler->statistics->getPlayerAccumulator(attackerPlayer).numBattlesNeutral++;
+		if(!isDefenderNeutral)
+			gameHandler->statistics->getPlayerAccumulator(defenderPlayer).numBattlesNeutral++;
+		if(!finishingBattle->isDraw() && !isWinnerNeutral)
+			gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesNeutral++;
 	}
 	else
 	{
-		gameHandler->statistics->getPlayerAccumulator(battle.sideToPlayer(BattleSide::ATTACKER)).numBattlesPlayer++;
-		gameHandler->statistics->getPlayerAccumulator(battle.sideToPlayer(BattleSide::DEFENDER)).numBattlesPlayer++;
+		gameHandler->statistics->getPlayerAccumulator(attackerPlayer).numBattlesPlayer++;
+		gameHandler->statistics->getPlayerAccumulator(defenderPlayer).numBattlesPlayer++;
 		if(!finishingBattle->isDraw())
-			gameHandler->statistics->getPlayerAccumulator(battle.sideToPlayer(finishingBattle->winnerSide)).numWinBattlesPlayer++;
+			gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesPlayer++;
 	}
 
 	BattleResultAccepted raccepted;
