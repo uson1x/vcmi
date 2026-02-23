@@ -51,6 +51,7 @@ private:
 	void applyZoomMultiplier(qreal multiplier);
 	void panImage(const QPointF & delta);
 	void setButtonSize(int size);
+	void setButtonStyle(int size);
 
 	Ui::ImageViewer * ui;
 	QShortcut * shortcutPrevious = nullptr;

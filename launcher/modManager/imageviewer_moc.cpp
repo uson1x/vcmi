@@ -384,6 +384,26 @@ void ImageViewer::setButtonSize(int size)
 	ui->buttonClose->setMaximumSize(size, size);
 }
 
+void ImageViewer::setButtonStyle(int size)
+{
+	const int buttonRadius = size / 2;
+	const QString buttonStyle = QStringLiteral(
+		"QPushButton#buttonPrevious, QPushButton#buttonNext, QPushButton#buttonClose {"
+		" border: 1px solid palette(mid);"
+		" border-radius: %1px;"
+		" padding: 3px;"
+		" background: palette(button);"
+		" font-weight: 700;"
+		" }"
+		"QPushButton#buttonPrevious:hover, QPushButton#buttonNext:hover, QPushButton#buttonClose:hover {"
+		" background: palette(light);"
+		" }").arg(buttonRadius);
+
+	ui->buttonPrevious->setStyleSheet(buttonStyle);
+	ui->buttonNext->setStyleSheet(buttonStyle);
+	ui->buttonClose->setStyleSheet(buttonStyle);
+}
+
 void ImageViewer::updateResponsiveLayout(const QSize & windowSize)
 {
 #ifdef VCMI_MOBILE
@@ -404,6 +424,7 @@ void ImageViewer::updateResponsiveLayout(const QSize & windowSize)
 	ui->gridLayout->setVerticalSpacing(spacing);
 
 	setButtonSize(buttonSize);
+	setButtonStyle(buttonSize);
 
 	ui->gridLayout->setColumnStretch(0, 0);
 	ui->gridLayout->setColumnStretch(1, 1);
