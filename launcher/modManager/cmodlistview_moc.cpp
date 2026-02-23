@@ -1355,22 +1355,38 @@ void CModListView::loadScreenshots()
 
 	assert(ui->allModsView->currentIndex().isValid());
 
-
 	if (!ui->allModsView->currentIndex().isValid())
 		return;
 
 	ui->screenshotsList->clear();
 	QString modName = ui->allModsView->currentIndex().data(ModRoles::ModNameRole).toString();
 	assert(modStateModel->isModExists(modName)); //should be filtered out by check above
+	const auto localScreenshotsPath = QString{QLatin1String{"%1/%2/screenshots"}}.arg(CLauncherDirs::modsPath(), modName);
 
 	for(QString url : modStateModel->getMod(modName).getScreenshots())
 	{
 		// URL must be encoded to something else to get rid of symbols illegal in file names
 		const auto hashed = QCryptographicHash::hash(url.toUtf8(), QCryptographicHash::Md5);
 		const auto fileName = QString{QLatin1String{"%1.png"}}.arg(QLatin1String{hashed.toHex()});
+		const auto originalFileName = QUrl{url}.fileName(QUrl::FullyDecoded);
 
-		const auto fullPath = QString{QLatin1String{"%1/%2"}}.arg(CLauncherDirs::downloadsPath(), fileName);
-		QPixmap pixmap(fullPath);
+		const QStringList fullPaths = {
+			QString{QLatin1String{"%1/%2"}}.arg(localScreenshotsPath, originalFileName),
+			QString{QLatin1String{"%1/%2"}}.arg(localScreenshotsPath, fileName),
+			QString{QLatin1String{"%1/%2"}}.arg(CLauncherDirs::downloadsPath(), fileName)
+		};
+
+		QPixmap pixmap;
+		QString loadedPath;
+		for(const auto & fullPath : fullPaths)
+		{
+			pixmap.load(fullPath);
+			if(!pixmap.isNull())
+			{
+				loadedPath = fullPath;
+				break;
+			}
+		}
 		if(pixmap.isNull())
 		{
 			// image file not exists or corrupted - try to redownload
@@ -1381,6 +1397,7 @@ void CModListView::loadScreenshots()
 			// managed to load cached image
 			QIcon icon(pixmap);
 			auto * item = new QListWidgetItem(icon, QString(tr("Screenshot %1")).arg(ui->screenshotsList->count() + 1));
+			item->setData(Qt::UserRole, loadedPath);
 			ui->screenshotsList->addItem(item);
 		}
 	}
@@ -1390,9 +1407,17 @@ void CModListView::on_screenshotsList_clicked(const QModelIndex & index)
 {
 	if(index.isValid())
 	{
-		QIcon icon = ui->screenshotsList->item(index.row())->icon();
-		auto pixmap = icon.pixmap(icon.availableSizes()[0]);
-		ImageViewer::showPixmap(pixmap, this);
+		QStringList imagePaths;
+		for(int i = 0; i < ui->screenshotsList->count(); ++i)
+		{
+			auto * item = ui->screenshotsList->item(i);
+			const auto path = item->data(Qt::UserRole).toString();
+			if(!path.isEmpty())
+				imagePaths.push_back(path);
+		}
+
+		if(!imagePaths.empty())
+			ImageViewer::showImages(imagePaths, index.row(), this);
 	}
 }
 
