@@ -387,17 +387,19 @@ void ImageViewer::setButtonSize(int size)
 void ImageViewer::setButtonStyle(int size)
 {
 	const int buttonRadius = size / 2;
+	const int buttonFontSize = std::max(14, size / 2);
 	const QString buttonStyle = QStringLiteral(
 		"QPushButton#buttonPrevious, QPushButton#buttonNext, QPushButton#buttonClose {"
 		" border: 1px solid palette(mid);"
 		" border-radius: %1px;"
 		" padding: 3px;"
 		" background: palette(button);"
+		" font-size: %2px;"
 		" font-weight: 700;"
 		" }"
 		"QPushButton#buttonPrevious:hover, QPushButton#buttonNext:hover, QPushButton#buttonClose:hover {"
 		" background: palette(light);"
-		" }").arg(buttonRadius);
+		" }").arg(buttonRadius).arg(buttonFontSize);
 
 	ui->buttonPrevious->setStyleSheet(buttonStyle);
 	ui->buttonNext->setStyleSheet(buttonStyle);
