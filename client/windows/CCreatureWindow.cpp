@@ -825,10 +825,14 @@ CStackWindow::CStackWindow(const CCommanderInstance * commander, std::vector<ui3
 	init();
 }
 
-CStackWindow::~CStackWindow()
+CStackWindow::~CStackWindow() = default;
+
+void CStackWindow::close()
 {
 	if(info->levelupInfo && !info->levelupInfo->skills.empty())
 		info->levelupInfo->callback(vstd::find_pos(info->levelupInfo->skills, selectedSkill));
+
+	CWindowObject::close();
 }
 
 void CStackWindow::init()
