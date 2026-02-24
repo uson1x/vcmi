@@ -552,9 +552,17 @@ if (ENABLE_DISCORD)
 	find_package(fmt ${findOptions})
 	find_package(glaze ${findOptions})
 
+	if(MSVC AND ENABLE_STRICT_COMPILATION)
+		# fmt built via CPM has compile warning which becomes an error
+		set(OLD_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
+	endif()
 	add_subdirectory(lib/discord-presence)
 	target_link_libraries(vcmiclientcommon PRIVATE discord-rpc)
 	target_compile_definitions(vcmiclientcommon PRIVATE ENABLE_DISCORD)
+	if(OLD_CMAKE_CXX_FLAGS)
+		set(CMAKE_CXX_FLAGS ${OLD_CMAKE_CXX_FLAGS})
+	endif()
 endif()
 
 vcmi_set_output_dir(vcmiclientcommon "")
