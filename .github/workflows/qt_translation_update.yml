@@ -13,7 +13,7 @@ jobs:
   refresh:
     name: Qt translations refresh
     runs-on: ubuntu-latest
-    if: github.repository == 'vcmi/vcmi'
+    #if: github.repository == 'vcmi/vcmi'
 
     steps:
       - name: Checkout
