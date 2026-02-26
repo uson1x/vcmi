@@ -422,17 +422,17 @@ Nahlaste prosím tento problém vývojářům</translation>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1087"/>
         <source>Extracting error!</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při extrakci!</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1089"/>
         <source>Invalid file selected</source>
-        <translation type="unfinished">Vybrán neplatný soubor</translation>
+        <translation>Vybrán neplatný soubor</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1089"/>
         <source>You have to select a Heroes Chronicles installer file!</source>
-        <translation type="unfinished">Musíte vybrat instalační soubor Heroes Chronicles!</translation>
+        <translation>Musíte vybrat instalační soubor Heroes Chronicles!</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1143"/>
@@ -476,12 +476,12 @@ Nahlaste prosím tento problém vývojářům</translation>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1443"/>
         <source>Uninstall mod</source>
-        <translation type="unfinished"></translation>
+        <translation>Odinstalování modifikace</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1443"/>
         <source>Are you sure you want to uninstall %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Opravdu chcete odinstalovat modifikaci %1?</translation>
     </message>
     <message>
         <source>%1 map(s) successfully imported.</source>
@@ -1519,17 +1519,17 @@ Vyberte prosím složku s nainstalovanými daty Heroes III.</translation>
     <message>
         <location filename="../modManager/imageviewer_moc.ui" line="100"/>
         <source>&lt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;</translation>
     </message>
     <message>
         <location filename="../modManager/imageviewer_moc.ui" line="138"/>
         <source>&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&gt;</translation>
     </message>
     <message>
         <location filename="../modManager/imageviewer_moc.ui" line="176"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation>X</translation>
     </message>
 </context>
 <context>
@@ -1663,7 +1663,7 @@ Bin (%n bajtů):
     <message>
         <location filename="../languages.cpp" line="27"/>
         <source>Dutch</source>
-        <translation type="unfinished"></translation>
+        <translation>Holandština</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="28"/>
@@ -1673,7 +1673,7 @@ Bin (%n bajtů):
     <message>
         <location filename="../languages.cpp" line="29"/>
         <source>Filipino</source>
-        <translation type="unfinished"></translation>
+        <translation>Filipínština</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="30"/>
@@ -1718,7 +1718,7 @@ Bin (%n bajtů):
     <message>
         <location filename="../languages.cpp" line="38"/>
         <source>Latvian</source>
-        <translation type="unfinished"></translation>
+        <translation>Lotyština</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="39"/>
@@ -1748,7 +1748,7 @@ Bin (%n bajtů):
     <message>
         <location filename="../languages.cpp" line="44"/>
         <source>Serbian</source>
-        <translation type="unfinished"></translation>
+        <translation>Srbština</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="45"/>
