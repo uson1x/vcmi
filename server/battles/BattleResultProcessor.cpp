@@ -324,49 +324,61 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 	const auto attackerHero = battle.battleGetFightingHero(BattleSide::ATTACKER);
 	const auto defenderHero = battle.battleGetFightingHero(BattleSide::DEFENDER);
 
-	const auto winnerHero = battle.battleGetFightingHero(finishingBattle->winnerSide);
-	const auto loserHero = battle.battleGetFightingHero(CBattleInfoEssentials::otherSide(finishingBattle->winnerSide));
 
 	//give exp
 	if(!finishingBattle->isDraw() && battleResult->exp[finishingBattle->winnerSide])
 	{
+		const auto winnerHero = battle.battleGetFightingHero(finishingBattle->winnerSide);
+
 		gameHandler->giveStackExperience(battle.battleGetArmyObject(finishingBattle->winnerSide), battleResult->exp[finishingBattle->winnerSide]);
 		if (winnerHero)
 			gameHandler->giveExperience(winnerHero, battleResult->exp[finishingBattle->winnerSide]);
 	}
 
 	// Add statistics
-	if(loserHero && !finishingBattle->isDraw())
+	if(!finishingBattle->isDraw())
 	{
+		const CGHeroInstance * loserHero = battle.battleGetFightingHero(CBattleInfoEssentials::otherSide(finishingBattle->winnerSide));
 		const CGHeroInstance * strongestHero = nullptr;
-		for(auto & hero : gameHandler->gameState().getPlayerState(finishingBattle->loser)->getHeroes())
-			if(!strongestHero || hero->exp > strongestHero->exp)
-				strongestHero = hero;
-		if(strongestHero->id == finishingBattle->loserId && strongestHero->level > 5)
-			gameHandler->statistics->getPlayerAccumulator(finishingBattle->victor).lastDefeatedStrongestHeroDay = gameHandler->gameState().getDate(Date::DAY);
+
+		if (loserHero != nullptr)
+		{
+			for(auto & hero : gameHandler->gameState().getPlayerState(finishingBattle->loser)->getHeroes())
+				if(!strongestHero || hero->exp > strongestHero->exp)
+					strongestHero = hero;
+			if(strongestHero->id == finishingBattle->loserId && strongestHero->level > 5)
+				gameHandler->statistics->getPlayerAccumulator(finishingBattle->victor).lastDefeatedStrongestHeroDay = gameHandler->gameState().getDate(Date::DAY);
+		}
 	}
 
 	auto attackerPlayer = battle.sideToPlayer(BattleSide::ATTACKER);
 	auto defenderPlayer = battle.sideToPlayer(BattleSide::DEFENDER);
-	auto winnerPlayer = battle.sideToPlayer(finishingBattle->winnerSide);
 	auto isAttackerNeutral = attackerPlayer == PlayerColor::NEUTRAL;
 	auto isDefenderNeutral = defenderPlayer == PlayerColor::NEUTRAL;
-	auto isWinnerNeutral = winnerPlayer == PlayerColor::NEUTRAL;
+
 	if(isAttackerNeutral || isDefenderNeutral)
 	{
 		if(!isAttackerNeutral)
 			gameHandler->statistics->getPlayerAccumulator(attackerPlayer).numBattlesNeutral++;
 		if(!isDefenderNeutral)
 			gameHandler->statistics->getPlayerAccumulator(defenderPlayer).numBattlesNeutral++;
-		if(!finishingBattle->isDraw() && !isWinnerNeutral)
-			gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesNeutral++;
+		if(!finishingBattle->isDraw())
+		{
+			auto winnerPlayer = battle.sideToPlayer(finishingBattle->winnerSide);
+			auto isWinnerNeutral = winnerPlayer == PlayerColor::NEUTRAL;
+			if (!isWinnerNeutral)
+				gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesNeutral++;
+		}
 	}
 	else
 	{
 		gameHandler->statistics->getPlayerAccumulator(attackerPlayer).numBattlesPlayer++;
 		gameHandler->statistics->getPlayerAccumulator(defenderPlayer).numBattlesPlayer++;
 		if(!finishingBattle->isDraw())
+		{
+			auto winnerPlayer = battle.sideToPlayer(finishingBattle->winnerSide);
 			gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesPlayer++;
+		}
 	}
 
 	BattleResultAccepted raccepted;
