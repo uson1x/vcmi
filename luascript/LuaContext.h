@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "LuaStack.h"
+#include "../lib/json/JsonNode.h"
 #include <vcmi/scripting/Service.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -35,6 +37,9 @@ public:
 
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
 	JsonNode callGlobal(ServerCallback * cb, const std::string & name, const JsonNode & parameters) override;
+
+	template<typename... Args>
+	JsonNode callGlobalWithParameters(const std::string & name, Args&& ... parameters);
 
 	void getGlobal(const std::string & name, int & value) override;
 	void getGlobal(const std::string & name, std::string & value) override;
@@ -86,6 +91,50 @@ private:
 
 	int logErrorImpl();
 };
+
+template<typename... Args>
+JsonNode LuaContext::callGlobalWithParameters(const std::string & name, Args&& ... parameters)
+{
+	LuaStack S(L);
+
+	lua_getglobal(L, name.c_str());
+
+	if(!S.isFunction(-1))
+	{
+		boost::format fmt("%s is not a function");
+		fmt % name;
+
+		logGlobal->error(fmt.str());
+
+		S.clear();
+
+		return JsonNode();
+	}
+
+	int argc = sizeof...(Args);
+	(S << ... << parameters);
+
+	if(lua_pcall(L, argc, 1, 0))
+	{
+		std::string error = lua_tostring(L, -1);
+
+		boost::format fmt("Lua function %s failed with message: %s");
+		fmt % name % error;
+
+		logGlobal->error(fmt.str());
+
+		S.clear();
+
+		return JsonNode();
+	}
+
+	JsonNode ret;
+
+	pop(ret);
+	S.balance();
+
+	return ret;
+}
 
 }
 

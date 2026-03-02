@@ -77,7 +77,6 @@ private:
 
 	std::shared_ptr<LuaContext> resolveScript(const Mechanics * m) const;
 
-	void setContextVariables(const Mechanics * m, const std::shared_ptr<LuaContext>& context) const;
 	JsonNode spellTargetToJson(const Target & spellTarget) const;
 	Target spellTargetFromJson(const Mechanics * m, const JsonNode & config) const;
 };

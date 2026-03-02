@@ -67,9 +67,7 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 
-	setContextVariables(m, context);
-
-	JsonNode response = context->callGlobal(APPLICABLE_GENERAL, JsonNode());
+	JsonNode response = context->callGlobalWithParameters(APPLICABLE_GENERAL, parameters, m);
 
 	if(response.getType() != JsonNode::JsonType::DATA_BOOL)
 	{
@@ -84,9 +82,7 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const Ef
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	setContextVariables(m, context);
-
-	JsonNode requestP;
+	JsonNode targetJson;
 
 	if(target.empty())
 		return false;
@@ -101,13 +97,10 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const Ef
 		else
 			targetData.Vector().emplace_back(-1);
 
-		requestP.Vector().push_back(targetData);
+		targetJson.Vector().push_back(targetData);
 	}
 
-	JsonNode request;
-	request.Vector().push_back(requestP);
-
-	JsonNode response = context->callGlobal(APPLICABLE_TARGET, request);
+	JsonNode response = context->callGlobalWithParameters(APPLICABLE_TARGET, parameters, m, targetJson);
 
 	if(response.getType() != JsonNode::JsonType::DATA_BOOL)
 	{
@@ -125,12 +118,7 @@ void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const E
 
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	setContextVariables(m, context);
-
-	JsonNode request;
-	request.Vector().push_back(spellTargetToJson(target));
-
-	context->callGlobal(server, APPLY, request);
+	context->callGlobalWithParameters(APPLY, parameters, m, server, spellTargetToJson(target));
 }
 
 EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
@@ -158,11 +146,6 @@ std::shared_ptr<scripting::LuaContext> LuaSpellEffect::resolveScript(const Mecha
 		throw std::runtime_error("Failed to execute Lua script effect! Context not available!");
 
 	return luaContext;
-}
-
-void LuaSpellEffect::setContextVariables(const Mechanics * m, const std::shared_ptr<scripting::LuaContext>& context)  const
-{
-	context->setGlobal("parameters", parameters);
 }
 
 JsonNode LuaSpellEffect::spellTargetToJson(const Target & target) const

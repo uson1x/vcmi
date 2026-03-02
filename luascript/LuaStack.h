@@ -45,6 +45,13 @@ public:
 
 	void pushByIndex(lua_Integer index);
 
+	template<typename T>
+	LuaStack & operator<<(const T & parameter)
+	{
+		push(parameter);
+		return *this;
+	}
+
 	void pushNil();
 	void pushInteger(lua_Integer value);
 	void push(bool value);
