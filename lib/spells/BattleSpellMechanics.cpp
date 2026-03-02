@@ -301,7 +301,7 @@ bool BattleSpellMechanics::canBeCastAt(const Target & target, Problem & problem)
 	}
 	else if(getSpell()->canCastOnlyOnSelf())
 	{
-		if(mainTarget && mainTarget != caster)
+		if(!mainTarget || mainTarget != caster)
 			return false; // can't cast on others
 	}
 
