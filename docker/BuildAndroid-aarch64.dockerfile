@@ -11,7 +11,7 @@ RUN pipx install 'sdkmanager'
 
 RUN conan profile detect
 
-ENV DEPS="dependencies-android-arm64-v8a.tgz"
+ENV DEPS="dependencies-android-arm64-v8a.txz"
 COPY CI/install_conan_dependencies.sh CI/install_conan_dependencies.sh
 RUN DEPS_VERSION=$(grep '^RELEASE_TAG=' CI/install_conan_dependencies.sh | cut -d'"' -f2) && \
     echo "Using DEPS_VERSION=$DEPS_VERSION" && \
