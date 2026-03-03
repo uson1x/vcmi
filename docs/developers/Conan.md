@@ -9,13 +9,13 @@ The following platforms are supported and known to work, others might require ch
 - **macOS**:
   - x86_64 (Intel) - target 10.13 (High Sierra)
   - arm64 (Apple Silicon) - target 11.0 (Big Sur)
-- **iOS**: arm64 - target 12.0
+- **iOS**: arm64 - target 12.0, but should also be possible to build for iOS 10-11 (maybe even for 9)
 - **Windows** using MSVC compiler:
   - x86_64 (x64) - target Windows 7
   - x86 - target Windows 7
-  - arm64 - target Windows 11
+  - arm64 - target Windows 10 1709
 - **Android**:
-  - arvm7 / armeabi-v7a (32-bit ARM) - target 4.4 (API level 19)
+  - arvm7 / armeabi-v7a (32-bit ARM) - target 5.0 (API level 21), but should also be possible to build for 4.4
   - arm64 / aarch64-v8a (64-bit ARM) - target 5.0 (API level 21)
   - x86_64 (64-bit Intel) - target 5.0 (API level 21)
 
@@ -31,23 +31,23 @@ The following platforms are supported and known to work, others might require ch
 1. Check if your build environment can use the prebuilt binaries: basically, that your compiler version (or Xcode major version) matches the information below. If you're unsure, simply advance to the next step.
     - *macOS*: libraries are built with Apple clang 16 (Xcode 16.2), should be consumable by Xcode / Xcode CLT 16.x and later
     - *iOS*: libraries are built with Apple clang 16 (Xcode 16.2), should be consumable by Xcode 16.x and later
-    - *Windows*: libraries are built with MSVC 19.29 (v142 toolset, but can be consumed by v143) for Intel and with MSVC 19.4x (v143 toolset) for ARM64
-    - *Android*: libraries are built with NDK r25c (25.2.9519653)
+    - *Windows*: libraries are built with MSVC 19.29 (v142 toolset) for Intel and with MSVC 19.4x (v143 toolset) for ARM64, should be consumable using this or any later toolset
+    - *Android*: libraries are built with NDK r29 (29.0.14206865)
 
-2. Download the binaries archive from <https://github.com/vcmi/vcmi-dependencies/releases> (pre-release is for development version and the latest release is for respective VCMI release) and use `conan cache restore <path to archive>` command to unpack them.
-    - *macOS*: pick **dependencies-mac-intel.tgz** if you have Intel Mac, otherwise - **dependencies-mac-arm.tgz**
-    - *iOS*: pick **dependencies-ios.tgz**
-    - *Windows*: pick **dependencies-windows-x64.tgz** for Windows x64, **dependencies-windows-arm64.tgz** for Windows ARM64 or **dependencies-windows-x86.tgz** for Windows x86
-    - *Android*: pick **dependencies-android-arm64-v8a.tgz** for arm64 (ARM 64-bit), **dependencies-android-armeabi-v7a.tgz** for armv7 (ARM 32-bit) or **dependencies-android-x64.tgz** for x86_64 (Intel 64-bit)
+2. Download the binaries archive from <https://github.com/vcmi/vcmi-dependencies/releases> (pre-release is for the yet-to-be-released version and the latest release is for the latest VCMI release) and use `conan cache restore <path to archive>` command to unpack them.
+    - *macOS*: pick **dependencies-mac-arm.txz** if you have Apple Silicon Mac, otherwise for Intel - **dependencies-mac-intel.txz**
+    - *iOS*: pick **dependencies-ios.txz**
+    - *Windows*: pick **dependencies-windows-x64.txz** for Windows x64, **dependencies-windows-arm64.txz** for Windows ARM64 or **dependencies-windows-x86.txz** for Windows x86
+    - *Android*: pick **dependencies-android-arm64-v8a.txz** for arm64 (ARM 64-bit), **dependencies-android-armeabi-v7a.txz** for armv7 (ARM 32-bit) or **dependencies-android-x64.txz** for x86_64 (Intel 64-bit)
 
 ### Platform-specific preparation
 
 Follow this subsection only if any of the following applies to you, otherwise skip to the [next section](#generate-cmake-integration) directly.
 
-- you're trying to build for Android and your OS is Windows or macOS or Linux aarch64
+- you're trying to build for Android and your OS is not Linux amd64 / x86_64
 - you're trying to build for iOS and you have Intel Mac
 
-Qt 5 has some utilities required for the build process (moc, uic etc.) that are built for your desktop OS. Our CI (GitHub Actions) makes Android builds on Ubuntu Linux amd64 and iOS builds on an Apple Silicon Mac, therefore those Qt utilities are built for Linux amd64 and macOS arm64 respectively and can't be used/run on other OS / CPU architectures. To solve that, you must add/replace those utilities built for your desktop OS.
+Qt 5 has some utilities required for the build process (`moc`, `uic` etc.) that are built for your desktop OS. Our CI (GitHub Actions) makes Android builds on Ubuntu Linux amd64 and iOS builds on an Apple Silicon Mac, therefore those Qt utilities are built for Linux amd64 and macOS arm64 respectively and can't be used/run on other OS / CPU architectures. To solve that, you must add/replace those utilities built for your desktop OS.
 
 Once you have the executable files of those utilities, copy them to the `bin` directory of Qt package. You can find the package at `~/.conan2/p/qt<some hash>/p`.
 
@@ -63,13 +63,13 @@ Building all those executables is rather fast as it doesn't require building who
 
 ```sh
 # set Qt version that you're going to download and build
-qtVer=5.15.16
+qtVer=5.15.18
 
 # for Android:
 # ensure that ANDROID_HOME environment variable is set pointing to Android SDK directory
 # also set Min SDK and NDK versions
 minSdkVersion=21
-ndkVersion=25.2.9519653
+ndkVersion=29.0.14206865
 
 qtSrcDir="qt-everywhere-src-$qtVer"
 qtInstallDir="$(pwd)/install"
@@ -135,7 +135,7 @@ The highlighted parts can be adjusted:
   - if you want to consume our prebuilt binaries for Apple platforms (macOS / iOS), pass `--profile=dependencies/conan_profiles/base/apple-system`
   - if you want to consume our prebuilt binaries for Android, pass `--profile=dependencies/conan_profiles/base/android-system`
   - if your intention is to make a Debug build, pass `-s "&:build_type=RelWithDebInfo"` for Windows MSVC and `-s "&:build_type=Debug"` for other platforms
-  - if you're building on Windows 11 ARM64, pass `-o "&:lua_lib=lua"`
+  - if you're building on (or for) Windows ARM64, pass `-o "&:lua_lib=lua"`
   - if you're building on (or for) Windows < 10, pass `-o "&:target_pre_windows10=True"`
 
 If you use `--build=never` and this command fails, then it means that you can't use prebuilt binaries out of the box. For example, try using `--build=missing` instead.
@@ -156,16 +156,13 @@ This subsection describes platform specifics to build libraries from source prop
 
 You can use our Conan profiles or create your own (e.g. with different options), the choice is yours.
 
-*Note:* our profiles expect you to have CMake and Ninja in `PATH`, otherwise build would fail.
+*Note:* our profiles may require building some dependencies separately (e.g. `onnxruntime` for MSVC v142) and/or have environment configured in a special way (e.g. install MSVC v142 toolset separately), the best is to refer to the CI pipeline commands linked above. It's highly recommended to get at least a basic understanding of how Conan works when building stuff from source. Don't hesitate to ask for support in our Discord channel or in GitHub issues!
 
 #### Building for macOS/iOS
 
 If you wish to build dependencies against system libraries (like our prebuilts do), follow [below instructions](#using-recipes-for-system-libraries) executing `conan create` for all directories.
 
-If you're going to build for iOS without using our profile: to build Qt 5 with `md4c` library, make sure to enforce this library's version 0.5 or later. This is what we have in our profile:
-
-> [replace_requires]\
-> md4c/0.4.8: md4c/0.5.2
+Building `onnx` for iOS < 13 or macOS < 10.15 requires a patch, see [here](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/onnx/patches).
 
 #### Building for Android
 
@@ -173,13 +170,15 @@ It's highly recommended to use NDK recipe provided by Conan, otherwise build may
 
 Android has issues loading self-built shared zlib library because binary name is identical to the system one, so we enforce using the OS-provided library. To achieve that, follow [below instructions](#using-recipes-for-system-libraries), you only need `zlib` directory.
 
-Also, Android requires a few patches, but they are needed only for specific use cases, so you may evaluate whether you need them. The patches can be found in the [dependcies repository](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/qt/patches).
+Also, Android requires a few patches, but they are needed only for specific use cases, so you may evaluate whether you need them. The patches can be found in the [dependcies repository](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/).
+
+Note: `minizip` v1.3.2 will probably not compile, use 1.3.1 or apply [this patch](https://github.com/madler/zlib/pull/1188) to fix.
 
 ##### Qt patches
 
 1. [Safety measure for Xiaomi devices](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/qt/patches/xiaomi.diff). It's unclear whether it's really needed, but without it [I faced a crash once](https://bugreports.qt.io/browse/QTBUG-111960).
 2. [Fix running on Android 5.0-5.1](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/qt/patches/android-21-22.diff) (API level 21-22).
-3. Enable running on Android 4.4 (API level 19-20, 32-bit only): [patch 1](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/qt/patches/android-19-jar.diff), [patch 2](https://github.com/vcmi/vcmi-dependencies/blob/main/conan_patches/qt/patches/android-19-java.diff).
+3. Enable running on Android 4.4 (API level 19-20, 32-bit only, requires NDK r25c): [patch 1](https://github.com/vcmi/vcmi-dependencies/blob/1bfe97e7290ac9491eb0ec09cf5e6c33e1e36812/conan_patches/qt/patches/android-19-jar.diff), [patch 2](https://github.com/vcmi/vcmi-dependencies/blob/1bfe97e7290ac9491eb0ec09cf5e6c33e1e36812/conan_patches/qt/patches/android-19-java.diff).
 
 ##### Patches for other libraries
 
