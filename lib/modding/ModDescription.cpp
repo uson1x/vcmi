@@ -191,7 +191,7 @@ ModVerificationInfo ModDescription::getVerificationInfo() const
 
 bool ModDescription::isCompatible() const
 {
-	const JsonNode & compatibility = getValue("compatibility");
+	const JsonNode & compatibility = getLocalValue("compatibility");
 
 	if (compatibility.isNull())
 		return true;
