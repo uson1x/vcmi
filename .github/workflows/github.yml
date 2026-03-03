@@ -276,6 +276,7 @@ jobs:
           --output-folder="$outFolder" \
           --build=never \
           --profile=dependencies/conan_profiles/${{ matrix.conan_profile }} \
+          --conf="tools.cmake.cmaketoolchain:generator=Ninja" \
           ${{ matrix.conan_options }}
         ${{ startsWith(matrix.platform, 'msvc') && 'echo CONANRUN_PWSH_SCRIPT="$outFolder/conanrun.ps1" >> $GITHUB_ENV' || '' }}
 
