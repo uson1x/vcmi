@@ -352,7 +352,7 @@ jobs:
 
     - name: Build
       run: |
-        ${{ startsWith(matrix.platform, 'msvc') && '& $env:CONANRUN_PWSH_SCRIPT' }}
+        ${{ startsWith(matrix.platform, 'msvc') && '& $env:CONANRUN_PWSH_SCRIPT' || '' }}
         cmake --build --preset ${{matrix.preset}}
       shell: pwsh
       env:
