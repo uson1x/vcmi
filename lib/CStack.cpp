@@ -223,7 +223,7 @@ void CStack::prepareAttacked(BattleStackAttacked & bsa, vstd::RNG & rand, const 
 		}
 	}
 
-	customState->save(bsa.newState.data);
+	bsa.newState.data = customState->save();
 	bsa.newState.healthDelta = -bsa.damageAmount;
 	bsa.newState.id = customState->unitId();
 	bsa.newState.operation = UnitChanges::EOperation::RESET_STATE;

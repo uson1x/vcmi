@@ -132,7 +132,7 @@ void Summon::apply(ServerCallback * server, const Mechanics * m, const EffectTar
 			int64_t healthValue = summonedCreatureHealth(m, summoned);
 			state->heal(healthValue, EHealLevel::OVERHEAL, (permanent ? EHealPower::PERMANENT : EHealPower::ONE_BATTLE));
 			pack.changedStacks.emplace_back(summoned->unitId(), UnitChanges::EOperation::RESET_STATE);
-			state->save(pack.changedStacks.back().data);
+			pack.changedStacks.back().data = state->save();
 		}
 		else
 		{

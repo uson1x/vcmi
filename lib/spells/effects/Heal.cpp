@@ -176,7 +176,7 @@ void Heal::prepareHealEffect(int64_t value, BattleUnitsChanged & pack, BattleLog
 				{
 					UnitChanges info(state->unitId(), UnitChanges::EOperation::RESET_STATE);
 					info.healthDelta = healValue.hpDelta;
-					state->save(info.data);
+					info.data = state->save();
 					pack.changedStacks.push_back(info);
 				}
 			}

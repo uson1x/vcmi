@@ -263,7 +263,7 @@ TEST_P(SummonApplyTest, UpdatesOldUnit)
 	{
 		EXPECT_CALL(unit, acquire()).WillOnce(Return(acquired));
 		EXPECT_CALL(*acquired, heal(Eq(unitTotalHealth), Eq(EHealLevel::OVERHEAL), Eq(permanent ? EHealPower::PERMANENT : EHealPower::ONE_BATTLE)));
-		EXPECT_CALL(*acquired, save(_));
+		EXPECT_CALL(*acquired, save());
 		EXPECT_CALL(*battleFake, setUnitState(Eq(unitId), _, _));
 	}
 

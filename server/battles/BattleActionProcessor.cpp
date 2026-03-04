@@ -1146,7 +1146,7 @@ void BattleActionProcessor::makeAttack(const CBattleInfoCallback & battle, const
 
 	{
 		UnitChanges info(attackerState->unitId(), UnitChanges::EOperation::RESET_STATE);
-		attackerState->save(info.data);
+		info.data = attackerState->save();
 		bat.attackerChanges.changedStacks.push_back(info);
 	}
 

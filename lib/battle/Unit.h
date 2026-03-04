@@ -168,7 +168,7 @@ public:
 
 	//NOTE: save could possibly be const, but this requires heavy changes to Json serialization,
 	//also this method should be called only after modifying object
-	virtual void save(JsonNode & data) = 0;
+	virtual JsonNode save() = 0;
 	virtual void load(const JsonNode & data) = 0;
 
 	virtual void damage(int64_t & amount) = 0;
