@@ -9,12 +9,16 @@ local MetaString = require("texts.MetaString")
 -- - summonByHealth
 -- - summonSameUnit
 
-local function summonedEffectValue(mechanics)
-	return mechanics:applySpecificSpellBonus(mechanics:calculateRawEffectValue(0, mechanics:getEffectPower()))
+local function summonedEffectValue(parameters, mechanics)
+	effectPower = mechanics:getEffectPower()
+	rawEffectPower = mechanics:calculateRawEffectValue(0, effectPower)
+	finaleEffectPower = mechanics:applySpecificSpellBonus(rawEffectPower)
+	
+	return finaleEffectPower
 end
 
-local function summonedCreatureHealth(mechanics)
-	local valueWithBonus = summonedEffectValue(mechanics)
+local function summonedCreatureHealth(parameters, mechanics)
+	local valueWithBonus = summonedEffectValue(parameters, mechanics)
 
 	if parameters.summonByHealth then
 		return valueWithBonus
@@ -23,8 +27,8 @@ local function summonedCreatureHealth(mechanics)
 	end
 end
 
-local function summonedCreatureAmount(mechanics)
-	local valueWithBonus = summonedEffectValue(mechanics)
+local function summonedCreatureAmount(parameters, mechanics)
+	local valueWithBonus = summonedEffectValue(parameters, mechanics)
 
 	if parameters.summonByHealth then
 		return math.floor(valueWithBonus / parameters.creature:getMaxHealth())
@@ -33,12 +37,12 @@ local function summonedCreatureAmount(mechanics)
 	end
 end
 
-applicable = function(problem, mechanics)
+applicable = function(parameters, mechanics, problem)
 	if parameters.creature == "nil" then
 		return false -- mechanics:adaptGenericProblem(problem)
 	end
 
-	if summonedCreatureAmount(mechanics) == 0 then
+	if summonedCreatureAmount(parameters, mechanics) == 0 then
 		return false -- mechanics:adaptGenericProblem(problem)
 	end
 
@@ -77,7 +81,7 @@ applicable = function(problem, mechanics)
 	return true
 end
 
-apply = function(server, mechanics, target)
+apply = function(parameters, mechanics, server, target)
 	local pack = BattleUnitsChanged.new()
 	pack.battleID = mechanics:battle():getBattle():getBattleID()
 
@@ -85,7 +89,7 @@ apply = function(server, mechanics, target)
 		if dest.unitValue then
 			local summoned = dest.unitValue
 			local state = summoned:acquire()
-			local healthValue = summonedCreatureHealth(mechanics, summoned)
+			local healthValue = summonedCreatureHealth(parameters, mechanics)
 			
 			state:heal(
 				healthValue, 
@@ -100,7 +104,7 @@ apply = function(server, mechanics, target)
 			
 			state:save(pack.changedStacks[#pack.changedStacks].data)
 		else
-			local amount = summonedCreatureAmount(mechanics)
+			local amount = summonedCreatureAmount(parameters, mechanics)
 
 			if amount < 1 then
 				server:complain("Summoning didn't summon any!")
@@ -124,7 +128,7 @@ apply = function(server, mechanics, target)
 	end
 end
 
-apply = function(mechanics, aimPoint, spellTarget)
+transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 	local sameSummoned = mechanics:battle():battleGetUnitsIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())
