@@ -267,6 +267,7 @@ public:
 	virtual const Service * spells() const = 0;
 
 	virtual const CBattleInfoCallback * battle() const = 0;
+	virtual BattleID getBattleID() const = 0;
 
 	const Caster * caster;
 
@@ -323,6 +324,7 @@ public:
 	const Service * spells() const override;
 
 	const CBattleInfoCallback * battle() const override;
+	BattleID getBattleID() const override;
 
 protected:
 	const CSpell * owner;

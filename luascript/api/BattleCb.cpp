@@ -30,48 +30,22 @@ VCMI_REGISTER_CORE_SCRIPT_API(BattleCbProxy, "game.Battle");
 
 const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
 {
-	{
-		"getBattlefieldType",
-		&BattleCbProxy::getBattlefieldType,
-		false
-	},
-	{
-		"getNextUnitId",
-		LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleNextUnitId), &BattleCb::battleNextUnitId>::invoke,
-		false
-	},
-	{
-		"getTacticDistance",
-		LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleTacticDist), &BattleCb::battleTacticDist>::invoke,
-		false
-	},
-	{
-		"getTerrainType",
-		&BattleCbProxy::getTerrainType,
-		false
-	},
-	{
-		"getUnitById",
-		LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleGetUnitByID), &BattleCb::battleGetUnitByID>::invoke,
-		false
-	},
-	{
-		"getUnitByPos",
-		&BattleCbProxy::getUnitByPos,
-		false
-	},
-	{
-		"isFinished",
-		LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke,
-		false
-	}
+	{ "getNextUnitId", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleNextUnitId), &BattleCb::battleNextUnitId>::invoke, false },
+	{ "getTacticDistance", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleTacticDist), &BattleCb::battleTacticDist>::invoke, false },
+	{ "getUnitById", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleGetUnitByID), &BattleCb::battleGetUnitByID>::invoke, false },
+	{ "isFinished", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke, false },
+
+	{ "getBattlefieldType", &BattleCbProxy::getBattlefieldType, false },
+	{ "getTerrainType", &BattleCbProxy::getTerrainType, false },
+	{ "getUnitByPos", &BattleCbProxy::getUnitByPos, false },
+	{ "getAnyUnitIf", &BattleCbProxy::getAnyUnitIf, false },
 };
 
 int BattleCbProxy::getBattlefieldType(lua_State * L)
 {
 	LuaStack S(L);
 
-	const BattleCb * object;
+	const CBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -84,7 +58,7 @@ int BattleCbProxy::getTerrainType(lua_State * L)
 {
 	LuaStack S(L);
 
-	const BattleCb * object;
+	const CBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -95,7 +69,7 @@ int BattleCbProxy::getUnitByPos(lua_State * L)
 {
 	LuaStack S(L);
 
-	const BattleCb * object;
+	const CBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -113,6 +87,47 @@ int BattleCbProxy::getUnitByPos(lua_State * L)
 
 	S.clear();
 	S.push(object->battleGetUnitByPos(hex, onlyAlive));
+	return 1;
+}
+
+int BattleCbProxy::getAnyUnitIf(lua_State * L)
+{
+	LuaStack S(L);
+
+	const CBattleInfoCallback * object;
+	if(!S.tryGet(1, object))
+		return S.retVoid();
+
+	if(!S.isFunction(2))
+		return S.retNil();
+
+	// bring function to top of stack
+	lua_pushvalue(L, 2);
+
+	battle::Units units = object->battleGetUnitsIf([&L](const battle::Unit * unit){
+		LuaStack S2(L);
+		S2.push(unit);
+
+		if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
+			std::string error = lua_tostring(L, -1);
+			logGlobal->error("Lua getAnyUnitIf callback failed with message: %s", error);
+			S2.clear();
+			return false;
+		}
+
+		bool result = false;
+		S2.tryGet(-1, result);
+		S2.balance();
+		return result;
+	});
+
+	S.clear();
+
+	if (!units.empty())
+		S.push(units.front());
+	else
+		S.pushNil();
+
 	return 1;
 }
 

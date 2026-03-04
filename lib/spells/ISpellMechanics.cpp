@@ -581,6 +581,10 @@ const CBattleInfoCallback * BaseMechanics::battle() const
 	return cb;
 }
 
+BattleID BaseMechanics::getBattleID() const
+{
+	return cb->getBattle()->getBattleID();
+}
 
 } //namespace spells
 

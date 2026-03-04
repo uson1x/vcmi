@@ -78,6 +78,7 @@ public:
 
 	MOCK_CONST_METHOD0(game, const IGameInfoCallback * ());
 	MOCK_CONST_METHOD0(battle, const CBattleInfoCallback * ());
+	MOCK_CONST_METHOD0(getBattleID, BattleID ());
 };
 
 }

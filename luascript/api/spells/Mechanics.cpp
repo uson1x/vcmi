@@ -40,6 +40,7 @@ VCMI_LIB_NAMESPACE_BEGIN
 			{"getEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getEffectValue), &Mechanics::getEffectValue>::invoke, false},
 			{"getCasterColor", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getCasterColor), &Mechanics::getCasterColor>::invoke, false},
 			{"getBattle", LuaMethodWrapper<Mechanics, decltype(&Mechanics::battle), &Mechanics::battle>::invoke, false},
+			{"getBattleID", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getBattleID), &Mechanics::getBattleID>::invoke, false},
 			{"calculateRawEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::calculateRawEffectValue), &Mechanics::calculateRawEffectValue>::invoke, false},
 			{"applySpecificSpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpecificSpellBonus), &Mechanics::applySpecificSpellBonus>::invoke, false},
 

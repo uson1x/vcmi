@@ -48,14 +48,15 @@ applicable = function(parameters, mechanics, problem)
 
 	-- check if there are summoned creatures of other type
 	if parameters.exclusive then
-		local otherSummoned = mechanics:battle():battleGetUnitsIf(function(unit)
+		local battle = mechanics:getBattle();
+		local otherSummoned = battle:getAnyUnitIf(function(unit)
 			return (unit:getOwner() == mechanics:getCasterColor())
 				and (unit:isSummoned())
 				and (not unit:isClone())
 				and (unit:getCreature() ~= self.creature)
 		end)
 
-		if #otherSummoned > 0 then
+		if otherSummoned ~= nil then
 			local elemental = otherSummoned[1]
 
 			local text = MetaString.new()
@@ -83,7 +84,7 @@ end
 
 apply = function(parameters, mechanics, server, target)
 	local pack = BattleUnitsChanged.new()
-	pack.battleID = mechanics:battle():getBattle():getBattleID()
+	pack.battleID = mechanics:getBattleID()
 
 	for _, dest in ipairs(target) do
 		if dest.unitValue then
@@ -109,7 +110,7 @@ apply = function(parameters, mechanics, server, target)
 			if amount < 1 then
 				server:complain("Summoning didn't summon any!")
 			else
-				local id = mechanics:battle():battleNextUnitId();
+				local id = mechanics:getBattle():getNextUnitId();
 
 				pack:add(id,
 				{
@@ -129,7 +130,7 @@ apply = function(parameters, mechanics, server, target)
 end
 
 transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
-	local sameSummoned = mechanics:battle():battleGetUnitsIf(function(unit)
+	local sameSummoned = mechanics:getBattle():getAnyUnitIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())
 			and (not unit:isClone())
@@ -139,8 +140,8 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 
 	local effectTarget = {}
 
-	if #sameSummoned == 0 or not self.summonSameUnit then
-		local hex = mechanics:battle():getAvailableHex(parameters.creature, mechanics:casterSide())
+	if sameSummoned == nil or not self.summonSameUnit then
+		local hex = mechanics:getBattle():getAvailableHex(parameters.creature, mechanics:casterSide())
 		if not hex:isValid() then
 			return {} -- no free space. FIXME: should be in isApplicable
 		else

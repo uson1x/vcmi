@@ -204,14 +204,8 @@ JsonNode LuaContext::callGlobal(const std::string & name, const JsonNode & param
 	if(lua_pcall(L, argc, 1, 0))
 	{
 		std::string error = lua_tostring(L, -1);
-
-		boost::format fmt("Lua function %s failed with message: %s");
-		fmt % name % error;
-
-		logGlobal->error(fmt.str());
-
+		logGlobal->error("Lua function %s failed with message: %s", name, error);
 		S.clear();
-
 		return JsonNode();
 	}
 
