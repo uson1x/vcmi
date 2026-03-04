@@ -653,7 +653,7 @@ void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, std::map<He
 		selectedIndex = std::distance(heroes.begin(), it);
 	}
 
-	auto window = std::make_shared<CObjectListWindow>(texts, nullptr, LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), [this, onChoose, heroes](int index){
+	auto window = std::make_shared<CObjectListWindow>(texts, nullptr, LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), [onChoose, heroes](int index){
 		onChoose(heroes.at(index));
 	}, selectedIndex, images, true, false);
 	window->onPopup = [heroes](int index) {
