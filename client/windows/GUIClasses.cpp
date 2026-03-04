@@ -35,6 +35,7 @@
 #include "../widgets/ObjectLists.h"
 #include "../widgets/VideoWidget.h"
 #include "../widgets/GraphicalPrimitiveCanvas.h"
+#include "../windows/CHeroOverview.h"
 
 #include "../render/Canvas.h"
 #include "../render/IRenderHandler.h"
@@ -45,6 +46,7 @@
 #include "../lib/callback/CCallback.h"
 #include "../lib/entities/building/CBuilding.h"
 #include "../lib/entities/faction/CTownHandler.h"
+#include "../lib/entities/hero/CHeroClass.h"
 #include "../lib/entities/hero/CHeroHandler.h"
 #include "../lib/entities/ResourceTypeHandler.h"
 #include "../lib/mapObjectConstructors/CObjectClassesHandler.h"
@@ -616,6 +618,50 @@ CTavernWindow::CTavernWindow(const CGObjectInstance * TavernObj, const std::func
 	addInvite();
 }
 
+void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, std::map<HeroTypeID, CGHeroInstance*> InviteableHeroes, std::function<void(CGHeroInstance*)> onChoose)
+{
+	auto comp = [](const HeroTypeID& a, const HeroTypeID& b)
+	{
+		auto heroA = a.toHeroType();
+		auto heroB = b.toHeroType();
+		if(heroA->heroClass->faction != heroB->heroClass->faction)
+			return heroA->heroClass->faction < heroB->heroClass->faction;
+		if(heroA->heroClass->getId() != heroB->heroClass->getId())
+			return heroA->heroClass->getId() < heroB->heroClass->getId();
+		return heroA->getNameTranslated() < heroB->getNameTranslated();
+	};
+	std::map<HeroTypeID, CGHeroInstance*, decltype(comp)> orderedHeroes(comp);
+	orderedHeroes.insert(inviteableHeroes.begin(), inviteableHeroes.end());
+
+	std::vector<std::string> texts;
+	std::vector<std::shared_ptr<IImage>> images;
+	std::vector<CGHeroInstance*> heroes;
+	for (const auto & h : orderedHeroes)
+	{
+		heroes.push_back(h.second);
+		texts.push_back(h.first.toHeroType()->getNameTranslated());
+
+		auto image = ENGINE->renderHandler().loadImage(AnimationPath::builtin("PortraitsSmall"), h.first.toHeroType()->imageIndex, 0, EImageBlitMode::OPAQUE);
+		image->scaleTo(Point(35, 23), EScalingAlgorithm::NEAREST);
+		images.push_back(image);
+	}
+
+	int selectedIndex = 0;
+	if(selectedHero)
+	{
+		auto it = std::find(heroes.begin(), heroes.end(), selectedHero);
+		selectedIndex = std::distance(heroes.begin(), it);
+	}
+
+	auto window = std::make_shared<CObjectListWindow>(texts, nullptr, LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), [this, onChoose, heroes](int index){
+		onChoose(heroes.at(index));
+	}, selectedIndex, images, true, false);
+	window->onPopup = [heroes](int index) {
+		ENGINE->windows().createAndPushWindow<CHeroOverview>(heroes.at(index)->getHeroTypeID());
+	};
+	ENGINE->windows().pushWindow(window);
+}
+
 void CTavernWindow::addInvite()
 {
 	OBJECT_CONSTRUCTION;
@@ -639,7 +685,7 @@ void CTavernWindow::addInvite()
 
 		inviteHero = std::make_shared<CLabel>(170, 444, EFonts::FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->translate("vcmi.tavernWindow.inviteHero"));
 		inviteHeroImage = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsSmall"), imageIndex, 0, 245, 428);
-		inviteHeroImageArea = std::make_shared<LRClickableArea>(Rect(245, 428, 48, 32), [this](){ ENGINE->windows().createAndPushWindow<HeroSelector>(inviteableHeroes, [this](CGHeroInstance* h){ heroToInvite = h; addInvite(); }); }, [this](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroToInvite)); });
+		inviteHeroImageArea = std::make_shared<LRClickableArea>(Rect(245, 428, 48, 32), [this](){ chooseHeroToInvite(heroToInvite, inviteableHeroes, [this](CGHeroInstance* h){ heroToInvite = h; addInvite(); }); }, [this](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroToInvite)); });
 	}
 }
 
@@ -751,66 +797,6 @@ void CTavernWindow::HeroPortrait::hover(bool on)
 		ENGINE->statusbar()->write(hoverName);
 	else
 		ENGINE->statusbar()->clear();
-}
-
-CTavernWindow::HeroSelector::HeroSelector(std::map<HeroTypeID, CGHeroInstance*> InviteableHeroes, std::function<void(CGHeroInstance*)> OnChoose)
-	: CWindowObject(BORDERED), inviteableHeroes(InviteableHeroes), onChoose(OnChoose)
-{
-	OBJECT_CONSTRUCTION;
-
-	pos = Rect(
-		pos.x,
-		pos.y,
-		ELEM_PER_LINES * 48,
-		std::min((int)(inviteableHeroes.size() / ELEM_PER_LINES + (inviteableHeroes.size() % ELEM_PER_LINES != 0)), MAX_LINES) * 32
-	);
-	background = std::make_shared<CFilledTexture>(ImagePath::builtin("DIBOXBCK"), Rect(0, 0, pos.w, pos.h));
-
-	if(inviteableHeroes.size() / ELEM_PER_LINES > MAX_LINES)
-	{
-		pos.w += 16;
-		slider = std::make_shared<CSlider>(Point(pos.w - 16, 0), pos.h, std::bind(&CTavernWindow::HeroSelector::sliderMove, this, _1), MAX_LINES, std::ceil((double)inviteableHeroes.size() / ELEM_PER_LINES), 0, Orientation::VERTICAL, CSlider::BROWN);
-		slider->setPanningStep(32);
-		slider->setScrollBounds(Rect(-pos.w + slider->pos.w, 0, pos.w, pos.h));
-	}
-
-	recreate();
-	center();
-}
-
-void CTavernWindow::HeroSelector::sliderMove(int slidPos)
-{
-	if(!slider)
-		return; // ignore spurious call when slider is being created
-	recreate();
-	redraw();
-}
-
-void CTavernWindow::HeroSelector::recreate()
-{
-	OBJECT_CONSTRUCTION;
-
-	int sliderLine = slider ? slider->getValue() : 0;
-	int x = 0;
-	int y = -sliderLine;
-	portraits.clear();
-	portraitAreas.clear();
-	for(auto & h : inviteableHeroes)
-	{
-		if(y >= 0 && y <= MAX_LINES - 1)
-		{
-			portraits.push_back(std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsSmall"), (*LIBRARY->heroh)[h.first]->imageIndex, 0, x * 48, y * 32));
-			portraitAreas.push_back(std::make_shared<LRClickableArea>(Rect(x * 48, y * 32, 48, 32), [this, h](){ close(); onChoose(inviteableHeroes[h.first]); }, [this, h](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(inviteableHeroes[h.first])); }));
-		}
-
-		if(x > 0 && x % 15 == 0)
-		{
-			x = 0;
-			y++;
-		}
-		else
-			x++;
-	}
 }
 
 CShipyardWindow::CShipyardWindow(const TResources & cost, int state, BoatId boatType, const std::function<void()> & onBuy)
