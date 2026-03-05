@@ -21,7 +21,11 @@ void QueriesProcessor::popQuery(PlayerColor player, QueryPtr query)
 		return;
 	}
 
-	queries[player] -= query;
+	const int idx = player.getNum();
+	assert(query && idx >= 0 && idx < PlayerColor::PLAYER_LIMIT_I);
+
+	auto & stack = queries[static_cast<size_t>(idx)];
+	stack.pop_back();
 	auto nextQuery = topQuery(player);
 
 	query->onRemoval(player);
@@ -71,6 +75,13 @@ void QueriesProcessor::addQuery(QueryPtr query)
 void QueriesProcessor::addQuery(PlayerColor player, QueryPtr query)
 {
 	LOG_TRACE_PARAMS(logGlobal, "player='%d', query='%s'", player.getNum() % query);
+
+	const int idx = player.getNum();
+	assert(query && idx >= 0 && idx < PlayerColor::PLAYER_LIMIT_I);
+	auto & stack = queries[static_cast<size_t>(idx)];
+	// Prevent adding the same query twice in a row
+	if(!stack.empty() && stack.back() == query)
+		return;
 	query->onAdding(player);
 	queries[player].push_back(query);
 }

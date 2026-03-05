@@ -10,6 +10,7 @@
 #pragma once
 
 #include "../../lib/GameConstants.h"
+#include "constants/EntityIdentifiers.h"
 
 class CQuery;
 using QueryPtr = std::shared_ptr<CQuery>;
@@ -20,7 +21,7 @@ private:
 	void addQuery(PlayerColor player, QueryPtr query);
 	void popQuery(PlayerColor player, QueryPtr query);
 
-	std::map<PlayerColor, std::vector<QueryPtr>> queries; //player => stack of queries
+	std::array<std::vector<QueryPtr>, PlayerColor::PLAYER_LIMIT_I> queries; //player => stack of queries
 
 public:
 	void addQuery(QueryPtr query);
