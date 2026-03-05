@@ -1,8 +1,6 @@
 # VCMI Project
 
 [![VCMI](https://github.com/vcmi/vcmi/actions/workflows/github.yml/badge.svg?branch=develop&event=push)](https://github.com/vcmi/vcmi/actions/workflows/github.yml?query=branch%3Adevelop+event%3Apush)
-[![Translation status](https://hosted.weblate.org/widget/vcmi/language-badge.svg)](https://hosted.weblate.org/engage/vcmi/)
-
 [![Github Downloads](https://img.shields.io/github/downloads/vcmi/vcmi/1.7.1/total)](https://github.com/vcmi/vcmi/releases/tag/1.7.1)
 [![Github Downloads](https://img.shields.io/github/downloads/vcmi/vcmi/1.7.2/total)](https://github.com/vcmi/vcmi/releases/tag/1.7.2)
 [![Github Downloads](https://img.shields.io/github/downloads/vcmi/vcmi/1.7.3/total)](https://github.com/vcmi/vcmi/releases/tag/1.7.3)
@@ -24,6 +22,9 @@ VCMI is an open-source recreation of Heroes of Might & Magic III engine, giving 
 * Bugtracker: <https://github.com/vcmi/vcmi/issues>
 * Discord:    <https://discord.gg/chBT42V>
 * GPT Store:  <https://chat.openai.com/g/g-1kNhX0mlO-vcmi-assistant>
+
+VCMI translations are powered by Weblate
+[![Translation status](https://hosted.weblate.org/widget/vcmi/287x66-grey.png)](https://hosted.weblate.org/engage/vcmi/)
 
 ## Latest release
 
