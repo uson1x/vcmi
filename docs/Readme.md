@@ -24,6 +24,7 @@ VCMI is an open-source recreation of Heroes of Might & Magic III engine, giving 
 * GPT Store:  <https://chat.openai.com/g/g-1kNhX0mlO-vcmi-assistant>
 
 VCMI translations are powered by Weblate
+
 [![Translation status](https://hosted.weblate.org/widget/vcmi/287x66-grey.png)](https://hosted.weblate.org/engage/vcmi/)
 
 ## Latest release

@@ -95,13 +95,13 @@ VCMI contains several new strings, to cover functionality not existing in Heroes
 
 ### Translation of in-game data
 
-Most of game data is translated using Weblate: https://hosted.weblate.org/projects/vcmi/
+Most of game data is translated using [Weblate](https://hosted.weblate.org/projects/vcmi/)
 
-For usage of Weblate, please refer to Weblate documentation here: https://docs.weblate.org/en/latest/user/translating.html
+For usage of Weblate, please refer to [Weblate documentation](https://docs.weblate.org/en/latest/user/translating.html)
 
 If something is not clear - feel free to ask us on Discord or forum. Translation made via Weblate will be automatically integrated into VCMI for next release
 
-### Data not covered by Weblate 
+### Data not covered by Weblate
 
 Before you start, make sure that you have copy of VCMI source code. If you are not familiar with git, you can use Github Desktop to clone VCMI repository or use Github web interface
 
