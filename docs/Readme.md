@@ -23,6 +23,10 @@ VCMI is an open-source recreation of Heroes of Might & Magic III engine, giving 
 * Discord:    <https://discord.gg/chBT42V>
 * GPT Store:  <https://chat.openai.com/g/g-1kNhX0mlO-vcmi-assistant>
 
+VCMI translations are powered by Weblate
+
+[![Translation status](https://hosted.weblate.org/widget/vcmi/287x66-grey.png)](https://hosted.weblate.org/engage/vcmi/)
+
 ## Latest release
 
 Latest release can be found [in Github Releases page](https://github.com/vcmi/vcmi/releases/latest). As of right now we plan to have major releases around 3 times per year. Daily builds are still available at [builds.vcmi.download](https://builds.vcmi.download/branch/develop/) but they are not guaranteed to be stable. So we encourage everybody to use them and report found bugs so that we can fix them.
@@ -57,6 +61,10 @@ See also installation guide for [Heroes Chronicles](players/Heroes_Chronicles.md
 ## Documentation and guidelines for translators
 
 - [Translations](translators/Translations.md)
+
+### Current translation status
+
+[![Translation status](https://hosted.weblate.org/widget/vcmi/multi-auto.svg)](https://hosted.weblate.org/engage/vcmi/)
 
 ## Documentation and guidelines for game modders
 

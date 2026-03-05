@@ -93,36 +93,19 @@ VCMI contains several new strings, to cover functionality not existing in Heroes
 - Linux specific
 - Android Launcher
 
-Before you start, make sure that you have copy of VCMI source code. If you are not familiar with git, you can use Github Desktop to clone VCMI repository.
-
 ### Translation of in-game data
 
-In order to translate in-game data you need:
+Most of game data is translated using [Weblate](https://hosted.weblate.org/projects/vcmi/)
 
-- Add section with your language to `<VCMI>/Mods/VCMI/mod.json`, similar to other languages
-- Copy English translation file in `<VCMI>/Mods/VCMI/config/vcmi/english.json` and rename it to name of your language. Note that while you can copy any language other than English, other files might not be up to date and may have missing strings.
-- Translate copied file to your language.
+For usage of Weblate, please refer to [Weblate documentation](https://docs.weblate.org/en/latest/user/translating.html)
 
-After this, you can set language in Launcher to your language and start game. All translated strings should show up in your language.
+If something is not clear - feel free to ask us on Discord or forum. Translation made via Weblate will be automatically integrated into VCMI for next release
 
-### Translation of Launcher and Editor
+### Data not covered by Weblate
 
-VCMI Launcher and Map Editor use translation system provided by Qt framework so it requires slightly different approach than in-game translations:
+Before you start, make sure that you have copy of VCMI source code. If you are not familiar with git, you can use Github Desktop to clone VCMI repository or use Github web interface
 
-- Install Qt Linguist. You can find find standalone version here: <https://download.qt.io/linguist_releases/>
-- Open `<VCMI Sources>/launcher/translation/` directory, copy `english.ts` file and rename it to your language
-- Open `<VCMI Sources>/launcher/CMakeLists.txt` file with a text editor. In there you need to find list of existing translation files and add new file to the list.
-- Launch Qt Linguist, select Open and navigate to your copied file
-- Select any untranslated string, enter translation in field below, and click "Done and Next" (Ctrl+Return) to navigate to next untranslated string
-- Once translation has been finished, save resulting file.
-
-Translation of Map Editor is identical, except for location of translation files. Open `<VCMI Sources>/editor/translation/` instead to translate Map Editor
-
-TODO: how to test translation locally
-
-### Translation of Linux specific files
-
-#### Translation of AppStream metainfo
+### Translation of Linux AppStream metainfo
 
 The [AppStream](https://freedesktop.org/software/appstream/docs/chap-Metadata.html) [metainfo file](https://github.com/vcmi/vcmi/blob/develop/launcher/eu.vcmi.VCMI.metainfo.xml) is used for Linux software centers.
 
@@ -132,21 +115,23 @@ It can be translated using a text editor or using [jdAppStreamEdit](https://flat
 - Open `<VCMI>/launcher/eu.vcmi.VCMI.metainfo.xml`
 - Translate and save the file
   
-##### Desktop file
+##### Linux Desktop file
 
 - Edit `<VCMI>/launcher/vcmilauncher.desktop` and `<VCMI>/launcher/vcmieditor.desktop`
 - Add `GenericName[xyz]` and `Comment[xyz]` with your language code and translation
 
-##### Translation of Android Launcher
+##### Android Launcher
 
 - Copy `<VCMI>/android/vcmi-app/src/main/res/values/strings.xml` to `<VCMI>/android/vcmi-app/src/main/res/values-xyz/strings.xml` (`xyz` is your language code)
 - Translate this file
 
 See also here: <https://developer.android.com/guide/topics/resources/localization>
 
-### Submitting changes
+#### Submitting changes
 
-Once you have finished with translation you need to submit these changes to vcmi team using git or Github Desktop
+For Weblate, all changes made in Weblate web UI will be submitted to VCMI automatically.
+
+For strings not migrated to Weblate, once you have finished with translation you need to submit these changes to vcmi team using git or Github Desktop
 
 - Commit all your changed files
 - Push changes to your forked repository
