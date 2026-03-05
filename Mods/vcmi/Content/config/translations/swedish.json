@@ -234,13 +234,13 @@
 	"vcmi.lobby.login.spectator"          : "Åskådare",
 	"vcmi.lobby.header.rooms"             : "Spelrum - %d",
 	"vcmi.lobby.header.channels"          : "Chattkanaler",
-	"vcmi.lobby.header.chat.global"       : "Global spelchatt - %s", // %s -> språknamn
-	"vcmi.lobby.header.chat.match"        : "Chatt från tidigare spel (%s)", // %s -> datum och tid för spelstart
-	"vcmi.lobby.header.chat.player"       : "Privat chatt med %s", // %s -> smeknamn på en annan spelare
+	"vcmi.lobby.header.chat.global"       : "Global spelchatt - %s", 
+	"vcmi.lobby.header.chat.match"        : "Chatt från tidigare spel (%s)",
+	"vcmi.lobby.header.chat.player"       : "Privat chatt med %s", 
 	"vcmi.lobby.header.history"           : "Era tidigare spel",
 	"vcmi.lobby.header.players"           : "Spelare online - %d",
 	"vcmi.lobby.match.solo"               : "Enspelarspel",
-	"vcmi.lobby.match.duel"               : "Spel med %s", // %s -> smeknamn på en annan spelare
+	"vcmi.lobby.match.duel"               : "Spel med %s", 
 	"vcmi.lobby.match.multi"              : "%d spelare",
 	"vcmi.lobby.room.create.hover"        : "Skapa nytt spelrum",
 	"vcmi.lobby.room.create.help"         : "Skapa ett nytt rum i onlinelobbyn som andra spelare kan gå med i.",
@@ -253,7 +253,7 @@
 	"vcmi.lobby.invite.header"            : "Bjud in spelare",
 	"vcmi.lobby.invite.notification"      : "Spelaren har bjudit in dig till sitt spelrum. Du kan nu gå med i deras privata rum.",
 	"vcmi.lobby.preview.title"            : "Gå med i spelrum",
-	"vcmi.lobby.preview.subtitle"         : "Spel på %s, värd %s", // Översättningsnot: 1) namn på karta eller RMG-mall 2) smeknamn på spelvärden
+	"vcmi.lobby.preview.subtitle"         : "Spel på %s, värd %s",
 	"vcmi.lobby.preview.version"          : "Spelversion:",
 	"vcmi.lobby.preview.players"          : "Spelare:",
 	"vcmi.lobby.preview.mods"             : "Använda moddar:",
@@ -293,7 +293,7 @@
 	"vcmi.client.errors.invalidMap"                 : "{Ogiltig karta eller kampanj}\n\nSpelet kunde inte startas! Den valda kartan eller kampanjen kan vara ogiltig eller skadad. Anledning:\n%s",
 	"vcmi.client.errors.modLoadingFailure"          : "{Moddladdningsfel}\n\nKritiska fel hittades vid laddning av moddar! Spelet kanske inte fungerar korrekt eller kraschar! Vänligen uppdatera eller avaktivera följande moddar:\n\n",
 	"vcmi.server.errors.disconnected"               : "{Nätverksfel}\n\nAnslutningen till spelservern avbröts!",
-	"vcmi.server.errors.playerLeft"                 : "{Spelare lämnade}\n\nSpelare %s avbröt anslutningen till spelet!", // %s -> spelarens färg
+	"vcmi.server.errors.playerLeft"                 : "{Spelare lämnade}\n\nSpelare %s avbröt anslutningen till spelet!",
 	"vcmi.server.errors.existingProcess"            : "En annan server-process i VCMI körs, vänligen avsluta den först",
 	"vcmi.server.errors.modsToEnable"               : "{Nödvändiga moddar för att spela}",
 	"vcmi.server.errors.modsToDisable"              : "{Följande moddar måste avaktiveras}",
@@ -589,7 +589,7 @@
 
 	"vcmi.systemOptions.videoGroup": "Videoinställningar",
 	"vcmi.systemOptions.audioGroup": "Ljudinställningar",
-	"vcmi.systemOptions.otherGroup": "Andra inställningar", // används inte för närvarande
+	"vcmi.systemOptions.otherGroup": "Andra inställningar", 
 	"vcmi.systemOptions.townsGroup": "Stadsskärm",
 
 	"vcmi.statisticWindow.statistics"                   : "Statistik",
@@ -636,7 +636,7 @@
 	"vcmi.systemOptions.scalingButton.help"              : "{Gränssnittsskalning}\n\nÄndrar storleken på de olika gränssnitten som finns i spelet.",
 	"vcmi.systemOptions.scalingMenu.hover"               : "Välj gränssnittsskalning",
 	"vcmi.systemOptions.scalingMenu.help"                : "Ändrar gränssnittsskalningen i spelet.",
-	"vcmi.systemOptions.longTouchButton.hover"           : "Varaktighet för lång beröring: %d ms", // Översättningsnot: "ms" = "millisekunder"
+	"vcmi.systemOptions.longTouchButton.hover"           : "Varaktighet för lång beröring: %d ms",
 	"vcmi.systemOptions.longTouchButton.help"            : "{Varaktighet för lång beröring}\n\nVid användning av pekskärm visas popup-fönster efter beröring av skärmen under den angivna varaktigheten (i millisekunder).",
 	"vcmi.systemOptions.longTouchMenu.hover"             : "Beröringsvaraktighet för meny",
 	"vcmi.systemOptions.longTouchMenu.help"              : "Ändrar varaktighetsintervallet för fördröjd pekskärmsberöringsmeny.",
@@ -908,8 +908,6 @@
 	"vcmi.campaignSet.hota"      : "Avgrundens Horn",
 	"vcmi.campaignSet.wog"       : "I Gudars Kölvatten",
 
-	// Översättningsanmärkning: översätt strängarna nedan med hjälp av den form som är korrekt för "0 dagar", "1 dag" och "2 dagar" på ditt språk.
-	// Med hjälp av denna information väljer VCMI automatiskt rätt pluralform för varje möjlig mängd.
 	"vcmi.optionsTab.simturns.days.0"  : "%d dagar",
 	"vcmi.optionsTab.simturns.days.1"  : "%d dag",
 	"vcmi.optionsTab.simturns.days.2"  : "%d dagar",
@@ -931,7 +929,6 @@
 	"vcmi.optionsTab.cheatAllowed.help"    : "{Tillåt fusk}\n\nTillåter inmatning av fuskkoder under spelets gång.",
 	"vcmi.optionsTab.unlimitedReplay.help" : "{Spela om strider}\n\nIngen begränsning för hur många gånger man kan spela om sina strider.",
 
-	// Anpassade segervillkor för H3-kampanjer och HotA-kartor
 	"vcmi.map.victoryCondition.daysPassed.toOthers"           : "Fienden har lyckats överleva fram till denna dag. Segern är deras!",
 	"vcmi.map.victoryCondition.daysPassed.toSelf"             : "Gratulerar! Ni har lyckats överleva. Segern är er!",
 	"vcmi.map.victoryCondition.eliminateMonsters.toOthers"    : "Fienden har besegrat alla monster som plågade detta land och utropar seger!",
@@ -941,7 +938,6 @@
 	"vcmi.map.victoryCondition.angelicAlliance.message"       : "Besegra alla fiender och sätt ihop Änglaalliansen.",
 	"vcmi.map.victoryCondition.angelicAlliancePartLost.toSelf": "Tyvärr har ni förlorat en del av Änglaalliansen. Allt är förlorat!",
 
-	// Några strängar från WoG som används av VCMI
 	"vcmi.stackExperience.description": "» V a r e l s e f ö r b a n d s d e t a l j e r «\n\nVarelsetyp ................... : %s\nErfarenhetsrang ................. : %s (%i)\nErfarenhetspoäng ............... : %i\nErfarenhetspoäng för nästa rang .. : %i\nMaximal erfarenhet per strid ... : %i%% (%i)\nAntal varelser i förbandet .... : %i\nMaximalt antal nya rekryter\n utan att förlora nuvarande rang .... : %i\nErfarenhetsmultiplikator ........... : %.2f\nUppgraderingsmultiplikator .............. : %.2f\nErfarenhet efter rang 10 ........ : %i\nMaximalt antal nya rekryter som kan rekryteras\n för att behålla rang 10 med maximal erfarenhet : %i",
 	"vcmi.stackExperience.rank.0"     : "Grundläggande",
 	"vcmi.stackExperience.rank.1"     : "Novis",
@@ -955,7 +951,6 @@
 	"vcmi.stackExperience.rank.9"     : "Mästare",
 	"vcmi.stackExperience.rank.10"    : "Ess",
 
-	// Strängar för HotA Siarens hydda / Uppdragsvakt
 	"core.seerhut.quest.heroClass.complete.0"   : "Ah, ni är %s!  Här är en gåva åt er.  Tar ni emot den?",
 	"core.seerhut.quest.heroClass.complete.1"   : "Ah, ni är %s!  Här är en gåva åt er.  Tar ni emot den?",
 	"core.seerhut.quest.heroClass.complete.2"   : "Ah, ni är %s!  Här är en gåva åt er.  Tar ni emot den?",
@@ -1033,7 +1028,7 @@
 	"creatures.core.rogue.bonus.visionsHeroes"           : "{Anblick hjältar}\nHjälten kan se detaljerad information om fientliga hjältar.",
 	"creatures.core.rogue.bonus.visionsTowns"            : "{Anblick städer}\nHjälten kan se detaljerad information om fientliga städer.",
 
-	"core.bonus.ADDITIONAL_ATTACK.description" : "{Dubbelslag}\nAngriper två gånger.", // ATT GÖRA: alternativa beskrivningar för närstrid/distansstridseffektens räckvidd
+	"core.bonus.ADDITIONAL_ATTACK.description" : "{Dubbelslag}\nAngriper två gånger.",
 	"core.bonus.ADDITIONAL_RETALIATION.description" : "{Ytterligare vedergällningar}\nKan vedergälla ${val} extra gång(er).",
 	"core.bonus.ADJACENT_SPELLCASTER.description" : "{Magiker på nära håll}\nKan kasta ${subtype.spell} medan den står bredvid målet.",
 	"core.bonus.ALWAYS_MAXIMUM_DAMAGE.description" : "{Maximal skada}\nÅsamkar alltid den maximalt möjliga skadan.",
