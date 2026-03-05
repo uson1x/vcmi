@@ -76,34 +76,7 @@ void EvaluationContext::addNonCriticalStrategicalValue(float value)
 	vstd::amax(strategicalValue, std::min(value, MAX_CRITICAL_VALUE));
 }
 
-PriorityEvaluator::~PriorityEvaluator()
-{
-	delete engine;
-}
-
-void PriorityEvaluator::initVisitTile()
-{
-	auto file = CResourceHandler::get()->load(ResourcePath("config/ai/nk2ai/object-priorities.txt"))->readAll();
-	std::string str = std::string((char *)file.first.get(), file.second);
-	engine = fl::FllImporter().fromString(str);
-	armyLossRatioVariable = engine->getInputVariable("armyLoss");
-	armyGrowthVariable = engine->getInputVariable("armyGrowth");
-	heroRoleVariable = engine->getInputVariable("heroRole");
-	dangerVariable = engine->getInputVariable("danger");
-	turnVariable = engine->getInputVariable("turn");
-	mainTurnDistanceVariable = engine->getInputVariable("mainTurnDistance");
-	scoutTurnDistanceVariable = engine->getInputVariable("scoutTurnDistance");
-	goldRewardVsMovementVariable = engine->getInputVariable("goldReward");
-	armyRewardVariable = engine->getInputVariable("armyReward");
-	skillRewardVariable = engine->getInputVariable("skillReward");
-	rewardTypeVariable = engine->getInputVariable("rewardType");
-	closestHeroRatioVariable = engine->getInputVariable("closestHeroRatio");
-	strategicalValueVariable = engine->getInputVariable("strategicalValue");
-	goldPressureVariable = engine->getInputVariable("goldPressure");
-	goldCostVariable = engine->getInputVariable("goldCost");
-	fearVariable = engine->getInputVariable("fear");
-	value = engine->getOutputVariable("Value");
-}
+PriorityEvaluator::~PriorityEvaluator() = default;
 
 bool isAnotherAi(const CGObjectInstance * obj, const CPlayerSpecificInfoCallback & cb)
 {
@@ -1285,7 +1258,6 @@ uint64_t RewardEvaluator::getUpgradeArmyReward(const CGTownInstance * town, cons
 
 PriorityEvaluator::PriorityEvaluator(const Nullkiller * aiNk) : aiNk(aiNk)
 {
-	initVisitTile();
 	evaluationContextBuilders.push_back(std::make_shared<ExecuteHeroChainEvaluationContextBuilder>(aiNk));
 	evaluationContextBuilders.push_back(std::make_shared<BuildThisEvaluationContextBuilder>());
 	evaluationContextBuilders.push_back(std::make_shared<ClusterEvaluationContextBuilder>(aiNk));
@@ -1379,39 +1351,6 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 	const bool amIWithoutCastle = aiNk->cc->getPlayerState(aiNk->playerID)->daysWithoutCastle.has_value();
 	double result = 0;
 
-	if (aiNk->settings->isUseFuzzy())
-	{
-		float fuzzyResult = 0;
-		try
-		{
-			armyLossRatioVariable->setValue(evaluationContext.armyLossRatio);
-			heroRoleVariable->setValue(evaluationContext.heroRole);
-			mainTurnDistanceVariable->setValue(evaluationContext.movementCostByRole[HeroRole::MAIN]);
-			scoutTurnDistanceVariable->setValue(evaluationContext.movementCostByRole[HeroRole::SCOUT]);
-			goldRewardVsMovementVariable->setValue(goldRewardVsMovement);
-			armyRewardVariable->setValue(evaluationContext.armyReward);
-			armyGrowthVariable->setValue(evaluationContext.armyGrowth);
-			skillRewardVariable->setValue(evaluationContext.skillReward);
-			dangerVariable->setValue(evaluationContext.danger);
-			rewardTypeVariable->setValue(rewardType);
-			closestHeroRatioVariable->setValue(evaluationContext.closestWayRatio);
-			strategicalValueVariable->setValue(evaluationContext.strategicalValue);
-			goldPressureVariable->setValue(aiNk->buildAnalyzer->getGoldPressure());
-			goldCostVariable->setValue(evaluationContext.goldCost / ((float)aiNk->getFreeResources()[EGameResID::GOLD] + (float)aiNk->buildAnalyzer->getDailyIncome()[EGameResID::GOLD] + 1.0f));
-			turnVariable->setValue(evaluationContext.turn);
-			fearVariable->setValue(evaluationContext.enemyHeroDangerRatio);
-
-			engine->process();
-
-			fuzzyResult = value->getValue();
-		}
-		catch (fl::Exception& fe)
-		{
-			logAi->error("evaluate VisitTile: %s", fe.getWhat());
-		}
-		result = fuzzyResult;
-	}
-	else
 	{
 		float score = 0;
 

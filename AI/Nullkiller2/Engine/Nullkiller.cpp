@@ -419,7 +419,7 @@ void Nullkiller::makeTurn()
 		{
 			prioOfTask = prio;
 			selectedTasks = buildPlanAndFilter(tasks, prio);
-			if (!selectedTasks.empty() || settings->isUseFuzzy())
+			if (!selectedTasks.empty())
 			{
 				// Activate for deep debugging, otherwise too noisy even for trace level 2
 // #if NK2AI_TRACE_LEVEL >= 2
@@ -478,7 +478,7 @@ void Nullkiller::makeTurn()
 			// 		selectedTask->priority);
 			// }
 
-			if((settings->isUseFuzzy() && selectedTask->priority < MIN_PRIORITY) || (!settings->isUseFuzzy() && selectedTask->priority <= 0))
+			if(selectedTask->priority <= 0)
 			{
 				auto heroes = cc->getHeroesInfo();
 				const auto hasMp = vstd::contains_if(heroes, [](const CGHeroInstance * h) -> bool
