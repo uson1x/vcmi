@@ -250,7 +250,7 @@ void GameStatePackVisitor::visitGiveBonus(GiveBonus & pack)
 	assert(cbsn);
 
 	if(Bonus::OneWeek(&pack.bonus))
-		pack.bonus.turnsRemain = 8 - gs.getDate(Date::DAY_OF_WEEK); // set correct number of days before adding bonus
+		pack.bonus.turnsRemain = (LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK) + 1) - gs.getDate(Date::DAY_OF_WEEK); // set correct number of days before adding bonus
 
 	auto b = std::make_shared<Bonus>(pack.bonus);
 	cbsn->addNewBonus(b);

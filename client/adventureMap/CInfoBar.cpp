@@ -33,6 +33,7 @@
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
+#include "../../lib/filesystem/Filesystem.h"
 
 CInfoBar::CVisibleInfo::CVisibleInfo()
 	: CIntObject(0, Point(offset_x, offset_y))
@@ -98,18 +99,14 @@ AnimationPath CInfoBar::VisibleDateInfo::getNewDayName()
 	if(GAME->interface()->cb->getDate(Date::DAY_OF_WEEK) != 1)
 		return AnimationPath::builtin("NEWDAY");
 
-	switch(GAME->interface()->cb->getDate(Date::WEEK))
+	int week = GAME->interface()->cb->getDate(Date::WEEK);
+	auto resourceName = AnimationPath::builtin("NEWWEEK" + std::to_string(week));
+	if(CResourceHandler::get()->existsResource(resourceName.addPrefix("SPRITES/")))
+		return resourceName;
+	else
 	{
-	case 1:
+		logGlobal->warn("NEWWEEK animation for week %d not found. Falling back to animation for week 1.", week);
 		return AnimationPath::builtin("NEWWEEK1");
-	case 2:
-		return AnimationPath::builtin("NEWWEEK2");
-	case 3:
-		return AnimationPath::builtin("NEWWEEK3");
-	case 4:
-		return AnimationPath::builtin("NEWWEEK4");
-	default:
-		return AnimationPath();
 	}
 }
 
