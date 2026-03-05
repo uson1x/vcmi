@@ -293,7 +293,7 @@
 	"vcmi.client.errors.invalidMap"                 : "{Ogiltig karta eller kampanj}\n\nSpelet kunde inte startas! Den valda kartan eller kampanjen kan vara ogiltig eller skadad. Anledning:\n%s",
 	"vcmi.client.errors.modLoadingFailure"          : "{Moddladdningsfel}\n\nKritiska fel hittades vid laddning av moddar! Spelet kanske inte fungerar korrekt eller kraschar! Vänligen uppdatera eller avaktivera följande moddar:\n\n",
 	"vcmi.server.errors.disconnected"               : "{Nätverksfel}\n\nAnslutningen till spelservern avbröts!",
-	"vcmi.server.errors.playerLeft"                 : "{Spelare lämnade}\n\nSpelare %s avbröt anslutningen till spelet!", // %s -> spelarens färg
+	"vcmi.server.errors.playerLeft"                 : "{Spelare lämnade}\n\nSpelare %s avbröt anslutningen till spelet!",
 	"vcmi.server.errors.existingProcess"            : "En annan server-process i VCMI körs, vänligen avsluta den först",
 	"vcmi.server.errors.modsToEnable"               : "{Nödvändiga moddar för att spela}",
 	"vcmi.server.errors.modsToDisable"              : "{Följande moddar måste avaktiveras}",
@@ -908,8 +908,6 @@
 	"vcmi.campaignSet.hota"      : "Avgrundens Horn",
 	"vcmi.campaignSet.wog"       : "I Gudars Kölvatten",
 
-	// Översättningsanmärkning: översätt strängarna nedan med hjälp av den form som är korrekt för "0 dagar", "1 dag" och "2 dagar" på ditt språk.
-	// Med hjälp av denna information väljer VCMI automatiskt rätt pluralform för varje möjlig mängd.
 	"vcmi.optionsTab.simturns.days.0"  : "%d dagar",
 	"vcmi.optionsTab.simturns.days.1"  : "%d dag",
 	"vcmi.optionsTab.simturns.days.2"  : "%d dagar",
@@ -931,7 +929,6 @@
 	"vcmi.optionsTab.cheatAllowed.help"    : "{Tillåt fusk}\n\nTillåter inmatning av fuskkoder under spelets gång.",
 	"vcmi.optionsTab.unlimitedReplay.help" : "{Spela om strider}\n\nIngen begränsning för hur många gånger man kan spela om sina strider.",
 
-	// Anpassade segervillkor för H3-kampanjer och HotA-kartor
 	"vcmi.map.victoryCondition.daysPassed.toOthers"           : "Fienden har lyckats överleva fram till denna dag. Segern är deras!",
 	"vcmi.map.victoryCondition.daysPassed.toSelf"             : "Gratulerar! Ni har lyckats överleva. Segern är er!",
 	"vcmi.map.victoryCondition.eliminateMonsters.toOthers"    : "Fienden har besegrat alla monster som plågade detta land och utropar seger!",
@@ -1031,7 +1028,7 @@
 	"creatures.core.rogue.bonus.visionsHeroes"           : "{Anblick hjältar}\nHjälten kan se detaljerad information om fientliga hjältar.",
 	"creatures.core.rogue.bonus.visionsTowns"            : "{Anblick städer}\nHjälten kan se detaljerad information om fientliga städer.",
 
-	"core.bonus.ADDITIONAL_ATTACK.description" : "{Dubbelslag}\nAngriper två gånger.", // ATT GÖRA: alternativa beskrivningar för närstrid/distansstridseffektens räckvidd
+	"core.bonus.ADDITIONAL_ATTACK.description" : "{Dubbelslag}\nAngriper två gånger.",
 	"core.bonus.ADDITIONAL_RETALIATION.description" : "{Ytterligare vedergällningar}\nKan vedergälla ${val} extra gång(er).",
 	"core.bonus.ADJACENT_SPELLCASTER.description" : "{Magiker på nära håll}\nKan kasta ${subtype.spell} medan den står bredvid målet.",
 	"core.bonus.ALWAYS_MAXIMUM_DAMAGE.description" : "{Maximal skada}\nÅsamkar alltid den maximalt möjliga skadan.",
