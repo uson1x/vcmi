@@ -282,7 +282,7 @@ public:
 	std::map<HeroTypeID, CGHeroInstance*> inviteableHeroes;
 	CGHeroInstance* heroToInvite;
 	void addInvite();
-	void chooseHeroToInvite(CGHeroInstance* selectedHero, std::map<HeroTypeID, CGHeroInstance*> InviteableHeroes, std::function<void(CGHeroInstance*)> onChoose);
+	void chooseHeroToInvite(CGHeroInstance* selectedHero, const std::map<HeroTypeID, CGHeroInstance*> & inviteableHeroes, const std::function<void(CGHeroInstance*)> & onChoose);
 
 	CTavernWindow(const CGObjectInstance * TavernObj, const std::function<void()> & onWindowClosed);
 

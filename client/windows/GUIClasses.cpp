@@ -35,7 +35,6 @@
 #include "../widgets/ObjectLists.h"
 #include "../widgets/VideoWidget.h"
 #include "../widgets/GraphicalPrimitiveCanvas.h"
-#include "../windows/CHeroOverview.h"
 
 #include "../render/Canvas.h"
 #include "../render/IRenderHandler.h"
@@ -49,6 +48,7 @@
 #include "../lib/entities/hero/CHeroClass.h"
 #include "../lib/entities/hero/CHeroHandler.h"
 #include "../lib/entities/ResourceTypeHandler.h"
+#include "../lib/mapping/CMap.h"
 #include "../lib/mapObjectConstructors/CObjectClassesHandler.h"
 #include "../lib/mapObjectConstructors/CommonConstructors.h"
 #include "../lib/mapObjects/CGHeroInstance.h"
@@ -618,7 +618,7 @@ CTavernWindow::CTavernWindow(const CGObjectInstance * TavernObj, const std::func
 	addInvite();
 }
 
-void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, std::map<HeroTypeID, CGHeroInstance*> InviteableHeroes, std::function<void(CGHeroInstance*)> onChoose)
+void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, const std::map<HeroTypeID, CGHeroInstance*> & inviteableHeroes, const std::function<void(CGHeroInstance*)> & onChoose)
 {
 	auto comp = [](const HeroTypeID& a, const HeroTypeID& b)
 	{
@@ -639,9 +639,13 @@ void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, std::map<He
 	for (const auto & h : orderedHeroes)
 	{
 		heroes.push_back(h.second);
-		texts.push_back(h.first.toHeroType()->getNameTranslated());
 
-		auto image = ENGINE->renderHandler().loadImage(AnimationPath::builtin("PortraitsSmall"), h.first.toHeroType()->imageIndex, 0, EImageBlitMode::OPAQUE);
+		auto heroFromMapPool = GAME->server().client->gameState().getMap().tryGetFromHeroPool(h.first);
+		auto hero = heroFromMapPool ? heroFromMapPool : h.second;
+
+		texts.push_back(hero->getNameTranslated());
+
+		auto image = ENGINE->renderHandler().loadImage(AnimationPath::builtin("PortraitsSmall"), hero->getIconIndex(), 0, EImageBlitMode::OPAQUE);
 		image->scaleTo(Point(35, 23), EScalingAlgorithm::NEAREST);
 		images.push_back(image);
 	}
@@ -653,11 +657,11 @@ void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, std::map<He
 		selectedIndex = std::distance(heroes.begin(), it);
 	}
 
-	auto window = std::make_shared<CObjectListWindow>(texts, nullptr, LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), [onChoose, heroes](int index){
+	auto window = std::make_shared<CObjectListWindow>(texts, nullptr, LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), [this, onChoose, heroes](int index){
 		onChoose(heroes.at(index));
 	}, selectedIndex, images, true, false);
 	window->onPopup = [heroes](int index) {
-		ENGINE->windows().createAndPushWindow<CHeroOverview>(heroes.at(index)->getHeroTypeID());
+		ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroes.at(index)));
 	};
 	ENGINE->windows().pushWindow(window);
 }
