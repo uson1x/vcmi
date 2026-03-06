@@ -177,18 +177,35 @@ if(ENABLE_CCACHE)
 endif()
 
 if(ENABLE_CCACHE AND XCODE)
-	# https://stackoverflow.com/a/36515503/2278742
-	# Set up wrapper scripts
-	configure_file(xcode/launch-c.in   xcode/launch-c)
-	configure_file(xcode/launch-cxx.in xcode/launch-cxx)
-	execute_process(COMMAND chmod a+rx
-											"${CMAKE_BINARY_DIR}/xcode/launch-c"
-											"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
-	# Set Xcode project attributes to route compilation through our scripts
-	set(CMAKE_XCODE_ATTRIBUTE_CC         	"${CMAKE_BINARY_DIR}/xcode/launch-c")
-	set(CMAKE_XCODE_ATTRIBUTE_CXX        	"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
-	set(CMAKE_XCODE_ATTRIBUTE_LD         	"${CMAKE_BINARY_DIR}/xcode/launch-c")
-	set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS 	"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
+	set(compilerLauncherPermissions FILE_PERMISSIONS
+		OWNER_READ OWNER_WRITE OWNER_EXECUTE
+		GROUP_READ GROUP_EXECUTE
+		WORLD_READ WORLD_EXECUTE
+	)
+	set(compilerLauncherTemplate "xcode/compiler-launcher.in")
+	set(compilerLauncherC "${CMAKE_BINARY_DIR}/xcode/launch-c")
+	set(compilerLauncherCXX "${CMAKE_BINARY_DIR}/xcode/launch-cxx")
+
+	set(xcodeCompiler "clang")
+	configure_file(${compilerLauncherTemplate} ${compilerLauncherC} ${compilerLauncherPermissions})
+
+	set(xcodeCompiler "clang++")
+	configure_file(${compilerLauncherTemplate} ${compilerLauncherCXX} ${compilerLauncherPermissions})
+
+	if(XCODE_VERSION VERSION_GREATER_EQUAL 26)
+		set(compilerLauncherXcode26 "${CMAKE_BINARY_DIR}/xcode/launch-xc26")
+
+		set(xcodeCompiler)
+		configure_file(${compilerLauncherTemplate} ${compilerLauncherXcode26} ${compilerLauncherPermissions})
+
+		set(CMAKE_XCODE_ATTRIBUTE_C_COMPILER_LAUNCHER   ${compilerLauncherXcode26})
+		set(CMAKE_XCODE_ATTRIBUTE_CXX_COMPILER_LAUNCHER ${compilerLauncherXcode26})
+	else()
+		set(CMAKE_XCODE_ATTRIBUTE_CC  ${compilerLauncherC})
+		set(CMAKE_XCODE_ATTRIBUTE_CXX ${compilerLauncherCXX})
+	endif()
+	set(CMAKE_XCODE_ATTRIBUTE_LD         ${compilerLauncherC})
+	set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS ${compilerLauncherCXX})
 endif()
 
 # Allow to pass package name from Travis CI
