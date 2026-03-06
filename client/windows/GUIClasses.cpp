@@ -683,13 +683,23 @@ void CTavernWindow::addInvite()
 
 	if(!inviteableHeroes.empty())
 	{
-		int imageIndex = heroToInvite ? heroToInvite->getIconIndex() : 156; // 156 => special id for random
-		if(!heroToInvite)
+		bool isRandomHero = !heroToInvite;
+		int imageIndex = isRandomHero ? 156 : heroToInvite->getIconIndex(); // 156 => special id for random
+		if(isRandomHero)
 			heroToInvite = (*RandomGeneratorUtil::nextItem(inviteableHeroes, CRandomGenerator::getDefault())).second;
 
 		inviteHero = std::make_shared<CLabel>(170, 444, EFonts::FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->translate("vcmi.tavernWindow.inviteHero"));
 		inviteHeroImage = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsSmall"), imageIndex, 0, 245, 428);
-		inviteHeroImageArea = std::make_shared<LRClickableArea>(Rect(245, 428, 48, 32), [this](){ chooseHeroToInvite(heroToInvite, inviteableHeroes, [this](CGHeroInstance* h){ heroToInvite = h; addInvite(); }); }, [this](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroToInvite)); });
+		inviteHeroImageArea = std::make_shared<LRClickableArea>(Rect(245, 428, 48, 32), [this, isRandomHero](){
+			chooseHeroToInvite(isRandomHero ? nullptr : heroToInvite, inviteableHeroes, [this](CGHeroInstance* h){
+				heroToInvite = h; addInvite();
+			});
+		}, [this, isRandomHero](){
+			if(isRandomHero)
+				CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("core.genrltxt.522"));
+			else
+				ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroToInvite));
+		});
 	}
 }
 
