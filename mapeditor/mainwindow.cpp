@@ -305,6 +305,7 @@ MainWindow::MainWindow(QWidget* parent) :
 			
 			mapLevel = combo->currentIndex();
 			ui->mapView->setScene(controller.scene(mapLevel));
+			ui->mapView->resetInteractionState();
 			ui->mapView->setViewports();
 			ui->minimapView->setScene(controller.miniScene(mapLevel));
 		});
@@ -346,6 +347,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	
 	ui->mapView->setScene(controller.scene(0));
 	ui->mapView->setController(&controller);
+	ui->mapView->resetInteractionState();
 	ui->mapView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
 	connect(ui->mapView, &MapView::openObjectProperties, this, &MainWindow::loadInspector);
 	connect(ui->mapView, &MapView::currentCoordinates, this, &MainWindow::currentCoordinatesChanged);
@@ -431,6 +433,7 @@ void MainWindow::initializeMap(bool isNew)
 
 	mapLevel = 0;
 	ui->mapView->setScene(controller.scene(mapLevel));
+	ui->mapView->resetInteractionState();
 	ui->minimapView->setScene(controller.miniScene(mapLevel));
 	ui->minimapView->dimensions();
 	if(initialScale.isValid())
