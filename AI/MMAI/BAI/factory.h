@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "StdInc.h"
+
 #include "callback/CBattleGameInterface.h"
 #include "schema/base.h"
 #include <onnxruntime_cxx_api.h>
