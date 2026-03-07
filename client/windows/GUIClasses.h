@@ -255,28 +255,6 @@ public:
 		std::shared_ptr<CAnimImage> portrait;
 	};
 
-	class HeroSelector : public CWindowObject
-	{
-	public:
-		std::shared_ptr<CFilledTexture> background;
-		std::shared_ptr<CSlider> slider;
-
-		const int MAX_LINES = 18;
-		const int ELEM_PER_LINES = 16;
-
-		HeroSelector(std::map<HeroTypeID, CGHeroInstance*> InviteableHeroes, std::function<void(CGHeroInstance*)> OnChoose);
-
-	private:
-		std::map<HeroTypeID, CGHeroInstance*> inviteableHeroes;
-		std::function<void(CGHeroInstance*)> onChoose;
-
-		std::vector<std::shared_ptr<CAnimImage>> portraits;
-		std::vector<std::shared_ptr<LRClickableArea>> portraitAreas;
-
-		void recreate();
-		void sliderMove(int slidPos);
-	};
-
 	//recruitable heroes
 	std::shared_ptr<HeroPortrait> h1;
 	std::shared_ptr<HeroPortrait> h2; //recruitable heroes
@@ -304,6 +282,7 @@ public:
 	std::map<HeroTypeID, CGHeroInstance*> inviteableHeroes;
 	CGHeroInstance* heroToInvite;
 	void addInvite();
+	void chooseHeroToInvite(CGHeroInstance* selectedHero, const std::map<HeroTypeID, CGHeroInstance*> & inviteableHeroes, const std::function<void(CGHeroInstance*)> & onChoose);
 
 	CTavernWindow(const CGObjectInstance * TavernObj, const std::function<void()> & onWindowClosed);
 
