@@ -33,11 +33,11 @@ std::vector<Target> SpellTargetEvaluator::getViableTargets(Mechanics * spellMech
     switch(targetType)
     {
     case AimType::CREATURE:
-        return allSusceptibleCreatures(spellMechanics);
+        return allTargetableCreatures(spellMechanics);
     case AimType::LOCATION:
     {
         if (spellMechanics->isNeutralSpell())
-            return defaultHeuristics(spellMechanics);   // theoretically anything can be a useful destination, so we balance performance and validity
+            return defaultLocationSpellHeuristics(spellMechanics);   // theoretically anything can be a useful destination, so we balance performance and validity
         else
             return theBestLocationCasts(spellMechanics);
     }
@@ -48,24 +48,27 @@ std::vector<Target> SpellTargetEvaluator::getViableTargets(Mechanics * spellMech
     }
 }
 
-std::vector<Target> SpellTargetEvaluator::defaultHeuristics(spells::Mechanics * spellMechanics)
+std::vector<Target> SpellTargetEvaluator::defaultLocationSpellHeuristics(spells::Mechanics * spellMechanics)
 {
-        std::vector<Target> result = allSusceptibleCreatures(spellMechanics);
-        auto stacks = spellMechanics->battle()->battleGetAllStacks(true);
-        for(const auto * stack : stacks) //insert a random surrounding hex
+        std::vector<Target> result = allTargetableCreatures(spellMechanics);
+        auto units = spellMechanics->battle()->battleGetAllUnits(false);
+        for(const auto * unit : units) //insert a random surrounding hex
         {
-            auto surroundingHexes = stack->getSurroundingHexes();
-            auto randomSurroundingHex = surroundingHexes.at(rand() % surroundingHexes.size()); // don't think this method bias matter with such small numbers
-            addIfCanBeCast(spellMechanics, randomSurroundingHex, result);
+            auto surroundingHexes = unit->getSurroundingHexes();
+            if (!surroundingHexes.empty())
+            {
+                auto randomSurroundingHex = surroundingHexes.at(rand() % surroundingHexes.size()); // don't think this method bias matter with such small numbers
+                addIfCanBeCast(spellMechanics, randomSurroundingHex, result);
+            }
         }
         return result;
 }
 
-std::vector<Target> SpellTargetEvaluator::allSusceptibleCreatures(spells::Mechanics * spellMechanics) {
+std::vector<Target> SpellTargetEvaluator::allTargetableCreatures(spells::Mechanics * spellMechanics) {
         std::vector<Target> result;
-        auto stacks = spellMechanics->battle()->battleGetAllStacks(true);
-        for(const auto * stack : stacks)
-            addIfCanBeCast(spellMechanics, stack->getPosition(), result);
+        auto units = spellMechanics->battle()->battleGetAllUnits(false);
+        for(const auto * unit : units)
+            addIfCanBeCast(spellMechanics, unit->getPosition(), result);
         return result;
 }
 

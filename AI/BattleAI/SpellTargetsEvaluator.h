@@ -25,8 +25,8 @@ private:
           WORSE
         };
 
-        static std::vector<spells::Target> defaultHeuristics(spells::Mechanics * spellMechanics);
-        static std::vector<spells::Target> allSusceptibleCreatures(spells::Mechanics * spellMechanics);
+        static std::vector<spells::Target> defaultLocationSpellHeuristics(spells::Mechanics * spellMechanics);
+        static std::vector<spells::Target> allTargetableCreatures(spells::Mechanics * spellMechanics);
         static std::vector<spells::Target> theBestLocationCasts(spells::Mechanics * spellMechanics);
         static Compare compareAffectedStacks(spells::Mechanics * spellMechanics, std::set<const CStack *> newCast, std::set<const CStack *> oldCast);
         static Compare compareAffectedStacksSubset(spells::Mechanics * spellMechanics, std::set<const CStack *> newSubset, std::set<const CStack *> oldSubset);

@@ -10,6 +10,7 @@
 #include "StdInc.h"
 
 #include "../mock/mock_spells_Mechanics.h"
+#include "../mock/mock_battle_Unit.h"
 #include "../mock/BattleFake.h"
 #include "AI/BattleAI/SpellTargetsEvaluator.h"
 #include "lib/battle/CBattleInfoCallback.h"
@@ -20,12 +21,13 @@ namespace test
 {
 using namespace ::testing;
 using namespace spells;
+using namespace battle;
 using PossiblePositions = std::vector<BattleHex>;
 
 class CBattleInfoCallbackMock : public CBattleInfoCallback
 {
 public:
-    MOCK_CONST_METHOD1(battleGetAllStacks, TStacks(bool));
+    MOCK_CONST_METHOD1(battleGetAllUnits, battle::Units(bool));
     MOCK_CONST_METHOD0(getBattle, IBattleInfo*());
     MOCK_CONST_METHOD0(getPlayerID, std::optional<PlayerColor>());
 #if SCRIPTING_ENABLED
@@ -33,10 +35,8 @@ public:
 #endif
 };
 
-class CStackMock : public CStack
-{
+class CStackMock : public CStack {
 public:
-    MOCK_CONST_METHOD0(getPosition, BattleHex());
     MOCK_CONST_METHOD0(unitSide, BattleSide());
 };
 
@@ -47,6 +47,7 @@ public:
 
     MechanicsMock mechMock;
     CBattleInfoCallbackMock battleMock;
+    battle::Units allUnits;
     TStacks allStacks;
     BattleSide casterSide = BattleSide::ATTACKER;
     BattleSide enemySide = BattleSide::DEFENDER;
@@ -60,6 +61,9 @@ public:
 
     void TearDown() override
     {
+        for (const auto * unit : allUnits)
+            delete unit;
+        allUnits.clear();
         for (const auto * stack : allStacks)
             delete stack;
         allStacks.clear();
@@ -70,27 +74,18 @@ public:
         ON_CALL(mechMock, getTargetTypes()).WillByDefault(Return(std::move(targetTypes)));
     }
 
-    CStackMock * addStack(BattleHex position, bool isSuspectible = true)
+    CStackMock * addStack(BattleHex position, BattleSide battleSide, bool isSuspectible = true)
     {
         auto * stack = new CStackMock();
-        ON_CALL(*stack, getPosition()).WillByDefault(Return(position));
+        ON_CALL(*stack, unitSide()).WillByDefault(Return(battleSide));
         allStacks.push_back(stack);
+        auto * unit = new UnitMock();
+        ON_CALL(*unit, getPosition()).WillByDefault(Return(position));
+        allUnits.push_back(unit);
 
         if (!isSuspectible)
             ON_CALL(mechMock, canBeCastAt(Contains(Field(&Destination::hexValue, position)),_)).WillByDefault(Return(false));
         return stack;
-    }
-
-    void areAlliedStacks(std::vector<const CStackMock *> stacks)
-    {
-        for (const CStackMock * stack : stacks)
-            ON_CALL(*stack, unitSide()).WillByDefault(Return(casterSide));
-    }
-
-    void areEnemyStacks(std::vector<const CStackMock *> stacks)
-    {
-        for (const CStackMock * stack : stacks)
-            ON_CALL(*stack, unitSide()).WillByDefault(Return(enemySide));
     }
 
     void setAffectedStacksForCast(BattleHex position, std::vector<const CStack *> stacks)
@@ -163,10 +158,10 @@ TEST_F(SpellTargetEvaluatorTest, ReturnsSuspectibleCreaturePositionsIfSpellTarge
 {
     spellTargetTypes({AimType::CREATURE});
 
-    addStack(BattleHex(1));
-    addStack(BattleHex(2), false);
-    addStack(BattleHex(3));
-    ON_CALL(battleMock, battleGetAllStacks(Eq(true))).WillByDefault(Return(allStacks));
+    addStack(BattleHex(1), casterSide);
+    addStack(BattleHex(2), enemySide, false);
+    addStack(BattleHex(3), casterSide);
+    ON_CALL(battleMock, battleGetAllUnits(Eq(false))).WillByDefault(Return(allUnits));
 
     confirmResults({{BattleHex(1)}, {BattleHex(3)}});
 }
@@ -176,10 +171,10 @@ TEST_F(SpellTargetEvaluatorTest, ReturnsSuspectibleCreaturePositionsAndSingleRan
      spellTargetTypes({AimType::LOCATION});
      ON_CALL(mechMock, isNeutralSpell()).WillByDefault(Return(true));
 
-     addStack(BattleHex(72));
-     addStack(BattleHex(159), false);
-     addStack(BattleHex(23));
-     ON_CALL(battleMock, battleGetAllStacks(Eq(true))).WillByDefault(Return(allStacks));
+     addStack(BattleHex(72), casterSide);
+     addStack(BattleHex(159), enemySide, false);
+     addStack(BattleHex(23), casterSide);
+     ON_CALL(battleMock, battleGetAllUnits(Eq(false))).WillByDefault(Return(allUnits));
 
      confirmResults(
                     {
@@ -194,19 +189,14 @@ TEST_F(SpellTargetEvaluatorTest, ReturnsOneCaseOfEachOptimalCastIfNegativeLocati
     spellTargetTypes({AimType::LOCATION});
     ON_CALL(mechMock, isNegativeSpell()).WillByDefault(Return(true));
 
-    auto *enemyStack1 = addStack(BattleHex(90));
-    auto *enemyStack2 = addStack(BattleHex(106));
-    auto *enemyStack3 = addStack(BattleHex(1));
-    auto *enemyStack4 = addStack(BattleHex(37));
-    auto *enemyStack5 = addStack(BattleHex(41));
+    auto *enemyStack1 = addStack(BattleHex(90), enemySide);
+    auto *enemyStack2 = addStack(BattleHex(106), enemySide);
+    auto *enemyStack3 = addStack(BattleHex(1), enemySide);
+    auto *enemyStack4 = addStack(BattleHex(37), enemySide);
+    auto *enemyStack5 = addStack(BattleHex(41), enemySide);
 
-    areEnemyStacks({enemyStack1, enemyStack2, enemyStack3, enemyStack4, enemyStack5});
-
-    auto *alliedStack1 = addStack(BattleHex(107));
-    auto *alliedStack2 = addStack(BattleHex(19));
-
-    areAlliedStacks({alliedStack1, alliedStack2});
-
+    auto *alliedStack1 = addStack(BattleHex(107), casterSide);
+    auto *alliedStack2 = addStack(BattleHex(19), casterSide);
 
     //optimal
     setAffectedStacksForCast(BattleHex(71), {enemyStack1, enemyStack2});

@@ -93,8 +93,8 @@ public:
 
 	//helpers
 	///returns all stacks, alive or dead or undead or mechanical :)
-	virtual TStacks battleGetAllStacks(bool includeTurrets = false) const;
-	battle::Units battleGetAllUnits(bool includeTurrets = false) const;
+	TStacks battleGetAllStacks(bool includeTurrets = false) const;
+	virtual battle::Units battleGetAllUnits(bool includeTurrets = false) const;
 
 	const CStack * battleGetStackByID(int ID, bool onlyAlive = true) const; //returns stack info by given ID
 	bool battleIsObstacleVisibleForSide(const CObstacleInstance & coi, BattleSide side) const;
