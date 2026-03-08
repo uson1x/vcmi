@@ -101,10 +101,10 @@ namespace
 		return it->second.get();
 	}
 
+	// Convert a memory address for logging purposes
 	std::string MakeAddrStr(const void * p)
 	{
 		std::ostringstream oss;
-		// Store the memory address and include it in logging
 		oss << p;
 		return oss.str();
 	}

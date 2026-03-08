@@ -402,7 +402,7 @@ std::shared_ptr<BattleAction> BAI::buildBattleAction()
 	const auto * acstack = bf->astack->cstack;
 
 	auto [x, y] = Hex::CalcXY(acstack->getPosition());
-	auto & hex = bf->hexes->at(y).at(x);
+	const auto & hex = bf->hexes->at(y).at(x);
 	std::shared_ptr<BattleAction> res = nullptr;
 
 	if(!state->action->hex)
@@ -501,13 +501,13 @@ std::shared_ptr<BattleAction> BAI::buildBattleAction()
 	// => *throw* errors here only if the mask SHOULD HAVE ALLOWED it
 	//    and *set* regular, non-throw errors otherwise
 	//
-	handleUnexpectedAction(acstack, hex, action);
+	handleUnexpectedAction(acstack, hex.get(), action);
 	ASSERT(state->supdata->errcode != ErrorCode::OK, "Could not identify why the action is invalid" + debugInfo(action, acstack, nullptr));
 
 	return res;
 }
 
-void BAI::handleUnexpectedAction(const CStack * acstack, const std::unique_ptr<Hex> & hex, Action * action)
+void BAI::handleUnexpectedAction(const CStack * acstack, const Hex * hex, Action * action)
 {
 	const auto & bhex = action->hex->bhex;
 	const auto & stack = action->hex->stack; // may be null
