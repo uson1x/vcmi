@@ -67,9 +67,9 @@ struct LogTag
 /*
  * Similar to LogTag, but *appends* the given string instead.
  * Example:
- *     {                           // (before) Thread name: "foo"
- *       NestedLogTag _("bar")     // (RAII)   Thread name: "foo.bar"
- *     }                           // (after)  Thread name: "foo"
+ *     {                           * (before) Thread name: "foo"
+ *       NestedLogTag _("bar")     * (RAII)   Thread name: "foo.bar"
+ *     }                           * (after)  Thread name: "foo"
  */
 struct NestedLogTag
 {

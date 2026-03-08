@@ -507,7 +507,7 @@ std::shared_ptr<BattleAction> BAI::buildBattleAction()
 	return res;
 }
 
-void BAI::handleUnexpectedAction(const CStack * acstack, std::unique_ptr<Hex> & hex, Action * action)
+void BAI::handleUnexpectedAction(const CStack * acstack, const std::unique_ptr<Hex> & hex, Action * action)
 {
 	const auto & bhex = action->hex->bhex;
 	const auto & stack = action->hex->stack; // may be null
@@ -647,7 +647,7 @@ void BAI::handleUnexpectedAction(const CStack * acstack, std::unique_ptr<Hex> & 
 	}
 }
 
-std::string BAI::debugInfo(Action * action, const CStack * astack, const BattleHex * const nbh)
+std::string BAI::debugInfo(Action * action, const CStack * astack, const BattleHex * const nbh) const
 {
 	auto info = std::stringstream();
 	info << "\n*** DEBUG INFO ***\n";
