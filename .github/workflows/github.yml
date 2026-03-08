@@ -132,16 +132,18 @@ jobs:
             os: ubuntu-24.04
             upload: 1
             preset: linux-gcc-release-appimage
+            conan_profile: linux-x64
+            conan_prebuilts: dependencies-linux-x64
             extension: AppImage
-            before_install: linux_qt6.sh
             artifact_platform: x86_64
 
           - platform: linux-appimage-arm64
             os: ubuntu-24.04-arm
             upload: 1
             preset: linux-gcc-release-arm64-appimage
+            conan_profile: linux-arm64
+            conan_prebuilts: dependencies-linux-arm64
             extension: AppImage
-            before_install: linux_qt6.sh
             artifact_platform: arm64
 
     runs-on: ${{ matrix.os }}
@@ -366,7 +368,7 @@ jobs:
         ARCH: ${{ matrix.artifact_platform }}
       run: |
         chmod +x CI/create_appimage.sh
-        CI/create_appimage.sh
+        CI/create_appimage.sh --use-conan
 
     - name: Kill XProtect to work around CPack issue on macOS
       if: ${{ startsWith(matrix.platform, 'mac') }}
