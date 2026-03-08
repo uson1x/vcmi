@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
           - platform: mac-intel
-            os: macos-14
+            os: macos-15
             pack: 1
             upload: 1
             pack_type: Release
@@ -33,7 +33,7 @@ jobs:
             artifact_platform: intel
 
           - platform: mac-arm
-            os: macos-14
+            os: macos-15
             pack: 1
             upload: 1
             pack_type: Release
@@ -46,7 +46,7 @@ jobs:
             artifact_platform: arm
 
           - platform: ios
-            os: macos-14
+            os: macos-15
             pack: 1
             upload: 1
             pack_type: RelWithDebInfo
@@ -267,6 +267,14 @@ jobs:
         ccache --set-config=hash_dir=true
         ccache --set-config=sloppiness=time_macros
 
+    # TODO: remove once v4.13 is available in Homebrew
+    - name: Install ccache v4.13
+      if: ${{ matrix.platform == 'ios' }}
+      run: |
+        curl -L https://github.com/ccache/ccache/releases/download/v4.13/ccache-4.13-darwin.tar.gz \
+          | tar -xf -
+        echo "$(pwd)/ccache-4.13-darwin" >> $GITHUB_PATH
+
     - name: Install Conan profile
       if: "${{ matrix.conan_profile != '' }}"
       run: |
@@ -344,7 +352,7 @@ jobs:
 
     - name: Build
       run: |
-        ${{ startsWith(matrix.platform, 'msvc') && '& $env:CONANRUN_PWSH_SCRIPT' }}
+        ${{ startsWith(matrix.platform, 'msvc') && '& $env:CONANRUN_PWSH_SCRIPT' || '' }}
         cmake --build --preset ${{matrix.preset}}
       shell: pwsh
       env:
