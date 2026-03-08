@@ -24,6 +24,12 @@ public:
 	Router();
 	~Router() override;
 
+	Router(const Router &) = delete;
+	Router & operator=(const Router &) = delete;
+
+	Router(Router &&) = delete;
+	Router & operator=(Router &&) = delete;
+
 	/*
 	 * Handled locally (not delegated)
 	 */

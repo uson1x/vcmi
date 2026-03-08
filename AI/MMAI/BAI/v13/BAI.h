@@ -54,12 +54,9 @@ public:
 
 	Schema::IModel * model;
 	const int version;
+	const Logger logger;
 	const std::shared_ptr<Environment> env;
 	const std::shared_ptr<CBattleCallback> cb;
-	const Logger logger;
-
-	// Set via VCMI_BAI_VERBOSE env var ("1" to enable)
-	bool verbose = false;
 
 	bool enableSpellsUsage = false;
 

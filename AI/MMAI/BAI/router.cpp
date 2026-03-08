@@ -105,8 +105,7 @@ namespace
 	{
 		std::ostringstream oss;
 		// Store the memory address and include it in logging
-		const auto * ptr = static_cast<const void *>(p);
-		oss << ptr;
+		oss << p;
 		return oss.str();
 	}
 

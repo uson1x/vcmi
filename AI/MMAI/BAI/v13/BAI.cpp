@@ -34,8 +34,6 @@ using PA = Schema::V13::PlayerAttribute;
 BAI::BAI(Schema::IModel * model, int version, const std::shared_ptr<Environment> & env, const std::shared_ptr<CBattleCallback> & cb, bool enableSpellsUsage)
 	: model(model), version(version), logger(cb->getPlayerID()->toString()), env(env), cb(cb), enableSpellsUsage(enableSpellsUsage)
 {
-	const char * envvar = std::getenv("MMAI_VERBOSE");
-	verbose = envvar != nullptr && strcmp(envvar, "1") == 0;
 }
 
 Schema::Action BAI::getNonRenderAction()
@@ -54,7 +52,6 @@ Schema::Action BAI::getNonRenderAction()
 			state->supdata->type = Schema::V13::ISupplementaryData::Type::ANSI_RENDER;
 		}
 
-		// logger.info("getNonRenderAciton (loop) called with result type: " + std::to_string(res.type));
 		action = model->getAction(state.get());
 	}
 	state->supdata->ansiRender.clear();
@@ -436,8 +433,8 @@ std::shared_ptr<BattleAction> BAI::buildBattleAction()
 	// However, for manual playing/testing, it's bad to raise exceptions
 	// => return errcode (Gym env will raise an exception if errcode > 0)
 	const auto & bhex = action->hex->bhex;
-	auto & stack = action->hex->stack; // may be null
-	auto mask = HexActMask(action->hex->attr(HexAttribute::ACTION_MASK));
+	const auto & stack = action->hex->stack; // may be null
+	const auto & mask = HexActMask(action->hex->attr(HexAttribute::ACTION_MASK));
 	if(mask.test(EI(action->hexaction)))
 	{
 		// Action is VALID
@@ -513,9 +510,9 @@ std::shared_ptr<BattleAction> BAI::buildBattleAction()
 void BAI::handleUnexpectedAction(const CStack * acstack, std::unique_ptr<Hex> & hex, Action * action)
 {
 	const auto & bhex = action->hex->bhex;
-	auto & stack = action->hex->stack; // may be null
-	auto rinfo = battle->getReachability(acstack);
-	auto ainfo = battle->getAccessibility();
+	const auto & stack = action->hex->stack; // may be null
+	const auto rinfo = battle->getReachability(acstack);
+	const auto ainfo = battle->getAccessibility();
 
 	switch(state->action->hexaction)
 	{
