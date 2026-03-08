@@ -718,7 +718,7 @@ void BattleInfo::moveUnit(uint32_t id, const BattleHex & destination)
 	nodeHasChanged();
 }
 
-void BattleInfo::setUnitState(uint32_t id, const JsonNode & data, int64_t healthDelta)
+void BattleInfo::updateUnit(uint32_t id, const JsonNode & data, int64_t healthDelta)
 {
 	CStack * changedStack = getStack(id, false);
 	if(!changedStack)
@@ -829,11 +829,6 @@ void BattleInfo::removeUnit(uint32_t id)
 
 		ids.erase(toRemoveId);
 	}
-}
-
-void BattleInfo::updateUnit(uint32_t id, const JsonNode & data)
-{
-	//TODO
 }
 
 void BattleInfo::addUnitBonus(uint32_t id, const std::vector<Bonus> & bonus)

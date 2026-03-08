@@ -354,7 +354,7 @@ void HypotheticBattle::moveUnit(uint32_t id, const BattleHex & destination)
 	changed->position = destination;
 }
 
-void HypotheticBattle::setUnitState(uint32_t id, const JsonNode & data, int64_t healthDelta)
+void HypotheticBattle::updateUnit(uint32_t id, const JsonNode & data, int64_t healthDelta)
 {
 	std::shared_ptr<StackWithBonuses> changed = getForUpdate(id);
 
@@ -401,11 +401,6 @@ void HypotheticBattle::removeUnit(uint32_t id)
 
 		ids.erase(toRemoveId);
 	}
-}
-
-void HypotheticBattle::updateUnit(uint32_t id, const JsonNode & data)
-{
-	//TODO:
 }
 
 void HypotheticBattle::addUnitBonus(uint32_t id, const std::vector<Bonus> & bonus)

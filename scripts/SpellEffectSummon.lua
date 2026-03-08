@@ -53,7 +53,7 @@ applicable = function(parameters, mechanics, problem)
 			return (unit:getOwner() == mechanics:getCasterColor())
 				and (unit:isSummoned())
 				and (not unit:isClone())
-				and (unit:getCreature() ~= self.creature)
+				and (unit:getCreature() ~= parameters.creature)
 		end)
 
 		if otherSummoned ~= nil then
@@ -95,32 +95,27 @@ apply = function(parameters, mechanics, server, target)
 			state:heal(
 				healthValue, 
 				EHealLevel.OVERHEAL, 
-				(self.permanent and EHealPower.PERMANENT or EHealPower.ONE_BATTLE)
+				(parameters.permanent and EHealPower.PERMANENT or EHealPower.ONE_BATTLE)
 			)
 			
-			table.insert(pack.changedStacks, {
-				unitId = summoned:unitId(),
-				operation = UnitChanges.EOperation.RESET_STATE
-			})
+			server:battleUnitChanged(
+				summoned:unitId(),
+				UnitChanges.EOperation.UPDATE,
+				state:save()
+			)
 			
-			state:save(pack.changedStacks[#pack.changedStacks].data)
 		else
-			local amount = summonedCreatureAmount(parameters, mechanics)
-
-			if amount < 1 then
-				server:complain("Summoning didn't summon any!")
-			else
-				local id = mechanics:getBattle():getNextUnitId();
-
-				pack:add(id,
+			server:battleUnitChanged(
+				mechanics:getBattle():getNextUnitId(),
+				UnitChanges.EOperation.ADD,
 				{
-					count = amount,
+					count = summonedCreatureAmount(parameters, mechanics),
 					type = parameters.creature,
 					side = mechanics:casterSide(),
 					position = dest.hexValue,
-					summoned = not self.permanent
-				})
-			end
+					summoned = not parameters.permanent
+				}
+			)
 		end
 	end
 
@@ -140,7 +135,7 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 
 	local effectTarget = {}
 
-	if sameSummoned == nil or not self.summonSameUnit then
+	if sameSummoned == nil or not parameters.summonSameUnit then
 		local hex = mechanics:getBattle():getAvailableHex(parameters.creature, mechanics:casterSide())
 		if not hex:isValid() then
 			return {} -- no free space. FIXME: should be in isApplicable
