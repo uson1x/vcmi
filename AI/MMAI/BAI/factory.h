@@ -27,21 +27,10 @@ struct NNContainer
 	OrtAllocator * allocator;
 	int version;
 
-    NNContainer(
-    	std::unique_ptr<Ort::Session> session,
-        Ort::MemoryInfo meminfo,
-        Ort::ModelMetadata metadata,
-        OrtAllocator * allocator,
-        int version
-    )
-        : session(std::move(session))
-        , meminfo(std::move(meminfo))
-        , metadata(std::move(metadata))
-        , allocator(allocator)
-        , version(version)
-    {
-    }
-
+	NNContainer(std::unique_ptr<Ort::Session> session, Ort::MemoryInfo meminfo, Ort::ModelMetadata metadata, OrtAllocator * allocator, int version)
+		: session(std::move(session)), meminfo(std::move(meminfo)), metadata(std::move(metadata)), allocator(allocator), version(version)
+	{
+	}
 };
 
 // Factory method for versioned derived NNModel (e.g. BAI::V13::NNModel)
