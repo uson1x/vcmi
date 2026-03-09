@@ -284,7 +284,6 @@ void Router::battleStart(
 			THROW_FORMAT("Unexpected model type: %d", EI(model->getType()));
 	}
 
-	logAi->info("test1");
 	bai->battleStart(bid, army1, army2, tile, hero1, hero2, side, replayAllowed);
 }
 
