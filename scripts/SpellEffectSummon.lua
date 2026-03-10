@@ -20,25 +20,28 @@ end
 local function summonedCreatureHealth(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
 
+	local creature = SERVICES.creatures.getByName(parameters.creature)
 	if parameters.summonByHealth then
 		return valueWithBonus
 	else
-		return valueWithBonus * parameters.creature:getMaxHealth()
+		return valueWithBonus * creature:getMaxHealth()
 	end
 end
 
 local function summonedCreatureAmount(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
 
+	local creature = SERVICES.creatures.getByName(parameters.creature)
 	if parameters.summonByHealth then
-		return math.floor(valueWithBonus / parameters.creature:getMaxHealth())
+		return math.floor(valueWithBonus / creature:getMaxHealth())
 	else
 		return valueWithBonus
 	end
 end
 
 applicable = function(parameters, mechanics, problem)
-	if parameters.creature == "nil" then
+	local creature = SERVICES.creatures.getByName(parameters.creature)
+	if creature == "nil" then
 		return false -- mechanics:adaptGenericProblem(problem)
 	end
 
@@ -83,8 +86,7 @@ applicable = function(parameters, mechanics, problem)
 end
 
 apply = function(parameters, mechanics, server, target)
-	local pack = BattleUnitsChanged.new()
-	pack.battleID = mechanics:getBattleID()
+	local creature = SERVICES.creatures.getByName(parameters.creature)
 
 	for _, dest in ipairs(target) do
 		if dest.unitValue then
@@ -99,6 +101,7 @@ apply = function(parameters, mechanics, server, target)
 			)
 			
 			server:battleUnitChanged(
+				mechanics:getBattleID(),
 				summoned:unitId(),
 				UnitChanges.EOperation.UPDATE,
 				state:save()
@@ -106,6 +109,7 @@ apply = function(parameters, mechanics, server, target)
 			
 		else
 			server:battleUnitChanged(
+				mechanics:getBattleID(),
 				mechanics:getBattle():getNextUnitId(),
 				UnitChanges.EOperation.ADD,
 				{
@@ -125,6 +129,7 @@ apply = function(parameters, mechanics, server, target)
 end
 
 transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
+	local creature = SERVICES.creatures.getByName(parameters.creature)
 	local sameSummoned = mechanics:getBattle():getAnyUnitIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())

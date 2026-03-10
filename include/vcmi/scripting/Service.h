@@ -33,7 +33,6 @@ public:
 	virtual void run(ServerCallback * server, const JsonNode & initialState) = 0;
 
 	virtual JsonNode callGlobal(const std::string & name, const JsonNode & parameters) = 0;
-	virtual JsonNode callGlobal(ServerCallback * server, const std::string & name, const JsonNode & parameters) = 0;
 
 	virtual void setGlobal(const std::string & name, int value) = 0;
 	virtual void setGlobal(const std::string & name, const std::string & value) = 0;

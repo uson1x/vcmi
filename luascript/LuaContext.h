@@ -36,7 +36,6 @@ public:
 	int errorRetVoid(const std::string & message);
 
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
-	JsonNode callGlobal(ServerCallback * cb, const std::string & name, const JsonNode & parameters) override;
 
 	template<typename... Args>
 	JsonNode callGlobalWithParameters(const std::string & name, Args&& ... parameters);
