@@ -1342,12 +1342,6 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 {
 	auto evaluationContext = buildEvaluationContext(task);
 
-	int rewardType = (evaluationContext.goldReward > 0 ? 1 : 0)
-		+ (evaluationContext.armyReward > 0 ? 1 : 0)
-		+ (evaluationContext.skillReward > 0 ? 1 : 0)
-		+ (evaluationContext.strategicalValue > 0 ? 1 : 0);
-
-	float goldRewardVsMovement = evaluationContext.goldReward / std::log2f(2 + evaluationContext.movementCost * 10);
 	const bool amIWithoutCastle = aiNk->cc->getPlayerState(aiNk->playerID)->daysWithoutCastle.has_value();
 	double result = 0;
 
@@ -1365,7 +1359,7 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 #if NK2AI_TRACE_LEVEL >= 2
 		logAi->trace(
 			"BEFORE: priorityTier %d, Evaluated %s, armyLossRatio: %f, maxWillingToLose: %f, turn: %d, turns main: %f, scout: %f, armyInvolvement: %f, "
-			"goldReward: %f, goldRewardVsMovement: %f, goldCost: %d, armyReward: %f, armyGrowth: %f, skillReward: %f, danger: %d, threatTurns: %d, threat: %d, "
+			"goldReward: %f, goldCost: %d, armyReward: %f, armyGrowth: %f, skillReward: %f, danger: %d, threatTurns: %d, threat: %d, "
 			"heroRole: %s, strategicalValue: %f, conquestValue: %f, buildingCost.marketValue: %f, closestWayRatio: %f, enemyHeroDangerRatio: %f, "
 			"maxEnemyDangerRatio: %f, explorePriority: %d, isDefend: %d, isEnemy: %d, arriveNextWeek: %d, powerRatio: %f",
 			priorityTier,
@@ -1377,7 +1371,6 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 			evaluationContext.movementCostByRole[HeroRole::SCOUT],
 			evaluationContext.armyInvolvement,
 			evaluationContext.goldReward,
-			goldRewardVsMovement,
 			evaluationContext.goldCost,
 			evaluationContext.armyReward,
 			evaluationContext.armyGrowth,
@@ -1675,7 +1668,7 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 #if NK2AI_TRACE_LEVEL >= 2
 	logAi->trace(
 		"priorityTier %d, Evaluated %s, armyLossRatio: %f, turn: %d, turns main: %f, turns scout: %f, armyInvolvement: %f, "
-		"goldReward: %f, goldRewardVsMovement: %f, goldCost: %d, armyReward: %f, armyGrowth: %f, skillReward: %f, danger: %d, threatTurns: %d, threat: %d, "
+		"goldReward: %f, goldCost: %d, armyReward: %f, armyGrowth: %f, skillReward: %f, danger: %d, threatTurns: %d, threat: %d, "
 		"heroRole: %s, strategicalValue: %f, conquestValue: %f, buildingCost.marketValue: %f, closestWayRatio: %f, enemyHeroDangerRatio: %f, "
 		"explorePriority: %d, isDefend: %d, isEnemy: %d, powerRatio: %f, result %f",
 		priorityTier,
@@ -1686,7 +1679,6 @@ float PriorityEvaluator::evaluate(Goals::TSubgoal task, int priorityTier)
 		evaluationContext.movementCostByRole[HeroRole::SCOUT],
 		evaluationContext.armyInvolvement,
 		evaluationContext.goldReward,
-		goldRewardVsMovement,
 		evaluationContext.goldCost,
 		evaluationContext.armyReward,
 		evaluationContext.armyGrowth,
