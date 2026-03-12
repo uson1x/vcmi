@@ -657,6 +657,28 @@ jobs:
             exit 1
         fi
 
+  lobby:
+    name: Test VCMI Lobby
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Prepare CI
+      run: sudo apt update && sudo apt install cmake zlib1g-dev libboost-dev libboost-program-options-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libboost-iostreams-dev libminizip-dev
+
+    - name: Configure
+      run: |
+        cmake --preset linux-gcc-release-lobby
+
+    - name: Build
+      run: |
+        cmake --build --preset linux-gcc-release-lobby
+
   windows-installer:
     needs: build
     if: ${{ needs.build.result == 'success' }}

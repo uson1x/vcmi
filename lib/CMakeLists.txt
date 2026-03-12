@@ -839,9 +839,13 @@ endif()
 
 set_target_properties(vcmi PROPERTIES COMPILE_DEFINITIONS "VCMI_DLL=1")
 target_link_libraries(vcmi PUBLIC
-	minizip::minizip ZLIB::ZLIB TBB::tbb
+	minizip::minizip ZLIB::ZLIB
 	${SYSTEM_LIBS} Boost::boost Boost::filesystem Boost::program_options Boost::locale Boost::date_time
 )
+
+if (NOT ENABLE_MINIMAL_LIB)
+	target_link_libraries(vcmi PUBLIC TBB::tbb)
+endif()
 
 if(ENABLE_STATIC_LIBS AND ENABLE_CLIENT)
 	target_compile_definitions(vcmi PRIVATE STATIC_AI)
