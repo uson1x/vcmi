@@ -141,10 +141,6 @@ void CSettingsView::fillValidAdventureAILibraries(QComboBox * comboBox, QString 
 	comboBox->blockSignals(true);
 	comboBox->clear();
 
-#ifdef ENABLE_NULLKILLER_AI
-	comboBox->addItem(tr("Nullkiller (superseded by Nullkiller2)"), "Nullkiller");
-#endif
-
 #ifdef ENABLE_NULLKILLER2_AI
 	comboBox->addItem(tr("Nullkiller2 (default, recommended)"), "Nullkiller2");
 #endif
