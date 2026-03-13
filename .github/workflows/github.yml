@@ -457,14 +457,14 @@ jobs:
             ${{ env.IOS_APPSTORE_SYMBOLS_DIR }}
 
     - name: Upload build to download.vcmi.eu
-      if: ${{ matrix.upload == 1 && github.event.number == '' && env.DEPLOY_RSA != '' }}
+      if: ${{ matrix.upload == 1 && github.event.number == '' && env.BUILDS_UPLOADER_PRIVATE_KEY != '' }}
       run: |
         if [ -z '${{ env.ANDROID_APK_PATH }}' ] ; then
           cd '${{github.workspace}}/out/build/${{matrix.preset}}'
         fi
         source '${{github.workspace}}/CI/upload_package.sh'
       env:
-        DEPLOY_RSA: ${{ secrets.DEPLOY_RSA }}
+        BUILDS_UPLOADER_PRIVATE_KEY: ${{ secrets.BUILDS_UPLOADER_PRIVATE_KEY }}
         PACKAGE_EXTENSION: ${{ matrix.extension }}
 
     - name: Prepare partial JSON with build informations
