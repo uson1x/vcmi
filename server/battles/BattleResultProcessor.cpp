@@ -264,7 +264,15 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 	battleQuery->result = std::make_optional(*battleResult);
 
 	//Check how many battle gameHandler->queries were created (number of players blocked by battle)
-	const int queriedPlayers = battleQuery ? boost::count(gameHandler->queries->allQueries(), battleQuery) : 0;
+	int queriedPlayers = 0;
+	if(battleQuery)
+	{
+		for(const auto & query : gameHandler->queries->allQueries())
+		{
+			if(query == battleQuery)
+				++queriedPlayers;
+		}
+	}
 
 	assert(finishingBattles.count(battle.getBattle()->getBattleID()) == 0);
 	finishingBattles[battle.getBattle()->getBattleID()] = std::make_unique<FinishingBattleHelper>(battle, *battleResult, queriedPlayers);
@@ -286,7 +294,7 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 		battleResult->queryID = QueryID::NONE;
 
 	//set same battle result for all gameHandler->queries
-	for(auto q : gameHandler->queries->allQueries())
+	for(auto & q : gameHandler->queries->allQueries())
 	{
 		auto otherBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(q);
 		if(otherBattleQuery && otherBattleQuery->battleID == battle.getBattle()->getBattleID())
