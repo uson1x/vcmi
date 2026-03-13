@@ -95,11 +95,17 @@ export UPD_INFO="gh-releases-zsync|vcmi|vcmi|continuous|VCMI-*$ARCH.AppImage.zsy
 if [[ -z "$QMAKE" ]]; then
     if [[ "$USE_CONAN" -eq 1 ]]; then
         # --use-conan: require qmake from Conan2 cache, no system fallback
-        CONAN_QMAKE=$(find "${HOME}/.conan2/p" -name "qmake" -type f 2>/dev/null | head -n1)
-        if [[ -z "$CONAN_QMAKE" ]]; then
-            echo "Error: --use-conan set but no qmake found in ~/.conan2" >&2
+        qtPackage='qt'
+        hexRegex='[[:xdigit:]]+'
+        qtPackageRevision=$(conan list --format=compact "$qtPackage/*:*" \
+          | grep -Eo "$qtPackage/[[:alnum:]_]+#$hexRegex:$hexRegex" | head -n1)
+        CONAN_QMAKE="$(conan cache path "$qtPackageRevision")/bin/qmake"
+
+        if [[ -z "$qtPackageRevision" || ! -x "$CONAN_QMAKE" ]]; then
+            echo "Error: --use-conan set but no qmake found in Conan cache" >&2
             exit 1
         fi
+
         export QMAKE="$CONAN_QMAKE"
         echo "Using Conan Qt qmake: $QMAKE"
     else
