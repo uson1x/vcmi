@@ -227,7 +227,8 @@ bool ZipArchive::extract(const boost::filesystem::path & where, const std::strin
 	if (unzLocateFile(archive, file.c_str(), 1) != UNZ_OK)
 		return false;
 
-	const boost::filesystem::path fullName = where / file;
+	const boost::filesystem::path relativeName = TextOperations::Utf8TofilesystemPath(file);
+	const boost::filesystem::path fullName = where / relativeName;
 	const boost::filesystem::path fullPath = fullName.parent_path();
 
 	boost::filesystem::create_directories(fullPath);

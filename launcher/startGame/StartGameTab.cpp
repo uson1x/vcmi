@@ -243,9 +243,10 @@ void StartGameTab::on_buttonImportFiles_clicked()
 	{
 #ifndef VCMI_MOBILE
 		QString filter =
-			tr("All supported files") + " (*.h3m *.vmap *.h3c *.vcmp *.zip *.json *.exe);;" +
+			tr("All supported files") + " (*.h3m *.vmap *.h3c *.vcmp *.vsgm1 *.zip *.json *.exe);;" +
 			tr("Maps") + " (*.h3m *.vmap);;" +
 			tr("Campaigns") + " (*.h3c *.vcmp);;" +
+			tr("Saves") + " (*.vsgm1);;" +
 			tr("Configs") + " (*.json);;" +
 			tr("Mods") + " (*.zip);;" +
 			tr("Gog files") + " (*.exe)";
@@ -253,9 +254,61 @@ void StartGameTab::on_buttonImportFiles_clicked()
 		//Workaround for sometimes incorrect mime for some extensions (e.g. for exe)
 		QString filter = tr("All files (*.*)");
 #endif
-		QStringList files = QFileDialog::getOpenFileNames(this, tr("Select files (configs, mods, maps, campaigns, gog files) to install..."), QDir::homePath(), filter);
+		QStringList files = QFileDialog::getOpenFileNames(this, tr("Select files (configs, mods, saves, maps, campaigns, gog files) to install..."), QDir::homePath(), filter);
+		if(files.isEmpty())
+			return;
 
-		for(const auto & file : files)
+		QStringList preparedFiles;
+		preparedFiles.reserve(files.size());
+
+		QDir userDataDir(pathToQString(VCMIDirs::get().userDataPath()));
+		const QString importCachePath = userDataDir.filePath("tmp/import-cache");
+
+		QDir importCacheDir(importCachePath);
+		if(importCacheDir.exists() && !importCacheDir.removeRecursively())
+			logGlobal->warn("Failed to cleanup import cache dir: %s", importCachePath.toStdString());
+
+		userDataDir.mkpath("tmp/import-cache");
+		importCacheDir.setPath(importCachePath);
+
+		auto * modView = Helper::getMainWindow()->getModView();
+		modView->showExternalProgress(tr("Preparing selected files for import..."), 0, files.size());
+
+		for(int index = 0; index < files.size(); ++index)
+		{
+			const QString file = files[index];
+			modView->showExternalProgress(tr("Preparing selected files for import... %1/%2").arg(index + 1).arg(files.size()), index, files.size());
+			qApp->processEvents();
+
+			QString importPath = file;
+
+			// Some exotic systems allows read after copy
+			QFile sourceFile(file);
+			if(!sourceFile.open(QIODevice::ReadOnly))
+			{
+				QString baseName = QFileInfo(Helper::getRealPath(file)).fileName();
+				if(baseName.isEmpty())
+					baseName = QStringLiteral("import_%1").arg(index + 1);
+
+				QString stagedPath = importCacheDir.filePath(QStringLiteral("%1_%2").arg(index + 1).arg(baseName));
+				for(int duplicateIndex = 1; QFileInfo::exists(stagedPath); duplicateIndex++)
+					stagedPath = importCacheDir.filePath(QStringLiteral("%1_%2_%3").arg(index + 1).arg(duplicateIndex).arg(baseName));
+
+				if(!Helper::performNativeCopy(file, stagedPath))
+				{
+					QMessageBox::warning(this, tr("Import failed"), tr("Failed to prepare file for import: %1").arg(Helper::getRealPath(file)));
+					continue;
+				}
+				importPath = stagedPath;
+			}
+
+			preparedFiles << importPath;
+		}
+
+		modView->showExternalProgress(tr("Preparing selected files for import..."), files.size(), files.size());
+		modView->hideExternalProgress();
+
+		for(const auto & file : preparedFiles)
 		{
 			logGlobal->info("Importing file %s", file.toStdString());
 			Helper::getMainWindow()->manualInstallFile(file);
@@ -303,6 +356,8 @@ void StartGameTab::on_buttonHelpImportFiles_clicked()
 		" - Heroes III Campaigns (.h3c or .vcmp).\n"
 		" - Heroes III Chronicles using offline backup installer from GOG.com (.exe).\n"
 		" - VCMI mods in zip format (.zip)\n"
+		" - VCMI saves archive in zip format (.zip)\n"
+		" - VCMI save files (.vsgm1)\n"
 		" - VCMI configuration files (.json)\n"
 	);
 
