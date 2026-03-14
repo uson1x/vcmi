@@ -160,7 +160,7 @@ std::optional<PossibleSpellcast> BattleEvaluator::findBestCreatureSpell(const CS
 			continue;
 
 		spells::BattleCast temp(cb->getBattle(battleID).get(), stack, spells::Mode::CREATURE_ACTIVE, spell);
-		for(auto & target : SpellTargetEvaluator::getViableTargets(spell->battleMechanics(&temp).get()))
+		for(const auto & target : SpellTargetEvaluator::getViableTargets(spell->battleMechanics(&temp).get()))
 		{
 			PossibleSpellcast ps;
 			ps.dest = target;
@@ -539,7 +539,7 @@ bool BattleEvaluator::attemptCastingSpell(const CStack * activeStack)
 	{
 		spells::BattleCast temp(cb->getBattle(battleID).get(), hero, spells::Mode::HERO, spell);
 
-		for(auto & target : SpellTargetEvaluator::getViableTargets(spell->battleMechanics(&temp).get()))
+		for(const auto & target : SpellTargetEvaluator::getViableTargets(spell->battleMechanics(&temp).get()))
 		{
 			PossibleSpellcast ps;
 			ps.dest = target;

@@ -9,29 +9,32 @@
  */
 #pragma once
 
-#include <vcmi/spells/Magic.h>
 #include "../../lib/spells/BattleSpellMechanics.h"
+#include <vcmi/spells/Magic.h>
 
 class SpellTargetEvaluator
 {
 public:
-        static std::vector<spells::Target> getViableTargets(spells::Mechanics * spellMechanics);
+	static std::vector<spells::Target> getViableTargets(const spells::Mechanics * spellMechanics);
+
 private:
+	enum Compare
+	{
+		EQUAL,
+		DIFFERENT,
+		BETTER,
+		WORSE
+	};
 
-        enum Compare {
-          EQUAL,
-          DIFFERENT,
-          BETTER,
-          WORSE
-        };
-
-        static std::vector<spells::Target> defaultLocationSpellHeuristics(spells::Mechanics * spellMechanics);
-        static std::vector<spells::Target> allTargetableCreatures(spells::Mechanics * spellMechanics);
-        static std::vector<spells::Target> theBestLocationCasts(spells::Mechanics * spellMechanics);
-        static Compare compareAffectedStacks(spells::Mechanics * spellMechanics, std::set<const CStack *> newCast, std::set<const CStack *> oldCast);
-        static Compare compareAffectedStacksSubset(spells::Mechanics * spellMechanics, std::set<const CStack *> newSubset, std::set<const CStack *> oldSubset);
-        static SpellTargetEvaluator::Compare reverse(Compare compare);
-        static bool isCastHarmful(spells::Mechanics * spellMechanics, std::set<const CStack *> affectedStacks);
-        static bool canBeCastAt(spells::Mechanics * spellMechanics, BattleHex hex);
-        static void addIfCanBeCast(spells::Mechanics * spellMechanics, BattleHex hex, std::vector<spells::Target> & targets);
+	static std::vector<spells::Target> defaultLocationSpellHeuristics(const spells::Mechanics * spellMechanics);
+	static std::vector<spells::Target> allTargetableCreatures(const spells::Mechanics * spellMechanics);
+	static std::vector<spells::Target> theBestLocationCasts(const spells::Mechanics * spellMechanics);
+	static Compare compareAffectedStacks(
+	const spells::Mechanics * spellMechanics, const std::set<const CStack *> & newCast, const std::set<const CStack *> & oldCast);
+	static Compare compareAffectedStacksSubset(
+	const spells::Mechanics * spellMechanics, const std::set<const CStack *> & newSubset, const std::set<const CStack *> & oldSubset);
+	static SpellTargetEvaluator::Compare reverse(Compare compare);
+	static bool isCastHarmful(const spells::Mechanics * spellMechanics, const std::set<const CStack *> & affectedStacks);
+	static bool canBeCastAt(const spells::Mechanics * spellMechanics, BattleHex hex);
+	static void addIfCanBeCast(const spells::Mechanics * spellMechanics, BattleHex hex, std::vector<spells::Target> & targets);
 };
