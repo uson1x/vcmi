@@ -288,7 +288,7 @@ void AboutProjectView::on_pushButtonExportSaves_clicked()
 
 	outPath = ensureZipSuffix(outPath);
 	if(exportSavesToLocalArchive(outPath))
-		QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(outPath));
+		QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(Helper::getRealPath(outPath)));
 #endif
 }
 
