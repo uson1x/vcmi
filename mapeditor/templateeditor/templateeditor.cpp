@@ -912,7 +912,7 @@ void TemplateEditor::on_pushButtonRemoveSubTemplate_clicked()
 {
 	if(templates.size() < 2)
 	{
-		QMessageBox::critical(this, tr("To few templates!"), tr("At least one template should remain after removing."));
+		QMessageBox::critical(this, tr("Too few templates!"), tr("At least one template should remain after removing."));
 		return;
 	}
 
