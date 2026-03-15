@@ -253,12 +253,12 @@ void AboutProjectView::on_pushButtonExportSaves_clicked()
 
 		const QString dstPath = targetIsFile ? target : Helper::createFile(target, QStringLiteral("vcmi-saves.zip"), QStringLiteral("application/zip"));
 
-		QFile::remove(cacheArchivePath);
-
 		if(!dstPath.isEmpty() && Helper::performNativeCopy(cacheArchivePath, dstPath))
 			QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(dstPath));
 		else
 			QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
+
+		QFile::remove(cacheArchivePath);
 	};
 
 	if(Helper::canUseFolderPicker())
@@ -274,7 +274,8 @@ void AboutProjectView::on_pushButtonExportSaves_clicked()
 	{
 		logGlobal->warn("Save export: folder picker unavailable, using manual file selection fallback");
 		QMessageBox::information(this, tr("Select destination file"), tr("Please select destination file and save the archive as vcmi-saves.zip."));
-		const QString pickedPath = QFileDialog::getOpenFileName(this, tr("Select destination file"), QDir::homePath(), tr("All files (*.*)"));
+		const QString defaultName = QDir::home().filePath("vcmi-saves.zip");
+		const QString pickedPath = QFileDialog::getSaveFileName(this, tr("Select destination file"), defaultName, tr("Zip archives (*.zip);;All files (*.*)"));
 		if(pickedPath.isEmpty())
 			return;
 		exportViaTarget(ensureZipSuffix(pickedPath), true);
@@ -504,7 +505,8 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 		{
 			logGlobal->warn("Log export: folder picker unavailable, using manual file selection fallback");
 			QMessageBox::information(this, tr("Select destination file"), tr("Please select destination file and save the archive as vcmi-logs.zip."));
-			QString pickedPath = QFileDialog::getOpenFileName(this, tr("Select destination file"), QDir::homePath(), tr("All files (*.*)"));
+			const QString defaultName = QDir::home().filePath("vcmi-logs.zip");
+			QString pickedPath = QFileDialog::getSaveFileName(this, tr("Select destination file"), defaultName, tr("Zip archives (*.zip);;All files (*.*)"));
 			if(!pickedPath.isEmpty())
 			{
 				if(!pickedPath.endsWith(".zip", Qt::CaseInsensitive))
