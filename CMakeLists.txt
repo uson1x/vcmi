@@ -112,15 +112,19 @@ else()
 	else()
 		check_cxx_compiler_flag("-std=c++23" COMPILER_SUPPORTS_CXX23)
 	endif()
-	if(COMPILER_SUPPORTS_CXX23 # C++23 features needed
-		AND (MACOS
-			AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64" # skip intel for apple (compile issue)
-			OR NOT MACOS
-			OR CMAKE_OSX_DEPLOYMENT_TARGET VERSION_GREATER_EQUAL "10.15") # allow it if we have proper deployment target
+
+	option(ENABLE_DISCORD "Enable compilation of discord integration" ON)
+
+	# Determine if Glaze can be used
+	set(DISCORD_RPC_NO_GLAZE OFF)
+	if(
+		(MACOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "10.15")
+		OR
+		(IOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.0")
+		OR
+		(NOT COMPILER_SUPPORTS_CXX23)
 	)
-		option(ENABLE_DISCORD "Enable compilation of discord integration" ON)
-	else()
-		option(ENABLE_DISCORD "Enable compilation of discord integration" OFF)
+		set(DISCORD_RPC_NO_GLAZE ON)
 	endif()
 endif()
 
