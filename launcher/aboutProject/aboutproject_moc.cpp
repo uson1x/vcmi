@@ -150,94 +150,145 @@ static QString gatherDeviceInfo()
 	return info;
 }
 
-
 void AboutProjectView::on_pushButtonExportSaves_clicked()
 {
+	auto exportSavesToLocalArchive = [this](const QString & outPath)
+	{
+		QDir savesDir(pathToQString(VCMIDirs::get().userSavePath()));
+		if(!savesDir.exists())
+		{
+			QMessageBox::warning(this, tr("Error"), tr("Saves directory does not exist"));
+			return false;
+		}
+
+		QStringList saveFiles;
+		QDirIterator scanner(savesDir.absolutePath(), QDir::Files, QDirIterator::Subdirectories);
+		while(scanner.hasNext())
+		{
+			const QString savePath = scanner.next();
+			if(savePath.endsWith(".vsgm1", Qt::CaseInsensitive))
+				saveFiles.push_back(savePath);
+		}
+
+		if(saveFiles.empty())
+		{
+			QMessageBox::warning(this, tr("Error"), tr("No save files were found"));
+			return false;
+		}
+
+		QProgressDialog progress(tr("Exporting saves..."), tr("Cancel"), 0, saveFiles.size(), this);
+		progress.setWindowTitle(tr("Save export"));
+		progress.setWindowModality(Qt::WindowModal);
+		progress.setMinimumDuration(0);
+		progress.setAutoReset(false);
+		progress.setAutoClose(false);
+		progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
+		progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+		auto * progressBar = new QProgressBar(&progress);
+		progressBar->setRange(0, saveFiles.size());
+		progressBar->setValue(0);
+		progressBar->setFormat(QStringLiteral("%v / %m"));
+		progress.setBar(progressBar);
+		progress.setLabelText(tr("Exporting saves..."));
+
+		try
+		{
+			std::shared_ptr<CIOApi> api = std::make_shared<CDefaultIOApi>();
+			boost::filesystem::path archivePath(outPath.toStdString());
+			CZipSaver saver(api, archivePath);
+
+			for(int index = 0; index < saveFiles.size(); ++index)
+			{
+				if(progress.wasCanceled())
+				{
+					QFile::remove(outPath);
+					return false;
+				}
+
+				const QString savePath = saveFiles[index];
+				const QString relativePath = savesDir.relativeFilePath(savePath);
+				progress.setValue(index + 1);
+				qApp->processEvents();
+
+				QFile saveFile(savePath);
+				if(!saveFile.open(QIODevice::ReadOnly))
+					continue;
+
+				QByteArray data = saveFile.readAll();
+				QByteArray relativePathUtf8 = relativePath.toUtf8();
+				auto stream = saver.addFile(std::string(relativePathUtf8.constData(), relativePathUtf8.size()));
+				stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
+			}
+
+			progress.setValue(saveFiles.size());
+			qApp->processEvents();
+			progress.hide();
+		}
+		catch(const std::exception & e)
+		{
+			QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
+			return false;
+		}
+
+		return true;
+	};
+
+	auto ensureZipSuffix = [](QString path)
+	{
+		if(path.endsWith(".zip", Qt::CaseInsensitive))
+			return path;
+		return path + ".zip";
+	};
+
+#if defined(VCMI_MOBILE)
+	auto exportViaTarget = [this, exportSavesToLocalArchive](const QString & target, bool targetIsFile)
+	{
+		if(target.isEmpty())
+			return;
+
+		const QString cacheDir = pathToQString(VCMIDirs::get().userCachePath());
+		const QString cacheArchivePath = QDir(cacheDir).filePath(QStringLiteral("vcmi-saves-export.zip"));
+		if(!exportSavesToLocalArchive(cacheArchivePath))
+			return;
+
+		const QString dstPath = targetIsFile ? target : Helper::createFile(target, QStringLiteral("vcmi-saves.zip"), QStringLiteral("application/zip"));
+
+		QFile::remove(cacheArchivePath);
+
+		if(!dstPath.isEmpty() && Helper::performNativeCopy(cacheArchivePath, dstPath))
+			QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(dstPath));
+		else
+			QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
+	};
+
+	if(Helper::canUseFolderPicker())
+	{
+		Helper::nativeFolderPicker(this, [exportViaTarget](QString picked)
+		{
+			if(picked.isEmpty())
+				return;
+			exportViaTarget(picked, false);
+		});
+	}
+	else
+	{
+		logGlobal->warn("Save export: folder picker unavailable, using manual file selection fallback");
+		QMessageBox::information(this, tr("Select destination file"), tr("Please select destination file and save the archive as vcmi-saves.zip."));
+		const QString pickedPath = QFileDialog::getOpenFileName(this, tr("Select destination file"), QDir::homePath(), tr("All files (*.*)"));
+		if(pickedPath.isEmpty())
+			return;
+		exportViaTarget(ensureZipSuffix(pickedPath), true);
+	}
+#else
 	const QString defaultName = QDir::home().filePath("vcmi-saves.zip");
 	QString outPath = QFileDialog::getSaveFileName(this, tr("Export saves"), defaultName, tr("Zip archives (*.zip)"));
 	if(outPath.isEmpty())
 		return;
 
-	if(!outPath.endsWith(".zip", Qt::CaseInsensitive))
-		outPath += ".zip";
-
-	QDir savesDir(pathToQString(VCMIDirs::get().userSavePath()));
-	if(!savesDir.exists())
-	{
-		QMessageBox::warning(this, tr("Error"), tr("Saves directory does not exist"));
-		return;
-	}
-
-	QStringList saveFiles;
-	QDirIterator scanner(savesDir.absolutePath(), QDir::Files, QDirIterator::Subdirectories);
-	while(scanner.hasNext())
-	{
-		const QString savePath = scanner.next();
-		if(savePath.endsWith(".vsgm1", Qt::CaseInsensitive))
-			saveFiles.push_back(savePath);
-	}
-
-	if(saveFiles.empty())
-	{
-		QMessageBox::warning(this, tr("Error"), tr("No save files were found"));
-		return;
-	}
-
-	QProgressDialog progress(tr("Exporting saves..."), tr("Cancel"), 0, saveFiles.size(), this);
-	progress.setWindowTitle(tr("Save export"));
-	progress.setWindowModality(Qt::WindowModal);
-	progress.setMinimumDuration(0);
-	progress.setAutoReset(false);
-	progress.setAutoClose(false);
-	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
-	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-	auto * progressBar = new QProgressBar(&progress);
-	progressBar->setRange(0, saveFiles.size());
-	progressBar->setValue(0);
-	progressBar->setFormat(QStringLiteral("%v / %m"));
-	progress.setBar(progressBar);
-	progress.setLabelText(tr("Exporting saves..."));
-
-	try
-	{
-		std::shared_ptr<CIOApi> api = std::make_shared<CDefaultIOApi>();
-		boost::filesystem::path archivePath(outPath.toStdString());
-		CZipSaver saver(api, archivePath);
-
-		for(int index = 0; index < saveFiles.size(); ++index)
-		{
-			if(progress.wasCanceled())
-			{
-				QFile::remove(outPath);
-				return;
-			}
-
-			const QString savePath = saveFiles[index];
-			const QString relativePath = savesDir.relativeFilePath(savePath);
-			progress.setValue(index + 1);
-			qApp->processEvents();
-
-			QFile saveFile(savePath);
-			if(!saveFile.open(QIODevice::ReadOnly))
-				continue;
-
-			QByteArray data = saveFile.readAll();
-			QByteArray relativePathUtf8 = relativePath.toUtf8();
-			auto stream = saver.addFile(std::string(relativePathUtf8.constData(), relativePathUtf8.size()));
-			stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
-		}
-
-		progress.setValue(saveFiles.size());
-		qApp->processEvents();
-		progress.hide();
-	}
-	catch (const std::exception & e)
-	{
-		QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
-		return;
-	}
-
-	QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(outPath));
+	outPath = ensureZipSuffix(outPath);
+	if(exportSavesToLocalArchive(outPath))
+		QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(outPath));
+#endif
 }
 
 void AboutProjectView::on_pushButtonExportLogs_clicked()
@@ -249,8 +300,8 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
     {
         QDir tdir(QDir::tempPath());
         const QFileInfoList old = tdir.entryInfoList(QStringList() << "vcmi-logs-*.zip", QDir::Files, QDir::Name);
-        for (const QFileInfo & fi : old)
-            QFile::remove(fi.absoluteFilePath());
+        for(const QFileInfo & file : old)
+            QFile::remove(file.absoluteFilePath());
     }
 	// On mobile: write archive to system temp and send via platform share (no save dialog)
 	const QString tmpDir = QDir::tempPath();
@@ -258,10 +309,10 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 #else
 	const QString defaultName = QDir::home().filePath("vcmi-logs.zip");
 	QString outPath = QFileDialog::getSaveFileName(this, tr("Save logs"), defaultName, tr("Zip archives (*.zip)"));
-	if (outPath.isEmpty())
+	if(outPath.isEmpty())
 		return;
 
-	if (!outPath.endsWith(".zip", Qt::CaseInsensitive))
+	if(!outPath.endsWith(".zip", Qt::CaseInsensitive))
 		outPath += ".zip";
 #endif
 
@@ -274,20 +325,50 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 	QDir dataDir(dataDirPath);
 	QDirIterator it(dataDirPath, QDir::NoDotAndDotDot | QDir::AllEntries, QDirIterator::Subdirectories);
 	QTextStream ts(&listing);
-	while (it.hasNext())
+	while(it.hasNext())
 	{
 		const QString path = it.next();
 		const QString rel = dataDir.relativeFilePath(path);
 		QFileInfo info(path);
 
-		if (rel.startsWith(QLatin1String("Saves/")))
+		if(rel.startsWith(QLatin1String("Saves/")))
 			continue;
 
-		if (info.isDir())
+		if(info.isDir())
 			ts << QChar('D') << QLatin1Char(' ') << rel << '\n';
 		else
 			ts << QChar('F') << QLatin1Char(' ') << rel << QLatin1String(" (") << info.size() << QLatin1String(")") << '\n';
 	}
+
+	const int progressMaximum = files.size() + 3;
+	QProgressDialog progress(tr("Exporting logs..."), tr("Cancel"), 0, progressMaximum, this);
+	progress.setWindowTitle(tr("Log export"));
+	progress.setWindowModality(Qt::WindowModal);
+	progress.setMinimumDuration(0);
+	progress.setAutoReset(false);
+	progress.setAutoClose(false);
+	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
+	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+	auto * progressBar = new QProgressBar(&progress);
+	progressBar->setRange(0, progressMaximum);
+	progressBar->setValue(0);
+	progressBar->setFormat(QStringLiteral("%v / %m"));
+	progress.setBar(progressBar);
+	progress.setLabelText(tr("Exporting logs..."));
+
+	int progressValue = 0;
+	auto advanceProgress = [&]()
+	{
+		++progressValue;
+		progress.setValue(progressValue);
+		qApp->processEvents();
+		if(progress.wasCanceled())
+		{
+			QFile::remove(outPath);
+			return false;
+		}
+		return true;
+	};
 
 	try
 	{
@@ -296,19 +377,26 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 		boost::filesystem::path archivePath(outPath.toStdString());
 		CZipSaver saver(api, archivePath);
 
-		for (const QFileInfo & fi : files)
+		for(const QFileInfo & file : files)
 		{
 			// Skip persistent storage to avoid logging private data (e.g. lobby login tokens)
-			if (fi.fileName().compare(QStringLiteral("persistentStorage.json"), Qt::CaseInsensitive) == 0)
+			if(file.fileName().compare(QStringLiteral("persistentStorage.json"), Qt::CaseInsensitive) == 0)
+			{
+				if(!advanceProgress())
+					return;
 				continue;
+			}
 
-			QFile f(fi.absoluteFilePath());
-			if (!f.open(QIODevice::ReadOnly))
-				continue;
+			QFile f(file.absoluteFilePath());
+			if(f.open(QIODevice::ReadOnly))
+			{
+				QByteArray data = f.readAll();
+				auto stream = saver.addFile(file.fileName().toStdString());
+				stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
+			}
 
-			QByteArray data = f.readAll();
-			auto stream = saver.addFile(fi.fileName().toStdString());
-			stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
+			if(!advanceProgress())
+				return;
 		}
 
 		// try to include the last save reported in settings.json
@@ -321,51 +409,110 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 					auto lastSavePath = json["general"]["lastSave"].String();
 					const auto rsave = ResourcePath(lastSavePath, EResType::SAVEGAME);
 					const auto * rhandler = CResourceHandler::get();
-					if(!rhandler->existsResource(rsave))
-						return;
+					if(rhandler->existsResource(rsave))
+					{
+						size_t pos = lastSavePath.find_last_of("/\\");
+						std::string name = (pos == std::string::npos)? lastSavePath : lastSavePath.substr(pos + 1);
 
-					size_t pos = lastSavePath.find_last_of("/\\");
-					std::string name = (pos == std::string::npos)? lastSavePath : lastSavePath.substr(pos + 1);
-
-					const auto & [data, length] = rhandler->load(rsave)->readAll();
-					auto stream = saver.addFile(name + ".VSGM1");
-					stream->write(data.get(), length);
+						const auto & [data, length] = rhandler->load(rsave)->readAll();
+						auto stream = saver.addFile(name + ".VSGM1");
+						stream->write(data.get(), length);
+					}
 				}
-				catch(const std::exception& e)
+				catch(const std::exception&)
 				{
 					// ignore errors here
 				}
 			}
 		}
+		if(!advanceProgress())
+			return;
 
 		// add generated listing as game-directory-structure.txt
-		if (!listing.isEmpty())
+		if(!listing.isEmpty())
 		{
 			QByteArray data = listing.toUtf8();
 			auto stream = saver.addFile(std::string("data-directory-structure.txt"));
 			stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
 		}
+		if(!advanceProgress())
+			return;
 
 		// add device information as device-info.txt
 		{
 			const QString deviceInfo = gatherDeviceInfo();
-			if (!deviceInfo.isEmpty())
+			if(!deviceInfo.isEmpty())
 			{
 				QByteArray dataDev = deviceInfo.toUtf8();
 				auto streamDev = saver.addFile(std::string("device-info.txt"));
 				streamDev->write(reinterpret_cast<const ui8 *>(dataDev.constData()), dataDev.size());
 			}
 		}
+		if(!advanceProgress())
+			return;
+
+		progress.hide();
 	}
-	catch (const std::exception & e)
+	catch(const std::exception & e)
 	{
+		QFile::remove(outPath);
 		QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
 		return;
 	}
-	// On mobile platforms, send file via platform and remove temporary file afterwards.
+
+	// On mobile platforms, let user choose between share and saving to selected destination.
 #if defined(VCMI_MOBILE)
-	QMessageBox::information(this, tr("Send logs"), tr("The archive will be sent via another application. Share your logs e.g. over discord to developers."));
-	Helper::sendFileToApp(outPath);
+	QMessageBox destinationChoice(this);
+	destinationChoice.setIcon(QMessageBox::Question);
+	destinationChoice.setWindowTitle(tr("Export logs"));
+	destinationChoice.setText(tr("Choose what to do with the exported logs archive."));
+	QPushButton * shareButton = destinationChoice.addButton(tr("Share"), QMessageBox::AcceptRole);
+	QPushButton * saveButton = destinationChoice.addButton(tr("Save"), QMessageBox::ActionRole);
+	destinationChoice.addButton(QMessageBox::Cancel);
+	destinationChoice.exec();
+
+	if(destinationChoice.clickedButton() == shareButton)
+	{
+		QMessageBox::information(this, tr("Send logs"), tr("The archive will be sent via another application. Share your logs e.g. over discord to developers."));
+		Helper::sendFileToApp(outPath);
+	}
+	else if(destinationChoice.clickedButton() == saveButton)
+	{
+		auto saveArchiveTo = [this, outPath](const QString & targetPath)
+		{
+			if(targetPath.isEmpty())
+				return;
+
+			if(Helper::performNativeCopy(outPath, targetPath))
+				QMessageBox::information(this, tr("Success"), tr("Logs saved to %1").arg(targetPath));
+			else
+				QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
+		};
+
+		if(Helper::canUseFolderPicker())
+		{
+			Helper::nativeFolderPicker(this, [saveArchiveTo](QString picked)
+			{
+				if(picked.isEmpty())
+					return;
+
+				const QString destination = Helper::createFile(picked, QStringLiteral("vcmi-logs.zip"), QStringLiteral("application/zip"));
+				saveArchiveTo(destination);
+			});
+		}
+		else
+		{
+			logGlobal->warn("Log export: folder picker unavailable, using manual file selection fallback");
+			QMessageBox::information(this, tr("Select destination file"), tr("Please select destination file and save the archive as vcmi-logs.zip."));
+			QString pickedPath = QFileDialog::getOpenFileName(this, tr("Select destination file"), QDir::homePath(), tr("All files (*.*)"));
+			if(!pickedPath.isEmpty())
+			{
+				if(!pickedPath.endsWith(".zip", Qt::CaseInsensitive))
+					pickedPath += ".zip"
+				saveArchiveTo(pickedPath);
+			}
+		}
+	}
 #else
 	// desktop: notify user and do not auto-send
 	QMessageBox::information(this, tr("Success"), tr("Logs saved to %1, please send them to the developers").arg(outPath));
