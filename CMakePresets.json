@@ -59,8 +59,8 @@
             "description": "VCMI Linux Clang",
             "inherits": "linux-release",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "/usr/bin/clang",
-                "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
                 "ENABLE_DISCORD": "OFF"
             }
         },
@@ -81,8 +81,8 @@
             "inherits": "linux-release",
             "cacheVariables": {
                 "ENABLE_LUA" : "ON",
-                "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
             }
         },
         {
@@ -91,8 +91,8 @@
             "description": "VCMI Linux GCC",
             "inherits": "linux-release",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "ENABLE_STATIC_LIBS": "ON"
             }
         },
@@ -102,8 +102,8 @@
             "description": "VCMI Linux GCC ARM64",
             "inherits": "linux-release",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "ENABLE_STATIC_LIBS": "ON"
             }
         },
@@ -124,8 +124,8 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "ENABLE_LUA" : "ON",
-                "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
             }
         },
         {
@@ -136,8 +136,8 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "ENABLE_LUA" : "ON",
-                "CMAKE_C_COMPILER": "/usr/bin/clang",
-                "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
                 "ENABLE_DISCORD": "OFF"
             }
         },
@@ -147,8 +147,8 @@
             "description": "VCMI Linux Clang",
             "inherits": "linux-test",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "/usr/bin/clang",
-                "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
                 "ENABLE_DISCORD": "OFF"
             }
         },
@@ -159,8 +159,8 @@
             "inherits": "linux-test",
             "cacheVariables": {
                 "ENABLE_LUA" : "OFF",
-                "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
             }
         },
         {
