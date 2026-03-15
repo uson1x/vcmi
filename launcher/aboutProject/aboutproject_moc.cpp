@@ -254,7 +254,7 @@ void AboutProjectView::on_pushButtonExportSaves_clicked()
 		const QString dstPath = targetIsFile ? target : Helper::createFile(target, QStringLiteral("vcmi-saves.zip"), QStringLiteral("application/zip"));
 
 		if(!dstPath.isEmpty() && Helper::performNativeCopy(cacheArchivePath, dstPath))
-			QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(dstPath));
+			QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(Helper::getRealPath(dstPathp));
 		else
 			QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
 
@@ -485,7 +485,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 				return;
 
 			if(Helper::performNativeCopy(outPath, targetPath))
-				QMessageBox::information(this, tr("Success"), tr("Logs saved to %1").arg(targetPath));
+				QMessageBox::information(this, tr("Success"), tr("Logs saved to %1").arg(Helper::getRealPath(targetPath)));
 			else
 				QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
 		};
@@ -517,6 +517,6 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 	}
 #else
 	// desktop: notify user and do not auto-send
-	QMessageBox::information(this, tr("Success"), tr("Logs saved to %1, please send them to the developers").arg(outPath));
+	QMessageBox::information(this, tr("Success"), tr("Logs saved to %1, please send them to the developers").arg(Helper::getRealPath(outPath)));
 #endif
 }
