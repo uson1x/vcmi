@@ -18,6 +18,7 @@
 
 #include <QObject>
 #include <QScroller>
+#include <QFileDialog>
 
 #ifdef VCMI_ANDROID
 #include <QAndroidJniObject>
@@ -108,18 +109,54 @@ bool performNativeCopy(QString src, QString dst)
 	const bool srcIsContent = src.startsWith("content://", Qt::CaseInsensitive);
 	const bool dstIsContent = dst.startsWith("content://", Qt::CaseInsensitive);
 
-	if(srcIsContent || dstIsContent)
+	if(srcIsContent && !dstIsContent)
 	{
-		const QAndroidJniObject jSrc = QAndroidJniObject::fromString(srcIsContent ? safeEncode(src) : src);
-		const QAndroidJniObject jDst = QAndroidJniObject::fromString(dstIsContent ? safeEncode(dst) : dst);
-		QAndroidJniObject::callStaticMethod<void>("eu/vcmi/vcmi/util/FileUtil", "copyFileFromUri", "(Ljava/lang/String;Ljava/lang/String;Landroid/content/Context;)V", jSrc.object<jstring>(), jDst.object<jstring>(), QtAndroid::androidContext().object());
-		return QFileInfo(dst).exists();
+		const QAndroidJniObject jSrc = QAndroidJniObject::fromString(safeEncode(src));
+		const QAndroidJniObject jDst = QAndroidJniObject::fromString(dst);
+		QAndroidJniObject::callStaticMethod<void>("eu/vcmi/vcmi/util/FileUtil", "copyFileFromUri", "(Ljava/lang/String;Ljava/lang/String;Landroid/content/Context;)V",	jSrc.object<jstring>(),	jDst.object<jstring>(),	QtAndroid::androidContext().object());
+		// Real filesystem path -> QFileInfo works
+		return QFileInfo(dst).exists() && QFileInfo(dst).size() > 0;
+	}
+
+	// filesystem path -> content://  (NEW Java method that writes via ContentResolver)
+	if(!srcIsContent && dstIsContent)
+	{
+		const QAndroidJniObject jSrc = QAndroidJniObject::fromString(src);
+		const QAndroidJniObject jDst = QAndroidJniObject::fromString(safeEncode(dst));
+		const jboolean ok = QAndroidJniObject::callStaticMethod<jboolean>("eu/vcmi/vcmi/util/FileUtil", "copyFilePathToUri", "(Ljava/lang/String;Ljava/lang/String;Landroid/content/Context;)Z", jSrc.object<jstring>(), jDst.object<jstring>(),	QtAndroid::androidContext().object());
+		return ok;
 	}
 #endif
 
 	// Pure filesystem -> use Qt copy
 	QFile::remove(dst);
 	return QFile::copy(src, dst);
+}
+
+
+QString createFile(QString target, QString fileName, QString mime)
+{
+#ifdef VCMI_ANDROID
+	if(target.startsWith("content://", Qt::CaseInsensitive))
+	{
+		const QAndroidJniObject jTree = QAndroidJniObject::fromString(target);
+		const QAndroidJniObject jName = QAndroidJniObject::fromString(fileName);
+		const QString targetMime = mime.isEmpty() ? QStringLiteral("application/octet-stream") : mime;
+		const QAndroidJniObject jMime = QAndroidJniObject::fromString(targetMime);
+		const QAndroidJniObject jDst = QAndroidJniObject::callStaticObjectMethod(
+			"eu/vcmi/vcmi/util/FileUtil",
+			"createFileInTree",
+			"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/content/Context;)Ljava/lang/String;",
+			jTree.object<jstring>(),
+			jName.object<jstring>(),
+			jMime.object<jstring>(),
+			QtAndroid::androidContext().object());
+
+		return jDst.isValid() ? jDst.toString() : QString();
+	}
+#endif
+
+	return QDir(target).filePath(fileName);
 }
 
 void revealDirectoryInFileBrowser(QString path)
@@ -155,21 +192,23 @@ void keepScreenOn(bool isEnabled)
 bool canUseFolderPicker()
 {
 #if defined(VCMI_ANDROID)
-	// Folder picker is available on API >= 21.
-	// Android/Google TV usually lacks DocumentsUI — hide this option.
+	// Use runtime capability check instead of device-type heuristics (Google TV, etc.).
+	const QAndroidJniObject context = QtAndroid::androidContext();
+	if(!context.isValid())
+		return false;
 
-	QAndroidJniObject context = QtAndroid::androidContext();
-	QAndroidJniObject uiModeMgr = context.callObjectMethod("getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;", QAndroidJniObject::fromString("uimode").object<jstring>());
+	const QAndroidJniObject packageManager = context.callObjectMethod("getPackageManager", "()Landroid/content/pm/PackageManager;");
+	if(!packageManager.isValid())
+		return false;
 
-	if(uiModeMgr.isValid())
-	{
-		jint mode = uiModeMgr.callMethod<jint>("getCurrentModeType", "()I");
-		jint TV = QAndroidJniObject::getStaticField<jint>("android/content/res/Configuration", "UI_MODE_TYPE_TELEVISION");
-		if(mode == TV)
-			return false;
-	}
+	QAndroidJniObject intent("android/content/Intent", "()V");
+	if(!intent.isValid())
+		return false;
 
-	return true;
+	intent.callObjectMethod("setAction", "(Ljava/lang/String;)Landroid/content/Intent;", QAndroidJniObject::fromString("android.intent.action.OPEN_DOCUMENT_TREE").object<jstring>());
+
+	const QAndroidJniObject resolver = intent.callObjectMethod("resolveActivity", "(Landroid/content/pm/PackageManager;)Landroid/content/ComponentName;", packageManager.object<jobject>());
+	return resolver.isValid();
 #elif defined(VCMI_IOS)
 	// selecting directory through UIDocumentPickerViewController is available only since iOS 13
 	return iOS_utils::isOsVersionAtLeast(13);
@@ -227,6 +266,7 @@ public:
 };
 
 static FolderPickReceiver g_receiver;
+
 #endif
 
 void nativeFolderPicker(QWidget *parent, std::function<void(QString)>&& cb)
@@ -360,6 +400,24 @@ void sendFileToApp(QString path)
 	iOS_utils::shareFile(path.toStdString());
 #else
 	Q_UNUSED(path);
+#endif
+}
+
+bool isInstalledFromGooglePlay()
+{
+#if defined(VCMI_ANDROID)
+	if(!QtAndroid::androidContext().isValid())
+		return false;
+
+	const jboolean installedFromGooglePlay = QAndroidJniObject::callStaticMethod<jboolean>(
+		"eu/vcmi/vcmi/util/FileUtil",
+		"isInstalledFromGooglePlay",
+		"(Landroid/content/Context;)Z",
+		QtAndroid::androidContext().object()
+	);
+	return installedFromGooglePlay;
+#else
+	return false;
 #endif
 }
 
