@@ -508,7 +508,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 			if(!pickedPath.isEmpty())
 			{
 				if(!pickedPath.endsWith(".zip", Qt::CaseInsensitive))
-					pickedPath += ".zip"
+					pickedPath += ".zip";
 				saveArchiveTo(pickedPath);
 			}
 		}
