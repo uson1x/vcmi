@@ -629,9 +629,10 @@ void GameStatePackVisitor::visitHeroRecruited(HeroRecruited & pack)
 	h->pos = pack.tile;
 	h->updateAppearance();
 
-	// Generate unique instance name before adding to map
-	if (h->instanceName.empty())
-		gs.getMap().generateUniqueInstanceName(h.get());
+	// Heroes taken from the tavern pool may carry a stale instance name from an
+	// earlier lifetime or from an older save that reconstructed uidCounter from
+	// on-map objects only. Always assign a fresh map-unique name on recruitment.
+	gs.getMap().generateUniqueInstanceName(h.get());
 
 	gs.getMap().addNewObject(h);
 	assert(h->id.hasValue());
