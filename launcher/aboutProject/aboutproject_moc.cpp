@@ -254,7 +254,7 @@ void AboutProjectView::on_pushButtonExportSaves_clicked()
 		const QString dstPath = targetIsFile ? target : Helper::createFile(target, QStringLiteral("vcmi-saves.zip"), QStringLiteral("application/zip"));
 
 		if(!dstPath.isEmpty() && Helper::performNativeCopy(cacheArchivePath, dstPath))
-			QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(Helper::getRealPath(dstPathp));
+			QMessageBox::information(this, tr("Success"), tr("Saves exported to %1").arg(Helper::getRealPath(dstPath)));
 		else
 			QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
 
