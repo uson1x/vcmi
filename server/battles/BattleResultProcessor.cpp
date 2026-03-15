@@ -251,9 +251,16 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 	if(heroDefender)
 		battleResult->exp[BattleSide::DEFENDER] = heroDefender->calculateXp(battleResult->exp[BattleSide::DEFENDER]);
 
-	auto battleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::ATTACKER)));
-	if(!battleQuery)
-		battleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::DEFENDER)));
+	auto attackerQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::ATTACKER));
+	QueryPtr battleQuery;
+	if(gameHandler->queries->queryAs<CBattleQuery>(attackerQuery))
+		battleQuery = attackerQuery;
+	else
+	{
+		auto defenderQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::DEFENDER));
+		battleQuery = defenderQuery;
+	}
+
 	if (!battleQuery)
 	{
 		logGlobal->error("Cannot find battle query!");
@@ -261,18 +268,11 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 		return;
 	}
 
-	battleQuery->result = std::make_optional(*battleResult);
+	auto * typedBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(battleQuery);
+	typedBattleQuery->result = std::make_optional(*battleResult);
 
 	//Check how many battle gameHandler->queries were created (number of players blocked by battle)
-	int queriedPlayers = 0;
-	if(battleQuery)
-	{
-		for(const auto & query : gameHandler->queries->allQueries())
-		{
-			if(query == battleQuery)
-				++queriedPlayers;
-		}
-	}
+	const int queriedPlayers = gameHandler->queries->countQuery(battleQuery);
 
 	assert(finishingBattles.count(battle.getBattle()->getBattleID()) == 0);
 	finishingBattles[battle.getBattle()->getBattleID()] = std::make_unique<FinishingBattleHelper>(battle, *battleResult, queriedPlayers);
@@ -286,7 +286,7 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 	// in battles against neutrals attacker can ask to replay battle manually, additionally in battles against AI player human side can also ask for replay
 	if(onlyOnePlayerHuman)
 	{
-		auto battleDialogQuery = std::make_shared<CBattleDialogQuery>(gameHandler, battle.getBattle(), battleQuery->result);
+		auto battleDialogQuery = std::make_shared<CBattleDialogQuery>(gameHandler, battle.getBattle(), typedBattleQuery->result);
 		battleResult->queryID = battleDialogQuery->queryID;
 		gameHandler->queries->addQuery(battleDialogQuery);
 	}
@@ -296,9 +296,9 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 	//set same battle result for all gameHandler->queries
 	for(auto & q : gameHandler->queries->allQueries())
 	{
-		auto otherBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(q);
+		auto * otherBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(q);
 		if(otherBattleQuery && otherBattleQuery->battleID == battle.getBattle()->getBattleID())
-			otherBattleQuery->result = battleQuery->result;
+			otherBattleQuery->result = typedBattleQuery->result;
 	}
 
 	gameHandler->turnTimerHandler->onBattleEnd(battle.getBattle()->getBattleID());
@@ -310,9 +310,20 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 
 void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 {
-	auto battleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::ATTACKER)));
-	if(!battleQuery)
-		battleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::DEFENDER)));
+	auto attackerQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::ATTACKER));
+
+	QueryPtr battleQueryPtr;
+	auto * battleQuery = gameHandler->queries->queryAs<CBattleQuery>(attackerQuery);
+	if(battleQuery)
+		battleQueryPtr = attackerQuery;
+	else
+	{
+		auto defenderQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::DEFENDER));
+		battleQuery = gameHandler->queries->queryAs<CBattleQuery>(defenderQuery);
+		if(battleQuery)
+			battleQueryPtr = attackerQuery;
+	}
+
 	if(!battleQuery)
 	{
 		logGlobal->trace("No battle query, battle end was confirmed by another player");
@@ -400,7 +411,7 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 	raccepted.winnerSide = finishingBattle->winnerSide;
 	gameHandler->sendAndApply(raccepted);
 
-	gameHandler->queries->popIfTop(battleQuery); // Workaround to remove battle query for AI case. TODO Think of a cleaner solution.
+	gameHandler->queries->popIfTop(battleQueryPtr); // Workaround to remove battle query for AI case. TODO Think of a cleaner solution.
 	//--> continuation (battleFinalize) occurs after level-up gameHandler->queries are handled or on removing query
 }
 

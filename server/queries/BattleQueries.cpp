@@ -31,7 +31,7 @@ void CBattleQuery::notifyObjectAboutRemoval(const CGObjectInstance * visitedObje
 }
 
 CBattleQuery::CBattleQuery(CGameHandler * owner, const IBattleInfo * bi):
-	CQuery(owner),
+	CQuery(owner, TYPE),
 	battleID(bi->getBattleID())
 {
 	belligerents[BattleSide::ATTACKER] = bi->getSideArmy(BattleSide::ATTACKER);
@@ -42,7 +42,7 @@ CBattleQuery::CBattleQuery(CGameHandler * owner, const IBattleInfo * bi):
 }
 
 CBattleQuery::CBattleQuery(CGameHandler * owner):
-	CQuery(owner)
+	CQuery(owner, TYPE)
 {
 	belligerents[BattleSide::ATTACKER] = nullptr;
 	belligerents[BattleSide::DEFENDER] = nullptr;
@@ -77,7 +77,7 @@ void CBattleQuery::onExposure(QueryPtr topQuery)
 }
 
 CBattleDialogQuery::CBattleDialogQuery(CGameHandler * owner, const IBattleInfo * bi, const std::optional<BattleResult> & Br):
-	CDialogQuery(owner),
+	CDialogQuery(owner, TYPE),
 	bi(bi),
 	result(Br)
 {

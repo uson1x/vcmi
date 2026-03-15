@@ -107,6 +107,7 @@ public:
 
 	AllQueriesView allQueries();
 	AllQueriesViewConst allQueries() const;
+	int countQuery(const QueryPtr & query) const;
 
 	template<typename T, typename QueryPtrT>
 	using QueryAsResult = std::conditional_t<
@@ -129,17 +130,20 @@ public:
 		return static_cast<ResultT*>(query.get());
 	}
 
-	template<typename T>
-	T * topQueryAs(PlayerColor player)
+	template<typename T, typename Predicate>
+	T * findQuery(Predicate predicate) const
 	{
-		auto query = topQuery(player);
-		if(!query)
-			return nullptr;
+		for(const auto & playerQueries : queries)
+		{
+			for(auto it = playerQueries.rbegin(); it != playerQueries.rend(); ++it)
+			{
+				auto * query = dynamic_cast<T *>(it->get());
+				if(query && predicate(*query))
+					return query;
+			}
+		}
 
-		if(query->getType() != T::TYPE)
-			return nullptr;
-
-		assert(dynamic_cast<T*>(query.get()) != nullptr);
-		return static_cast<T*>(query.get());
+		return nullptr;
 	}
+
 };

@@ -3513,20 +3513,18 @@ bool CGameHandler::isAllowedExchange(ObjectInstanceID id1, ObjectInstanceID id2)
 				return true;
 		}
 
-		//Ongoing garrison exchange - usually picking from top garison (from o1 to o2), but who knows
-		auto dialog = std::dynamic_pointer_cast<CGarrisonDialogQuery>(queries->topQuery(o1->tempOwner));
-		if (!dialog)
-		{
-			dialog = std::dynamic_pointer_cast<CGarrisonDialogQuery>(queries->topQuery(o2->tempOwner));
-		}
-		if (dialog)
-		{
-			const auto * topArmy = dialog->exchangingArmies.at(0);
-			const auto * bottomArmy = dialog->exchangingArmies.at(1);
+		// Ongoing garrison exchange
+		const auto * dialog = queries->findQuery<CGarrisonDialogQuery>(
+			[o1, o2](const CGarrisonDialogQuery & query)
+			{
+				const auto * topArmy = query.exchangingArmies.at(0);
+				const auto * bottomArmy = query.exchangingArmies.at(1);
 
-			if ((topArmy == o1 && bottomArmy == o2) || (bottomArmy == o1 && topArmy == o2))
-				return true;
-		}
+				return (topArmy == o1 && bottomArmy == o2) || (topArmy == o2 && bottomArmy == o1);
+			});
+
+		if(dialog)
+			return true;
 	}
 
 	return false;
@@ -4234,13 +4232,15 @@ void CGameHandler::removeAfterVisit(const ObjectInstanceID & id)
 	//If the object is being visited, there must be a matching query
 	for (const auto &query : queries->allQueries())
 	{
-		if (auto someVistQuery = std::dynamic_pointer_cast<MapObjectVisitQuery>(query))
+		auto * someVisitQuery = queries->queryAs<MapObjectVisitQuery>(query);
+
+		if(!someVisitQuery)
+			continue;
+
+		if(someVisitQuery->visitedObject == id)
 		{
-			if (someVistQuery->visitedObject == id)
-			{
-				someVistQuery->removeObjectAfterVisit = true;
-				return;
-			}
+			someVisitQuery->removeObjectAfterVisit = true;
+			return;
 		}
 	}
 
@@ -4295,8 +4295,11 @@ const CGHeroInstance * CGameHandler::getVisitingHero(const CGObjectInstance *obj
 
 	for(const auto & query : queries->allQueries())
 	{
-		auto visit = std::dynamic_pointer_cast<const VisitQuery>(query);
-		if (visit && visit->visitedObject == obj->id)
+		const auto * visit = dynamic_cast<VisitQuery *>(query.get());
+		if(!visit)
+			continue;
+
+		if(visit->visitedObject == obj->id)
 			return gameInfo().getHero(visit->visitingHero);
 	}
 	return nullptr;
@@ -4308,8 +4311,11 @@ const CGObjectInstance * CGameHandler::getVisitingObject(const CGHeroInstance *h
 
 	for(const auto & query : queries->allQueries())
 	{
-		auto visit = std::dynamic_pointer_cast<const VisitQuery>(query);
-		if (visit && visit->visitingHero == hero->id)
+		const auto * visit = dynamic_cast<VisitQuery *>(query.get());
+		if(!visit)
+			continue;
+
+		if(visit->visitingHero == hero->id)
 			return gameInfo().getObjInstance(visit->visitedObject);
 	}
 	return nullptr;
@@ -4324,8 +4330,8 @@ bool CGameHandler::isVisitCoveredByAnotherQuery(const CGObjectInstance *obj, con
 	// If top query is NOT visit to targeted object then we assume that
 	// visitation query is covered by other query that must be answered first
 
-	if (auto topQuery = queries->topQuery(hero->getOwner()))
-		if (auto visit = std::dynamic_pointer_cast<const VisitQuery>(topQuery))
+	if(const auto & topQuery = queries->topQuery(hero->getOwner()))
+		if(const auto * visit =  dynamic_cast<VisitQuery *>(topQuery.get()))
 			return !(visit->visitedObject == obj->id && visit->visitingHero == hero->id);
 
 	return true;

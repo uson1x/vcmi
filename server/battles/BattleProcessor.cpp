@@ -60,14 +60,18 @@ void BattleProcessor::restartBattle(const BattleID & battleID, const CArmedInsta
 {
 	auto battle = gameHandler->gameState().getBattle(battleID);
 
-	auto lastBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle->getSide(BattleSide::ATTACKER).color));
-	if(!lastBattleQuery)
-		lastBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle->getSide(BattleSide::DEFENDER).color));
+	auto attackerQuery = gameHandler->queries->topQuery(battle->getSide(BattleSide::ATTACKER).color);
+	auto * topBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(attackerQuery);
+	if(!topBattleQuery)
+	{
+		auto defenderQuery = gameHandler->queries->topQuery(battle->getSide(BattleSide::DEFENDER).color);
+		topBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(defenderQuery);
+	}
 
-	assert(lastBattleQuery);
+	assert(topBattleQuery);
 
 	//existing battle query for retying auto-combat
-	if(lastBattleQuery)
+	if(topBattleQuery)
 	{
 		BattleSideArray<const CGHeroInstance*> heroes{hero1, hero2};
 
@@ -83,10 +87,10 @@ void BattleProcessor::restartBattle(const BattleID & battleID, const CArmedInsta
 			}
 		}
 
-		lastBattleQuery->result = std::nullopt;
+		topBattleQuery->result = std::nullopt;
 
-		assert(lastBattleQuery->belligerents[BattleSide::ATTACKER] == battle->getSideArmy(BattleSide::ATTACKER));
-		assert(lastBattleQuery->belligerents[BattleSide::DEFENDER] == battle->getSideArmy(BattleSide::DEFENDER));
+		assert(topBattleQuery->belligerents[BattleSide::ATTACKER] == battle->getSideArmy(BattleSide::ATTACKER));
+		assert(topBattleQuery->belligerents[BattleSide::DEFENDER] == battle->getSideArmy(BattleSide::DEFENDER));
 	}
 
 	BattleCancelled bc;
@@ -109,7 +113,7 @@ void BattleProcessor::startBattle(const CArmedInstance *army1, const CArmedInsta
 
 	const auto * battle = gameHandler->gameState().getBattle(battleID);
 	assert(battle);
-	
+
 	//add battle bonuses based from player state only when attacks neutral creatures
 	const auto * attackerInfo = gameHandler->gameInfo().getPlayerState(army1->getOwner(), false);
 	if(attackerInfo && !army2->getOwner().isValidPlayer())
@@ -123,13 +127,16 @@ void BattleProcessor::startBattle(const CArmedInstance *army1, const CArmedInsta
 		}
 	}
 
-	auto lastBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle->getSide(BattleSide::ATTACKER).color));
-	if(!lastBattleQuery)
-		lastBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(battle->getSide(BattleSide::DEFENDER).color));
-
-	if (lastBattleQuery)
+	auto attackerQuery = gameHandler->queries->topQuery(battle->getSide(BattleSide::ATTACKER).color);
+	auto * topBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(attackerQuery);
+	if(!topBattleQuery)
 	{
-		lastBattleQuery->battleID = battleID;
+		auto defenderQuery = gameHandler->queries->topQuery(battle->getSide(BattleSide::DEFENDER).color);
+		topBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(defenderQuery);
+	}
+	if (topBattleQuery)
+	{
+		topBattleQuery->battleID = battleID;
 	}
 	else
 	{
@@ -176,14 +183,19 @@ BattleID BattleProcessor::setupBattle(int3 tile, BattleSideArray<const CArmedIns
 	engageIntoBattle(bs.info->getSide(BattleSide::ATTACKER).color);
 	engageIntoBattle(bs.info->getSide(BattleSide::DEFENDER).color);
 
-	auto lastBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(bs.info->getSide(BattleSide::ATTACKER).color));
-	if(!lastBattleQuery)
-		lastBattleQuery = std::dynamic_pointer_cast<CBattleQuery>(gameHandler->queries->topQuery(bs.info->getSide(BattleSide::DEFENDER).color));
+	auto attackerQuery = gameHandler->queries->topQuery(bs.info->getSide(BattleSide::ATTACKER).color);
+	auto * topBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(attackerQuery);
+	if(!topBattleQuery)
+	{
+		auto defenderQuery = gameHandler->queries->topQuery(bs.info->getSide(BattleSide::DEFENDER).color);
+		topBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(defenderQuery);
+	}
+
 	bool isDefenderHuman = bs.info->getSide(BattleSide::DEFENDER).color.isValidPlayer() && gameHandler->gameInfo().getPlayerState(bs.info->getSide(BattleSide::DEFENDER).color)->isHuman();
 	bool isAttackerHuman = gameHandler->gameInfo().getPlayerState(bs.info->getSide(BattleSide::ATTACKER).color)->isHuman();
 
 	bool onlyOnePlayerHuman = isDefenderHuman != isAttackerHuman;
-	bs.info->replayAllowed = lastBattleQuery == nullptr && onlyOnePlayerHuman;
+	bs.info->replayAllowed = topBattleQuery == nullptr && onlyOnePlayerHuman;
 
 	gameHandler->sendAndApply(bs);
 

@@ -88,6 +88,9 @@ void QueriesProcessor::addQuery(PlayerColor player, QueryPtr query)
 
 QueryPtr QueriesProcessor::topQuery(PlayerColor player)
 {
+	if(!player.isValidPlayer())
+		return nullptr;
+
 	return vstd::backOrNull(queries[player]);
 }
 
@@ -124,5 +127,19 @@ QueryPtr QueriesProcessor::getQuery(QueryID queryID)
 			if(query->queryID == queryID)
 				return query;
 	return nullptr;
+}
+
+int QueriesProcessor::countQuery(const QueryPtr & query) const
+{
+	if(!query)
+		return 0;
+
+	int result = 0;
+	for(const auto & currentQuery : allQueries())
+	{
+		if(currentQuery == query)
+			++result;
+	}
+	return result;
 }
 

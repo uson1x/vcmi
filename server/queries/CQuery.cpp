@@ -26,9 +26,10 @@ std::ostream & operator<<(std::ostream & out, QueryPtr query)
 	return out << "[" << query.get() << "] " << query->toString();
 }
 
-CQuery::CQuery(CGameHandler * gameHandler)
+CQuery::CQuery(CGameHandler * gameHandler, QueryType type)
 	: owner(gameHandler->queries.get())
 	, gh(gameHandler)
+	, type(type)
 {
 	queryID = ++gameHandler->QID;
 	logGlobal->trace("Created a new query with id %d", queryID);
@@ -119,8 +120,8 @@ bool CQuery::blockAllButReply(const CPackForServer * pack) const
 	return true;
 }
 
-CDialogQuery::CDialogQuery(CGameHandler * owner):
-	CQuery(owner)
+CDialogQuery::CDialogQuery(CGameHandler * owner, QueryType type):
+	CQuery(owner, type)
 {
 
 }
@@ -142,7 +143,7 @@ void CDialogQuery::setReply(std::optional<int32_t> reply)
 }
 
 CGenericQuery::CGenericQuery(CGameHandler * gh, PlayerColor color, const std::function<void(std::optional<int32_t>)> & callback):
-	CQuery(gh), callback(callback)
+	CQuery(gh, QueryType::Generic), callback(callback)
 {
 	addPlayer(color);
 }
