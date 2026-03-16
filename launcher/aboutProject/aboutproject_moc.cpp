@@ -159,12 +159,13 @@ static void setupExportProgressDialog(QProgressDialog & progress, const QString 
 	progress.setAutoClose(false);
 	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
 	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
-	auto * progressBar = new QProgressBar(&progress);
-	progressBar->setRange(0, maximum);
-	progressBar->setValue(0);
-	progressBar->setAlignment(Qt::AlignCenter);
-	progressBar->setFormat(QStringLiteral("%v / %m"));
-	progress.setBar(progressBar);
+	if(auto * progressBar = progress.findChild<QProgressBar *>())
+	{
+		progressBar->setRange(0, maximum);
+		progressBar->setValue(0);
+		progressBar->setAlignment(Qt::AlignCenter);
+		progressBar->setFormat(QStringLiteral("%v / %m"));
+	}
 	progress.setLabelText(labelText);
 }
 
