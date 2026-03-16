@@ -983,6 +983,46 @@ bool CModListView::askOverwriteDialog(const QString & windowTitle, const QString
 	return false;
 }
 
+namespace
+{
+enum class EZipType
+{
+	MODS,
+	MAPS,
+	SAVES
+};
+
+EZipType classifyZipArchive(const std::vector<std::string> & fileList)
+{
+	bool hasModJson = false;
+	bool hasMaps = false;
+	bool hasSaves = false;
+
+	for(const auto & file : fileList)
+	{
+		QString lower = QString::fromStdString(file).toLower();
+		// Check for mod.json anywhere in archive
+		if(lower.endsWith("mod.json"))
+			hasModJson = true;
+		// Check for map files anywhere
+		if(lower.endsWith(".h3m") || lower.endsWith(".h3c") || lower.endsWith(".vmap") || lower.endsWith(".vcmp"))
+			hasMaps = true;
+
+		// Check for save files
+		if(lower.endsWith(".vsgm1"))
+			hasSaves = true;
+	}
+
+	if(hasModJson)
+		return EZipType::MODS;
+	if(hasMaps)
+		return EZipType::MAPS;
+	if(hasSaves)
+		return EZipType::SAVES;
+	return EZipType::MODS;
+}
+}
+
 void CModListView::installFiles(QStringList files)
 {
 	QStringList mods;
@@ -991,43 +1031,6 @@ void CModListView::installFiles(QStringList files)
 	QStringList images;
 	QStringList exe;
 	bool repositoryFilesEnqueued = false;
-
-	enum class EZipType
-	{
-		MODS,
-		MAPS,
-		SAVES
-	};
-
-	auto classifyZipArchive = [](const std::vector<std::string> & fileList)
-	{
-		bool hasModJson = false;
-		bool hasMaps = false;
-		bool hasSaves = false;
-
-		for(const auto & file : fileList)
-		{
-			QString lower = QString::fromStdString(file).toLower();
-			// Check for mod.json anywhere in archive
-			if(lower.endsWith("mod.json"))
-				hasModJson = true;
-			// Check for map files anywhere
-			if(lower.endsWith(".h3m") || lower.endsWith(".h3c") || lower.endsWith(".vmap") || lower.endsWith(".vcmp"))
-				hasMaps = true;
-
-			// Check for save files
-			if(lower.endsWith(".vsgm1"))
-				hasSaves = true;
-		}
-
-		if(hasModJson)
-			return EZipType::MODS;
-		if(hasMaps)
-			return EZipType::MAPS;
-		if(hasSaves)
-			return EZipType::SAVES;
-		return EZipType::MODS;
-	};
 
 	for(QString filename : files)
 	{
@@ -1049,6 +1052,7 @@ void CModListView::installFiles(QStringList files)
 			}
 			catch(const std::runtime_error & e)
 			{
+				logGlobal->warn("Install file failed for %s. Reason: %s", filename.toStdString(), e.what());
 				QMessageBox::warning(this, tr("Import failed"), tr("Failed to install file %1.\nReason: %2.\nPlease report this issue to developers").arg(filename).arg(QString::fromStdString(e.what())));
 			}
 
@@ -1279,11 +1283,15 @@ void CModListView::installSaves(QStringList saves)
 					if(archive.extract(savesPath, file))
 						importedCount++;
 					else
+					{
+						logGlobal->warn("Failed to import save %s from archive %s", relativePath.toStdString(), realSavePath.toStdString());
 						QMessageBox::warning(this, tr("Import failed"), tr("Failed to import save %1 from %2").arg(relativePath, realSavePath));
+					}
 				}
 			}
 			catch(const std::exception & e)
 			{
+				logGlobal->warn("Failed to import saves from %s. Reason: %s", realSavePath.toStdString(), e.what());
 				QMessageBox::warning(this, tr("Import failed"), tr("Failed to import saves from %1.\nReason: %2").arg(realSavePath, QString::fromUtf8(e.what())));
 			}
 			continue;
@@ -1305,7 +1313,10 @@ void CModListView::installSaves(QStringList saves)
 		if(Helper::performNativeCopy(realSavePath, destinationPath))
 			importedCount++;
 		else
+		{
+			logGlobal->warn("Failed to import save file %s to %s", realSavePath.toStdString(), destinationPath.toStdString());
 			QMessageBox::warning(this, tr("Import failed"), tr("Failed to import save file %1").arg(realSavePath));
+		}
 	}
 
 	if(importedCount > 0)
