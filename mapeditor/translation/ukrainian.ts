@@ -2702,7 +2702,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="217"/>
         <source>Message to be displayed on granting of this reward</source>
-        <translation type="unfinished">Повідомлення, яке буде показано при наданні цієї нагороди</translation>
+        <translation>Повідомлення, яке буде показано при отриманні цієї нагороди</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="228"/>
@@ -2990,7 +2990,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="133"/>
         <source>Region right-click text</source>
-        <translation type="unfinished">Текст правої кнопки миші по регіону</translation>
+        <translation>Текст при натисканні правої кнопки миші по регіону</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="144"/>
