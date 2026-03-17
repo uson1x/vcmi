@@ -1766,7 +1766,7 @@ Czy chcesz to zrobić teraz?</translation>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <source>Guard</source>
-        <translation type="unfinished">Broń się</translation>
+        <translation>Strażnik</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
@@ -4024,22 +4024,22 @@ Strażnik: %3</translation>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="654"/>
         <source>No player range defined.</source>
-        <translation type="unfinished">Brak zdefiniowanego zakresu gracza.</translation>
+        <translation>Brak zdefiniowanego zakresu gracza.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="661"/>
         <source>Invalid range for players.</source>
-        <translation type="unfinished">Niewłaściwy zakres graczy.</translation>
+        <translation>Niewłaściwy zakres graczy.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="669"/>
         <source>Invalid range for human players.</source>
-        <translation type="unfinished">Niewłaściwy zakres dla ludzkich graczy.</translation>
+        <translation>Niewłaściwy zakres dla ludzkich graczy.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="684"/>
         <source>Connection references non-existing zone(s): %1 - %2</source>
-        <translation type="unfinished">Odniesienie do połączenia zawiera nieistniejące strefy: %1 - %2</translation>
+        <translation>Odniesienie do połączenia zawiera nieistniejące strefy: %1 - %2</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="696"/>
