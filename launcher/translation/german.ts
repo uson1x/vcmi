@@ -739,7 +739,7 @@ Exklusiver Vollbildmodus - das Spiel nimmt den gesamten Bildschirm ein und verwe
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1230"/>
         <source>Nearest</source>
-        <translation>Nearest</translation>
+        <translation>Nächster</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1235"/>

@@ -2037,7 +2037,7 @@ Möchten Sie das jetzt tun?</translation>
     <message>
         <location filename="../inspector/inspector.cpp" line="501"/>
         <source>Identifier</source>
-        <translation>Identifier</translation>
+        <translation>Identifizierer</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="502"/>
