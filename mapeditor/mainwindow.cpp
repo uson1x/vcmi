@@ -617,12 +617,12 @@ void MainWindow::on_menuOpenRecent_aboutToShow()
 	}
 }
 
-void MainWindow::saveMap()
+void MainWindow::saveMap(bool force)
 {
 	if(!controller.map())
 		return;
 
-	if(!unsaved)
+	if(!force && !unsaved)
 		return;
 	
 	//validate map
@@ -690,7 +690,7 @@ void MainWindow::on_actionSave_as_triggered()
 
 	filename = filenameSelect;
 
-	saveMap();
+	saveMap(true);
 }
 
 void MainWindow::on_actionCampaignEditor_triggered()
