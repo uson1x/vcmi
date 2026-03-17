@@ -49,7 +49,7 @@
         <location filename="../campaigneditor/campaigneditor.ui" line="14"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="159"/>
         <source>VCMI Campaign Editor</source>
-        <translation type="unfinished">Редактор кампаній VCMI</translation>
+        <translation>Редактор кампаній VCMI</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="36"/>
@@ -79,7 +79,7 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="113"/>
         <source>Open Campaignset</source>
-        <translation type="unfinished">Відкрити набір кампаній</translation>
+        <translation>Відкрити набір кампаній</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="121"/>
@@ -105,34 +105,34 @@
         <location filename="../campaigneditor/campaigneditor.ui" line="145"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="148"/>
         <source>Campaign Properties</source>
-        <translation type="unfinished">Властивості кампанії</translation>
+        <translation>Властивості кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="159"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="162"/>
         <source>Scenario Properties</source>
-        <translation type="unfinished">Властивості сценарію</translation>
+        <translation>Властивості сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="173"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="176"/>
         <source>Show full background</source>
-        <translation type="unfinished">Показати повний фон</translation>
+        <translation>Показати повний фон</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="124"/>
         <source>Scenario editor</source>
-        <translation type="unfinished">Редактор сценарію</translation>
+        <translation>Редактор сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="147"/>
         <source>Confirmation</source>
-        <translation type="unfinished">Підтвердження</translation>
+        <translation>Підтвердити</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="147"/>
         <source>Unsaved changes will be lost, are you sure?</source>
-        <translation type="unfinished">Незбережені зміни буде втрачено, ви впевнені?</translation>
+        <translation>Незбережені зміни буде втрачено. Ви впевнені?</translation>
     </message>
     <message>
         <source>Fewer Scenarios than regions</source>
@@ -146,17 +146,17 @@
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation>Не вдалося відкрити кампанію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>Validation failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Валідація не пройшла</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>Campaign has no maps defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>У кампанії відсутні будь-які мапи.</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="251"/>
@@ -166,37 +166,37 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="253"/>
         <source>All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)</source>
-        <translation type="unfinished">Всі підтримувані кампанії (*.vcmp *.h3c);;Кампанії VCMI (*.vcmp);;Кампанії HoMM3 (*.h3c)</translation>
+        <translation>Всі підтримувані кампанії (*.vcmp *.h3c);;Кампанії VCMI (*.vcmp);;Кампанії HoMM3 (*.h3c)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Open Campaign set</source>
-        <translation type="unfinished">Відкрити набір кампаній</translation>
+        <translation>Відкрити набір кампаній</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Select Campaign set</source>
-        <translation type="unfinished">Вибрати набір кампаній</translation>
+        <translation>Обрати набір кампаній</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Open Campaign</source>
-        <translation type="unfinished">Відкрити кампанію</translation>
+        <translation>Відкрити кампанію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Select Campaign</source>
-        <translation type="unfinished">Вибрати кампанію</translation>
+        <translation>Обрати кампанію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="308"/>
         <source>Save campaign</source>
-        <translation type="unfinished">Зберегти кампанію</translation>
+        <translation>Зберегти кампанію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="308"/>
         <source>VCMI campaigns (*.vcmp)</source>
-        <translation type="unfinished">Кампанії VCMI (*.vcmp)</translation>
+        <translation>Кампанії VCMI (*.vcmp)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="423"/>
@@ -216,7 +216,7 @@
         <location filename="../campaigneditor/campaignproperties.ui" line="14"/>
         <location filename="../campaigneditor/campaignproperties.cpp" line="28"/>
         <source>Campaign Properties</source>
-        <translation type="unfinished">Властивості кампанії</translation>
+        <translation>Властивості кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="30"/>
@@ -226,12 +226,12 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="36"/>
         <source>Campaign name</source>
-        <translation type="unfinished">Назва кампанії</translation>
+        <translation>Назва кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="46"/>
         <source>Campaign description</source>
-        <translation type="unfinished">Опис кампанії</translation>
+        <translation>Опис кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="56"/>
@@ -241,58 +241,58 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="66"/>
         <source>Author contact (e.g. e-mail)</source>
-        <translation type="unfinished">Контакт автора (наприклад, e‑mail)</translation>
+        <translation>Контактна інформація авторів (наприклад, e‑mail)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="76"/>
         <source>Campaign creation date</source>
-        <translation type="unfinished">Дата створення кампанії</translation>
+        <translation>Дата створення кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="86"/>
         <source>Campaign version</source>
-        <translation type="unfinished">Версія кампанії</translation>
+        <translation>Версія кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="96"/>
         <source>Music</source>
-        <translation type="unfinished">Музика</translation>
+        <translation>Музика</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="106"/>
         <source>Scenario difficulty is user selectable</source>
-        <translation type="unfinished">Вибір складності сценарію доступний користувачу</translation>
+        <translation>Гравець може обирати складність сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="114"/>
         <location filename="../campaigneditor/campaignproperties.ui" line="197"/>
         <source>Regions</source>
-        <translation type="unfinished">Регіони</translation>
+        <translation>Регіони</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="120"/>
         <source>Regions Preset</source>
-        <translation type="unfinished">Набір регіонів</translation>
+        <translation>Набір регіонів</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="137"/>
         <source>Background</source>
-        <translation type="unfinished">Фон</translation>
+        <translation>Фонове зображення</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="147"/>
         <source>Suffix</source>
-        <translation type="unfinished">Суфікс</translation>
+        <translation>Суфікс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="173"/>
         <source>Prefix</source>
-        <translation type="unfinished">Префікс</translation>
+        <translation>Префікс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="183"/>
         <source>Color suffix length</source>
-        <translation type="unfinished">Довжина кольорового суфіксу</translation>
+        <translation>Довжина суфіксу кольору</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="226"/>
@@ -307,72 +307,72 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="258"/>
         <source>Misc</source>
-        <translation type="unfinished">Різне</translation>
+        <translation>Різне</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="264"/>
         <source>Loading background image</source>
-        <translation type="unfinished">Завантаження фонового зображення</translation>
+        <translation>Фон зображення екрану завантаження</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="274"/>
         <source>Video rim image</source>
-        <translation type="unfinished">Зображення рамки відео</translation>
+        <translation>Зображення рамки відео</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
         <source>Enable rim image</source>
-        <translation type="unfinished">Увімкнути зображення рамки</translation>
+        <translation>Увімкнути зображення рамки</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="304"/>
         <source>Intro video</source>
-        <translation type="unfinished">Вступне відео</translation>
+        <translation>Вступне відео</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="314"/>
         <source>Outro video</source>
-        <translation type="unfinished">Фінальне відео</translation>
+        <translation>Фінальне відео</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="57"/>
         <source>Custom</source>
-        <translation type="unfinished">Користувацьке</translation>
+        <translation>Користувацьке</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Infix</source>
-        <translation type="unfinished">Інфікс</translation>
+        <translation>Інфікс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>X</source>
-        <translation type="unfinished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Y</source>
-        <translation type="unfinished">Y</translation>
+        <translation>Y</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Label Pos X</source>
-        <translation type="unfinished">Позиція мітки X</translation>
+        <translation>Позиція мітки (X)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Label Pos Y</source>
-        <translation type="unfinished">Позиція мітки Y</translation>
+        <translation>Позиція мітки (Y)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="201"/>
         <source>Fewer Scenarios</source>
-        <translation type="unfinished">Менше сценаріїв</translation>
+        <translation>Менше сценаріїв</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="201"/>
         <source>New Region setup supports fewer scenarios than before. Some will removed. Continue?</source>
-        <translation type="unfinished">Налаштування нового регіону підтримує менше сценаріїв, ніж раніше. Деякі будуть видалені. Продовжити?</translation>
+        <translation>Новий регіон підтримує менше сценаріїв, ніж раніше. Деякі будуть видалені. Продовжити?</translation>
     </message>
 </context>
 <context>
@@ -381,7 +381,7 @@
         <location filename="../templateeditor/entitiesselector.ui" line="14"/>
         <location filename="../templateeditor/entitiesselector.ui" line="20"/>
         <source>Select Entities</source>
-        <translation type="unfinished">Виберіть сутності</translation>
+        <translation>Виберіть об&apos;єкти</translation>
     </message>
 </context>
 <context>
@@ -418,12 +418,12 @@
         <location filename="../templateeditor/factionselector.ui" line="14"/>
         <location filename="../templateeditor/factionselector.ui" line="20"/>
         <source>Select Factions</source>
-        <translation type="unfinished">Виберіть фракції</translation>
+        <translation>Оберіть фракції</translation>
     </message>
     <message>
         <location filename="../templateeditor/factionselector.cpp" line="25"/>
         <source>Faction Selector</source>
-        <translation type="unfinished">Вибір фракції</translation>
+        <translation>Вибір фракції</translation>
     </message>
 </context>
 <context>
@@ -533,7 +533,7 @@
         <location filename="../inspector/heroskillswidget.ui" line="48"/>
         <location filename="../inspector/heroskillswidget.ui" line="58"/>
         <source>TextLabel</source>
-        <translation type="unfinished">Текстова мітка</translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.ui" line="97"/>
@@ -759,7 +759,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1036"/>
         <source>Ctrl+O</source>
-        <translation type="unfinished">Ctrl+O</translation>
+        <translation>Ctrl+O</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1046"/>
@@ -774,7 +774,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1057"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished">Ctrl+S</translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1062"/>
@@ -784,7 +784,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1065"/>
         <source>Ctrl+N</source>
-        <translation type="unfinished">Ctrl+N</translation>
+        <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1070"/>
@@ -800,13 +800,13 @@
         <location filename="../mainwindow.ui" line="1078"/>
         <location filename="../mainwindow.ui" line="1081"/>
         <source>Campaign editor</source>
-        <translation type="unfinished">Редактор кампанії</translation>
+        <translation>Редактор кампанії</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1086"/>
         <location filename="../mainwindow.ui" line="1089"/>
         <source>Template editor</source>
-        <translation type="unfinished">Редактор шаблонів</translation>
+        <translation>Редактор шаблонів випадкових карт</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1097"/>
@@ -817,7 +817,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1103"/>
         <source>Ctrl+U</source>
-        <translation type="unfinished">Ctrl+U</translation>
+        <translation>Ctrl+U</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1111"/>
@@ -827,7 +827,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1114"/>
         <source>Ctrl+Shift+P</source>
-        <translation type="unfinished">Ctrl+Shift+P</translation>
+        <translation>Ctrl+Shift+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1119"/>
@@ -837,7 +837,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1122"/>
         <source>Ctrl+X</source>
-        <translation type="unfinished">Ctrl+X</translation>
+        <translation>Ctrl+X</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1127"/>
@@ -847,7 +847,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1130"/>
         <source>Ctrl+C</source>
-        <translation type="unfinished">Ctrl+C</translation>
+        <translation>Ctrl+C</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1135"/>
@@ -857,7 +857,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1138"/>
         <source>Ctrl+V</source>
-        <translation type="unfinished">Ctrl+V</translation>
+        <translation>Ctrl+V</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1143"/>
@@ -877,7 +877,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1160"/>
         <source>Ctrl+G</source>
-        <translation type="unfinished">Ctrl+G</translation>
+        <translation>Ctrl+G</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1168"/>
@@ -892,7 +892,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1174"/>
         <source>Ctrl+Enter</source>
-        <translation type="unfinished">Ctrl+Enter</translation>
+        <translation>Ctrl+Enter</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1182"/>
@@ -902,7 +902,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1185"/>
         <source>Ctrl+P</source>
-        <translation type="unfinished">Ctrl+P</translation>
+        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1193"/>
@@ -913,7 +913,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1199"/>
         <source>Ctrl+Z</source>
-        <translation type="unfinished">Ctrl+Z</translation>
+        <translation>Ctrl+Z</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1210"/>
@@ -923,7 +923,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1213"/>
         <source>Ctrl+Y</source>
-        <translation type="unfinished">Ctrl+Y</translation>
+        <translation>Ctrl+Y</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1224"/>
@@ -933,7 +933,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1227"/>
         <source>Del</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Del</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1235"/>
@@ -943,7 +943,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1238"/>
         <source>Ctrl+0</source>
-        <translation type="unfinished">Ctrl+0</translation>
+        <translation>Ctrl+0</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1243"/>
@@ -953,13 +953,13 @@
     <message>
         <location filename="../mainwindow.ui" line="1246"/>
         <source>Ctrl+Shift+V</source>
-        <translation type="unfinished">Ctrl+Shift+V</translation>
+        <translation>Ctrl+Shift+V</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
         <location filename="../mainwindow.cpp" line="1413"/>
         <source>Select map layer type</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть тип рівня мапи</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
@@ -982,7 +982,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1290"/>
         <source>Ctrl+1</source>
-        <translation type="unfinished">Ctrl+1</translation>
+        <translation>Ctrl+1</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1298"/>
@@ -992,7 +992,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1301"/>
         <source>Ctrl+2</source>
-        <translation type="unfinished">Ctrl+2</translation>
+        <translation>Ctrl+2</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1309"/>
@@ -1002,7 +1002,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1312"/>
         <source>Ctrl+3</source>
-        <translation type="unfinished">Ctrl+3</translation>
+        <translation>Ctrl+3</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1320"/>
@@ -1012,7 +1012,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1323"/>
         <source>Ctrl+4</source>
-        <translation type="unfinished">Ctrl+4</translation>
+        <translation>Ctrl+4</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1331"/>
@@ -1022,7 +1022,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1334"/>
         <source>Ctrl+5</source>
-        <translation type="unfinished">Ctrl+5</translation>
+        <translation>Ctrl+5</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1342"/>
@@ -1032,7 +1032,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1345"/>
         <source>Ctrl+6</source>
-        <translation type="unfinished">Ctrl+6</translation>
+        <translation>Ctrl+6</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1353"/>
@@ -1042,7 +1042,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1356"/>
         <source>Ctrl+7</source>
-        <translation type="unfinished">Ctrl+7</translation>
+        <translation>Ctrl+7</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1364"/>
@@ -1052,7 +1052,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1367"/>
         <source>Ctrl+8</source>
-        <translation type="unfinished">Ctrl+8</translation>
+        <translation>Ctrl+8</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1372"/>
@@ -1062,7 +1062,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1375"/>
         <source>Ctrl+E</source>
-        <translation type="unfinished">Ctrl+E</translation>
+        <translation>Ctrl+E</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1383"/>
@@ -1072,100 +1072,100 @@
     <message>
         <location filename="../mainwindow.ui" line="1386"/>
         <source>Ctrl+T</source>
-        <translation type="unfinished">Ctrl+T</translation>
+        <translation>Ctrl+T</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1391"/>
         <location filename="../mainwindow.ui" line="1394"/>
         <source>h3m converter</source>
-        <translation type="unfinished">конвертер h3m</translation>
+        <translation>конвертер h3m</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1397"/>
         <source>Ctrl+Shift+M</source>
-        <translation type="unfinished">Ctrl+Shift+M</translation>
+        <translation>Ctrl+Shift+M</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1402"/>
         <location filename="../mainwindow.ui" line="1405"/>
         <source>h3c converter</source>
-        <translation type="unfinished">конвертер h3c</translation>
+        <translation>конвертер h3c</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1408"/>
         <source>Ctrl+Shift+C</source>
-        <translation type="unfinished">Ctrl+Shift+C</translation>
+        <translation>Ctrl+Shift+C</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1413"/>
         <source>Lock</source>
-        <translation type="unfinished">Заблокувати</translation>
+        <translation>Заблокувати</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1416"/>
         <source>Lock objects on map to avoid unnecessary changes</source>
-        <translation type="unfinished">Заблокувати об’єкти на карті, щоб уникнути небажаних змін</translation>
+        <translation>Заблокувати об’єкти на карті, щоб уникнути небажаних змін</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1419"/>
         <source>Ctrl+L</source>
-        <translation type="unfinished">Ctrl+L</translation>
+        <translation>Ctrl+L</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1424"/>
         <source>Unlock</source>
-        <translation type="unfinished">Розблокувати</translation>
+        <translation>Розблокувати</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1427"/>
         <source>Unlock all objects on the map</source>
-        <translation type="unfinished">Розблокувати всі об’єкти на карті</translation>
+        <translation>Розблокувати всі об’єкти на карті</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1257"/>
         <location filename="../mainwindow.ui" line="1430"/>
         <source>Ctrl+Shift+L</source>
-        <translation type="unfinished">Ctrl+Shift+L</translation>
+        <translation>Ctrl+Shift+L</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1435"/>
         <source>Zoom in</source>
-        <translation type="unfinished">Збільшити</translation>
+        <translation>Збільшити</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1438"/>
         <source>Ctrl++</source>
-        <translation type="unfinished">Ctrl++</translation>
+        <translation>Ctrl++</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1443"/>
         <source>Zoom out</source>
-        <translation type="unfinished">Зменшити</translation>
+        <translation>Зменшити</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1446"/>
         <source>Ctrl+-</source>
-        <translation type="unfinished">Ctrl+-</translation>
+        <translation>Ctrl+-</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1451"/>
         <source>Zoom reset</source>
-        <translation type="unfinished">Скидання масштабу</translation>
+        <translation>Скинути масштаб</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1454"/>
         <source>Ctrl+Shift+=</source>
-        <translation type="unfinished">Ctrl+Shift+=</translation>
+        <translation>Ctrl+Shift+=</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="391"/>
         <source>Confirmation</source>
-        <translation type="unfinished">Підтвердження</translation>
+        <translation>Підтвердження</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="391"/>
         <source>Unsaved changes will be lost, are you sure?</source>
-        <translation type="unfinished">Незбережені зміни буде втрачено, ви впевнені?</translation>
+        <translation>Незбережені зміни буде втрачено, ви впевнені?</translation>
     </message>
     <message>
         <source>Surface</source>
@@ -1183,18 +1183,18 @@
         <location filename="../mainwindow.cpp" line="453"/>
         <location filename="../mainwindow.cpp" line="1430"/>
         <source>Level %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Рівень %1: %2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="479"/>
         <source>Mods are required</source>
-        <translation type="unfinished">Необхідні моди</translation>
+        <translation>Є необхідні модифікації</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="487"/>
         <location filename="../mainwindow.cpp" line="493"/>
         <source>Failed to open map</source>
-        <translation type="unfinished">Не вдалося відкрити карту</translation>
+        <translation>Не вдалося відкрити мапу</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="524"/>
@@ -1209,27 +1209,27 @@
     <message>
         <location filename="../mainwindow.cpp" line="580"/>
         <source>Recently Opened Files</source>
-        <translation type="unfinished">Останні файли</translation>
+        <translation>Нещодавні файли</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="633"/>
         <source>Map validation</source>
-        <translation type="unfinished">Валідація карти</translation>
+        <translation>Валідація мапи</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="635"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
-        <translation type="unfinished">На карті знайдено критичні помилки і, ймовірно, вона не буде придатна для гри. Відкрийте Валідатор у меню Карта, щоб побачити знайдені проблеми</translation>
+        <translation>На мапі знайдено критичні помилки і, ймовірно, вона не буде придатна для гри. Відкрийте валідатор у меню Мапа щоб побачити знайдені проблеми</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
-        <translation type="unfinished">На карті знайдено деякі помилки. Відкрийте Валідатор у меню Карта, щоб побачити знайдені проблеми</translation>
+        <translation>На мапі знайдено деякі помилки. Відкрийте валідатор у меню Мапа, щоб побачити знайдені проблеми</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="664"/>
         <source>Failed to save map</source>
-        <translation type="unfinished">Не вдалося зберегти карту</translation>
+        <translation>Не вдалося зберегти мапу</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="677"/>
@@ -1249,12 +1249,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="898"/>
         <source>Towns</source>
-        <translation type="unfinished">Міста</translation>
+        <translation>Міста</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="899"/>
         <source>Objects</source>
-        <translation type="unfinished">Об’єкти</translation>
+        <translation>Об’єкти</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="900"/>
@@ -1269,97 +1269,97 @@
     <message>
         <location filename="../mainwindow.cpp" line="902"/>
         <source>Resources</source>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="903"/>
         <source>Banks</source>
-        <translation type="unfinished">Банки</translation>
+        <translation>Банки істот</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="904"/>
         <source>Dwellings</source>
-        <translation type="unfinished">Житла</translation>
+        <translation>Зовнішні житла</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="905"/>
         <source>Grounds</source>
-        <translation type="unfinished">Місцевості</translation>
+        <translation>Ґрунти</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="906"/>
         <source>Teleports</source>
-        <translation type="unfinished">Телепорти</translation>
+        <translation>Телепорти</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="907"/>
         <source>Mines</source>
-        <translation type="unfinished">Шахти</translation>
+        <translation>Шахти</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="908"/>
         <source>Triggers</source>
-        <translation type="unfinished">Тригери</translation>
+        <translation>Тригери</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="909"/>
         <source>Monsters</source>
-        <translation type="unfinished">Монстри</translation>
+        <translation>Створіння</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="910"/>
         <source>Quests</source>
-        <translation type="unfinished">Квести</translation>
+        <translation>Завдання</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="911"/>
         <source>Wog Objects</source>
-        <translation type="unfinished">Wog‑об’єкти</translation>
+        <translation>об’єкти WoG</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="912"/>
         <source>Obstacles</source>
-        <translation type="unfinished">Перешкоди</translation>
+        <translation>Перешкоди</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="913"/>
         <source>Other</source>
-        <translation type="unfinished">Інше</translation>
+        <translation>Інші</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1050"/>
         <source>Mods loading problem</source>
-        <translation type="unfinished">Проблема з завантаженням модів</translation>
+        <translation>Проблема з завантаженням модифікацій</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1050"/>
         <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
-        <translation type="unfinished">Критична помилка під час завантаження модів. Вимкніть невірні моди та перезапустіть.</translation>
+        <translation>Критична помилка під час завантаження модифікацій. Вимкніть невірні модифікації та перезапустіть.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1056"/>
         <source>Undo clicked</source>
-        <translation type="unfinished">Натиснуто «Скасувати»</translation>
+        <translation>Дія відмінена</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1067"/>
         <source>Redo clicked</source>
-        <translation type="unfinished">Натиснуто «Повторити»</translation>
+        <translation>Дія повторена</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1078"/>
         <source>Passability clicked</source>
-        <translation type="unfinished">Натиснуто «Прохідність»</translation>
+        <translation>Прохідність переключена</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1091"/>
         <source>Grid clicked</source>
-        <translation type="unfinished">Натиснуто «Сітка»</translation>
+        <translation>Сітка переключена</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1172"/>
         <source>Fill clicked</source>
-        <translation type="unfinished">Натиснуто «Заповнення»</translation>
+        <translation>Заповнення переключено</translation>
     </message>
     <message>
         <source>View surface</source>
@@ -1368,77 +1368,77 @@
     <message>
         <location filename="../mainwindow.cpp" line="1322"/>
         <source>No objects selected</source>
-        <translation type="unfinished">Об’єкти не вибрані</translation>
+        <translation>Немає обраних об&apos;єктів</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1326"/>
         <source>This operation is irreversible. Do you want to continue?</source>
-        <translation type="unfinished">Ця операція незворотна. Продовжити?</translation>
+        <translation>Ця операція незворотна. Ви впевнені що бажаєте продовжити?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1384"/>
         <source>Errors occurred. %1 objects were not updated</source>
-        <translation type="unfinished">Сталися помилки. %1 об’єкт(ів) не було оновлено</translation>
+        <translation>Сталися помилки. %1 об’єкт(ів) не було оновлено</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1414"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип:</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1469"/>
         <source>Save to image</source>
-        <translation type="unfinished">Зберегти як зображення</translation>
+        <translation>Зберегти як зображення</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1501"/>
         <source>Select maps to convert</source>
-        <translation type="unfinished">Виберіть карти для конвертації</translation>
+        <translation>Виберіть карти для перетворення</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1503"/>
         <source>HoMM3 maps(*.h3m)</source>
-        <translation type="unfinished">Карти HoMM3 (*.h3m)</translation>
+        <translation>Мапи HoMM3 (*.h3m)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1507"/>
         <source>Choose directory to save converted maps</source>
-        <translation type="unfinished">Виберіть каталог для збереження конвертованих карт</translation>
+        <translation>Виберіть теку для збереження перетворених мап</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1521"/>
         <source>Operation completed</source>
-        <translation type="unfinished">Операція завершена</translation>
+        <translation>Операція виконана</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1521"/>
         <source>Successfully converted %1 maps</source>
-        <translation type="unfinished">Успішно конвертовано %1 карту(и)</translation>
+        <translation>Успішно перетворено %1 мап(и)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1525"/>
         <source>Failed to convert the map. Abort operation</source>
-        <translation type="unfinished">Не вдалося конвертувати карту. Аварійне завершення операції</translation>
+        <translation>Не вдалося перетворити карту. Операції перервано</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1531"/>
         <source>Select campaign to convert</source>
-        <translation type="unfinished">Виберіть кампанію для конвертації</translation>
+        <translation>Виберіть кампанію для перетворення</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1533"/>
         <source>HoMM3 campaigns (*.h3c)</source>
-        <translation type="unfinished">Кампанії HoMM3 (*.h3c)</translation>
+        <translation>Кампанії HoMM3 (*.h3c)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1537"/>
         <source>Select destination file</source>
-        <translation type="unfinished">Виберіть файл призначення</translation>
+        <translation>Виберіть файл призначення</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1539"/>
         <source>VCMI campaigns (*.vcmp)</source>
-        <translation type="unfinished">Кампанії VCMI (*.vcmp)</translation>
+        <translation>Кампанії VCMI (*.vcmp)</translation>
     </message>
 </context>
 <context>
@@ -1446,27 +1446,26 @@
     <message>
         <location filename="../mapcontroller.cpp" line="612"/>
         <source>Hero %1 cannot be created as NEUTRAL.</source>
-        <translation type="unfinished">Герой %1 не може бути створений як НЕЙТРАЛЬНИЙ.</translation>
+        <translation>Герой %1 не може бути створений як нейтральний.</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="626"/>
         <source>Missing Required Mod</source>
-        <translation type="unfinished">Відсутній необхідний мод</translation>
+        <translation>Відсутня необхідна модифікація</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="626"/>
         <source>
 
 Do you want to do that now ?</source>
-        <translation type="unfinished">
-
+        <translation>
 
 Бажаєте зробити це зараз?</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="636"/>
         <source>This object&apos;s mod is mandatory for map to remain valid.</source>
-        <translation type="unfinished">Мод цього об’єкта обов’язковий для того, щоб карта залишалася дійсною.</translation>
+        <translation>Модифікація що містить цей об’єкт обов’язкова для того, щоб карта лишалася дійсною.</translation>
     </message>
 </context>
 <context>
@@ -1559,12 +1558,12 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/mineselector.ui" line="14"/>
         <location filename="../templateeditor/mineselector.ui" line="20"/>
         <source>Select Mines</source>
-        <translation type="unfinished">Виберіть копальні</translation>
+        <translation>Виберіть шахти</translation>
     </message>
     <message>
         <location filename="../templateeditor/mineselector.cpp" line="29"/>
         <source>Mine Selector</source>
-        <translation type="unfinished">Вибір копальні</translation>
+        <translation>Вибір шахти</translation>
     </message>
     <message>
         <location filename="../templateeditor/mineselector.cpp" line="35"/>
@@ -1587,7 +1586,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="32"/>
         <source>Mandatory mods to play this map</source>
-        <translation type="unfinished">Обов’язкові моди для гри на цій карті</translation>
+        <translation>Обов’язкові модифікації для гри на цій карті</translation>
     </message>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="46"/>
@@ -1630,7 +1629,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="14"/>
         <source>Select Objects</source>
-        <translation type="unfinished">Виберіть об’єкти</translation>
+        <translation>Оберіть об’єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="20"/>
@@ -1640,27 +1639,27 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="30"/>
         <source>Required Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Необхідні об&apos;єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="40"/>
         <source>Banned Objects</source>
-        <translation type="unfinished">Заборонені об’єкти</translation>
+        <translation>Заборонені об’єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="50"/>
         <source>Banned Object Categories</source>
-        <translation type="unfinished">Заборонені категорії об’єктів</translation>
+        <translation>Заборонені категорії об’єктів</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="33"/>
         <source>Object Selector</source>
-        <translation type="unfinished">Вибір об’єкта</translation>
+        <translation>Вибір об’єкта</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="96"/>
         <source>Category</source>
-        <translation type="unfinished">Категорія</translation>
+        <translation>Категорія</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="96"/>
@@ -1668,7 +1667,7 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Action</source>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="100"/>
@@ -1684,12 +1683,12 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="102"/>
         <location filename="../templateeditor/objectselector.cpp" line="257"/>
         <source>None</source>
-        <translation type="unfinished">Немає</translation>
+        <translation>Нічого</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="103"/>
         <source>Creature bank</source>
-        <translation type="unfinished">Банк істот</translation>
+        <translation>Банк істот</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="104"/>
@@ -1699,7 +1698,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="105"/>
         <source>Dwelling</source>
-        <translation type="unfinished">Житло</translation>
+        <translation>Зовнішнє житло</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="106"/>
@@ -1709,7 +1708,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="107"/>
         <source>Resource generator</source>
-        <translation type="unfinished">Генератор ресурсів</translation>
+        <translation>Генератор ресурсів</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="108"/>
@@ -1719,22 +1718,22 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="109"/>
         <source>Random artifact</source>
-        <translation type="unfinished">Випадковий артефакт</translation>
+        <translation>Випадковий артефакт</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="110"/>
         <source>Pandoras box</source>
-        <translation type="unfinished">Скриня Пандори</translation>
+        <translation>Скриня Пандори</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="111"/>
         <source>Quest artifact</source>
-        <translation type="unfinished">Квестовий артефакт</translation>
+        <translation>Артефакт для завдання</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="112"/>
         <source>Seer hut</source>
-        <translation type="unfinished">Хатина провидця</translation>
+        <translation>Хатина провидця</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="124"/>
@@ -1742,7 +1741,7 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="261"/>
         <location filename="../templateeditor/objectselector.cpp" line="345"/>
         <source>Delete</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="139"/>
@@ -1750,24 +1749,24 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="278"/>
         <location filename="../templateeditor/objectselector.cpp" line="360"/>
         <source>Add</source>
-        <translation type="unfinished">Додати</translation>
+        <translation>Додати</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="164"/>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Object</source>
-        <translation type="unfinished">Об’єкт</translation>
+        <translation>Об’єкт</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Кількість</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <source>Guard</source>
-        <translation type="unfinished">Охорона</translation>
+        <translation>Охорона</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
@@ -1777,12 +1776,12 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Probability</source>
-        <translation type="unfinished">Ймовірність</translation>
+        <translation>Ймовірність</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Max per zone</source>
-        <translation type="unfinished">Макс. на зону</translation>
+        <translation>Максимум на зону</translation>
     </message>
 </context>
 <context>
@@ -1815,7 +1814,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../playerparams.ui" line="164"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../playerparams.ui" line="221"/>
@@ -1835,7 +1834,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../playerparams.cpp" line="27"/>
         <source>No team</source>
-        <translation type="unfinished">Без команди</translation>
+        <translation>Без команди</translation>
     </message>
     <message>
         <location filename="../playerparams.cpp" line="108"/>
@@ -1848,22 +1847,22 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="45"/>
         <source>Select Player</source>
-        <translation type="unfinished">Виберіть гравця</translation>
+        <translation>Оберіть гравця</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="54"/>
         <source>Hero cannot be created as NEUTRAL</source>
-        <translation type="unfinished">Герой не може бути створений як НЕЙТРАЛЬНИЙ</translation>
+        <translation>Герой не може бути створений як нейтральний</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="60"/>
         <source>Switch to one of the available players:</source>
-        <translation type="unfinished">Переключитися на одного з доступних гравців:</translation>
+        <translation>Переключитися на одного з доступних гравців:</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="89"/>
         <source>Shortcut: %1</source>
-        <translation type="unfinished">Комбінація: %1</translation>
+        <translation>Гаряча клавіша: %1</translation>
     </message>
 </context>
 <context>
@@ -1876,7 +1875,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../PlayerSettingsDialog.ui" line="63"/>
         <source>Players</source>
-        <translation type="unfinished">Гравці</translation>
+        <translation>Гравці</translation>
     </message>
     <message>
         <location filename="../PlayerSettingsDialog.ui" line="74"/>
@@ -1894,18 +1893,18 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="14"/>
         <source>Portrait</source>
-        <translation type="unfinished">Портрет</translation>
+        <translation>Портрет</translation>
     </message>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="52"/>
         <location filename="../inspector/portraitwidget.ui" line="71"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="85"/>
         <source>Default</source>
-        <translation type="unfinished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
 </context>
 <context>
@@ -1913,83 +1912,83 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="22"/>
         <source>Beginner</source>
-        <translation type="unfinished">Новачок</translation>
+        <translation>1й ранг</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="23"/>
         <source>Advanced</source>
-        <translation type="unfinished">Просунутий</translation>
+        <translation>2й ранг</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="24"/>
         <source>Expert</source>
-        <translation type="unfinished">Експерт</translation>
+        <translation>3й ранг</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="170"/>
         <source>Default secondary skills:</source>
-        <translation type="unfinished">Початкові вторинні навички:</translation>
+        <translation>Початкові вторинні навички:</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="175"/>
         <source>Random hero secondary skills</source>
-        <translation type="unfinished">Випадкові другорядні навички героя</translation>
+        <translation>Випадкові другорядні навички героя</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="181"/>
         <source>Secondary skills:</source>
-        <translation type="unfinished">Вторинні навички:</translation>
+        <translation>Вторинні навички:</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="940"/>
         <source>Compliant</source>
-        <translation type="unfinished">Сумісний</translation>
+        <translation>Слухняний</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="941"/>
         <source>Friendly</source>
-        <translation type="unfinished">Дружній</translation>
+        <translation>Дружній</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="942"/>
         <source>Aggressive</source>
-        <translation type="unfinished">Агресивний</translation>
+        <translation>Агресивний</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="943"/>
         <source>Hostile</source>
-        <translation type="unfinished">Ворожий</translation>
+        <translation>Ворожий</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="944"/>
         <source>Savage</source>
-        <translation type="unfinished">Жорстокий</translation>
+        <translation>Лютий</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="355"/>
         <location filename="../inspector/inspector.cpp" line="358"/>
         <source>No patrol</source>
-        <translation type="unfinished">Без патрулювання</translation>
+        <translation>Без патрулювання</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="298"/>
         <source>POWER RANK</source>
-        <translation type="unfinished">РАНГ СИЛИ</translation>
+        <translation>РАНГ СИЛИ</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="298"/>
         <source>HERO TYPE</source>
-        <translation type="unfinished">ТИП ГЕРОЯ</translation>
+        <translation>ТИП ГЕРОЯ</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="321"/>
         <source>Hero class</source>
-        <translation type="unfinished">Клас героя</translation>
+        <translation>Клас героя</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="330"/>
         <source>Portrait</source>
-        <translation type="unfinished">Портрет</translation>
+        <translation>Портрет</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="333"/>
@@ -2005,7 +2004,7 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="357"/>
         <location filename="../inspector/inspector.cpp" line="358"/>
         <source>%n tile(s)</source>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n клітинка</numerusform>
             <numerusform>%n клітинки</numerusform>
             <numerusform>%n клітинок</numerusform>
@@ -2024,54 +2023,54 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../inspector/inspector.cpp" line="409"/>
         <source>Resource</source>
-        <translation type="unfinished">Ресурс</translation>
+        <translation>Ресурс</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="440"/>
         <source>Artifact reward</source>
-        <translation type="unfinished">Нагорода — артефакт</translation>
+        <translation>Нагорода — артефакт</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="483"/>
         <source>Quest</source>
-        <translation type="unfinished">Квест</translation>
+        <translation>Завдання</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="501"/>
         <source>Identifier</source>
-        <translation type="unfinished">Ідентифікатор</translation>
+        <translation>Ідентифікатор</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="502"/>
         <source>ID</source>
-        <translation type="unfinished">ID</translation>
+        <translation>ІД</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="503"/>
         <source>SubID</source>
-        <translation type="unfinished">SubID</translation>
+        <translation>Вторинний ІД</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="504"/>
         <source>InstanceName</source>
-        <translation type="unfinished">InstanceName</translation>
+        <translation>Унікальний ідентифікатор</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="509"/>
         <source>IsStatic</source>
-        <translation type="unfinished">IsStatic</translation>
+        <translation>Об&apos;єкт статичний</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="883"/>
         <location filename="../inspector/inspector.cpp" line="994"/>
         <source>neutral</source>
-        <translation type="unfinished">нейтральний</translation>
+        <translation>нейтральний</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="246"/>
         <location filename="../inspector/inspector.cpp" line="441"/>
         <source>Army</source>
-        <translation type="unfinished">Армія</translation>
+        <translation>Армія</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="253"/>
@@ -2084,31 +2083,31 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="512"/>
         <location filename="../inspector/inspector.cpp" line="559"/>
         <source>Owner</source>
-        <translation type="unfinished">Власник</translation>
+        <translation>Власник</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="258"/>
         <location filename="../inspector/inspector.cpp" line="667"/>
         <source>Same as town</source>
-        <translation type="unfinished">Як у міста</translation>
+        <translation>Таке ж як і місто</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="274"/>
         <location filename="../inspector/inspector.cpp" line="682"/>
         <source>Removable units</source>
-        <translation type="unfinished">Видаляємі юніти</translation>
+        <translation>Загони можна переміщати</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="299"/>
         <location filename="../inspector/inspector.cpp" line="690"/>
         <source>Placeholder type</source>
-        <translation type="unfinished">Тип-заповнювач</translation>
+        <translation>Тип місця для героя</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="302"/>
         <location filename="../inspector/inspector.cpp" line="708"/>
         <source>Power rank</source>
-        <translation type="unfinished">Ранг сили</translation>
+        <translation>Ранг сили</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="310"/>
@@ -2116,43 +2115,43 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="711"/>
         <location filename="../inspector/inspector.cpp" line="735"/>
         <source>Hero type</source>
-        <translation type="unfinished">Тип героя</translation>
+        <translation>Тип героя</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="320"/>
         <location filename="../inspector/inspector.cpp" line="732"/>
         <source>Experience</source>
-        <translation type="unfinished">Досвід</translation>
+        <translation>Досвід</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="325"/>
         <location filename="../inspector/inspector.cpp" line="326"/>
         <source>MALE</source>
-        <translation type="unfinished">ЧОЛОВІК</translation>
+        <translation>ЧОЛОВІК</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="325"/>
         <location filename="../inspector/inspector.cpp" line="326"/>
         <source>FEMALE</source>
-        <translation type="unfinished">ЖІНКА</translation>
+        <translation>ЖІНКА</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="326"/>
         <location filename="../inspector/inspector.cpp" line="721"/>
         <source>Gender</source>
-        <translation type="unfinished">Стать</translation>
+        <translation>Стать</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="328"/>
         <location filename="../inspector/inspector.cpp" line="724"/>
         <source>Name</source>
-        <translation type="unfinished">Ім&apos;я</translation>
+        <translation>Ім&apos;я</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="329"/>
         <location filename="../inspector/inspector.cpp" line="728"/>
         <source>Biography</source>
-        <translation type="unfinished">Біографія</translation>
+        <translation>Біографія</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="334"/>
@@ -2164,19 +2163,19 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="359"/>
         <location filename="../inspector/inspector.cpp" line="747"/>
         <source>Patrol radius</source>
-        <translation type="unfinished">Радіус патруля</translation>
+        <translation>Радіус патруля</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="367"/>
         <location filename="../inspector/inspector.cpp" line="624"/>
         <source>Town name</source>
-        <translation type="unfinished">Назва міста</translation>
+        <translation>Назва міста</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="374"/>
         <location filename="../inspector/inspector.cpp" line="628"/>
         <source>Same as player</source>
-        <translation type="unfinished">Як у гравця</translation>
+        <translation>Таке ж як і гравець</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="381"/>
@@ -2195,13 +2194,13 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="398"/>
         <location filename="../inspector/inspector.cpp" line="657"/>
         <source>Spell</source>
-        <translation type="unfinished">Закляття</translation>
+        <translation>Закляття</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="410"/>
         <location filename="../inspector/inspector.cpp" line="645"/>
         <source>Productivity</source>
-        <translation type="unfinished">Продуктивність</translation>
+        <translation>Продуктивність</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="417"/>
@@ -2209,90 +2208,90 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="764"/>
         <location filename="../inspector/inspector.cpp" line="781"/>
         <source>Amount</source>
-        <translation type="unfinished">Кількість</translation>
+        <translation>Кількість</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="436"/>
         <location filename="../inspector/inspector.cpp" line="775"/>
         <source>Character</source>
-        <translation type="unfinished">Персонаж</translation>
+        <translation>Характер</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="926"/>
         <source>Select town</source>
-        <translation type="unfinished">Вибрати місто</translation>
+        <translation>Обрати місто</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="438"/>
         <location filename="../inspector/inspector.cpp" line="777"/>
         <source>Never flees</source>
-        <translation type="unfinished">Ніколи не тікає</translation>
+        <translation>Ніколи не тікає</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="439"/>
         <location filename="../inspector/inspector.cpp" line="779"/>
         <source>Not growing</source>
-        <translation type="unfinished">Не розмножується</translation>
+        <translation>Розмір не зростає</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="451"/>
         <location filename="../inspector/inspector.cpp" line="491"/>
         <source>Reward</source>
-        <translation type="unfinished">Нагорода</translation>
+        <translation>Нагорода</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="465"/>
         <location filename="../inspector/inspector.cpp" line="610"/>
         <source>Remove after</source>
-        <translation type="unfinished">Видалити після</translation>
+        <translation>Видалити після події</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="466"/>
         <location filename="../inspector/inspector.cpp" line="613"/>
         <source>Human trigger</source>
-        <translation type="unfinished">Тригер гравця</translation>
+        <translation>Активація гравцем-людиною</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="467"/>
         <location filename="../inspector/inspector.cpp" line="616"/>
         <source>Cpu trigger</source>
-        <translation type="unfinished">Тригер ІІ</translation>
+        <translation>Активація ШІ гравцем</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="475"/>
         <location filename="../inspector/inspector.cpp" line="789"/>
         <source>First visit text</source>
-        <translation type="unfinished">Текст при першому візиті</translation>
+        <translation>Текст при першому відвідуванні</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="476"/>
         <location filename="../inspector/inspector.cpp" line="792"/>
         <source>Next visit text</source>
-        <translation type="unfinished">Текст при наступному візиті</translation>
+        <translation>Текст при наступному відвідуванні</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="477"/>
         <location filename="../inspector/inspector.cpp" line="795"/>
         <source>Completed text</source>
-        <translation type="unfinished">Текст при виконанні</translation>
+        <translation>Текст при виконанні завдання</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="478"/>
         <location filename="../inspector/inspector.cpp" line="492"/>
         <location filename="../inspector/inspector.cpp" line="798"/>
         <source>Repeat quest</source>
-        <translation type="unfinished">Повторюваний квест</translation>
+        <translation>Багаторазове завдання</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="479"/>
         <location filename="../inspector/inspector.cpp" line="800"/>
         <source>Time limit</source>
-        <translation type="unfinished">Обмеження за часом</translation>
+        <translation>Обмеження за часом</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="881"/>
         <source>UNFLAGGABLE</source>
-        <translation type="unfinished">НЕПРАПОРОПОСТАВНИЙ</translation>
+        <translation>ЗАВЖДИ НЕЙТРАЛЬНИЙ</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="417"/>
@@ -2302,7 +2301,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapcontroller.cpp" line="594"/>
         <source>There can only be one grail object on the map.</source>
-        <translation type="unfinished">На карті може бути лише один Грааль.</translation>
+        <translation>На мапі може бути лише один Грааль.</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="649"/>
@@ -2314,179 +2313,179 @@ Do you want to do that now ?</source>
         <source>The mod &apos;%1&apos;%2, is required by an object on the map.
 Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <comment>should be consistent with Map-&gt;General menu entry translation</comment>
-        <translation type="unfinished">Мод &apos;%1&apos;%2 є обов&apos;язковим для об&apos;єкта на карті.
-Додайте його до списку обов&apos;язкових модів у Карта → Загальні налаштування.</translation>
+        <translation>Модифікація &apos;%1&apos;%2 є обов&apos;язковою для об&apos;єкта на мапі.
+Додайте його до списку обов&apos;язкових модифікацій у Карта → Загальні налаштування.</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.cpp" line="217"/>
         <location filename="../inspector/townspellswidget.cpp" line="177"/>
         <source>Custom Spells:</source>
-        <translation type="unfinished">Користувацькі закляття:</translation>
+        <translation>Користувацькі закляття:</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.cpp" line="226"/>
         <location filename="../inspector/townspellswidget.cpp" line="197"/>
         <source>Default Spells</source>
-        <translation type="unfinished">Закляття за замовчуванням</translation>
+        <translation>Початкові закляття</translation>
     </message>
     <message>
         <location filename="../inspector/portraitwidget.cpp" line="151"/>
         <source>Default</source>
-        <translation type="unfinished">Типово</translation>
+        <translation>Типово</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="447"/>
         <source>Quest:</source>
-        <translation type="unfinished">Квест:</translation>
+        <translation>Завдання:</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="448"/>
         <source>Day of Week: %1</source>
-        <translation type="unfinished">День тижня: %1</translation>
+        <translation>День тижня: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="449"/>
         <source>Days Passed: %1</source>
-        <translation type="unfinished">Минуло днів: %1</translation>
+        <translation>Минуло днів: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="450"/>
         <location filename="../inspector/rewardswidget.cpp" line="773"/>
         <source>Hero Level: %1</source>
-        <translation type="unfinished">Рівень героя: %1</translation>
+        <translation>Рівень героя: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="451"/>
         <location filename="../inspector/rewardswidget.cpp" line="774"/>
         <source>Hero Experience: %1</source>
-        <translation type="unfinished">Досвід героя: %1</translation>
+        <translation>Досвід героя: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="452"/>
         <source>Mana Points: %1</source>
-        <translation type="unfinished">Очки мани: %1</translation>
+        <translation>Очки мани: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="453"/>
         <location filename="../inspector/rewardswidget.cpp" line="776"/>
         <source>Mana Percentage: %1</source>
-        <translation type="unfinished">Відсоток мани: %1</translation>
+        <translation>Відсоток мани: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="454"/>
         <location filename="../inspector/rewardswidget.cpp" line="779"/>
         <source>Primary Skills: %1/%2/%3/%4</source>
-        <translation type="unfinished">Основні навички: %1/%2/%3/%4</translation>
+        <translation>Основні навички: %1/%2/%3/%4</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="465"/>
         <location filename="../inspector/rewardswidget.cpp" line="789"/>
         <source>Resources: %1</source>
-        <translation type="unfinished">Ресурси: %1</translation>
+        <translation>Ресурси: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="472"/>
         <location filename="../inspector/rewardswidget.cpp" line="795"/>
         <source>Artifacts: %1</source>
-        <translation type="unfinished">Артефакти: %1</translation>
+        <translation>Артефакти: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="479"/>
         <location filename="../inspector/rewardswidget.cpp" line="801"/>
         <source>Spells: %1</source>
-        <translation type="unfinished">Закляття: %1</translation>
+        <translation>Закляття: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="486"/>
         <location filename="../inspector/rewardswidget.cpp" line="807"/>
         <source>Secondary Skills: %1</source>
-        <translation type="unfinished">Вторинні навички: %1</translation>
+        <translation>Вторинні навички: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="493"/>
         <location filename="../inspector/rewardswidget.cpp" line="813"/>
         <source>Creatures: %1</source>
-        <translation type="unfinished">Істоти: %1</translation>
+        <translation>Істоти: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="500"/>
         <source>Heroes: %1</source>
-        <translation type="unfinished">Герої: %1</translation>
+        <translation>Герої: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="507"/>
         <source>Hero Classes: %1</source>
-        <translation type="unfinished">Класи героїв: %1</translation>
+        <translation>Класи героїв: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="516"/>
         <source>Players: %1</source>
-        <translation type="unfinished">Гравці: %1</translation>
+        <translation>Гравці: %1</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="769"/>
         <source>Rewards:</source>
-        <translation type="unfinished">Нагороди:</translation>
+        <translation>Нагороди:</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="772"/>
         <source>Reward Message: %1</source>
-        <translation type="unfinished">Повідомлення про нагороду: %1</translation>
+        <translation>Повідомлення про нагороду: %1</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="775"/>
         <source>Mana Diff: %1</source>
-        <translation type="unfinished">Різниця мани: %1</translation>
+        <translation>Зміна мани: %1</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="777"/>
         <source>Move Points: %1</source>
-        <translation type="unfinished">Очки руху: %1</translation>
+        <translation>Очки руху: %1</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="778"/>
         <source>Move Percentage: %1</source>
-        <translation type="unfinished">Відсоток руху: %1</translation>
+        <translation>Відсоток руху: %1</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="816"/>
         <source>Spell Cast: %1 (%2)</source>
-        <translation type="unfinished">Закляття застосовано: %1 (%2)</translation>
+        <translation>Накладання закляття: %1 (%2)</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="824"/>
         <source>Bonuses: %1</source>
-        <translation type="unfinished">Бонуси: %1</translation>
+        <translation>Бонуси: %1</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="363"/>
         <source>Built buildings:</source>
-        <translation type="unfinished">Побудовані будівлі:</translation>
+        <translation>Побудовані будівлі:</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="374"/>
         <source>Forbidden buildings:</source>
-        <translation type="unfinished">Заборонені будівлі:</translation>
+        <translation>Заборонені будівлі:</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="183"/>
         <source>Town Events:</source>
-        <translation type="unfinished">Події міста:</translation>
+        <translation>Події міста:</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.cpp" line="178"/>
         <source>Required:</source>
-        <translation type="unfinished">Необхідні:</translation>
+        <translation>Необхідні:</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.cpp" line="185"/>
         <source>Possible:</source>
-        <translation type="unfinished">Можливі:</translation>
+        <translation>Можливі:</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="220"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation>Не вдалося відкрити кампанію</translation>
     </message>
 </context>
 <context>
@@ -2499,72 +2498,72 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/questwidget.ui" line="28"/>
         <source>Day of week</source>
-        <translation type="unfinished">День тижня</translation>
+        <translation>День тижня</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="45"/>
         <source>Days passed</source>
-        <translation type="unfinished">Минуло днів</translation>
+        <translation>Минуло днів</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="79"/>
         <source>Hero level</source>
-        <translation type="unfinished">Рівень героя</translation>
+        <translation>Рівень героя</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="96"/>
         <source>Hero experience</source>
-        <translation type="unfinished">Досвід героя</translation>
+        <translation>Досвід героя</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="136"/>
         <source>Spell points</source>
-        <translation type="unfinished">Очки заклять</translation>
+        <translation>Очки мани</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="156"/>
         <source>%</source>
-        <translation type="unfinished">%</translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="183"/>
         <source>Kill hero/monster</source>
-        <translation type="unfinished">Вбити героя/монстра</translation>
+        <translation>Вбити героя/істоту</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="197"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="206"/>
         <source>Primary skills</source>
-        <translation type="unfinished">Основні навички</translation>
+        <translation>Основні навички</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="221"/>
         <source>Attack</source>
-        <translation type="unfinished">Атака</translation>
+        <translation>Атака</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="231"/>
         <source>Defence</source>
-        <translation type="unfinished">Захист</translation>
+        <translation>Захист</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="241"/>
         <source>Spell power</source>
-        <translation type="unfinished">Сила заклять</translation>
+        <translation>Сила магії</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="251"/>
         <source>Knowledge</source>
-        <translation type="unfinished">Знання</translation>
+        <translation>Знання</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="289"/>
         <source>Resources</source>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="338"/>
@@ -2619,7 +2618,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/questwidget.cpp" line="41"/>
         <source>Day %1</source>
-        <translation type="unfinished">День %1</translation>
+        <translation>День %1</translation>
     </message>
 </context>
 <context>
@@ -2648,32 +2647,32 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="64"/>
         <source>Visit mode</source>
-        <translation type="unfinished">Режим візиту</translation>
+        <translation>Режим відвідування</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="85"/>
         <source>Select mode</source>
-        <translation type="unfinished">Режим вибору</translation>
+        <translation>Режим вибору</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="107"/>
         <source>On select text</source>
-        <translation type="unfinished">Текст при виборі</translation>
+        <translation>Текст при виборі</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="114"/>
         <source>Can refuse</source>
-        <translation type="unfinished">Можна відмовитися</translation>
+        <translation>Можна відмовитися</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="121"/>
         <source>Reset parameters</source>
-        <translation type="unfinished">Скинути параметри</translation>
+        <translation>Параметри скидання</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="141"/>
         <source>Period</source>
-        <translation type="unfinished">Період</translation>
+        <translation>Період</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="148"/>
@@ -2683,22 +2682,22 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="160"/>
         <source>Reset visitors</source>
-        <translation type="unfinished">Скинути відвідувачів</translation>
+        <translation>Скидати відвідувачів</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="167"/>
         <source>Reset rewards</source>
-        <translation type="unfinished">Скинути нагороди</translation>
+        <translation>Скидати нагороди</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="179"/>
         <source>Window type</source>
-        <translation type="unfinished">Тип вікна</translation>
+        <translation>Режим вікна</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="199"/>
         <source>Event info</source>
-        <translation type="unfinished">Інформація про подію</translation>
+        <translation>Інформація про подію</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="217"/>
@@ -2708,25 +2707,25 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="228"/>
         <source>Reward</source>
-        <translation type="unfinished">Нагорода</translation>
+        <translation>Нагорода</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="248"/>
         <location filename="../inspector/rewardswidget.ui" line="1035"/>
         <source>Hero level</source>
-        <translation type="unfinished">Рівень героя</translation>
+        <translation>Рівень героя</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="265"/>
         <location filename="../inspector/rewardswidget.ui" line="1052"/>
         <source>Hero experience</source>
-        <translation type="unfinished">Досвід героя</translation>
+        <translation>Досвід героя</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="305"/>
         <location filename="../inspector/rewardswidget.ui" line="1092"/>
         <source>Spell points</source>
-        <translation type="unfinished">Очки заклять</translation>
+        <translation>Очки мани</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="328"/>
@@ -2734,58 +2733,58 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../inspector/rewardswidget.ui" line="382"/>
         <location filename="../inspector/rewardswidget.ui" line="1112"/>
         <source>%</source>
-        <translation type="unfinished">%</translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="341"/>
         <source>Overflow</source>
-        <translation type="unfinished">Переповнення</translation>
+        <translation>Переповнення</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="365"/>
         <source>Movement</source>
-        <translation type="unfinished">Переміщення</translation>
+        <translation>Переміщення</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="408"/>
         <source>Remove object</source>
-        <translation type="unfinished">Видалити об&apos;єкт</translation>
+        <translation>Видалити об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="417"/>
         <location filename="../inspector/rewardswidget.ui" line="1137"/>
         <source>Primary skills</source>
-        <translation type="unfinished">Основні навички</translation>
+        <translation>Основні навички</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="432"/>
         <location filename="../inspector/rewardswidget.ui" line="1152"/>
         <source>Attack</source>
-        <translation type="unfinished">Атака</translation>
+        <translation>Атака</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="446"/>
         <location filename="../inspector/rewardswidget.ui" line="1162"/>
         <source>Defence</source>
-        <translation type="unfinished">Захист</translation>
+        <translation>Захист</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="460"/>
         <location filename="../inspector/rewardswidget.ui" line="1172"/>
         <source>Spell power</source>
-        <translation type="unfinished">Сила заклять</translation>
+        <translation>Сила магії</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="474"/>
         <location filename="../inspector/rewardswidget.ui" line="1182"/>
         <source>Knowledge</source>
-        <translation type="unfinished">Знання</translation>
+        <translation>Знання</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="504"/>
         <location filename="../inspector/rewardswidget.ui" line="1208"/>
         <source>Resources</source>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="553"/>
@@ -2814,13 +2813,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="750"/>
         <source>Bonuses</source>
-        <translation type="unfinished">Бонуси</translation>
+        <translation>Бонуси</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="767"/>
         <location filename="../inspector/rewardswidget.ui" line="859"/>
         <source>Duration</source>
-        <translation type="unfinished">Тривалість</translation>
+        <translation>Тривалість</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="777"/>
@@ -2837,37 +2836,37 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="878"/>
         <source>Cast</source>
-        <translation type="unfinished">Застосувати</translation>
+        <translation>Накласти закляття</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="884"/>
         <source>Cast an adventure map spell</source>
-        <translation type="unfinished">Застосувати закляття пригодницької карти</translation>
+        <translation>Застосувати закляття пригодницької карти</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="893"/>
         <source>Spell</source>
-        <translation type="unfinished">Закляття</translation>
+        <translation>Закляття</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="914"/>
         <source>Magic school level</source>
-        <translation type="unfinished">Рівень школи магії</translation>
+        <translation>Ранг школи магії</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="964"/>
         <source>Limiter</source>
-        <translation type="unfinished">Обмежувач</translation>
+        <translation>Обмежувач</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="984"/>
         <source>Day of week</source>
-        <translation type="unfinished">День тижня</translation>
+        <translation>День тижня</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="1001"/>
         <source>Days passed</source>
-        <translation type="unfinished">Минуло днів</translation>
+        <translation>Минуло днів</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="1457"/>
@@ -2882,7 +2881,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="1521"/>
         <source>Players</source>
-        <translation type="unfinished">Гравці</translation>
+        <translation>Гравці</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="54"/>
@@ -2892,13 +2891,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="56"/>
         <source>Day %1</source>
-        <translation type="unfinished">День %1</translation>
+        <translation>День %1</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.cpp" line="247"/>
         <location filename="../inspector/rewardswidget.cpp" line="618"/>
         <source>Reward %1</source>
-        <translation type="unfinished">Нагорода %1</translation>
+        <translation>Нагорода %1</translation>
     </message>
 </context>
 <context>
@@ -2906,12 +2905,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../mapsettings/rumorsettings.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Форма</translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../mapsettings/rumorsettings.ui" line="37"/>
         <source>Tavern rumors</source>
-        <translation type="unfinished">Чутки в таверні</translation>
+        <translation>Чутки у корчмі</translation>
     </message>
     <message>
         <location filename="../mapsettings/rumorsettings.ui" line="63"/>
@@ -2926,7 +2925,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../mapsettings/rumorsettings.cpp" line="59"/>
         <source>New rumor</source>
-        <translation type="unfinished">Нова чутка</translation>
+        <translation>Нова чутка</translation>
     </message>
 </context>
 <context>
@@ -2935,7 +2934,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/scenarioproperties.ui" line="14"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="35"/>
         <source>Scenario Properties</source>
-        <translation type="unfinished">Властивості сценарію</translation>
+        <translation>Властивості сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="30"/>
@@ -2945,32 +2944,32 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="36"/>
         <source>Region name</source>
-        <translation type="unfinished">Назва регіону</translation>
+        <translation>Назва регіону</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="50"/>
         <source>Region color</source>
-        <translation type="unfinished">Колір регіону</translation>
+        <translation>Колір регіону</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="60"/>
         <source>Scenario name</source>
-        <translation type="unfinished">Назва сценарію</translation>
+        <translation>Назва сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="74"/>
         <source>Map file</source>
-        <translation type="unfinished">Файл карти</translation>
+        <translation>Файл мапи</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="90"/>
         <source>Import...</source>
-        <translation type="unfinished">Імпортувати...</translation>
+        <translation>Імпортувати...</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="97"/>
         <source>Export...</source>
-        <translation type="unfinished">Експортувати...</translation>
+        <translation>Експортувати...</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="104"/>
@@ -2981,12 +2980,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="113"/>
         <source>Default difficulty</source>
-        <translation type="unfinished">Складність за замовчуванням</translation>
+        <translation>Складність за замовчуванням</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="123"/>
         <source>Prerequisites</source>
-        <translation type="unfinished">Передумови</translation>
+        <translation>Передумови</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="133"/>
@@ -2996,58 +2995,58 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="144"/>
         <source>Prologue/Epilogue</source>
-        <translation type="unfinished">Пролог / Епілог</translation>
+        <translation>Пролог / Епілог</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="150"/>
         <source>Prologue</source>
-        <translation type="unfinished">Пролог</translation>
+        <translation>Пролог</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="156"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="250"/>
         <source>Enabled</source>
-        <translation type="unfinished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="168"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="262"/>
         <source>Video</source>
-        <translation type="unfinished">Відео</translation>
+        <translation>Відео</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="185"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="279"/>
         <source>Video 2</source>
-        <translation type="unfinished">Відео 2</translation>
+        <translation>Відео 2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="202"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="296"/>
         <source>Music</source>
-        <translation type="unfinished">Музика</translation>
+        <translation>Музика</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="219"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="313"/>
         <source>Voice</source>
-        <translation type="unfinished">Голос</translation>
+        <translation>Озвучення</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="231"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="325"/>
         <source>Text</source>
-        <translation type="unfinished">Текст</translation>
+        <translation>Текст</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="244"/>
         <source>Epilogue</source>
-        <translation type="unfinished">Епілог</translation>
+        <translation>Епілог</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="339"/>
         <source>Crossover</source>
-        <translation type="unfinished">Перенесення</translation>
+        <translation>Перенесення</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="345"/>
@@ -3057,17 +3056,17 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="351"/>
         <source>Experience</source>
-        <translation type="unfinished">Досвід</translation>
+        <translation>Досвід</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="358"/>
         <source>Primary skills</source>
-        <translation type="unfinished">Основні навички</translation>
+        <translation>Основні навички</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="365"/>
         <source>Secondary skills</source>
-        <translation type="unfinished">Вторинні навички</translation>
+        <translation>Вторинні навички</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="372"/>
@@ -3082,22 +3081,22 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="412"/>
         <source>All</source>
-        <translation type="unfinished">Усі</translation>
+        <translation>Усі</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="419"/>
         <source>None</source>
-        <translation type="unfinished">Жодні</translation>
+        <translation>Жодні</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="446"/>
         <source>Crossover artifacts</source>
-        <translation type="unfinished">Артефакти при перенесенні</translation>
+        <translation>Артефакти що переносяться</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="475"/>
         <source>Starting</source>
-        <translation type="unfinished">Початкові</translation>
+        <translation>Початкові</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="481"/>
@@ -3107,59 +3106,59 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="488"/>
         <source>Starting bonus options</source>
-        <translation type="unfinished">Початкові бонуси</translation>
+        <translation>Початковий бонус</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="495"/>
         <source>Hero crossover options</source>
-        <translation type="unfinished">Опції перенесення героя</translation>
+        <translation>Опції перенесення героя</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="502"/>
         <source>Starting hero options</source>
-        <translation type="unfinished">Опції початкового героя</translation>
+        <translation>Опції початкового героя</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="520"/>
         <source>Bonus</source>
-        <translation type="unfinished">Бонус</translation>
+        <translation>Бонус</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="526"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="460"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="470"/>
         <source>Player position</source>
-        <translation type="unfinished">Позиція гравця</translation>
+        <translation>Позиція гравця</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="536"/>
         <source>Starting bonus option</source>
-        <translation type="unfinished">Опція початкового бонусу</translation>
+        <translation>Налаштування початкового бонусу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="547"/>
         <source>Crossover/ Starting hero</source>
-        <translation type="unfinished">Перенесений / Початковий герой</translation>
+        <translation>Перенесений / Початковий герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="565"/>
         <source>Add...</source>
-        <translation type="unfinished">Додати...</translation>
+        <translation>Додати...</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="572"/>
         <source>Edit...</source>
-        <translation type="unfinished">Редагувати...</translation>
+        <translation>Редагувати...</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="121"/>
         <source>Strongest</source>
-        <translation type="unfinished">Найсильніший</translation>
+        <translation>Найсильніший</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="122"/>
         <source>Generated</source>
-        <translation type="unfinished">Згенерований</translation>
+        <translation>Згенерований</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="123"/>
@@ -3169,7 +3168,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="140"/>
         <source>No map</source>
-        <translation type="unfinished">Немає карти</translation>
+        <translation>Немає карти</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="183"/>
@@ -3190,13 +3189,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="398"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="431"/>
         <source>Error</source>
-        <translation type="unfinished">Помилка</translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="398"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="431"/>
         <source>Could not open the file.</source>
-        <translation type="unfinished">Не вдалося відкрити файл.</translation>
+        <translation>Не вдалося відкрити файл.</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="424"/>
@@ -3206,22 +3205,22 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="424"/>
         <source>VCMI maps (*.vmap);</source>
-        <translation type="unfinished">Карти VCMI (*.vmap);</translation>
+        <translation>Мапи VCMI (*.vmap);</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="424"/>
         <source>HoMM3 maps (*.h3m);</source>
-        <translation type="unfinished">Карти HoMM3 (*.h3m);</translation>
+        <translation>Мапи HoMM3 (*.h3m);</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="460"/>
         <source>Source scenario</source>
-        <translation type="unfinished">Початковий сценарій</translation>
+        <translation>Сценарій-джерело</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="470"/>
         <source>Hero</source>
-        <translation type="unfinished">Герой</translation>
+        <translation>Герой</translation>
     </message>
 </context>
 <context>
@@ -3229,12 +3228,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="14"/>
         <source>Scenario Properties</source>
-        <translation type="unfinished">Властивості сценарію</translation>
+        <translation>Властивості сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="20"/>
         <source>Select a bonus type</source>
-        <translation type="unfinished">Виберіть тип бонусу</translation>
+        <translation>Виберіть тип бонусу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="27"/>
@@ -3242,13 +3241,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="110"/>
         <location filename="../campaigneditor/startingbonus.ui" line="270"/>
         <source>Spell</source>
-        <translation type="unfinished">Закляття</translation>
+        <translation>Закляття</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="34"/>
         <location filename="../campaigneditor/startingbonus.ui" line="134"/>
         <source>Creature</source>
-        <translation type="unfinished">Істота</translation>
+        <translation>Істота</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="41"/>
@@ -3256,7 +3255,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="190"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="363"/>
         <source>Building</source>
-        <translation type="unfinished">Будівля</translation>
+        <translation>Будівля</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="48"/>
@@ -3269,13 +3268,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="55"/>
         <location filename="../campaigneditor/startingbonus.ui" line="254"/>
         <source>Spell scroll</source>
-        <translation type="unfinished">Сувій закляття</translation>
+        <translation>Сувій з закляттям</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="62"/>
         <location filename="../campaigneditor/startingbonus.ui" line="294"/>
         <source>Primary skill</source>
-        <translation type="unfinished">Основна навичка</translation>
+        <translation>Первинна навичка</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="69"/>
@@ -3283,14 +3282,14 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="380"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="387"/>
         <source>Secondary skill</source>
-        <translation type="unfinished">Вторинна навичка</translation>
+        <translation>Вторинна навичка</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="76"/>
         <location filename="../campaigneditor/startingbonus.ui" line="414"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="391"/>
         <source>Resource</source>
-        <translation type="unfinished">Ресурс</translation>
+        <translation>Ресурс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="100"/>
@@ -3300,63 +3299,63 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="300"/>
         <location filename="../campaigneditor/startingbonus.ui" line="370"/>
         <source>Recipient</source>
-        <translation type="unfinished">Одержувач</translation>
+        <translation>Одержувач</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="150"/>
         <source>Creature type</source>
-        <translation type="unfinished">Тип істоти</translation>
+        <translation>Тип істоти</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="160"/>
         <location filename="../campaigneditor/startingbonus.ui" line="430"/>
         <source>Quantity</source>
-        <translation type="unfinished">Кількість</translation>
+        <translation>Кількість</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="310"/>
         <source>Attack skill</source>
-        <translation type="unfinished">Навичка атаки</translation>
+        <translation>Навичка атаки</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="320"/>
         <source>Defense skill</source>
-        <translation type="unfinished">Навичка захисту</translation>
+        <translation>Навичка захисту</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="330"/>
         <source>Spell power</source>
-        <translation type="unfinished">Сила заклять</translation>
+        <translation>Сила магії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="340"/>
         <source>Knowledge</source>
-        <translation type="unfinished">Знання</translation>
+        <translation>Знання</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="390"/>
         <source>Mastery</source>
-        <translation type="unfinished">Майстерність</translation>
+        <translation>Ранг</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="420"/>
         <source>Resource type</source>
-        <translation type="unfinished">Тип ресурсу</translation>
+        <translation>Тип ресурсу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="34"/>
         <source>Edit Starting Bonus</source>
-        <translation type="unfinished">Редагування початкового бонусу</translation>
+        <translation>Редагування початкового бонусу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="62"/>
         <source>Strongest</source>
-        <translation type="unfinished">Найсильніший</translation>
+        <translation>Найсильніший</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="63"/>
         <source>Generated</source>
-        <translation type="unfinished">Згенерований</translation>
+        <translation>Згенерований</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="64"/>
@@ -3366,62 +3365,62 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="95"/>
         <source>Main town is of random faction</source>
-        <translation type="unfinished">Головне місто випадкової фракції</translation>
+        <translation>Головне місто належить до випадкової фракції</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="107"/>
         <source>Player does not have a main town!</source>
-        <translation type="unfinished">Гравець не має головного міста!</translation>
+        <translation>Гравець не має головного міста!</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="132"/>
         <source>Common (%1 and %2)</source>
-        <translation type="unfinished">Поширені (%1 та %2)</translation>
+        <translation>Поширені (%1 та %2)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="137"/>
         <source>Rare (%1, %2, %3, %4)</source>
-        <translation type="unfinished">Рідкісні (%1, %2, %3, %4)</translation>
+        <translation>Рідкісні (%1, %2, %3, %4)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="319"/>
         <source>strongest hero</source>
-        <translation type="unfinished">найсильніший герой</translation>
+        <translation>найсильніший герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="321"/>
         <source>generated hero</source>
-        <translation type="unfinished">згенерований герой</translation>
+        <translation>створений герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="323"/>
         <source>random hero</source>
-        <translation type="unfinished">випадковий герой</translation>
+        <translation>випадковий герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="354"/>
         <source>%1 spell for %2</source>
-        <translation type="unfinished">%1 закляття для %2</translation>
+        <translation>Закляття %1 для %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="359"/>
         <source>%1 %2 for %3</source>
-        <translation type="unfinished">%1 %2 для %3</translation>
+        <translation>%1 %2 для %3</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="368"/>
         <source>%1 artifact for %2</source>
-        <translation type="unfinished">%1 артефакт для %2</translation>
+        <translation>Артефакт %1 для %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="373"/>
         <source>%1 spell scroll for %2</source>
-        <translation type="unfinished">%1 сувій закляття для %2</translation>
+        <translation>Сувій з закляттям %1 для %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="378"/>
         <source>Primary skill (Attack: %1, Defense: %2, Spell: %3, Knowledge: %4) for %5</source>
-        <translation type="unfinished">Основна навичка (Атака: %1, Захист: %2, Магія: %3, Знання: %4) для %5</translation>
+        <translation>Основні навички (Атака: %1, Захист: %2, Сила Магії: %3, Знання: %4) для %5</translation>
     </message>
 </context>
 <context>
@@ -3430,7 +3429,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../templateeditor/templateeditor.ui" line="14"/>
         <location filename="../templateeditor/templateeditor.cpp" line="637"/>
         <source>VCMI Template Editor</source>
-        <translation type="unfinished">Редактор шаблонів VCMI</translation>
+        <translation>Редактор шаблонів VCMI</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="36"/>
@@ -3455,7 +3454,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="114"/>
         <source>Selected Template:</source>
-        <translation type="unfinished">Вибраний шаблон:</translation>
+        <translation>Обраний шаблон:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="137"/>
@@ -3472,7 +3471,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="151"/>
         <source>Rename</source>
-        <translation type="unfinished">Перейменувати</translation>
+        <translation>Перейменувати</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="215"/>
@@ -3487,61 +3486,61 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="233"/>
         <source>Description</source>
-        <translation type="unfinished">Опис</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="245"/>
         <source>Min Size</source>
-        <translation type="unfinished">Мін. розмір</translation>
+        <translation>Мін. розмір</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="264"/>
         <location filename="../templateeditor/templateeditor.ui" line="363"/>
         <location filename="../templateeditor/templateeditor.ui" line="585"/>
         <source>X</source>
-        <translation type="unfinished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="294"/>
         <location filename="../templateeditor/templateeditor.ui" line="393"/>
         <location filename="../templateeditor/templateeditor.ui" line="615"/>
         <source>Y</source>
-        <translation type="unfinished">Y</translation>
+        <translation>Y</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="324"/>
         <location filename="../templateeditor/templateeditor.ui" line="423"/>
         <location filename="../templateeditor/templateeditor.ui" line="1378"/>
         <source>Z</source>
-        <translation type="unfinished">Z</translation>
+        <translation>Z</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="344"/>
         <source>Max Size</source>
-        <translation type="unfinished">Макс. розмір</translation>
+        <translation>Макс. розмір</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="443"/>
         <location filename="../templateeditor/templateeditor.ui" line="449"/>
         <source>Players</source>
-        <translation type="unfinished">Гравці</translation>
+        <translation>Гравці</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="459"/>
         <source>Human</source>
-        <translation type="unfinished">Людина</translation>
+        <translation>Людина</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="472"/>
         <source>Allowed water content</source>
-        <translation type="unfinished">Дозволений вміст води</translation>
+        <translation>Дозволений вміст води</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="478"/>
         <location filename="../templateeditor/templateeditor.cpp" line="403"/>
         <location filename="../templateeditor/templateeditor.cpp" line="416"/>
         <source>None</source>
-        <translation type="unfinished">Немає</translation>
+        <translation>Немає</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="485"/>
@@ -3557,48 +3556,48 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="502"/>
         <source>Entities</source>
-        <translation type="unfinished">Сутності</translation>
+        <translation>Сутності</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="508"/>
         <source>Banned Spells</source>
-        <translation type="unfinished">Заборонені заклинання</translation>
+        <translation>Заборонені закляття</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="515"/>
         <source>Banned Artifacts</source>
-        <translation type="unfinished">Заборонені артефакти</translation>
+        <translation>Заборонені артефакти</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="522"/>
         <source>Banned Skills</source>
-        <translation type="unfinished">Заборонені уміння</translation>
+        <translation>Заборонені вторинні вміння</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="529"/>
         <source>Banned Heroes</source>
-        <translation type="unfinished">Заборонені герої</translation>
+        <translation>Заборонені герої</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="561"/>
         <source>Zone</source>
-        <translation type="unfinished">Зона</translation>
+        <translation>Зона</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="567"/>
         <source>Visualisation</source>
-        <translation type="unfinished">Візуалізація</translation>
+        <translation>Візуалізація</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="573"/>
         <source>Position</source>
-        <translation type="unfinished">Позиція</translation>
+        <translation>Позиція</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="645"/>
         <location filename="../templateeditor/templateeditor.ui" line="701"/>
         <source>Size</source>
-        <translation type="unfinished">Розмір</translation>
+        <translation>Розмір</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="673"/>
@@ -3619,12 +3618,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="729"/>
         <source>Forced level</source>
-        <translation type="unfinished">Примусовий рівень</translation>
+        <translation>Фіксований рівень</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="741"/>
         <source>Zone link</source>
-        <translation type="unfinished">Зв’язок зон</translation>
+        <translation>Сполучення зон</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="747"/>
@@ -3637,7 +3636,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../templateeditor/templateeditor.ui" line="754"/>
         <location filename="../templateeditor/templateeditor.ui" line="1267"/>
         <source>Custom objects</source>
-        <translation type="unfinished">Користувацькі об’єкти</translation>
+        <translation>Користувацькі об’єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="761"/>
@@ -3649,7 +3648,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../templateeditor/templateeditor.ui" line="768"/>
         <location filename="../templateeditor/templateeditor.ui" line="1109"/>
         <source>Terrain</source>
-        <translation type="unfinished">Місцевість</translation>
+        <translation>Ґрунт</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="785"/>
@@ -3657,17 +3656,17 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../templateeditor/templateeditor.ui" line="1235"/>
         <location filename="../templateeditor/templateeditor.cpp" line="378"/>
         <source>Treasure</source>
-        <translation type="unfinished">Скарб</translation>
+        <translation>Скарб</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="848"/>
         <source>Town info</source>
-        <translation type="unfinished">Відомості про місто</translation>
+        <translation>Відомості про місто</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="854"/>
         <source>Town count</source>
-        <translation type="unfinished">Кількість міст</translation>
+        <translation>Кількість міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="866"/>
@@ -3688,52 +3687,52 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="917"/>
         <source>Castle count</source>
-        <translation type="unfinished">Кількість замків</translation>
+        <translation>Кількість замків</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="980"/>
         <source>Town density</source>
-        <translation type="unfinished">Щільність міст</translation>
+        <translation>Щільність міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1043"/>
         <source>Castle density</source>
-        <translation type="unfinished">Щільність замків</translation>
+        <translation>Щільність замків</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1115"/>
         <source>Match terrain to town</source>
-        <translation type="unfinished">Підігнати місцевість під місто</translation>
+        <translation>Ґрунт відповідає місту</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1122"/>
         <source>Terrain types</source>
-        <translation type="unfinished">Типи місцевості</translation>
+        <translation>Типи ґрунту</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1129"/>
         <source>Banned terrain types</source>
-        <translation type="unfinished">Заборонені типи місцевості</translation>
+        <translation>Заборонені типи ґрунту</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1145"/>
         <source>Towns are same type</source>
-        <translation type="unfinished">Міста одного типу</translation>
+        <translation>Міста одного типу</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1152"/>
         <source>Allowed towns</source>
-        <translation type="unfinished">Дозволені міста</translation>
+        <translation>Дозволені міста</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1159"/>
         <source>Banned towns</source>
-        <translation type="unfinished">Заборонені міста</translation>
+        <translation>Заборонені міста</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1166"/>
         <source>Town hints</source>
-        <translation type="unfinished">Підказки щодо міст</translation>
+        <translation>Правила вибору міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1176"/>
@@ -3743,17 +3742,17 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1182"/>
         <source>Allowed monsters</source>
-        <translation type="unfinished">Дозволені монстри</translation>
+        <translation>Дозволені монстри</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1189"/>
         <source>Banned monsters</source>
-        <translation type="unfinished">Заборонені монстри</translation>
+        <translation>Заборонені монстри</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1207"/>
         <source>Strength</source>
-        <translation type="unfinished">Сила</translation>
+        <translation>Сила</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1261"/>
@@ -3793,23 +3792,23 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1375"/>
         <source>Add zone</source>
-        <translation type="unfinished">Додати зону</translation>
+        <translation>Додати зону</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1386"/>
         <source>Remove zone</source>
-        <translation type="unfinished">Видалити зону</translation>
+        <translation>Видалити зону</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1389"/>
         <location filename="../templateeditor/templateeditor.cpp" line="466"/>
         <source>Del</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1394"/>
         <source>Auto position</source>
-        <translation type="unfinished">Автоматичне розміщення</translation>
+        <translation>Автоматичне розміщення</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1397"/>
@@ -3839,12 +3838,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1418"/>
         <source>Zoom auto</source>
-        <translation type="unfinished">Автомасштаб</translation>
+        <translation>Автомасштаб</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1421"/>
         <source>Ctrl+Shift+:</source>
-        <translation type="unfinished">Ctrl+Shift+:</translation>
+        <translation>Ctrl+Shift+:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1426"/>
@@ -3859,43 +3858,43 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="236"/>
         <source>Min</source>
-        <translation type="unfinished">Мін</translation>
+        <translation>Мін</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="236"/>
         <source>Max</source>
-        <translation type="unfinished">Макс</translation>
+        <translation>Макс</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="236"/>
         <source>Action</source>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="254"/>
         <location filename="../templateeditor/templateeditor.cpp" line="467"/>
         <source>Delete</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="293"/>
         <source>ID: %1</source>
-        <translation type="unfinished">ID: %1</translation>
+        <translation>ІД: %1</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="295"/>
         <source>Max treasure: %1</source>
-        <translation type="unfinished">Макс. скарб: %1</translation>
+        <translation>Макс. скарб: %1</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="376"/>
         <source>Player start</source>
-        <translation type="unfinished">Старт гравця</translation>
+        <translation>Старт гравця</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="377"/>
         <source>CPU start</source>
-        <translation type="unfinished">Старт ШІ</translation>
+        <translation>Старт ШІ</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="379"/>
@@ -3905,7 +3904,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="380"/>
         <source>Water</source>
-        <translation type="unfinished">Вода</translation>
+        <translation>Вода</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="381"/>
@@ -3915,7 +3914,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="408"/>
         <source>Automatic</source>
-        <translation type="unfinished">Автоматично</translation>
+        <translation>Автоматично</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="409"/>
@@ -3946,27 +3945,27 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Zone A</source>
-        <translation type="unfinished">Зона A</translation>
+        <translation>Зона А</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Zone B</source>
-        <translation type="unfinished">Зона B</translation>
+        <translation>Зона Б</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Guard</source>
-        <translation type="unfinished">Охорона</translation>
+        <translation>Охорона</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Road</source>
-        <translation type="unfinished">Дорога</translation>
+        <translation>Дорога</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="449"/>
         <source>Guarded</source>
-        <translation type="unfinished">Під охороною</translation>
+        <translation>Під охороною</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="450"/>
@@ -3991,20 +3990,20 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="455"/>
         <source>Yes</source>
-        <translation type="unfinished">Так</translation>
+        <translation>Так</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="456"/>
         <source>No</source>
-        <translation type="unfinished">Ні</translation>
+        <translation>Ні</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="565"/>
         <source>Zone A: %1
 Zone B: %2
 Guard: %3</source>
-        <translation type="unfinished">Зона A: %1
-Зона B: %2
+        <translation>Зона А: %1
+Зона Б: %2
 Охорона: %3</translation>
     </message>
     <message>
@@ -4020,89 +4019,89 @@ Guard: %3</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="649"/>
         <source>Validation failed!</source>
-        <translation type="unfinished"></translation>
+        <translation>Валідація не пройшла!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="654"/>
         <source>No player range defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не визначено кількість гравців.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="661"/>
         <source>Invalid range for players.</source>
-        <translation type="unfinished"></translation>
+        <translation>Невірна кількість гравців.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="669"/>
         <source>Invalid range for human players.</source>
-        <translation type="unfinished"></translation>
+        <translation>Невірна кількість гравців-людей.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="684"/>
         <source>Connection references non-existing zone(s): %1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Сполучення посилається на неіснуючу(і) зону(и): %1 - %2</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="696"/>
         <source>Zone %1 has no connections.</source>
-        <translation type="unfinished"></translation>
+        <translation>Зона %1 не має сполучень з іншими зонами.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="720"/>
         <source>Player %1 must have exactly one player start zone (found %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Гравець %1 повинен мати точно одну початкову зону (знайдено %2).</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="757"/>
         <source>Open template</source>
-        <translation type="unfinished">Відкрити шаблон</translation>
+        <translation>Відкрити шаблон</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="759"/>
         <source>VCMI templates(*.json)</source>
-        <translation type="unfinished">Шаблони VCMI (*.json)</translation>
+        <translation>Шаблони VCMI (*.json)</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="775"/>
         <source>Save template</source>
-        <translation type="unfinished">Зберегти шаблон</translation>
+        <translation>Зберегти шаблон</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="775"/>
         <source>VCMI templates (*.json)</source>
-        <translation type="unfinished">Шаблони VCMI (*.json)</translation>
+        <translation>Шаблони VCMI (*.json)</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="891"/>
         <location filename="../templateeditor/templateeditor.cpp" line="932"/>
         <source>Enter Name</source>
-        <translation type="unfinished">Введіть ім’я</translation>
+        <translation>Введіть назву</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="891"/>
         <location filename="../templateeditor/templateeditor.cpp" line="932"/>
         <source>Name:</source>
-        <translation type="unfinished">Ім’я:</translation>
+        <translation>Назва:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="898"/>
         <source>Already existing!</source>
-        <translation type="unfinished">Вже існує!</translation>
+        <translation>Вже існує!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="898"/>
         <source>A template with this name is already existing.</source>
-        <translation type="unfinished">Шаблон із такою назвою вже існує.</translation>
+        <translation>Шаблон із такою назвою вже існує.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>To few templates!</source>
-        <translation type="unfinished">Замало шаблонів!</translation>
+        <translation>Замало шаблонів!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
-        <translation type="unfinished">Після видалення має лишитися щонайменше один шаблон.</translation>
+        <translation>Після видалення має лишитися щонайменше один шаблон.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -4114,17 +4113,17 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="17"/>
         <source>Timed event</source>
-        <translation type="unfinished">Подія за часом</translation>
+        <translation>Подія за часом</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="28"/>
         <source>Event name</source>
-        <translation type="unfinished">Назва події</translation>
+        <translation>Назва події</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="35"/>
         <source>Type event message text</source>
-        <translation type="unfinished">Введіть текст повідомлення події</translation>
+        <translation>Введіть текст повідомлення події</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="47"/>
