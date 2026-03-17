@@ -1179,7 +1179,7 @@ Tryb pełnoekranowy - gra zajmie cały ekran i będzie korzystać z wybranej roz
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="831"/>
         <source>Descend into the underground realm and uncover Casemate — a new faction where mushrooms, stone and rune magic thrive in the dark, created for VCMI</source>
-        <translation type="unfinished">Zejdź do podziemnego królestwa i odkryj Casemate — nową frakcję stworzoną dla VCMI, w której grzyby, kamienna i runiczna magia czyhają w ciemności</translation>
+        <translation>Zejdź do podziemnego królestwa i odkryj Kazamaty — nową frakcję stworzoną dla VCMI, w której grzyby, magia run i kamieni czyhają w ciemności</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="847"/>
@@ -1194,7 +1194,7 @@ Tryb pełnoekranowy - gra zajmie cały ekran i będzie korzystać z wybranej roz
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="928"/>
         <source>Tides of War</source>
-        <translation type="unfinished">Teatry Wojny</translation>
+        <translation type="unfinished">Sztormy Wojny</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="966"/>
