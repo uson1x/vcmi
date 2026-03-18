@@ -423,17 +423,17 @@ Please report this issue to developers</source>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1100"/>
         <source>Extracting error!</source>
-        <translation type="unfinished">Помилка видобування!</translation>
+        <translation>Помилка видобування!</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1102"/>
         <source>Invalid file selected</source>
-        <translation type="unfinished">Обрано невірний файл</translation>
+        <translation>Обрано невірний файл</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1102"/>
         <source>You have to select a Heroes Chronicles installer file!</source>
-        <translation type="unfinished">Вам необхідно вибрати інсталяційний файл Heroes Chronicles!</translation>
+        <translation>Вам необхідно вибрати інсталяційний файл Heroes Chronicles!</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1156"/>
@@ -477,12 +477,12 @@ Please report this issue to developers</source>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1456"/>
         <source>Uninstall mod</source>
-        <translation type="unfinished"></translation>
+        <translation>Видалити модифікацію</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1456"/>
         <source>Are you sure you want to uninstall %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ви впевнені, що ви хочете видалити %1?</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="974"/>
@@ -1194,12 +1194,12 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="928"/>
         <source>Tides of War</source>
-        <translation>Tides of War</translation>
+        <translation>Хвилі Війни</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="966"/>
         <source>Fallen of the Depth</source>
-        <translation>Fallen of the Depth</translation>
+        <translation>Падші з Глибин</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="1004"/>
@@ -1280,7 +1280,7 @@ Offline installer consists of two files: &quot;.exe&quot; and &quot;.bin&quot; -
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="731"/>
         <source>Horn of the Abyss</source>
-        <translation>Horn of the Abyss</translation>
+        <translation>Ріг Безодні</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="658"/>
@@ -1290,7 +1290,7 @@ Offline installer consists of two files: &quot;.exe&quot; and &quot;.bin&quot; -
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="890"/>
         <source>In The Wake of Gods</source>
-        <translation>In The Wake of Gods</translation>
+        <translation>Слідами Богів</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.cpp" line="174"/>
@@ -1378,7 +1378,6 @@ Please select the directory with installed Heroes III data.</source>
         <source>Unknown installer selected.
 You need to select the offline GOG installer.</source>
         <translation>Вибрано невідомий інсталятор.
-
 Вам потрібно вибрати офлайн-інсталятор GOG.</translation>
     </message>
     <message>
@@ -1480,17 +1479,17 @@ You need to select the offline GOG installer.</source>
     <message>
         <location filename="../modManager/imageviewer_moc.ui" line="100"/>
         <source>&lt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;</translation>
     </message>
     <message>
         <location filename="../modManager/imageviewer_moc.ui" line="138"/>
         <source>&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&gt;</translation>
     </message>
     <message>
         <location filename="../modManager/imageviewer_moc.ui" line="176"/>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation>X</translation>
     </message>
 </context>
 <context>
@@ -1624,7 +1623,7 @@ Bin (%n байтів):
     <message>
         <location filename="../languages.cpp" line="27"/>
         <source>Dutch</source>
-        <translation type="unfinished"></translation>
+        <translation>Нідерландська</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="28"/>
@@ -1634,7 +1633,7 @@ Bin (%n байтів):
     <message>
         <location filename="../languages.cpp" line="29"/>
         <source>Filipino</source>
-        <translation type="unfinished"></translation>
+        <translation>Філіппінки</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="30"/>
@@ -1679,7 +1678,7 @@ Bin (%n байтів):
     <message>
         <location filename="../languages.cpp" line="38"/>
         <source>Latvian</source>
-        <translation type="unfinished"></translation>
+        <translation>Латвійська</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="39"/>
@@ -1709,7 +1708,7 @@ Bin (%n байтів):
     <message>
         <location filename="../languages.cpp" line="44"/>
         <source>Serbian</source>
-        <translation type="unfinished"></translation>
+        <translation>Сербська</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="45"/>

@@ -89,12 +89,12 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="316"/>
         <source>Export logs</source>
-        <translation type="unfinished">Экспорт журналов</translation>
+        <translation>Экспорт  логов</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Save logs</source>
-        <translation type="unfinished">Сохранить журналы</translation>
+        <translation>Сохранить логи</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
@@ -114,7 +114,7 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>Send logs</source>
-        <translation type="unfinished">Отправить журналы</translation>
+        <translation>Отправить логи</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
@@ -129,7 +129,7 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Logs saved to %1, please send them to the developers</source>
-        <translation type="unfinished">Журналы сохранены в %1, пожалуйста, отправьте их разработчикам</translation>
+        <translation>Логи сохранены в %1, пожалуйста, отправьте их разработчикам</translation>
     </message>
 </context>
 <context>
