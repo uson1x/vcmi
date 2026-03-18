@@ -134,6 +134,7 @@ jobs:
             preset: linux-gcc-release-appimage
             conan_profile: linux-x64
             conan_prebuilts: dependencies-linux-x64
+            before_install: linux_appimage.sh
             extension: AppImage
             artifact_platform: x86_64
 
@@ -143,6 +144,7 @@ jobs:
             preset: linux-gcc-release-arm64-appimage
             conan_profile: linux-arm64
             conan_prebuilts: dependencies-linux-arm64
+            before_install: linux_appimage.sh
             extension: AppImage
             artifact_platform: arm64
 
