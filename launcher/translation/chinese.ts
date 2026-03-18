@@ -142,7 +142,6 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.ui" line="69"/>
         <source>All mods</source>
-        <translatorcomment>Mod统一翻译为模组</translatorcomment>
         <translation>所有模组</translation>
     </message>
     <message>
@@ -323,13 +322,11 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="416"/>
         <source>Required mods</source>
-        <translatorcomment>Mod统一翻译为模组</translatorcomment>
         <translation>前置模组</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="417"/>
         <source>Conflicting mods</source>
-        <translatorcomment>Mod统一翻译为模组</translatorcomment>
         <translation>冲突的模组</translation>
     </message>
     <message>
@@ -523,7 +520,6 @@ Please report this issue to developers</source>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="320"/>
         <source>Mod is incompatible</source>
-        <translatorcomment>Mod统一翻译为模组</translatorcomment>
         <translation>模组不兼容</translation>
     </message>
 </context>
@@ -902,7 +898,6 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="392"/>
         <source>Heroes III Translation</source>
-        <translatorcomment>发布版本里找不到这个项，不太清楚意义</translatorcomment>
         <translation>英雄无敌3翻译</translation>
     </message>
     <message>

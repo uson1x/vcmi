@@ -89,55 +89,46 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="316"/>
         <source>Export logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Exportar registros</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Save logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Guardar registros</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Zip archives (*.zip)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Archivos ZIP (*.zip)</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="272"/>
         <source>Error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Error</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="272"/>
         <source>Failed to create archive: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">No se pudo crear el archivo: %1</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>Send logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Enviar registros</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>The archive will be sent via another application. Share your logs e.g. over discord to developers.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">El archivo se enviará mediante otra aplicación. Comparte tus registros, por ejemplo por Discord, con los desarrolladores.</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Success</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Éxito</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Logs saved to %1, please send them to the developers</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Registros guardados en %1, envíalos a los desarrolladores</translation>
     </message>
 </context>
@@ -306,13 +297,11 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="363"/>
         <source>Git-Repository</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Repositorio Git</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="366"/>
         <source>GitHub-Stars</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Estrellas de GitHub</translation>
     </message>
     <message>
@@ -368,19 +357,16 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="523"/>
         <source>Context menu</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Menú contextual</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="566"/>
         <source>Open directory</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Abrir directorio</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="571"/>
         <source>Open repository</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Abrir repositorio</translation>
     </message>
     <message>
@@ -455,37 +441,31 @@ Please report this issue to developers</source>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1224"/>
         <source>Map exists</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">El mapa existe</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1225"/>
         <source>Map &apos;%1&apos; already exists. Do you want to overwrite it?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">El mapa &apos;%1&apos; ya existe. ¿Quieres sobrescribirlo?</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1234"/>
         <source>Yes to All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Sí para todo</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1235"/>
         <source>No to All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">No para todo</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1324"/>
         <source>Import complete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Importación completa</translation>
     </message>
     <message numerus="yes">
         <location filename="../modManager/cmodlistview_moc.cpp" line="1324"/>
         <source>%n map(s) successfully imported.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">
             <numerusform>%n mapa(s) importado(s) correctamente.</numerusform>
             <numerusform>%n mapa(s) importado(s) correctamente.</numerusform>
@@ -505,14 +485,12 @@ Please report this issue to developers</source>
         <location filename="../modManager/cmodlistview_moc.cpp" line="974"/>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
         <source>Import failed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Error de importación</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
         <source>Failed to import the following maps:
 %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">No se pudieron importar los siguientes mapas:
 %1</translation>
     </message>
@@ -632,13 +610,11 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1378"/>
         <source>Config editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Editor de configuración</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="466"/>
         <source>Open editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Abrir editor</translation>
     </message>
     <message>
@@ -669,7 +645,6 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="911"/>
         <source>Allow portrait mode</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Permitir modo retrato</translation>
     </message>
     <message>
@@ -742,7 +717,6 @@ Modo Exclusivo de Pantalla Completa - el juego cubrirá toda tu pantalla y usar�
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="385"/>
         <source>Ignore mute switch</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Ignorar el interruptor de silencio</translation>
     </message>
     <message>
@@ -983,37 +957,31 @@ Modo Exclusivo de Pantalla Completa - el juego cubrirá toda tu pantalla y usar�
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="124"/>
         <source>StupidAI (deprecated)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">StupidAI (obsoleto)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="128"/>
         <source>BattleAI (default, recommended)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">BattleAI (predeterminado, recomendado)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="132"/>
         <source>MMAI (experimental)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">MMAI (experimental)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="145"/>
         <source>Nullkiller (superseded by Nullkiller2)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nullkiller (reemplazado por Nullkiller2)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="149"/>
         <source>Nullkiller2 (default, recommended)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nullkiller2 (predeterminado, recomendado)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="159"/>
         <source>EmptyAI - No valid AI libraries found!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">EmptyAI - ¡No se encontraron bibliotecas de IA válidas!</translation>
     </message>
     <message>
@@ -1061,13 +1029,11 @@ Modo Exclusivo de Pantalla Completa - el juego cubrirá toda tu pantalla y usar�
     <message>
         <location filename="../settingsView/configeditordialog_moc.ui" line="50"/>
         <source>Save</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Guardar</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.ui" line="73"/>
         <source>File:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Archivo:</translation>
     </message>
     <message>
@@ -1078,25 +1044,21 @@ Modo Exclusivo de Pantalla Completa - el juego cubrirá toda tu pantalla y usar�
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="27"/>
         <source>Config editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Editor de configuración</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="69"/>
         <source>Unsaved changes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Cambios no guardados</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="69"/>
         <source>Do you want to discard changes?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">¿Deseas descartar los cambios?</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="123"/>
         <source>JSON file is not valid!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">¡El archivo JSON no es válido!</translation>
     </message>
 </context>
@@ -1376,7 +1338,6 @@ Por favor, selecciona el directorio con Heroes III: Complete Edition o Heroes II
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.cpp" line="348"/>
         <source>Failed to open file: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">No se pudo abrir el archivo: %1</translation>
     </message>
     <message>
@@ -1481,31 +1442,26 @@ Por favor, selecciona el directorio con los datos de Heroes III instalados.</tra
     <message>
         <location filename="../modManager/hdextractor.cpp" line="38"/>
         <source>Select Directory with HD Edition (Steam folder)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selecciona el directorio de HD Edition (carpeta de Steam)</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
         <source>Invalid folder</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Carpeta no válida</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
         <source>The selected folder does not contain HOMM3 2.0.exe! Please select the HD Edition installation folder.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">¡La carpeta seleccionada no contiene HOMM3 2.0.exe! Selecciona la carpeta de instalación de HD Edition.</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="98"/>
         <source>Extraction error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Error de extracción</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="98"/>
         <source>Please delete mod and try again! Failed to copy file %1 to %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">¡Elimina el mod e inténtalo de nuevo! No se pudo copiar el archivo %1 a %2</translation>
     </message>
 </context>
@@ -1637,13 +1593,11 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="23"/>
         <source>Belarusian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bielorruso</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="24"/>
         <source>Bulgarian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Búlgaro</translation>
     </message>
     <message>
@@ -1689,7 +1643,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="33"/>
         <source>Greek</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Griego</translation>
     </message>
     <message>
@@ -1705,7 +1658,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="36"/>
         <source>Japanese</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Japonés</translation>
     </message>
     <message>
@@ -1721,7 +1673,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="39"/>
         <source>Norwegian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Noruego</translation>
     </message>
     <message>
@@ -1737,7 +1688,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="42"/>
         <source>Romanian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Rumano</translation>
     </message>
     <message>
@@ -2029,7 +1979,6 @@ Bin (%n bytes):
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="57"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Recursos</translation>
     </message>
 </context>
@@ -2157,7 +2106,6 @@ Razón: %2</translation>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="280"/>
         <source>Install HD Edition (Steam)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Instalar HD Edition (Steam)</translation>
     </message>
     <message>
@@ -2321,14 +2269,12 @@ After installation, you need to set the upscaling filter to x2 or higher in orde
         <location filename="../startGame/StartGameTab.cpp" line="442"/>
         <location filename="../startGame/StartGameTab.cpp" line="451"/>
         <source>Preset import failed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Error al importar el preajuste</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="442"/>
         <location filename="../startGame/StartGameTab.cpp" line="451"/>
         <source>Failed to import preset - data in clipboard does not looks like mod preset!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Error al importar el preajuste: los datos del portapapeles no parecen un preajuste de mod.</translation>
     </message>
     <message>

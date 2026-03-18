@@ -89,55 +89,46 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="316"/>
         <source>Export logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Naplók exportálása</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Save logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Naplók mentése</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Zip archives (*.zip)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">ZIP-archívumok (*.zip)</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="272"/>
         <source>Error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Hiba</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="272"/>
         <source>Failed to create archive: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nem sikerült létrehozni az archívumot: %1</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>Send logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Naplók küldése</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>The archive will be sent via another application. Share your logs e.g. over discord to developers.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Az archívumot egy másik alkalmazás küldi el. Ossza meg a naplókat (pl. Discordon) a fejlesztőkkel.</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Success</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Siker</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Logs saved to %1, please send them to the developers</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">A naplók a következő helyre lettek mentve: %1, kérjük küldje el őket a fejlesztőknek</translation>
     </message>
 </context>
@@ -306,13 +297,11 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="363"/>
         <source>Git-Repository</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Git-repozitórium</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="366"/>
         <source>GitHub-Stars</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">GitHub-csillagok</translation>
     </message>
     <message>
@@ -368,19 +357,16 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="523"/>
         <source>Context menu</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Kontextus menü</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="566"/>
         <source>Open directory</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Könyvtár megnyitása</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="571"/>
         <source>Open repository</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tároló megnyitása</translation>
     </message>
     <message>
@@ -455,31 +441,26 @@ Please report this issue to developers</source>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1224"/>
         <source>Map exists</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Térkép létezik</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1225"/>
         <source>Map &apos;%1&apos; already exists. Do you want to overwrite it?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">A(z) &apos;%1&apos; térkép már létezik. Felül szeretnéd írni?</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1234"/>
         <source>Yes to All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Igen mindet</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1235"/>
         <source>No to All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nem mindet</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1324"/>
         <source>Import complete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Importálás befejezve</translation>
     </message>
     <message numerus="yes">
@@ -503,14 +484,12 @@ Please report this issue to developers</source>
         <location filename="../modManager/cmodlistview_moc.cpp" line="974"/>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
         <source>Import failed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Importálás sikertelen</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
         <source>Failed to import the following maps:
 %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">A következő térképek importálása nem sikerült:
 %1</translation>
     </message>
@@ -625,13 +604,11 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1378"/>
         <source>Config editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Konfigurációs szerkesztő</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="466"/>
         <source>Open editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Szerkesztő megnyitása</translation>
     </message>
     <message>
@@ -662,7 +639,6 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="911"/>
         <source>Allow portrait mode</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Álló mód engedélyezése</translation>
     </message>
     <message>
@@ -735,7 +711,6 @@ Exkluzív teljes képernyő - a játék teljes képernyős módban fut, és az �
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="385"/>
         <source>Ignore mute switch</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Némító kapcsoló figyelmen kívül hagyása</translation>
     </message>
     <message>
@@ -981,37 +956,31 @@ Exkluzív teljes képernyő - a játék teljes képernyős módban fut, és az �
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="124"/>
         <source>StupidAI (deprecated)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">StupidAI (elavult)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="128"/>
         <source>BattleAI (default, recommended)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">BattleAI (alapértelmezett, ajánlott)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="132"/>
         <source>MMAI (experimental)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">MMAI (kísérleti)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="145"/>
         <source>Nullkiller (superseded by Nullkiller2)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nullkiller (a Nullkiller2 váltotta fel)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="149"/>
         <source>Nullkiller2 (default, recommended)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nullkiller2 (alapértelmezett, ajánlott)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="159"/>
         <source>EmptyAI - No valid AI libraries found!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">EmptyAI – Nem található érvényes AI-könyvtár!</translation>
     </message>
     <message>
@@ -1059,13 +1028,11 @@ Exkluzív teljes képernyő - a játék teljes képernyős módban fut, és az �
     <message>
         <location filename="../settingsView/configeditordialog_moc.ui" line="50"/>
         <source>Save</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Mentés</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.ui" line="73"/>
         <source>File:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Fájl:</translation>
     </message>
     <message>
@@ -1076,25 +1043,21 @@ Exkluzív teljes képernyő - a játék teljes képernyős módban fut, és az �
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="27"/>
         <source>Config editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Konfigurációs szerkesztő</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="69"/>
         <source>Unsaved changes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nem mentett változtatások</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="69"/>
         <source>Do you want to discard changes?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Elveted a változtatásokat?</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="123"/>
         <source>JSON file is not valid!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">A JSON fájl érvénytelen!</translation>
     </message>
 </context>
@@ -1374,7 +1337,6 @@ Kérjük, válassza ki a Heroes III: Complete Edition vagy Heroes III: Shadow of
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.cpp" line="348"/>
         <source>Failed to open file: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nem sikerült megnyitni a fájlt: %1</translation>
     </message>
     <message>
@@ -1479,31 +1441,26 @@ Kérjük, válassza ki az installált Heroes III adatokat tartalmazó könyvtár
     <message>
         <location filename="../modManager/hdextractor.cpp" line="38"/>
         <source>Select Directory with HD Edition (Steam folder)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Válassza ki a HD Edition könyvtárát (Steam mappa)</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
         <source>Invalid folder</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Érvénytelen mappa</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
         <source>The selected folder does not contain HOMM3 2.0.exe! Please select the HD Edition installation folder.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">A kiválasztott mappa nem tartalmazza a HOMM3 2.0.exe fájlt! Kérjük, válassza ki a HD Edition telepítési mappáját.</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="98"/>
         <source>Extraction error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Kibontási hiba</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="98"/>
         <source>Please delete mod and try again! Failed to copy file %1 to %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Kérjük törölje a modot és próbálja újra! Nem sikerült a(z) %1 fájlt a(z) %2 helyre másolni</translation>
     </message>
 </context>
@@ -1629,13 +1586,11 @@ Bin (%n bájt):
     <message>
         <location filename="../languages.cpp" line="23"/>
         <source>Belarusian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Belarusz</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="24"/>
         <source>Bulgarian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bolgár</translation>
     </message>
     <message>
@@ -1681,7 +1636,6 @@ Bin (%n bájt):
     <message>
         <location filename="../languages.cpp" line="33"/>
         <source>Greek</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Görög</translation>
     </message>
     <message>
@@ -1697,7 +1651,6 @@ Bin (%n bájt):
     <message>
         <location filename="../languages.cpp" line="36"/>
         <source>Japanese</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Japán</translation>
     </message>
     <message>
@@ -1713,7 +1666,6 @@ Bin (%n bájt):
     <message>
         <location filename="../languages.cpp" line="39"/>
         <source>Norwegian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Norvég</translation>
     </message>
     <message>
@@ -1729,7 +1681,6 @@ Bin (%n bájt):
     <message>
         <location filename="../languages.cpp" line="42"/>
         <source>Romanian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Román</translation>
     </message>
     <message>
@@ -2022,7 +1973,6 @@ Bin (%n bájt):
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="57"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Erőforrások</translation>
     </message>
 </context>
@@ -2150,7 +2100,6 @@ Indok: %2</translation>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="280"/>
         <source>Install HD Edition (Steam)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">HD Edition telepítése (Steam)</translation>
     </message>
     <message>
@@ -2312,14 +2261,12 @@ After installation, you need to set the upscaling filter to x2 or higher in orde
         <location filename="../startGame/StartGameTab.cpp" line="442"/>
         <location filename="../startGame/StartGameTab.cpp" line="451"/>
         <source>Preset import failed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Előbeállítás importja sikertelen</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="442"/>
         <location filename="../startGame/StartGameTab.cpp" line="451"/>
         <source>Failed to import preset - data in clipboard does not looks like mod preset!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Az előbeállítás importja nem sikerült – a vágólapon lévő adatok nem tűnnek mod előbeállításnak!</translation>
     </message>
     <message>

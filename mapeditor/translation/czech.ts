@@ -136,12 +136,10 @@
     </message>
     <message>
         <source>Fewer Scenarios than regions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Méně scénářů než regionů</translation>
     </message>
     <message>
         <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Máte méně scénářů než regionů. To je povoleno pouze tehdy, pokud chybějící scénáře jsou v posledních regionech, ne uprostřed nebo na začátku.</translation>
     </message>
     <message>
@@ -1171,7 +1169,6 @@
     </message>
     <message>
         <source>Surface</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Povrch</translation>
     </message>
     <message>
@@ -1180,7 +1177,6 @@
     </message>
     <message>
         <source>Level - %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Úroveň - %1</translation>
     </message>
     <message>
@@ -1462,7 +1458,6 @@
         <source>
 
 Do you want to do that now ?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation>
 
 Chcete to udělat nyní?</translation>

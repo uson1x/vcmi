@@ -79,7 +79,6 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="113"/>
         <source>Open Campaignset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Otwórz zestaw kampanii</translation>
     </message>
     <message>
@@ -137,12 +136,10 @@
     </message>
     <message>
         <source>Fewer Scenarios than regions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Mniej scenariuszy niż regionów</translation>
     </message>
     <message>
         <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Masz mniej scenariuszy niż regionów. Jest to dozwolone tylko wtedy, gdy brakujące scenariusze występują w ostatnich regionach, a nie w środku lub na początku.</translation>
     </message>
     <message>
@@ -174,25 +171,21 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Open Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Otwórz zestaw kampanii</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Select Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Wybierz zestaw kampanii</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Open Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Otwórz kampanię</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Select Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Wybierz kampanię</translation>
     </message>
     <message>
@@ -329,7 +322,6 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
         <source>Enable rim image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Włącz obraz ramki</translation>
     </message>
     <message>
@@ -3027,7 +3019,6 @@ Dodaj go do wymaganych modów w Ustawieniach ogólnych mapy.</translation>
         <location filename="../campaigneditor/scenarioproperties.ui" line="185"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="279"/>
         <source>Video 2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Wideo 2</translation>
     </message>
     <message>
@@ -3375,13 +3366,11 @@ Dodaj go do wymaganych modów w Ustawieniach ogólnych mapy.</translation>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="95"/>
         <source>Main town is of random faction</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Główne miasto jest losowej frakcji</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="107"/>
         <source>Player does not have a main town!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Gracz nie ma głównego miasta!</translation>
     </message>
     <message>
@@ -3630,7 +3619,6 @@ Dodaj go do wymaganych modów w Ustawieniach ogólnych mapy.</translation>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="729"/>
         <source>Forced level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Wymuszony poziom</translation>
     </message>
     <message>
@@ -3927,7 +3915,6 @@ Dodaj go do wymaganych modów w Ustawieniach ogólnych mapy.</translation>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="408"/>
         <source>Automatic</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Automatycznie</translation>
     </message>
     <message>

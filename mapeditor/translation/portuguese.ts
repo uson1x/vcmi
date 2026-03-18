@@ -79,7 +79,6 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="113"/>
         <source>Open Campaignset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Abrir conjunto de campanhas</translation>
     </message>
     <message>
@@ -137,12 +136,10 @@
     </message>
     <message>
         <source>Fewer Scenarios than regions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Menos cenários do que regiões</translation>
     </message>
     <message>
         <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Você tem menos cenários do que regiões. Isso só é permitido se os cenários ausentes ocorrerem nas últimas regiões, e não no meio ou no início.</translation>
     </message>
     <message>
@@ -174,25 +171,21 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Open Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Abrir conjunto de campanhas</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Select Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selecionar conjunto de campanhas</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Open Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Abrir campanha</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Select Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selecionar campanha</translation>
     </message>
     <message>
@@ -329,7 +322,6 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
         <source>Enable rim image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Ativar imagem da borda</translation>
     </message>
     <message>
@@ -389,7 +381,6 @@
         <location filename="../templateeditor/entitiesselector.ui" line="14"/>
         <location filename="../templateeditor/entitiesselector.ui" line="20"/>
         <source>Select Entities</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selecionar entidades</translation>
     </message>
 </context>
@@ -1178,7 +1169,6 @@
     </message>
     <message>
         <source>Surface</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Superfície</translation>
     </message>
     <message>
@@ -1187,7 +1177,6 @@
     </message>
     <message>
         <source>Level - %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Nível - %1</translation>
     </message>
     <message>
@@ -1350,31 +1339,26 @@
     <message>
         <location filename="../mainwindow.cpp" line="1056"/>
         <source>Undo clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Desfazer clicado</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1067"/>
         <source>Redo clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Refazer clicado</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1078"/>
         <source>Passability clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Passabilidade clicada</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1091"/>
         <source>Grid clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Grelha clicada</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1172"/>
         <source>Fill clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Preencher clicado</translation>
     </message>
     <message>
@@ -1645,7 +1629,6 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="14"/>
         <source>Select Objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selecionar objetos</translation>
     </message>
     <message>
@@ -1661,25 +1644,21 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="40"/>
         <source>Banned Objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Objetos proibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="50"/>
         <source>Banned Object Categories</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Categorias de objetos proibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="33"/>
         <source>Object Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Seletor de objetos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="96"/>
         <source>Category</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Categoria</translation>
     </message>
     <message>
@@ -1709,7 +1688,6 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="103"/>
         <source>Creature bank</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Banco de criaturas</translation>
     </message>
     <message>
@@ -1720,7 +1698,6 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="105"/>
         <source>Dwelling</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Habitação</translation>
     </message>
     <message>
@@ -1731,7 +1708,6 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="107"/>
         <source>Resource generator</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Gerador de recursos</translation>
     </message>
     <message>
@@ -1742,25 +1718,21 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="109"/>
         <source>Random artifact</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Artefacto aleatório</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="110"/>
         <source>Pandoras box</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Caixa de Pandora</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="111"/>
         <source>Quest artifact</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Artefacto de missão</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="112"/>
         <source>Seer hut</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Cabana do vidente</translation>
     </message>
     <message>
@@ -1784,7 +1756,6 @@ Você quer fazer isso agora?</translation>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Object</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Objeto</translation>
     </message>
     <message>
@@ -1805,13 +1776,11 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Probability</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Probabilidade</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Max per zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Máximo por zona</translation>
     </message>
 </context>
@@ -1963,7 +1932,6 @@ Você quer fazer isso agora?</translation>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="175"/>
         <source>Random hero secondary skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Perícias secundárias aleatórias do herói</translation>
     </message>
     <message>
@@ -3049,7 +3017,6 @@ Adicione-o aos mods obrigatórios do mapa em Mapa-&gt;Configurações gerais.</t
         <location filename="../campaigneditor/scenarioproperties.ui" line="185"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="279"/>
         <source>Video 2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Vídeo 2</translation>
     </message>
     <message>
@@ -3397,13 +3364,11 @@ Adicione-o aos mods obrigatórios do mapa em Mapa-&gt;Configurações gerais.</t
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="95"/>
         <source>Main town is of random faction</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">A cidade principal é de uma facção aleatória</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="107"/>
         <source>Player does not have a main town!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">O jogador não tem uma cidade principal!</translation>
     </message>
     <message>
@@ -3590,31 +3555,26 @@ Adicione-o aos mods obrigatórios do mapa em Mapa-&gt;Configurações gerais.</t
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="502"/>
         <source>Entities</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Entidades</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="508"/>
         <source>Banned Spells</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Feitiços proibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="515"/>
         <source>Banned Artifacts</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Artefactos proibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="522"/>
         <source>Banned Skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Perícias proibidas</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="529"/>
         <source>Banned Heroes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Heróis proibidos</translation>
     </message>
     <message>
@@ -3657,7 +3617,6 @@ Adicione-o aos mods obrigatórios do mapa em Mapa-&gt;Configurações gerais.</t
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="729"/>
         <source>Forced level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nível forçado</translation>
     </message>
     <message>
@@ -3954,7 +3913,6 @@ Adicione-o aos mods obrigatórios do mapa em Mapa-&gt;Configurações gerais.</t
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="408"/>
         <source>Automatic</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Automático</translation>
     </message>
     <message>
@@ -4409,7 +4367,6 @@ Guarda: %3</translation>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="14"/>
         <source>Select Town hints</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selecionar dicas de cidade</translation>
     </message>
     <message>
@@ -4420,7 +4377,6 @@ Guarda: %3</translation>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="24"/>
         <source>Town hint Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Seletor de dicas de cidade</translation>
     </message>
     <message>
@@ -4441,19 +4397,16 @@ Guarda: %3</translation>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="33"/>
         <source>Like Zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Como a zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="34"/>
         <source>Not like zone (comma separated)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Não como a zona (separado por vírgulas)</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="35"/>
         <source>Related to zone terrain</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Relacionado com o terreno da zona</translation>
     </message>
     <message>
@@ -4621,25 +4574,21 @@ Guarda: %3</translation>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
         <source>Spell Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Seletor de feitiços</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
         <source>Artifact Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Seletor de artefactos</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
         <source>Skill Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Seletor de perícias</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
         <source>Hero Type Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Seletor de tipo de herói</translation>
     </message>
 </context>
@@ -4909,7 +4858,6 @@ Guarda: %3</translation>
     <message>
         <location filename="../windownewmap.ui" line="312"/>
         <source>Levels</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Níveis</translation>
     </message>
     <message>
@@ -5054,13 +5002,11 @@ Guarda: %3</translation>
     <message>
         <location filename="../windownewmap.cpp" line="343"/>
         <source>Multilevel support</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Suporte a múltiplos níveis</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="343"/>
         <source>Multilevel support is highly experimental yet. Expect issues.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">O suporte a múltiplos níveis ainda é altamente experimental. Podem ocorrer problemas.</translation>
     </message>
     <message>

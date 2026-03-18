@@ -89,55 +89,46 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="316"/>
         <source>Export logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Xuất nhật ký</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Save logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Lưu nhật ký</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="170"/>
         <source>Zip archives (*.zip)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Lưu trữ ZIP (*.zip)</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="272"/>
         <source>Error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Lỗi</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="272"/>
         <source>Failed to create archive: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Không thể tạo gói lưu trữ: %1</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>Send logs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Gửi nhật ký</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="277"/>
         <source>The archive will be sent via another application. Share your logs e.g. over discord to developers.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Gói lưu trữ sẽ được gửi qua ứng dụng khác. Hãy chia sẻ nhật ký của bạn, ví dụ qua Discord, cho các nhà phát triển.</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Success</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thành công</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.cpp" line="281"/>
         <source>Logs saved to %1, please send them to the developers</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nhật ký đã được lưu vào %1, vui lòng gửi cho các nhà phát triển</translation>
     </message>
 </context>
@@ -306,13 +297,11 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="363"/>
         <source>Git-Repository</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Kho Git</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="366"/>
         <source>GitHub-Stars</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Sao GitHub</translation>
     </message>
     <message>
@@ -368,19 +357,16 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="523"/>
         <source>Context menu</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Menu ngữ cảnh</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="566"/>
         <source>Open directory</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Mở thư mục</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="571"/>
         <source>Open repository</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Mở kho lưu trữ</translation>
     </message>
     <message>
@@ -416,7 +402,6 @@ Có lỗi sau:
         <source>
 
 Install successfully downloaded?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">
 Cài đặt đã tải xuống thành công?</translation>
     </message>
@@ -455,31 +440,26 @@ Please report this issue to developers</source>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1224"/>
         <source>Map exists</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bản đồ đã tồn tại</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1225"/>
         <source>Map &apos;%1&apos; already exists. Do you want to overwrite it?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bản đồ &apos;%1&apos; đã tồn tại. Bạn có muốn ghi đè không?</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1234"/>
         <source>Yes to All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Có cho tất cả</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1235"/>
         <source>No to All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Không cho tất cả</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1324"/>
         <source>Import complete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nhập xong</translation>
     </message>
     <message numerus="yes">
@@ -503,14 +483,12 @@ Please report this issue to developers</source>
         <location filename="../modManager/cmodlistview_moc.cpp" line="974"/>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
         <source>Import failed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nhập thất bại</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
         <source>Failed to import the following maps:
 %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Không thể nhập các bản đồ sau:
 %1</translation>
     </message>
@@ -593,19 +571,16 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="348"/>
         <source>Sticks Sensitivity</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Độ nhạy cần điều khiển</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1240"/>
         <source>Automatic (Linear)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tự động (Tuyến tính)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="733"/>
         <source>Haptic Feedback</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Phản hồi xúc giác</translation>
     </message>
     <message>
@@ -628,13 +603,11 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1378"/>
         <source>Config editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Trình chỉnh sửa cấu hình</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="466"/>
         <source>Open editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Mở trình chỉnh sửa</translation>
     </message>
     <message>
@@ -645,19 +618,16 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="508"/>
         <source>xBRZ x2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">xBRZ x2</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="513"/>
         <source>xBRZ x3</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">xBRZ x3</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="518"/>
         <source>xBRZ x4</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">xBRZ x4</translation>
     </message>
     <message>
@@ -668,7 +638,6 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="911"/>
         <source>Allow portrait mode</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Cho phép chế độ dọc</translation>
     </message>
     <message>
@@ -684,7 +653,6 @@ Please report this issue to developers</source>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="678"/>
         <source>Handle back as right mouse button</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Xử lý nút quay lại như chuột phải</translation>
     </message>
     <message>
@@ -742,7 +710,6 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="385"/>
         <source>Ignore mute switch</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bỏ qua công tắc tắt tiếng</translation>
     </message>
     <message>
@@ -758,19 +725,16 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="685"/>
         <source>Use Relative Pointer Mode</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Sử dụng chế độ con trỏ tương đối</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1230"/>
         <source>Nearest</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Gần nhất</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1235"/>
         <source>Linear</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tuyến tính</translation>
     </message>
     <message>
@@ -831,19 +795,16 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="313"/>
         <source>Long Touch Duration</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thời gian nhấn giữ lâu</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1371"/>
         <source>Controller Click Tolerance</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Độ nhạy nhấp chuột của bộ điều khiển</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="664"/>
         <source>Touch Tap Tolerance</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Độ nhạy chạm màn hình</translation>
     </message>
     <message>
@@ -894,13 +855,11 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="740"/>
         <source>Mouse Click Tolerance</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Độ nhạy nhấp chuột</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="1129"/>
         <source>Sticks Acceleration</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Gia tốc cần điều khiển</translation>
     </message>
     <message>
@@ -971,7 +930,6 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="112"/>
         <source>VSync</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">VSync</translation>
     </message>
     <message>
@@ -997,37 +955,31 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="124"/>
         <source>StupidAI (deprecated)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">StupidAI (đã lỗi thời)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="128"/>
         <source>BattleAI (default, recommended)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">BattleAI (mặc định, khuyến nghị)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="132"/>
         <source>MMAI (experimental)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">MMAI (thử nghiệm)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="145"/>
         <source>Nullkiller (superseded by Nullkiller2)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nullkiller (đã được thay thế bởi Nullkiller2)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="149"/>
         <source>Nullkiller2 (default, recommended)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nullkiller2 (mặc định, khuyến nghị)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.cpp" line="159"/>
         <source>EmptyAI - No valid AI libraries found!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">EmptyAI - Không tìm thấy thư viện AI hợp lệ!</translation>
     </message>
     <message>
@@ -1062,13 +1014,11 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
         <location filename="../modManager/chroniclesextractor.cpp" line="100"/>
         <location filename="../modManager/chroniclesextractor.cpp" line="101"/>
         <source>Heroes Chronicles</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Heroes Chronicles</translation>
     </message>
     <message>
         <location filename="../modManager/chroniclesextractor.cpp" line="149"/>
         <source>Heroes Chronicles %1 - %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Heroes Chronicles %1 - %2</translation>
     </message>
 </context>
@@ -1077,13 +1027,11 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/configeditordialog_moc.ui" line="50"/>
         <source>Save</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Lưu</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.ui" line="73"/>
         <source>File:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tệp:</translation>
     </message>
     <message>
@@ -1094,25 +1042,21 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="27"/>
         <source>Config editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Trình chỉnh sửa cấu hình</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="69"/>
         <source>Unsaved changes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thay đổi chưa lưu</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="69"/>
         <source>Do you want to discard changes?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bạn có muốn hủy các thay đổi không?</translation>
     </message>
     <message>
         <location filename="../settingsView/configeditordialog_moc.cpp" line="123"/>
         <source>JSON file is not valid!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tệp JSON không hợp lệ!</translation>
     </message>
 </context>
@@ -1122,7 +1066,6 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
         <location filename="../modManager/modstate.cpp" line="145"/>
         <location filename="../modManager/modstatemodel.cpp" line="93"/>
         <source>%1 MiB</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">%1 MiB</translation>
     </message>
 </context>
@@ -1141,7 +1084,6 @@ Toàn màn hình riêng biệt - Sử dụng kích thước màn hình do bạn 
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="78"/>
         <source>Mods Preset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thiết lập mod</translation>
     </message>
     <message>
@@ -1394,7 +1336,6 @@ Hãy chọn thư mục có Heroes III: Complete Edition hoặc Heroes III: Shado
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.cpp" line="348"/>
         <source>Failed to open file: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Không mở được tệp: %1</translation>
     </message>
     <message>
@@ -1499,31 +1440,26 @@ Hãy chọn đúng thư mục chứa dữ liệu Heroes III đã cài đặt.</t
     <message>
         <location filename="../modManager/hdextractor.cpp" line="38"/>
         <source>Select Directory with HD Edition (Steam folder)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Chọn thư mục chứa HD Edition (thư mục Steam)</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
         <source>Invalid folder</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thư mục không hợp lệ</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
         <source>The selected folder does not contain HOMM3 2.0.exe! Please select the HD Edition installation folder.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thư mục đã chọn không chứa HOMM3 2.0.exe! Vui lòng chọn thư mục cài đặt HD Edition.</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="98"/>
         <source>Extraction error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Lỗi giải nén</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="98"/>
         <source>Please delete mod and try again! Failed to copy file %1 to %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Vui lòng xóa mod và thử lại! Không thể sao chép tệp %1 tới %2</translation>
     </message>
 </context>
@@ -1601,13 +1537,11 @@ Bin (%n bytes):
     <message>
         <location filename="../innoextract.cpp" line="157"/>
         <source>Exe</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Exe</translation>
     </message>
     <message>
         <location filename="../innoextract.cpp" line="157"/>
         <source>Bin</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bin</translation>
     </message>
     <message>
@@ -1647,13 +1581,11 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="23"/>
         <source>Belarusian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếng Belarus</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="24"/>
         <source>Bulgarian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếng Bulgaria</translation>
     </message>
     <message>
@@ -1699,7 +1631,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="33"/>
         <source>Greek</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếng Hy Lạp</translation>
     </message>
     <message>
@@ -1715,7 +1646,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="36"/>
         <source>Japanese</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếng Nhật</translation>
     </message>
     <message>
@@ -1731,7 +1661,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="39"/>
         <source>Norwegian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếng Na Uy</translation>
     </message>
     <message>
@@ -1747,7 +1676,6 @@ Bin (%n bytes):
     <message>
         <location filename="../languages.cpp" line="42"/>
         <source>Romanian</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếng Romania</translation>
     </message>
     <message>
@@ -1811,7 +1739,6 @@ Bin (%n bytes):
     <message>
         <location filename="../mainwindow_moc.ui" line="61"/>
         <source>Game</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Trò chơi</translation>
     </message>
     <message>
@@ -2036,13 +1963,11 @@ Bin (%n bytes):
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="56"/>
         <source>AI</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">AI</translation>
     </message>
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="57"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tài nguyên</translation>
     </message>
 </context>
@@ -2066,31 +1991,26 @@ Có thể do lỗi: %2</translation>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="635"/>
         <source>Import from Clipboard</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nhập từ bảng tạm</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="654"/>
         <source>Rename Current Preset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Đổi tên thiết lập hiện tại</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="568"/>
         <source>Create New Preset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tạo thiết lập mới</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="549"/>
         <source>Export to Clipboard</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Xuất ra bảng tạm</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="603"/>
         <source>Delete Current Preset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Xóa thiết lập hiện tại</translation>
     </message>
     <message>
@@ -2110,7 +2030,6 @@ Có thể do lỗi: %2</translation>
         <location filename="../startGame/StartGameTab.ui" line="489"/>
         <location filename="../startGame/StartGameTab.ui" line="508"/>
         <source>?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">?</translation>
     </message>
     <message>
@@ -2171,19 +2090,16 @@ Có thể do lỗi: %2</translation>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="55"/>
         <source>Mod Preset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Thiết lập mod</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="280"/>
         <source>Install HD Edition (Steam)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Cài đặt HD Edition (Steam)</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.ui" line="811"/>
         <source>Resume</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tiếp tục</translation>
     </message>
     <message>
@@ -2225,19 +2141,16 @@ cài đặt %n/%1</numerusform>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="247"/>
         <source>Maps</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bản đồ</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="248"/>
         <source>Campaigns</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Chiến dịch</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="249"/>
         <source>Configs</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Cấu hình</translation>
     </message>
     <message>
@@ -2248,7 +2161,6 @@ cài đặt %n/%1</numerusform>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="251"/>
         <source>Gog files</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tệp Gog</translation>
     </message>
     <message>
@@ -2271,7 +2183,6 @@ cài đặt %n/%1</numerusform>
  - VCMI mods in zip format (.zip)
  - VCMI configuration files (.json)
 </source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Tùy chọn này cho phép bạn nhập thêm tệp dữ liệu vào cài đặt VCMI của bạn. Hiện tại, các tùy chọn sau được hỗ trợ:
 
 - Bản đồ Heroes III (.h3m hoặc .vmap).
@@ -2283,13 +2194,11 @@ cài đặt %n/%1</numerusform>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="314"/>
         <source>Your Heroes III version uses different language. VCMI provides translations of the game into various languages that you can use. Use this option to automatically install such translation to your language.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Phiên bản Heroes III của bạn sử dụng ngôn ngữ khác. VCMI cung cấp bản dịch trò chơi sang nhiều ngôn ngữ mà bạn có thể sử dụng. Sử dụng tùy chọn này để tự động cài đặt bản dịch sang ngôn ngữ của bạn.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="324"/>
         <source>Translation of Heroes III into your language is installed, but has been turned off. Use this option to enable it.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Bản dịch Heroes III sang ngôn ngữ của bạn đã được cài đặt nhưng đang bị tắt. Sử dụng tùy chọn này để bật nó.</translation>
     </message>
     <message>
@@ -2297,7 +2206,6 @@ cài đặt %n/%1</numerusform>
         <source>A new version of some of the mods that you have installed is now available in mod repository. Use this option to automatically update all your mods to latest version.
 
 WARNING: In some cases, updated versions of mods may not be compatible with your existing saves. You may want to postpone mod update until you finish any of your ongoing games.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Một phiên bản mới của một số mod mà bạn đã cài đặt hiện có sẵn trong kho lưu trữ mod. Sử dụng tùy chọn này để tự động cập nhật tất cả các mod của bạn lên phiên bản mới nhất.
 
 CẢNH BÁO: Trong một số trường hợp, các phiên bản cập nhật của mod có thể không tương thích với các bản lưu hiện có của bạn. Bạn có thể muốn hoãn cập nhật mod cho đến khi hoàn thành trò chơi hiện tại của mình.</translation>
@@ -2347,26 +2255,22 @@ After installation, you need to set the upscaling filter to x2 or higher in orde
         <location filename="../startGame/StartGameTab.cpp" line="442"/>
         <location filename="../startGame/StartGameTab.cpp" line="451"/>
         <source>Preset import failed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nhập preset thất bại</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="442"/>
         <location filename="../startGame/StartGameTab.cpp" line="451"/>
         <source>Failed to import preset - data in clipboard does not looks like mod preset!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Không thể nhập preset - dữ liệu trong bảng tạm không giống preset của mod!</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="467"/>
         <source>Enter preset name:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nhập tên thiết lập:</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="510"/>
         <source>Rename preset &apos;%1&apos; to:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Đổi tên thiết lập &apos;%1&apos; thành:</translation>
     </message>
 </context>

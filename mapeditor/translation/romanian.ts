@@ -79,7 +79,6 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="113"/>
         <source>Open Campaignset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Deschide setul de campanii</translation>
     </message>
     <message>
@@ -137,12 +136,10 @@
     </message>
     <message>
         <source>Fewer Scenarios than regions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Mai puține scenarii decât regiuni</translation>
     </message>
     <message>
         <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="obsolete">Aveți mai puține scenarii decât regiuni. Acest lucru este permis doar dacă scenariile lipsă apar în ultimele regiuni, nu la mijloc sau la început.</translation>
     </message>
     <message>
@@ -174,25 +171,21 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Open Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Deschide setul de campanii</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Select Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selectează setul de campanii</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Open Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Deschide campania</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Select Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Selectează campania</translation>
     </message>
     <message>
@@ -329,7 +322,6 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
         <source>Enable rim image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Activează imaginea ramei</translation>
     </message>
     <message>
@@ -642,7 +634,6 @@
     <message>
         <location filename="../mapsettings/loseconditions.cpp" line="39"/>
         <source>Lose hero</source>
-        <translatorcomment>AI</translatorcomment>
         <translation>Pierderea eroului</translation>
     </message>
     <message>
@@ -962,7 +953,6 @@
     <message>
         <location filename="../mainwindow.ui" line="1246"/>
         <source>Ctrl+Shift+V</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterward</translatorcomment>
         <translation>Ctrl+Shift+V</translation>
     </message>
     <message>
@@ -2558,7 +2548,6 @@ Adaugă-l în modurile necesare ale hărții din Hartă-&gt;Setări generale.</t
     <message>
         <location filename="../inspector/questwidget.ui" line="231"/>
         <source>Defence</source>
-        <translatorcomment>AI-g</translatorcomment>
         <translation>Apărare</translation>
     </message>
     <message>
@@ -3029,7 +3018,6 @@ Adaugă-l în modurile necesare ale hărții din Hartă-&gt;Setări generale.</t
         <location filename="../campaigneditor/scenarioproperties.ui" line="185"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="279"/>
         <source>Video 2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Video 2</translation>
     </message>
     <message>
@@ -3377,13 +3365,11 @@ Adaugă-l în modurile necesare ale hărții din Hartă-&gt;Setări generale.</t
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="95"/>
         <source>Main town is of random faction</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Orașul principal este al unei facțiuni aleatoare</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="107"/>
         <source>Player does not have a main town!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Jucătorul nu are un oraș principal!</translation>
     </message>
     <message>
@@ -3632,7 +3618,6 @@ Adaugă-l în modurile necesare ale hărții din Hartă-&gt;Setări generale.</t
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="729"/>
         <source>Forced level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Nivel forțat</translation>
     </message>
     <message>
@@ -3929,7 +3914,6 @@ Adaugă-l în modurile necesare ale hărții din Hartă-&gt;Setări generale.</t
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="408"/>
         <source>Automatic</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Automat</translation>
     </message>
     <message>
