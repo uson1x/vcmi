@@ -431,6 +431,8 @@ void TemplateEditor::loadZoneMenuContent(bool onlyPosition)
 
 void TemplateEditor::loadZoneConnectionMenuContent()
 {
+	updateConnectionAddButton();
+
 	auto widget = ui->tableWidgetConnections;
 	auto & connections = templates[selectedTemplate]->connections;
 
@@ -510,6 +512,12 @@ void TemplateEditor::loadZoneConnectionMenuContent()
 		widget->setCellWidget(i, 5, delButton);
 	};
 	widget->resizeColumnsToContents();
+}
+
+void TemplateEditor::updateConnectionAddButton()
+{
+	const bool canAddConnection = templates.count(selectedTemplate) && templates[selectedTemplate]->getZones().size() >= 2;
+	ui->pushButtonConnectionAdd->setEnabled(canAddConnection);
 }
 
 void TemplateEditor::saveZoneMenuContent()
