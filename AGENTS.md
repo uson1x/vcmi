@@ -85,11 +85,13 @@ For platform-specific build and test instructions see [`docs/developers/Building
 #### Bonus System
 
 One of the most important systems. Every bonus (attribute, resistance, spell immunity, etc.) is stored in a bonus system that propagates through a DAG of nodes. Key files:
+
 - `lib/bonuses/Bonus.h` - Bonus structure
 - `lib/bonuses/CBonusSystemNode.h` - Node in the bonus graph
 - `lib/bonuses/IBonusBearer.h` - Interface for objects that can have bonuses
 
 Bonuses have:
+
 - **Propagators** - Rules for which descendants receive the bonus
 - **Limiters** - Restrictions on which descendants receive the bonus (e.g., only griffins)
 - **Inheritance** is automatic through the DAG; propagation requires explicit propagators
@@ -99,6 +101,7 @@ More details in [`docs/developers/Bonus_System.md`](docs/developers/Bonus_System
 #### Game State
 
 Accessed through `CGameState` in `lib/gameState/CGameState.h`. Contains:
+
 - Map and all map objects
 - Player information
 - Heroes and their armies
@@ -109,6 +112,7 @@ See [`docs/developers/Code_Structure.md`](docs/developers/Code_Structure.md) for
 #### Callbacks
 
 The lib exposes game state through callback interfaces:
+
 - `CGameInfoCallback` - Read-only game info
 - `CPlayerSpecificInfoCallback` - Player-specific visible state
 - `CBattleCallback` - Battle-specific state
@@ -119,6 +123,7 @@ AI uses these callbacks rather than directly accessing game state.
 #### Networking
 
 Network layer:
+
 - `lib/network/NetworkConnection.h` - Low-level connection
 - `lib/networkPacks/` - Serializable network packets
 
@@ -136,6 +141,7 @@ See [`docs/developers/Code_Structure.md`](docs/developers/Code_Structure.md) for
 ### Namespace Wrapping (iOS/Mobile Considerations)
 
 On iOS, the lib is built as a static library and linked into a single process with both client and server. The lib symbols must be wrapped in a namespace. This is handled by:
+
 - `VCMI_LIB_NAMESPACE_BEGIN` / `VCMI_LIB_NAMESPACE_END` macros in lib code
 - Forward declarations of lib symbols in external code must also use these macros
 - In new project parts, add `VCMI_LIB_USING_NAMESPACE` to `StdInc.h`
@@ -156,6 +162,7 @@ See [`docs/developers/Code_Structure.md`](docs/developers/Code_Structure.md) for
 ### Modifying Battle Logic
 
 Battle logic is split:
+
 - `lib/battle/` - Core rules and state
 - `server/battles/` - Server-side processing
 - `client/battle/` - Rendering and UI
@@ -165,6 +172,7 @@ Changes to rules should go in `lib/battle/` (especially `DamageCalculator.h`, `B
 ### Working with Configuration Files
 
 Game configuration uses JSON:
+
 - `config/` directory contains JSON schemas for entities
 - JSON parsing: `lib/json/JsonParser.h`, `lib/json/JsonNode.h`
 - JSON validation: `lib/json/JsonValidator.h`
@@ -174,6 +182,7 @@ Configuration is loaded by handlers in `lib/entities/` (creature handler, spell 
 ### Running the Game
 
 After building, configure game data:
+
 1. Copy Heroes III `Data`, `Maps`, `Mp3` folders to `%USERPROFILE%\Documents\My Games\vcmi\`
 2. On Windows, run `build/bin/RelWithDebInfo/VCMI_launcher.bat`
 3. On Linux, run `build/bin/vcmiclient` or use launcher if built
@@ -226,6 +235,7 @@ Prefer existing constants over magic numbers or hard-coded strings:
 ## Dependencies
 
 Major dependencies (managed by Conan):
+
 - SDL2 - Graphics rendering
 - Qt5/Qt6 - Launcher and map editor UI
 - Boost - Various utilities
