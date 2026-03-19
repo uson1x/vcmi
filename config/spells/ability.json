@@ -277,7 +277,7 @@
 			}
 		},
 		"flags" : {
-			"indifferent": true
+			"negative": true
 		},
 		"targetCondition" : {
 			"noneOf" : {

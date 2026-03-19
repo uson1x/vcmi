@@ -417,7 +417,9 @@ bool BattleActionProcessor::doShootAction(const CBattleInfoCallback & battle, co
 		makeAttack(battle, stack, destinationStack, 0, destination, true, true, false);
 
 	BonusList attackerBonusesToRemove = *stack->getAllBonuses(Bonus::untilAfterAttackSequence);	//they need to be gathered here since bonuses with this duration added during attack (like blind) should not be removed
-	BonusList defenderBonusesToRemove = *destinationStack->getAllBonuses(Bonus::untilAfterAttackSequence);
+	BonusList defenderBonusesToRemove;
+	if (destinationStack)
+		defenderBonusesToRemove = *destinationStack->getAllBonuses(Bonus::untilAfterAttackSequence);
 
 	//ranged counterattack
 	if (!emptyTileAreaAttack
