@@ -88,6 +88,7 @@ void QueriesProcessor::addQuery(PlayerColor player, QueryPtr query)
 
 QueryPtr QueriesProcessor::topQuery(PlayerColor player)
 {
+	assert(player.isValidPlayer());
 	if(!player.isValidPlayer())
 		return nullptr;
 

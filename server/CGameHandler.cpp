@@ -4207,6 +4207,9 @@ void CGameHandler::spawnWanderingMonsters(CreatureID creatureID)
 
 bool CGameHandler::isBlockedByQueries(const CPackForServer *pack, PlayerColor player)
 {
+	if(!player.isValidPlayer())
+		return false;
+
 	if (dynamic_cast<const PlayerMessage *>(pack) != nullptr)
 		return false;
 

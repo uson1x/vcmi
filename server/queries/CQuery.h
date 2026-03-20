@@ -10,7 +10,7 @@
 #pragma once
 
 #include "../../lib/constants/EntityIdentifiers.h"
-#include <cstdint>
+#include <boost/container/small_vector.hpp>
 
 VCMI_LIB_NAMESPACE_BEGIN
 

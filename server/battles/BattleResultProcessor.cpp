@@ -252,13 +252,17 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 		battleResult->exp[BattleSide::DEFENDER] = heroDefender->calculateXp(battleResult->exp[BattleSide::DEFENDER]);
 
 	auto attackerQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::ATTACKER));
+
 	QueryPtr battleQuery;
+	const auto * defenderPlayer = gameHandler->gameInfo().getPlayerState(battle.getBattle()->getSidePlayer(BattleSide::DEFENDER));
+	bool isDefenderHuman = defenderPlayer && defenderPlayer->isHuman();
 	if(gameHandler->queries->queryAs<CBattleQuery>(attackerQuery))
 		battleQuery = attackerQuery;
-	else
+	else if(isDefenderHuman)
 	{
 		auto defenderQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::DEFENDER));
-		battleQuery = defenderQuery;
+		if(gameHandler->queries->queryAs<CBattleQuery>(defenderQuery))
+			battleQuery = defenderQuery;
 	}
 
 	if (!battleQuery)
@@ -279,9 +283,7 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 
 	// in battles against neutrals, 1st player can ask to replay battle manually
 	const auto * attackerPlayer = gameHandler->gameInfo().getPlayerState(battle.getBattle()->getSidePlayer(BattleSide::ATTACKER));
-	const auto * defenderPlayer = gameHandler->gameInfo().getPlayerState(battle.getBattle()->getSidePlayer(BattleSide::DEFENDER));
 	bool isAttackerHuman = attackerPlayer && attackerPlayer->isHuman();
-	bool isDefenderHuman = defenderPlayer && defenderPlayer->isHuman();
 	bool onlyOnePlayerHuman = isAttackerHuman != isDefenderHuman;
 	// in battles against neutrals attacker can ask to replay battle manually, additionally in battles against AI player human side can also ask for replay
 	if(onlyOnePlayerHuman)
@@ -294,7 +296,7 @@ void BattleResultProcessor::endBattle(const CBattleInfoCallback & battle)
 		battleResult->queryID = QueryID::NONE;
 
 	//set same battle result for all gameHandler->queries
-	for(auto & q : gameHandler->queries->allQueries())
+	for(const auto & q : gameHandler->queries->allQueries())
 	{
 		auto * otherBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(q);
 		if(otherBattleQuery && otherBattleQuery->battleID == battle.getBattle()->getBattleID())
@@ -313,18 +315,18 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 	auto attackerQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::ATTACKER));
 
 	QueryPtr battleQueryPtr;
-	auto * battleQuery = gameHandler->queries->queryAs<CBattleQuery>(attackerQuery);
-	if(battleQuery)
+	auto defenderPlayer = battle.sideToPlayer(BattleSide::DEFENDER);
+	if(gameHandler->queries->queryAs<CBattleQuery>(attackerQuery))
 		battleQueryPtr = attackerQuery;
-	else
+	else if(defenderPlayer.isValidPlayer())
 	{
 		auto defenderQuery = gameHandler->queries->topQuery(battle.sideToPlayer(BattleSide::DEFENDER));
-		battleQuery = gameHandler->queries->queryAs<CBattleQuery>(defenderQuery);
-		if(battleQuery)
-			battleQueryPtr = attackerQuery;
+		if(gameHandler->queries->queryAs<CBattleQuery>(defenderQuery))
+			battleQueryPtr = defenderQuery;
 	}
 
-	if(!battleQuery)
+	auto * typedBattleQuery = gameHandler->queries->queryAs<CBattleQuery>(battleQueryPtr);
+	if(!typedBattleQuery)
 	{
 		logGlobal->trace("No battle query, battle end was confirmed by another player");
 		return;
@@ -371,7 +373,6 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 	}
 
 	auto attackerPlayer = battle.sideToPlayer(BattleSide::ATTACKER);
-	auto defenderPlayer = battle.sideToPlayer(BattleSide::DEFENDER);
 	auto isAttackerNeutral = attackerPlayer == PlayerColor::NEUTRAL;
 	auto isDefenderNeutral = defenderPlayer == PlayerColor::NEUTRAL;
 
