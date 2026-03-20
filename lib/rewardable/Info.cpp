@@ -340,6 +340,12 @@ void Rewardable::Info::replaceTextPlaceholders(MetaString & target, const Variab
 			loot.replaceName(secondary.first);
 		}
 
+		for (const auto & creature : info.reward.creatures )
+		{
+			loot.appendRawString("%s");
+			loot.replaceNamePlural(creature.getId());
+		}
+
 		target.replaceRawString(loot.buildList());
 	}
 	else
@@ -355,6 +361,9 @@ void Rewardable::Info::replaceTextPlaceholders(MetaString & target, const Variab
 
 		for (const auto & secondary : info.reward.secondary )
 			target.replaceName(secondary.first);
+
+		for (const auto & creature : info.reward.creatures )
+			target.replaceNamePlural(creature.getId());
 
 		replaceTextPlaceholders(target, variables);
 	}
