@@ -74,5 +74,9 @@ private slots:
 
 	void clipboardDataChanged();
 private:
+	QStringList selectImportFiles();
+	QStringList stageUnreadableFiles(const QStringList & files);
+	void importPreparedFiles(const QStringList & files);
+
 	Ui::StartGameTab * ui;
 };

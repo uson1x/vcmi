@@ -241,6 +241,123 @@ static bool exportSavesToLocalArchive(AboutProjectView * view, const QString & o
 	return true;
 }
 
+static QString chooseLogArchivePath(AboutProjectView * view)
+{
+#if defined(VCMI_MOBILE)
+	QDir tempDir(QDir::tempPath());
+	const QFileInfoList oldArchives = tempDir.entryInfoList(QStringList() << "vcmi-logs-*.zip", QDir::Files, QDir::Name);
+	for(const QFileInfo & file : oldArchives)
+		QFile::remove(file.absoluteFilePath());
+
+	return tempDir.filePath(QString("vcmi-logs-%1.zip").arg(QString::number(QDateTime::currentMSecsSinceEpoch())));
+#else
+	const QString defaultName = QDir::home().filePath("vcmi-logs.zip");
+	QString outPath = QFileDialog::getSaveFileName(view, view->tr("Save logs"), defaultName, view->tr("Zip archives (*.zip)"));
+	if(outPath.isEmpty())
+		return {};
+	if(!outPath.endsWith(".zip", Qt::CaseInsensitive))
+		outPath += ".zip";
+	return outPath;
+#endif
+}
+
+static QString buildDataDirListing(const QString & dataDirPath)
+{
+	QString listing;
+	QDir dataDir(dataDirPath);
+	QDirIterator it(dataDirPath, QDir::NoDotAndDotDot | QDir::AllEntries, QDirIterator::Subdirectories);
+	QTextStream ts(&listing);
+	while(it.hasNext())
+	{
+		const QString path = it.next();
+		const QString rel = dataDir.relativeFilePath(path);
+		const QFileInfo info(path);
+
+		if(rel.startsWith(QLatin1String("Saves/")))
+			continue;
+
+		if(info.isDir())
+			ts << QChar('D') << QLatin1Char(' ') << rel << '\n';
+		else
+			ts << QChar('F') << QLatin1Char(' ') << rel << QLatin1String(" (") << info.size() << QLatin1String(")") << '\n';
+	}
+	return listing;
+}
+
+static bool advanceProgress(QProgressDialog & progress, int & value, const QString & outPath)
+{
+	++value;
+	progress.setValue(value);
+	qApp->processEvents();
+	if(progress.wasCanceled())
+	{
+		QFile::remove(outPath);
+		return false;
+	}
+	return true;
+}
+
+#if defined(VCMI_MOBILE)
+static void saveLogArchiveToDestination(AboutProjectView * view, const QString & sourcePath, const QString & targetPath)
+{
+	if(targetPath.isEmpty())
+		return;
+
+	if(Helper::performNativeCopy(sourcePath, targetPath))
+		QMessageBox::information(view, view->tr("Success"), view->tr("Logs saved to %1").arg(Helper::getRealPath(targetPath)));
+	else
+	{
+		logGlobal->error("Log export failed: could not copy archive from %s to %s", sourcePath.toStdString(), targetPath.toStdString());
+		QMessageBox::critical(view, view->tr("Error"), view->tr("Failed to save archive to selected destination"));
+	}
+}
+
+static void handleMobileLogArchiveDestination(AboutProjectView * view, const QString & outPath)
+{
+	QMessageBox destinationChoice(view);
+	destinationChoice.setIcon(QMessageBox::Question);
+	destinationChoice.setWindowTitle(view->tr("Export logs"));
+	destinationChoice.setText(view->tr("Choose what to do with the exported logs archive."));
+	QPushButton * shareButton = destinationChoice.addButton(view->tr("Share"), QMessageBox::AcceptRole);
+	QPushButton * saveButton = destinationChoice.addButton(view->tr("Save"), QMessageBox::ActionRole);
+	destinationChoice.addButton(QMessageBox::Cancel);
+	destinationChoice.exec();
+
+	if(destinationChoice.clickedButton() == shareButton)
+	{
+		QMessageBox::information(view, view->tr("Send logs"), view->tr("The archive will be sent via another application. Share your logs e.g. over discord to developers."));
+		Helper::sendFileToApp(outPath);
+		return;
+	}
+
+	if(destinationChoice.clickedButton() != saveButton)
+		return;
+
+	if(Helper::canUseFolderPicker())
+	{
+		Helper::nativeFolderPicker(view, [view, outPath](QString picked)
+		{
+			if(picked.isEmpty())
+				return;
+
+			const QString destination = Helper::createFile(picked, QStringLiteral("vcmi-logs.zip"), QStringLiteral("application/zip"));
+			saveLogArchiveToDestination(view, outPath, destination);
+		});
+		return;
+	}
+
+	logGlobal->warn("Log export: folder picker unavailable, using manual file selection fallback");
+	QMessageBox::information(view, view->tr("Select destination file"), view->tr("Please select destination file and save the archive as vcmi-logs.zip."));
+	const QString defaultName = QDir::home().filePath("vcmi-logs.zip");
+	QString pickedPath = QFileDialog::getSaveFileName(view, view->tr("Select destination file"), defaultName, view->tr("Zip archives (*.zip);;All files (*.*)"));
+	if(pickedPath.isEmpty())
+		return;
+	if(!pickedPath.endsWith(".zip", Qt::CaseInsensitive))
+		pickedPath += ".zip";
+	saveLogArchiveToDestination(view, outPath, pickedPath);
+}
+#endif
+
 void AboutProjectView::on_pushButtonExportSaves_clicked()
 {
 	auto ensureZipSuffix = [](QString path)
@@ -308,70 +425,19 @@ void AboutProjectView::on_pushButtonExportSaves_clicked()
 void AboutProjectView::on_pushButtonExportLogs_clicked()
 {
 	QDir tempDir(ui->lineEditTempDir->text());
-
-#if defined(VCMI_MOBILE)
-    // cleanup old temp archives from previous runs (delete now)
-    {
-        QDir tdir(QDir::tempPath());
-        const QFileInfoList old = tdir.entryInfoList(QStringList() << "vcmi-logs-*.zip", QDir::Files, QDir::Name);
-        for(const QFileInfo & file : old)
-            QFile::remove(file.absoluteFilePath());
-    }
-	// On mobile: write archive to system temp and send via platform share (no save dialog)
-	const QString tmpDir = QDir::tempPath();
-	const QString outPath = QDir(tmpDir).filePath(QString("vcmi-logs-%1.zip").arg(QString::number(QDateTime::currentMSecsSinceEpoch())));
-#else
-	const QString defaultName = QDir::home().filePath("vcmi-logs.zip");
-	QString outPath = QFileDialog::getSaveFileName(this, tr("Save logs"), defaultName, tr("Zip archives (*.zip)"));
+	const QString outPath = chooseLogArchivePath(this);
 	if(outPath.isEmpty())
 		return;
 
-	if(!outPath.endsWith(".zip", Qt::CaseInsensitive))
-		outPath += ".zip";
-#endif
-
 	QFileInfoList files = tempDir.entryInfoList({ "*.txt" }, QDir::Files, QDir::Name);
 	files.append(QDir(ui->lineEditConfigDir->text()).entryInfoList({ "*.json", "*.ini" }, QDir::Files, QDir::Name));
-
-	// build data dir file/folder listing and add as a virtual text file
-	const QString dataDirPath = ui->lineEditUserDataDir->text();
-	QString listing;
-	QDir dataDir(dataDirPath);
-	QDirIterator it(dataDirPath, QDir::NoDotAndDotDot | QDir::AllEntries, QDirIterator::Subdirectories);
-	QTextStream ts(&listing);
-	while(it.hasNext())
-	{
-		const QString path = it.next();
-		const QString rel = dataDir.relativeFilePath(path);
-		QFileInfo info(path);
-
-		if(rel.startsWith(QLatin1String("Saves/")))
-			continue;
-
-		if(info.isDir())
-			ts << QChar('D') << QLatin1Char(' ') << rel << '\n';
-		else
-			ts << QChar('F') << QLatin1Char(' ') << rel << QLatin1String(" (") << info.size() << QLatin1String(")") << '\n';
-	}
+	const QString listing = buildDataDirListing(ui->lineEditUserDataDir->text());
 
 	const int progressMaximum = files.size() + 3;
 	QProgressDialog progress(tr("Exporting logs..."), tr("Cancel"), 0, progressMaximum, this);
 	setupExportProgressDialog(progress, tr("Log export"), tr("Exporting logs..."), progressMaximum);
 
 	int progressValue = 0;
-	auto advanceProgress = [&]()
-	{
-		++progressValue;
-		progress.setValue(progressValue);
-		qApp->processEvents();
-		if(progress.wasCanceled())
-		{
-			QFile::remove(outPath);
-			return false;
-		}
-		return true;
-	};
-
 	try
 	{
 		// create zip and add .txt files
@@ -384,7 +450,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 			// Skip persistent storage to avoid logging private data (e.g. lobby login tokens)
 			if(file.fileName().compare(QStringLiteral("persistentStorage.json"), Qt::CaseInsensitive) == 0)
 			{
-				if(!advanceProgress())
+				if(!advanceProgress(progress, progressValue, outPath))
 					return;
 				continue;
 			}
@@ -397,7 +463,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 				stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
 			}
 
-			if(!advanceProgress())
+			if(!advanceProgress(progress, progressValue, outPath))
 				return;
 		}
 
@@ -427,7 +493,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 				}
 			}
 		}
-		if(!advanceProgress())
+		if(!advanceProgress(progress, progressValue, outPath))
 			return;
 
 		// add generated listing as game-directory-structure.txt
@@ -437,7 +503,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 			auto stream = saver.addFile(std::string("data-directory-structure.txt"));
 			stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
 		}
-		if(!advanceProgress())
+		if(!advanceProgress(progress, progressValue, outPath))
 			return;
 
 		// add device information as device-info.txt
@@ -450,7 +516,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 				streamDev->write(reinterpret_cast<const ui8 *>(dataDev.constData()), dataDev.size());
 			}
 		}
-		if(!advanceProgress())
+		if(!advanceProgress(progress, progressValue, outPath))
 			return;
 
 		progress.hide();
@@ -465,61 +531,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 
 	// On mobile platforms, let user choose between share and saving to selected destination.
 #if defined(VCMI_MOBILE)
-	QMessageBox destinationChoice(this);
-	destinationChoice.setIcon(QMessageBox::Question);
-	destinationChoice.setWindowTitle(tr("Export logs"));
-	destinationChoice.setText(tr("Choose what to do with the exported logs archive."));
-	QPushButton * shareButton = destinationChoice.addButton(tr("Share"), QMessageBox::AcceptRole);
-	QPushButton * saveButton = destinationChoice.addButton(tr("Save"), QMessageBox::ActionRole);
-	destinationChoice.addButton(QMessageBox::Cancel);
-	destinationChoice.exec();
-
-	if(destinationChoice.clickedButton() == shareButton)
-	{
-		QMessageBox::information(this, tr("Send logs"), tr("The archive will be sent via another application. Share your logs e.g. over discord to developers."));
-		Helper::sendFileToApp(outPath);
-	}
-	else if(destinationChoice.clickedButton() == saveButton)
-	{
-		auto saveArchiveTo = [this, outPath](const QString & targetPath)
-		{
-			if(targetPath.isEmpty())
-				return;
-
-			if(Helper::performNativeCopy(outPath, targetPath))
-				QMessageBox::information(this, tr("Success"), tr("Logs saved to %1").arg(Helper::getRealPath(targetPath)));
-			else
-			{
-				logGlobal->error("Log export failed: could not copy archive from %s to %s", outPath.toStdString(), targetPath.toStdString());
-				QMessageBox::critical(this, tr("Error"), tr("Failed to save archive to selected destination"));
-			}
-		};
-
-		if(Helper::canUseFolderPicker())
-		{
-			Helper::nativeFolderPicker(this, [saveArchiveTo](QString picked)
-			{
-				if(picked.isEmpty())
-					return;
-
-				const QString destination = Helper::createFile(picked, QStringLiteral("vcmi-logs.zip"), QStringLiteral("application/zip"));
-				saveArchiveTo(destination);
-			});
-		}
-		else
-		{
-			logGlobal->warn("Log export: folder picker unavailable, using manual file selection fallback");
-			QMessageBox::information(this, tr("Select destination file"), tr("Please select destination file and save the archive as vcmi-logs.zip."));
-			const QString defaultName = QDir::home().filePath("vcmi-logs.zip");
-			QString pickedPath = QFileDialog::getSaveFileName(this, tr("Select destination file"), defaultName, tr("Zip archives (*.zip);;All files (*.*)"));
-			if(!pickedPath.isEmpty())
-			{
-				if(!pickedPath.endsWith(".zip", Qt::CaseInsensitive))
-					pickedPath += ".zip";
-				saveArchiveTo(pickedPath);
-			}
-		}
-	}
+	handleMobileLogArchiveDestination(this, outPath);
 #else
 	// desktop: notify user and do not auto-send
 	QMessageBox::information(this, tr("Success"), tr("Logs saved to %1, please send them to the developers").arg(Helper::getRealPath(outPath)));

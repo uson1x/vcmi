@@ -1197,25 +1197,20 @@ void CModListView::installFiles(QStringList files)
 		loadScreenshots();
 }
 
-void CModListView::installSaves(QStringList saves)
+namespace
 {
-	const auto savesPath = VCMIDirs::get().userSavePath();
-	boost::filesystem::create_directories(savesPath);
+QString resolveSaveFileName(const QString & originalPath, const QString & realPath)
+{
+	QString fileName = QFileInfo(realPath).fileName();
+	if(fileName.isEmpty())
+		fileName = QFileInfo(originalPath).fileName();
+	if(fileName.isEmpty())
+		fileName = QUrl(originalPath).fileName();
+	return fileName;
+}
 
-	QDir savesDir(pathToQString(savesPath));
-	const auto saveDestDir = savesDir.absolutePath() + QChar{'/'};
-
-	auto resolveSaveFileName = [](const QString & originalPath, const QString & realPath)
-	{
-		QString fileName = QFileInfo(realPath).fileName();
-		if(fileName.isEmpty())
-			fileName = QFileInfo(originalPath).fileName();
-		if(fileName.isEmpty())
-			fileName = QUrl(originalPath).fileName();
-		return fileName;
-	};
-
-	int importedCount = 0;
+int countSaveConflicts(const QStringList & saves, const QString & saveDestDir)
+{
 	int conflictCount = 0;
 
 	for(const auto & save : saves)
@@ -1251,8 +1246,83 @@ void CModListView::installSaves(QStringList saves)
 			conflictCount++;
 	}
 
+	return conflictCount;
+}
+
+bool shouldOverwriteSave(const std::function<bool(const QString &)> & askOverwrite, const QString & destinationPath, const QString & entryName)
+{
+	if(!QFile::exists(destinationPath))
+		return true;
+
+	if(!askOverwrite(entryName))
+		return false;
+
+	QFile::remove(destinationPath);
+	return true;
+}
+
+void importSaveFromArchive(CModListView * view, ZipArchive & archive, const QString & realSavePath, const boost::filesystem::path & savesPath, const QString & saveDestDir, const std::function<bool(const QString &)> & askOverwrite, int & importedCount)
+{
+	const auto fileList = archive.listFiles();
+	for(const auto & file : fileList)
+	{
+		QString relativePath = QString::fromUtf8(file.data(), static_cast<int>(file.size()));
+		if(!relativePath.endsWith(".vsgm1", Qt::CaseInsensitive))
+			continue;
+
+		const QString destinationPath = saveDestDir + relativePath;
+		if(!shouldOverwriteSave(askOverwrite, destinationPath, relativePath))
+			continue;
+
+		if(archive.extract(savesPath, file))
+			importedCount++;
+		else
+		{
+			logGlobal->warn("Failed to import save %s from archive %s", relativePath.toStdString(), realSavePath.toStdString());
+			QMessageBox::warning(view, QObject::tr("Import failed"), QObject::tr("Failed to import save %1 from %2").arg(relativePath, realSavePath));
+		}
+	}
+}
+
+void importSingleSaveFile(CModListView * view, const QString & sourcePath, const QString & fileName, const QString & saveDestDir, const std::function<bool(const QString &)> & askOverwrite, int & importedCount)
+{
+	const QString destinationPath = saveDestDir + fileName;
+	if(!shouldOverwriteSave(askOverwrite, destinationPath, fileName))
+		return;
+
+	if(Helper::performNativeCopy(sourcePath, destinationPath))
+	{
+		importedCount++;
+		return;
+	}
+
+	logGlobal->warn("Failed to import save file %s to %s", sourcePath.toStdString(), destinationPath.toStdString());
+	QMessageBox::warning(view, QObject::tr("Import failed"), QObject::tr("Failed to import save file %1").arg(sourcePath));
+}
+}
+
+void CModListView::installSaves(QStringList saves)
+{
+	const auto savesPath = VCMIDirs::get().userSavePath();
+	boost::filesystem::create_directories(savesPath);
+
+	QDir savesDir(pathToQString(savesPath));
+	const auto saveDestDir = savesDir.absolutePath() + QChar{'/'};
+
+	int importedCount = 0;
+	int conflictCount = countSaveConflicts(saves, saveDestDir);
+
 	bool applyToAll = false;
 	bool overwriteAll = false;
+	const auto askOverwrite = [this, conflictCount, &applyToAll, &overwriteAll](const QString & entryName)
+	{
+		return askOverwriteDialog(
+			tr("Save exists"),
+			tr("Save '%1' already exists. Do you want to overwrite it?").arg(entryName),
+			conflictCount,
+			applyToAll,
+			overwriteAll);
+	};
 
 	for(const auto & save : saves)
 	{
@@ -1263,31 +1333,7 @@ void CModListView::installSaves(QStringList saves)
 			try
 			{
 				ZipArchive archive(qstringToPath(realSavePath));
-				auto fileList = archive.listFiles();
-
-				for(const auto & file : fileList)
-				{
-					QString relativePath = QString::fromUtf8(file.data(), static_cast<int>(file.size()));
-					if(!relativePath.endsWith(".vsgm1", Qt::CaseInsensitive))
-						continue;
-
-					const QString destinationPath = saveDestDir + relativePath;
-					if(QFile::exists(destinationPath))
-					{
-						if(!askOverwriteDialog(tr("Save exists"), tr("Save '%1' already exists. Do you want to overwrite it?").arg(relativePath), conflictCount, applyToAll, overwriteAll))
-							continue;
-
-						QFile::remove(destinationPath);
-					}
-
-					if(archive.extract(savesPath, file))
-						importedCount++;
-					else
-					{
-						logGlobal->warn("Failed to import save %s from archive %s", relativePath.toStdString(), realSavePath.toStdString());
-						QMessageBox::warning(this, tr("Import failed"), tr("Failed to import save %1 from %2").arg(relativePath, realSavePath));
-					}
-				}
+				importSaveFromArchive(this, archive, realSavePath, savesPath, saveDestDir, askOverwrite, importedCount);
 			}
 			catch(const std::exception & e)
 			{
@@ -1301,22 +1347,7 @@ void CModListView::installSaves(QStringList saves)
 		if(fileName.isEmpty())
 			continue;
 
-		const QString destinationPath = saveDestDir + fileName;
-		if(QFile::exists(destinationPath))
-		{
-			if(!askOverwriteDialog(tr("Save exists"), tr("Save '%1' already exists. Do you want to overwrite it?").arg(fileName), conflictCount, applyToAll, overwriteAll))
-				continue;
-
-			QFile::remove(destinationPath);
-		}
-
-		if(Helper::performNativeCopy(realSavePath, destinationPath))
-			importedCount++;
-		else
-		{
-			logGlobal->warn("Failed to import save file %s to %s", realSavePath.toStdString(), destinationPath.toStdString());
-			QMessageBox::warning(this, tr("Import failed"), tr("Failed to import save file %1").arg(realSavePath));
-		}
+		importSingleSaveFile(this, realSavePath, fileName, saveDestDir, askOverwrite, importedCount);
 	}
 
 	if(importedCount > 0)
