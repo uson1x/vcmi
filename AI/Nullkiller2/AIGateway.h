@@ -155,7 +155,7 @@ public:
 
 	void invalidatePaths() override;
 
-	void makeTurn() noexcept;
+	void makeTurn();
 
 	void buildArmyIn(const CGTownInstance * t);
 	void endTurn();
