@@ -92,7 +92,7 @@ One of the most important systems. Every bonus (attribute, resistance, spell imm
 
 Bonuses have:
 
-- **Propagators** - Rules for which descendants receive the bonus
+- **Propagators** - Rules for which ascendants receive the bonus
 - **Limiters** - Restrictions on which descendants receive the bonus (e.g., only griffins)
 - **Inheritance** is automatic through the DAG; propagation requires explicit propagators
 
@@ -118,7 +118,7 @@ The lib exposes game state through callback interfaces:
 - `CBattleCallback` - Battle-specific state
 - `CCallback` - Server callback for client requests
 
-AI uses these callbacks rather than directly accessing game state.
+AI and player interfaces use these callbacks rather than directly accessing game state.
 
 #### Networking
 
@@ -138,9 +138,9 @@ All changes to game state must go through server via network packets. More detai
 
 See [`docs/developers/Code_Structure.md`](docs/developers/Code_Structure.md) for detailed threading information.
 
-### Namespace Wrapping (iOS/Mobile Considerations)
+### Namespace Wrapping (iOS/Android Considerations)
 
-On iOS, the lib is built as a static library and linked into a single process with both client and server. The lib symbols must be wrapped in a namespace. This is handled by:
+On mobile systems, the lib is built as a static library and linked into a single process with both client and server. The lib symbols must be wrapped in a namespace. This is handled by:
 
 - `VCMI_LIB_NAMESPACE_BEGIN` / `VCMI_LIB_NAMESPACE_END` macros in lib code
 - Forward declarations of lib symbols in external code must also use these macros
@@ -155,9 +155,10 @@ See [`docs/developers/Code_Structure.md`](docs/developers/Code_Structure.md) for
 1. Add bonus type or modify `lib/bonuses/BonusEnum.h` if needed
 2. Implement logic in lib (typically in entity handlers or callback implementations)
 3. Add serialization support if it affects saved games
-4. Update network packets if client-server communication is needed
-5. Add tests in `test/`
-6. Update client UI if player-visible changes needed
+4. Add serialization compatibility for older saves
+5. Update network packets if client-server communication is needed
+6. Add tests in `test/`
+7. Update client UI if player-visible changes needed
 
 ### Modifying Battle Logic
 
@@ -230,7 +231,7 @@ Prefer existing constants over magic numbers or hard-coded strings:
 ### Serialization and state
 
 - **Serialization**: Use the custom serialization framework in `lib/serializer/`. Objects implement `h & object` pattern with serialization visitors. More details in [`docs/developers/Serialization.md`](docs/developers/Serialization.md).
-- **Game state modifications**: Only server modifies state; client receives notifications
+- **Game state modifications**: Only server can modify state. Client can only send requests to change gamestate to server, server validates requests and sends resulting changes in gamestate to clients
 
 ## Dependencies
 
