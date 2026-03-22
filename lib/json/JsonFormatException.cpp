@@ -1,5 +1,5 @@
 /*
- * JsonFormatException.h, part of VCMI engine
+ * JsonFormatException.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -7,15 +7,11 @@
  * Full text of license available in license.txt file, in main folder
  *
  */
-#pragma once
+#include "StdInc.h"
+#include "JsonFormatException.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-class DLL_LINKAGE JsonFormatException : public std::runtime_error
-{
-public:
-	using runtime_error::runtime_error;
-	~JsonFormatException() override;
-};
+JsonFormatException::~JsonFormatException() = default;
 
 VCMI_LIB_NAMESPACE_END
