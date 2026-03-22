@@ -159,6 +159,11 @@ static void setupExportProgressDialog(QProgressDialog & progress, const QString 
 	progress.setAutoClose(false);
 	progress.setWindowFlag(Qt::WindowCloseButtonHint, false);
 	progress.setWindowFlag(Qt::WindowContextHelpButtonHint, false);
+#if defined(VCMI_MOBILE)
+	progress.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+	progress.setObjectName(QStringLiteral("contentPanel"));
+	progress.setStyleSheet(QStringLiteral("QWidget#contentPanel { background: palette(window); border: 2px solid rgba(0,0,0,160); border-radius: 6px; }"));
+#endif
 	if(auto * progressBar = progress.findChild<QProgressBar *>())
 	{
 		progressBar->setRange(0, maximum);
@@ -201,7 +206,7 @@ static bool exportSavesToLocalArchive(AboutProjectView * view, const QString & o
 	try
 	{
 		std::shared_ptr<CIOApi> api = std::make_shared<CDefaultIOApi>();
-		boost::filesystem::path archivePath(outPath.toStdString());
+		boost::filesystem::path archivePath = qstringToPath(outPath);
 		CZipSaver saver(api, archivePath);
 
 		for(int index = 0; index < saveFiles.size(); ++index)
@@ -442,7 +447,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 	{
 		// create zip and add .txt files
 		std::shared_ptr<CIOApi> api = std::make_shared<CDefaultIOApi>();
-		boost::filesystem::path archivePath(outPath.toStdString());
+		boost::filesystem::path archivePath = qstringToPath(outPath);
 		CZipSaver saver(api, archivePath);
 
 		for(const QFileInfo & file : files)
@@ -459,7 +464,8 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 			if(f.open(QIODevice::ReadOnly))
 			{
 				QByteArray data = f.readAll();
-				auto stream = saver.addFile(file.fileName().toStdString());
+				QByteArray fileNameUtf8 = file.fileName().toUtf8();
+				auto stream = saver.addFile(std::string(fileNameUtf8.constData(), fileNameUtf8.size()));
 				stream->write(reinterpret_cast<const ui8 *>(data.constData()), data.size());
 			}
 
