@@ -380,9 +380,12 @@ void Inspector::updateProperties(CGArtifact * o)
 
 	addProperty(QObject::tr("Message"), o->message, false);
 
-	const CArtifactInstance * instance = o->getArtifactInstance();
-	if(instance && o->ID == Obj::SPELL_SCROLL)
+	if(o->ID == Obj::SPELL_SCROLL)
 	{
+		const CArtifactInstance * instance = o->getArtifactInstance();
+		if(!instance)
+			return;
+
 		SpellID spellId = instance->getScrollSpellID();
 		if(spellId != SpellID::NONE)
 		{
