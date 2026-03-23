@@ -103,9 +103,6 @@ paths:
                   server:
                     type: string
                     description: Server name
-                  lobbyVersion:
-                    type: string
-                    description: VCMI version
                   apiVersion:
                     type: string
                     description: API version

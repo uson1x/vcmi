@@ -14,7 +14,6 @@
 
 #include "../lib/json/JsonNode.h"
 #include "../lib/logging/CLogger.h"
-#include "../lib/GameConstants.h"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -245,43 +244,43 @@ JsonNode HttpApiServer::getStats()
 	stats["onlinePlayers"].Vector() = JsonVector();
 	for (const auto & player : database.getActiveAccounts())
 		stats["onlinePlayers"].Vector().push_back(JsonNode(player.displayName));
+	auto activeCounts = database.getActiveAccountsCounts({1, 24, 168, 720, 8760});
 	stats["onlinePlayersCount"].Struct() = JsonMap{
 		{"current", JsonNode(static_cast<int64_t>(stats["onlinePlayers"].Vector().size()))},
-		{"lastHour", JsonNode(database.getActiveAccountsCount(1))},
-		{"lastDay", JsonNode(database.getActiveAccountsCount(24))},
-		{"lastWeek", JsonNode(database.getActiveAccountsCount(168))},
-		{"lastMonth", JsonNode(database.getActiveAccountsCount(720))},
-		{"lastYear", JsonNode(database.getActiveAccountsCount(8760))}
+		{"lastHour", JsonNode(activeCounts[0])},
+		{"lastDay", JsonNode(activeCounts[1])},
+		{"lastWeek", JsonNode(activeCounts[2])},
+		{"lastMonth", JsonNode(activeCounts[3])},
+		{"lastYear", JsonNode(activeCounts[4])}
 	};
+	auto registeredCounts = database.getRegisteredAccountsCounts({24, 168, 720, 8760});
 	stats["registeredPlayersCount"].Struct() = JsonMap{
 		{"total", JsonNode(database.getAccountCount())},
-		{"lastDay", JsonNode(database.getRegisteredAccountsCount(24))},
-		{"lastWeek", JsonNode(database.getRegisteredAccountsCount(168))},
-		{"lastMonth", JsonNode(database.getRegisteredAccountsCount(720))},
-		{"lastYear", JsonNode(database.getRegisteredAccountsCount(8760))}
+		{"lastDay", JsonNode(registeredCounts[0])},
+		{"lastWeek", JsonNode(registeredCounts[1])},
+		{"lastMonth", JsonNode(registeredCounts[2])},
+		{"lastYear", JsonNode(registeredCounts[3])}
 	};
 	std::map<LobbyRoomState, int> lobbysCount;
 	for (const auto & room : database.getActiveGameRooms())
 		lobbysCount[room.roomState]++;
+	auto closedCounts = database.getClosedGameRoomsCounts({24, 168, 720, 8760});
 	stats["gameCount"].Struct() = JsonMap{
 		{"current", JsonNode(lobbysCount[LobbyRoomState::BUSY])},
-		{"total", JsonNode(database.getClosedGameRoomsCount())},
-		{"lastDay", JsonNode(database.getClosedGameRoomsCount(24))},
-		{"lastWeek", JsonNode(database.getClosedGameRoomsCount(168))},
-		{"lastMonth", JsonNode(database.getClosedGameRoomsCount(720))},
-		{"lastYear", JsonNode(database.getClosedGameRoomsCount(8760))}
+		{"total", JsonNode(closedCounts[0])},
+		{"lastDay", JsonNode(closedCounts[1])},
+		{"lastWeek", JsonNode(closedCounts[2])},
+		{"lastMonth", JsonNode(closedCounts[3])},
+		{"lastYear", JsonNode(closedCounts[4])}
 	};
 	stats["lobbyCount"].Struct() = JsonMap{
 		{"current", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PUBLIC] + lobbysCount[LobbyRoomState::PRIVATE]))},
 		{"public", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PUBLIC]))},
 		{"private", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PRIVATE]))}
 	};
-	stats["registeredPlayersCount"].Integer() = database.getAccountCount();
-
 	stats["lobbyStartTime"].String() = formatTimestamp(startTime);
 	
 	stats["server"].String() = "VCMI Lobby";
-	stats["lobbyVersion"].String() = GameConstants::VCMI_VERSION;
 	stats["apiVersion"].String() = "1.0";
 	return stats;
 }

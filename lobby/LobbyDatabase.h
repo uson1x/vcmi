@@ -106,6 +106,9 @@ public:
 	int getActiveAccountsCount(int hours);
 	int getRegisteredAccountsCount(int hours);
 	int getClosedGameRoomsCount(int hours = -1);
+	std::vector<int> getActiveAccountsCounts(const std::vector<int> & hours);
+	std::vector<int> getRegisteredAccountsCounts(const std::vector<int> & hours);
+	std::vector<int> getClosedGameRoomsCounts(const std::vector<int> & hours);
 
 	LobbyCookieStatus getAccountCookieStatus(const std::string & accountID, const std::string & accessCookieUUID);
 	LobbyInviteStatus getAccountInviteStatus(const std::string & accountID, const std::string & roomID);

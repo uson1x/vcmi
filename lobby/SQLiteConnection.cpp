@@ -157,6 +157,20 @@ void SQLiteStatement::getColumnSingle(size_t index, std::string & value)
 	value = reinterpret_cast<const char *>(value_raw);
 }
 
+void SQLiteStatement::setBindVector(const std::vector<int> & values)
+{
+	for (size_t i = 0; i < values.size(); ++i)
+		setBindSingle(i + 1, static_cast<int32_t>(values[i]));
+}
+
+void SQLiteStatement::getColumnVector(std::vector<int> & result)
+{
+	int count = sqlite3_column_count(m_statement);
+	result.resize(count);
+	for (int i = 0; i < count; ++i)
+		result[i] = sqlite3_column_int(m_statement, i);
+}
+
 SQLiteInstancePtr SQLiteInstance::open(const boost::filesystem::path & db_path, bool allow_write)
 {
 	int flags = allow_write ? (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE) : SQLITE_OPEN_READONLY;

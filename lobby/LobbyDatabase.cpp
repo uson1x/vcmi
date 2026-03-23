@@ -340,7 +340,7 @@ void LobbyDatabase::prepareStatements()
 		SELECT COUNT(*)
 		FROM gameRooms
 		WHERE status = 5
-	)");;
+	)");
 
 	isAccountCookieValidStatement = database->prepare(R"(
 		SELECT COUNT(accountID)
@@ -582,6 +582,61 @@ int LobbyDatabase::getClosedGameRoomsCount(int hours)
 		getClosedGameRoomsCountStatement->reset();
 	}
 
+	return result;
+}
+
+std::vector<int> LobbyDatabase::getActiveAccountsCounts(const std::vector<int> & hours)
+{
+	if(hours.empty())
+		return {};
+	std::string sql = "SELECT ";
+	for (size_t i = 0; i < hours.size(); ++i)
+	{
+		if (i > 0) sql += ", ";
+		sql += "COUNT(CASE WHEN lastLoginTime >= datetime('now', '-' || ? || ' hours') THEN 1 END)";
+	}
+	sql += " FROM accounts";
+	auto stmt = database->prepare(sql);
+	stmt->setBindVector(hours);
+	std::vector<int> result;
+	if (stmt->execute())
+		stmt->getColumnVector(result);
+	return result;
+}
+
+std::vector<int> LobbyDatabase::getRegisteredAccountsCounts(const std::vector<int> & hours)
+{
+	if(hours.empty())
+		return {};
+	std::string sql = "SELECT ";
+	for (size_t i = 0; i < hours.size(); ++i)
+	{
+		if (i > 0) sql += ", ";
+		sql += "COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END)";
+	}
+	sql += " FROM accounts";
+	auto stmt = database->prepare(sql);
+	stmt->setBindVector(hours);
+	std::vector<int> result;
+	if (stmt->execute())
+		stmt->getColumnVector(result);
+	return result;
+}
+
+std::vector<int> LobbyDatabase::getClosedGameRoomsCounts(const std::vector<int> & hours)
+{
+	if(hours.empty())
+		return {};
+	// First column is total (no time filter), remaining columns are per-hour
+	std::string sql = "SELECT COUNT(*)";
+	for (size_t i = 0; i < hours.size(); ++i)
+		sql += ", COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END)";
+	sql += " FROM gameRooms WHERE status = 5";
+	auto stmt = database->prepare(sql);
+	stmt->setBindVector(hours);
+	std::vector<int> result;
+	if (stmt->execute())
+		stmt->getColumnVector(result);
 	return result;
 }
 
