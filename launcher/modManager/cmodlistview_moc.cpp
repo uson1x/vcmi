@@ -1233,8 +1233,9 @@ int countSaveConflicts(const QStringList & saves, const QString & saveDestDir)
 						conflictCount++;
 				}
 			}
-			catch(const std::exception &)
+			catch(const std::runtime_error & e)
 			{
+				logGlobal->warn("Failed to inspect saves archive %s. Reason: %s", realSavePath.toStdString(), e.what());
 			}
 			continue;
 		}
@@ -1249,7 +1250,8 @@ int countSaveConflicts(const QStringList & saves, const QString & saveDestDir)
 	return conflictCount;
 }
 
-bool shouldOverwriteSave(const std::function<bool(const QString &)> & askOverwrite, const QString & destinationPath, const QString & entryName)
+template<typename AskOverwriteFn>
+bool shouldOverwriteSave(const AskOverwriteFn & askOverwrite, const QString & destinationPath, const QString & entryName)
 {
 	if(!QFile::exists(destinationPath))
 		return true;
@@ -1261,7 +1263,8 @@ bool shouldOverwriteSave(const std::function<bool(const QString &)> & askOverwri
 	return true;
 }
 
-void importSaveFromArchive(CModListView * view, ZipArchive & archive, const QString & realSavePath, const boost::filesystem::path & savesPath, const QString & saveDestDir, const std::function<bool(const QString &)> & askOverwrite, int & importedCount)
+template<typename AskOverwriteFn>
+void importSaveFromArchive(CModListView * view, ZipArchive & archive, const QString & realSavePath, const boost::filesystem::path & savesPath, const QString & saveDestDir, const AskOverwriteFn & askOverwrite, int & importedCount)
 {
 	const auto fileList = archive.listFiles();
 	for(const auto & file : fileList)
@@ -1284,7 +1287,8 @@ void importSaveFromArchive(CModListView * view, ZipArchive & archive, const QStr
 	}
 }
 
-void importSingleSaveFile(CModListView * view, const QString & sourcePath, const QString & fileName, const QString & saveDestDir, const std::function<bool(const QString &)> & askOverwrite, int & importedCount)
+template<typename AskOverwriteFn>
+void importSingleSaveFile(CModListView * view, const QString & sourcePath, const QString & fileName, const QString & saveDestDir, const AskOverwriteFn & askOverwrite, int & importedCount)
 {
 	const QString destinationPath = saveDestDir + fileName;
 	if(!shouldOverwriteSave(askOverwrite, destinationPath, fileName))
@@ -1335,7 +1339,7 @@ void CModListView::installSaves(QStringList saves)
 				ZipArchive archive(qstringToPath(realSavePath));
 				importSaveFromArchive(this, archive, realSavePath, savesPath, saveDestDir, askOverwrite, importedCount);
 			}
-			catch(const std::exception & e)
+			catch(const std::runtime_error & e)
 			{
 				logGlobal->warn("Failed to import saves from %s. Reason: %s", realSavePath.toStdString(), e.what());
 				QMessageBox::warning(this, tr("Import failed"), tr("Failed to import saves from %1.\nReason: %2").arg(realSavePath, QString::fromUtf8(e.what())));
