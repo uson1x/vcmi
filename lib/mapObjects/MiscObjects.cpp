@@ -35,7 +35,7 @@
 #include "../networkPacks/PacksForClient.h"
 #include "../networkPacks/PacksForClientBattle.h"
 #include "../networkPacks/StackLocation.h"
-#include "../lib/gameState/UpgradeInfo.h"
+#include "../../lib/gameState/UpgradeInfo.h"
 
 #include <vstd/RNG.h>
 

@@ -9,8 +9,8 @@
  */
 #pragma once
 
-#include "../lib/constants/EntityIdentifiers.h"
-#include "../lib/ResourceSet.h"
+#include "../../lib/constants/EntityIdentifiers.h"
+#include "../../lib/ResourceSet.h"
 #include <boost/container/small_vector.hpp>
 
 VCMI_LIB_NAMESPACE_BEGIN

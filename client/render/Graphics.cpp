@@ -22,12 +22,12 @@
 #include "../render/CAnimation.h"
 #include "../render/IImage.h"
 
-#include "../lib/filesystem/Filesystem.h"
-#include "../lib/filesystem/CBinaryReader.h"
+#include "../../lib/filesystem/Filesystem.h"
+#include "../../lib/filesystem/CBinaryReader.h"
 #include "../../lib/json/JsonNode.h"
-#include "../lib/modding/CModHandler.h"
-#include "../lib/modding/ModScope.h"
-#include "../lib/GameLibrary.h"
+#include "../../lib/modding/CModHandler.h"
+#include "../../lib/modding/ModScope.h"
+#include "../../lib/GameLibrary.h"
 
 #include <SDL_surface.h>
 

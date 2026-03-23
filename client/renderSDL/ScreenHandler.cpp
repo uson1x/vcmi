@@ -32,7 +32,7 @@
 #include <vstd/DateUtils.h>
 
 #ifdef VCMI_ANDROID
-#include "../lib/CAndroidVMHelper.h"
+#include "../../lib/CAndroidVMHelper.h"
 #endif
 
 #ifdef VCMI_IOS

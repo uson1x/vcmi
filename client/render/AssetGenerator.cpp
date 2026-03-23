@@ -20,15 +20,15 @@
 #include "../render/CAnimation.h"
 #include "../render/Colors.h"
 
-#include "../lib/filesystem/Filesystem.h"
-#include "../lib/GameSettings.h"
-#include "../lib/IGameSettings.h"
-#include "../lib/json/JsonNode.h"
-#include "../lib/VCMIDirs.h"
-#include "../lib/GameLibrary.h"
-#include "../lib/RiverHandler.h"
-#include "../lib/RoadHandler.h"
-#include "../lib/TerrainHandler.h"
+#include "../../lib/filesystem/Filesystem.h"
+#include "../../lib/GameSettings.h"
+#include "../../lib/IGameSettings.h"
+#include "../../lib/json/JsonNode.h"
+#include "../../lib/VCMIDirs.h"
+#include "../../lib/GameLibrary.h"
+#include "../../lib/RiverHandler.h"
+#include "../../lib/RoadHandler.h"
+#include "../../lib/TerrainHandler.h"
 
 void AssetGenerator::initialize()
 {

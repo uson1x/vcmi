@@ -15,8 +15,8 @@
 
 #include "../widgets/CGarrisonInt.h"
 
-#include "../lib/callback/CCallback.h"
-#include "../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/callback/CCallback.h"
+#include "../../lib/mapObjects/CGHeroInstance.h"
 
 CExchangeController::CExchangeController(ObjectInstanceID hero1, ObjectInstanceID hero2)
 	: left(GAME->interface()->cb->getHero(hero1))
