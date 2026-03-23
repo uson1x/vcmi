@@ -40,6 +40,7 @@ set(lib_SRCS
 	CConfigHandler.cpp
 	CConsoleHandler.cpp
 	CThreadHelper.cpp
+	ExceptionsCommon.cpp
 	VCMIDirs.cpp
 )
 
@@ -319,7 +320,6 @@ set(lib_MAIN_SRCS
 	CScriptingModule.cpp
 	CSkillHandler.cpp
 	CStack.cpp
-	ExceptionsCommon.cpp
 	GameSettings.cpp
 	IHandlerBase.cpp
 	LoadProgress.cpp
