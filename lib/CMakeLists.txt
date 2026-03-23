@@ -16,6 +16,7 @@ set(lib_SRCS
 	filesystem/MinizipExtensions.cpp
 	filesystem/ResourcePath.cpp
 
+	json/JsonFormatException.cpp
 	json/JsonNode.cpp
 	json/JsonParser.cpp
 	json/JsonUtils.cpp
@@ -39,6 +40,7 @@ set(lib_SRCS
 	CConfigHandler.cpp
 	CConsoleHandler.cpp
 	CThreadHelper.cpp
+	ExceptionsCommon.cpp
 	VCMIDirs.cpp
 )
 
@@ -97,6 +99,7 @@ set(lib_MAIN_SRCS
 	campaign/CampaignRegionsHandler.cpp
 
 	constants/EntityIdentifiers.cpp
+	constants/IdentifierBase.cpp
 
 	entities/artifact/ArtifactUtils.cpp
 	entities/artifact/ArtSlotInfo.cpp
@@ -192,6 +195,7 @@ set(lib_MAIN_SRCS
 	modding/ContentTypeHandler.cpp
 	modding/IdentifierStorage.cpp
 	modding/ModDescription.cpp
+	modding/ModIncompatibility.cpp
 	modding/ModManager.cpp
 	modding/ModUtility.cpp
 	modding/ModVerificationInfo.cpp
@@ -310,6 +314,7 @@ set(lib_MAIN_SRCS
 	CAndroidVMHelper.cpp
 	CBonusTypeHandler.cpp
 	CCreatureHandler.cpp
+	ConditionalWait.cpp
 	CPlayerState.cpp
 	CRandomGenerator.cpp
 	CScriptingModule.cpp
