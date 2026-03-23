@@ -22,7 +22,7 @@ class LobbyDatabase;
 class HttpApiServer
 {
 public:
-	HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port);
+	HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port, bool localhostOnly);
 	~HttpApiServer();
 
 	void start();
@@ -40,6 +40,7 @@ private:
 	LobbyDatabase & database;
 
 	unsigned short port;
+	bool localhostOnly;
 	boost::asio::io_context & ioc;
 	std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor;
 	std::chrono::system_clock::time_point startTime;

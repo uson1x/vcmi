@@ -41,9 +41,10 @@ static std::string queryParam(boost::beast::string_view target, const std::strin
 	return {};
 }
 
-HttpApiServer::HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port)
+HttpApiServer::HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port, bool localhostOnly)
 	: database(database)
 	, port(port)
+	, localhostOnly(localhostOnly)
 	, ioc(ioc)
 {
 }
@@ -58,11 +59,21 @@ void HttpApiServer::start()
 	startTime = std::chrono::system_clock::now();
 
 	acceptor = std::make_unique<tcp::acceptor>(ioc);
-	tcp::endpoint ep{tcp::v6(), port};
-	acceptor->open(ep.protocol());
-	acceptor->set_option(tcp::acceptor::reuse_address(true));
-	acceptor->set_option(boost::asio::ip::v6_only(false));
-	acceptor->bind(ep);
+	if (localhostOnly)
+	{
+		tcp::endpoint ep{boost::asio::ip::address_v4::loopback(), port};
+		acceptor->open(ep.protocol());
+		acceptor->set_option(tcp::acceptor::reuse_address(true));
+		acceptor->bind(ep);
+	}
+	else
+	{
+		tcp::endpoint ep{tcp::v6(), port};
+		acceptor->open(ep.protocol());
+		acceptor->set_option(tcp::acceptor::reuse_address(true));
+		acceptor->set_option(boost::asio::ip::v6_only(false));
+		acceptor->bind(ep);
+	}
 	acceptor->listen();
 
 	doAccept();
@@ -175,18 +186,19 @@ http::response<http::string_body> HttpApiServer::handleRequest(http::request<htt
 			if (auto val = queryParam(req.target(), "hours"); !val.empty())
 			{
 				try { hours = std::stoi(val); }
-				catch (const std::invalid_argument &) { hours = -1; }
-				catch (const std::out_of_range &) { hours = -1; }
+				catch (const std::invalid_argument &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'hours' must be an integer"})"); }
+				catch (const std::out_of_range &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'hours' is out of range"})"); }
 			}
 			if (auto val = queryParam(req.target(), "limit"); !val.empty())
 			{
 				try
 				{
 					limit = std::stoi(val);
-					limit = std::clamp(limit, 1, 250);
+					if (limit < 1 || limit > 250)
+						return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})");
 				}
-				catch (const std::invalid_argument &) { limit = 50; }
-				catch (const std::out_of_range &) { limit = 50; }
+				catch (const std::invalid_argument &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be an integer"})"); }
+				catch (const std::out_of_range &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})"); }
 			}
 			
 			JsonNode rooms = getRooms(hours, limit);
@@ -325,7 +337,8 @@ JsonNode HttpApiServer::getRooms(int hours, int limit)
 		try {
 			JsonNode modsNode(reinterpret_cast<const std::byte*>(room.modsJson.data()), room.modsJson.size(), "");
 			roomNode["mods"] = modsNode;
-		} catch(...) {
+		} catch(const std::exception & e) {
+			logGlobal->warn("HTTP API: failed to parse mods JSON: %s", e.what());
 			roomNode["mods"].Struct() = JsonMap{};
 		}
 		

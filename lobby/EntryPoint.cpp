@@ -20,6 +20,7 @@
 
 static const int LISTENING_PORT = 3031;
 static const int HTTP_API_PORT = 3032;
+static const bool HTTP_API_LOCALHOST_ONLY = true;
 
 int main(int argc, const char * argv[])
 {
@@ -49,7 +50,7 @@ int main(int argc, const char * argv[])
 	}
 
 	// Start HTTP API Server
-	HttpApiServer httpServer(server.getNetworkContext(), *server.getDatabase(), HTTP_API_PORT);
+	HttpApiServer httpServer(server.getNetworkContext(), *server.getDatabase(), HTTP_API_PORT, HTTP_API_LOCALHOST_ONLY);
 	try
 	{
 		httpServer.start();
