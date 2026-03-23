@@ -164,7 +164,7 @@ static bool extractCurrent(unzFile file, std::ostream & where)
 	return false;
 }
 
-static boost::filesystem::path zipFilenameToFilesystemPath(const std::string & filename, bool isUtf8)
+boost::filesystem::path zipFilenameToFilesystemPath(const std::string & filename, bool isUtf8)
 {
 #ifdef VCMI_WINDOWS
 	if (isUtf8)
