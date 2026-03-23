@@ -40,7 +40,6 @@ Schema::Action BAI::getNonRenderAction()
 {
 	NestedLogTag _("NN");
 
-	// logger.info("getNonRenderAciton called with result type: " + std::to_string(result->type));
 	const auto * s = state.get();
 	auto action = model->getAction(s);
 	while(action == Schema::ACTION_RENDER_ANSI)

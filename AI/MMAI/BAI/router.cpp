@@ -24,57 +24,49 @@
 
 namespace MMAI::BAI
 {
-using ModelStorage = std::map<std::string, std::shared_ptr<MMAI::Schema::IModel>>;
+// key => {model, path}
+using ModelStorage = std::map<std::string, std::pair<std::shared_ptr<MMAI::Schema::IModel>, std::string>>;
 
 namespace
 {
 	struct ModelRepository
 	{
-		ModelStorage models;
+		mutable std::mutex mutex;
+		mutable ModelStorage models;
 		float temperature = 1.0;
 		uint64_t seed = 0;
-		std::unique_ptr<ScriptedModel> fallbackModel;
+		std::map<std::string, std::string> paths;
+		std::shared_ptr<ScriptedModel> fallbackModel;
 		std::string fallbackName;
 	};
 
-	std::unique_ptr<ModelRepository> InitModelRepository()
+	std::shared_ptr<ModelRepository> InitModelRepository()
 	{
 		auto repo = std::make_unique<ModelRepository>();
 		auto json = JsonUtils::assembleFromFiles("MMAI/CONFIG/mmai-settings.json");
-		if(!json.isStruct())
+		std::string fallback;
+
+		if(json.isStruct())
+		{
+			JsonUtils::validate(json, "vcmi:mmaiSettings", "mmai");
+			repo->temperature = static_cast<float>(json["temperature"].Float());
+
+			repo->seed = json["seed"].Integer();
+			if(repo->seed == 0)
+				repo->seed = CRandomGenerator::getDefault().nextInt();
+
+			for(const auto & [key, node] : json["models"].Struct())
+				repo->paths.try_emplace(key, "MMAI/models/" + node.String());
+
+			fallback = json["fallback"].isNull() ? "BattleAI" : json["fallback"].String();
+		}
+		else
 		{
 			logAi->error("Could not load MMAI config. Is MMAI mod enabled?");
-			std::string fallback = "BattleAI";
-			logAi->debug("MMAI: preparing fallback model: %s", fallback);
-			repo->fallbackModel = std::make_unique<ScriptedModel>(fallback);
-			repo->fallbackName = fallback;
-			return repo;
+			fallback = "BattleAI";
 		}
 
-		JsonUtils::validate(json, "vcmi:mmaiSettings", "mmai");
-		repo->temperature = static_cast<float>(json["temperature"].Float());
-
-		repo->seed = json["seed"].Integer();
-		if(repo->seed == 0)
-			repo->seed = CRandomGenerator::getDefault().nextInt();
-
-		for(const std::string key : {"attacker", "defender"})
-		{
-			std::string path = "MMAI/models/" + json["models"][key].String();
-
-			logAi->debug("MMAI: Loading NN %s model from: %s", key, path);
-			try
-			{
-				repo->models.try_emplace(key, CreateNNModel(path, repo->temperature, repo->seed));
-			}
-			catch(std::exception & e)
-			{
-				logAi->error("MMAI: error loading " + key + ": " + std::string(e.what()));
-			}
-		}
-
-		auto fallback = json["fallback"].isNull() ? "BattleAI" : json["fallback"].String();
-		logAi->debug("MMAI: preparing fallback model: %s", fallback);
+		logAi->debug("MMAI: repo initialized with fallback: %s", fallback);
 		repo->fallbackModel = std::make_unique<ScriptedModel>(fallback);
 		repo->fallbackName = fallback;
 
@@ -89,16 +81,71 @@ namespace
 
 	Schema::IModel * GetModel(const std::string & key)
 	{
-		const auto * config = GetModelRepository();
-		auto it = config->models.find(key);
-		if(it == config->models.end())
+		const auto * repo = GetModelRepository();
+		auto lock = std::lock_guard<std::mutex>(repo->mutex);
+
+		std::shared_ptr<Schema::IModel> model = nullptr;
+
+		// Search for "foo.bar.baz" -> "foo.bar" -> "foo"
+		auto currentKey = key;
+		auto keysToAdd = std::vector<std::string>{};
+
+		while(true)
 		{
-			logAi->error("MMAI: no %s model loaded, trying fallback: %s", key, config->fallbackName);
-			ASSERT(config->fallbackModel, "fallback failed: model is null");
-			return config->fallbackModel.get();
+			logAi->debug("MMAI: trying %s", currentKey);
+			auto it = repo->models.find(currentKey);
+
+			if(it != repo->models.end())
+			{
+				model = it->second.first;
+				logAi->debug("MMAI: cache hit: %s (%s)", currentKey, it->second.second);
+				break;
+			}
+
+			logAi->debug("MMAI: cache miss: %s", currentKey);
+			keysToAdd.push_back(currentKey);
+
+			auto itPath = repo->paths.find(currentKey);
+			if(itPath != repo->paths.end())
+			{
+				const auto & path = itPath->second;
+				logAi->debug("MMAI: Loading %s model from: %s", currentKey, path);
+				try
+				{
+					model = CreateNNModel(path, repo->temperature, repo->seed);
+					for(const auto & k : keysToAdd)
+					{
+						logAi->debug("MMAI: cache write: %s (%s)", k, path);
+						repo->models.try_emplace(k, std::pair(model, path));
+					}
+					break;
+				}
+				catch(std::exception & e)
+				{
+					logAi->error("MMAI: load error: %s: %s", currentKey, std::string(e.what()));
+				}
+			}
+			else
+			{
+				logAi->warn("MMAI: load error: %s: no path configured", currentKey);
+			}
+
+			// Try next key (if any)
+			auto pos = currentKey.rfind('.');
+			if(pos == std::string::npos)
+				break;
+
+			currentKey = currentKey.substr(0, pos);
 		}
 
-		return it->second.get();
+		if(!model)
+		{
+			logAi->error("MMAI: %s: falling back to %s", key, repo->fallbackName);
+			ASSERT(repo->fallbackModel, "fallback error: model is null");
+			model = repo->fallbackModel;
+		}
+
+		return model.get();
 	}
 
 	// Convert a memory address for logging purposes
@@ -245,7 +292,12 @@ void Router::battleStart(
 {
 	MMAI_LOG_TAG;
 	Schema::IModel * model;
-	const std::string modelkey = side == BattleSide::ATTACKER ? "attacker" : "defender";
+
+	std::string modelkey = side == BattleSide::ATTACKER ? "attacker" : "defender";
+
+	if(cb->getBattle(bid)->battleGetWallState(EWallPart::GATE) != EWallState::NONE)
+		modelkey += ".siege";
+
 	model = GetModel(modelkey);
 
 	logtag += ".v" + std::to_string(model->getVersion());

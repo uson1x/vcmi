@@ -46,13 +46,12 @@ Schema::Side ScriptedModel::getSide()
 // When MMAI fails to load an ML model, it loads a SCRIPTED model instead
 // as per MMAI mod's "fallback" setting in order to prevent a game crash.
 
-// The below methods should never be called on this object:
 int ScriptedModel::getVersion()
 {
-	warn("getVersion", -666);
-	return -666;
+	return -1;
 };
 
+// The below methods should never be called on this object:
 int ScriptedModel::getAction(const MMAI::Schema::IState * s)
 {
 	warn("getAction", -666);
