@@ -12,7 +12,6 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <memory>
-#include <thread>
 
 VCMI_LIB_NAMESPACE_BEGIN
 class JsonNode;
@@ -23,27 +22,25 @@ class LobbyDatabase;
 class HttpApiServer
 {
 public:
-	HttpApiServer(const boost::filesystem::path & databasePath, unsigned short port);
+	HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port);
 	~HttpApiServer();
 
 	void start();
 	void stop();
 
 private:
-	void run();
-	void handleSession(boost::beast::tcp_stream stream);
-	void handleRequest(boost::beast::http::request<boost::beast::http::string_body> && req, boost::beast::tcp_stream & stream);
+	void doAccept();
+	boost::beast::http::response<boost::beast::http::string_body> handleRequest(boost::beast::http::request<boost::beast::http::string_body> && req, boost::beast::tcp_stream & stream);
 	std::string formatTimestamp(std::chrono::system_clock::time_point timePoint);
 
 	JsonNode getStats();
 	JsonNode getChats(const std::string & channelName);
 	JsonNode getRooms(int hours, int limit);
 
-	std::unique_ptr<LobbyDatabase> database;
+	LobbyDatabase & database;
 
 	unsigned short port;
-	boost::asio::io_context ioc;
-	std::unique_ptr<std::thread> thread;
-	bool running;
+	boost::asio::io_context & ioc;
+	std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor;
 	std::chrono::system_clock::time_point startTime;
 };

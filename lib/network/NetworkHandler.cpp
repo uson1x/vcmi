@@ -21,12 +21,22 @@ std::unique_ptr<INetworkHandler> INetworkHandler::createHandler()
 }
 
 NetworkHandler::NetworkHandler()
-	: context(std::make_unique<NetworkContext>())
+	: ownedContext(std::make_unique<NetworkContext>())
+	, context(ownedContext.get())
+{}
+
+NetworkHandler::NetworkHandler(NetworkContext & externalContext)
+	: context(&externalContext)
 {}
 
 std::unique_ptr<INetworkServer> NetworkHandler::createServerTCP(INetworkServerListener & listener)
 {
 	return std::make_unique<NetworkServer>(listener, *context);
+}
+
+std::unique_ptr<INetworkHandler> NetworkHandler::createHandlerWithContext(NetworkContext & context)
+{
+	return std::make_unique<NetworkHandler>(context);
 }
 
 std::shared_ptr<INetworkConnection> NetworkHandler::createAsyncConnection(INetworkConnectionListener & listener)

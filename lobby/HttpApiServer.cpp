@@ -9,7 +9,6 @@
  */
 #include "StdInc.h"
 #include "HttpApiServer.h"
-#include "LobbyServer.h"
 #include "LobbyDatabase.h"
 #include "EmbeddedWebAssets.h"
 
@@ -22,10 +21,30 @@ namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
-HttpApiServer::HttpApiServer(const boost::filesystem::path & databasePath, unsigned short port)
-	: database(std::make_unique<LobbyDatabase>(databasePath, false))
+static std::string queryParam(boost::beast::string_view target, const std::string & key)
+{
+	std::string t(target);
+	auto qpos = t.find('?');
+	if (qpos == std::string::npos)
+		return {};
+	std::string query = t.substr(qpos + 1);
+	const std::string prefix = key + '=';
+	for (std::string::size_type pos = 0; pos < query.size(); )
+	{
+		auto amp = query.find('&', pos);
+		std::string part = query.substr(pos, amp == std::string::npos ? std::string::npos : amp - pos);
+		if (part.substr(0, prefix.size()) == prefix)
+			return part.substr(prefix.size());
+		if (amp == std::string::npos) break;
+		pos = amp + 1;
+	}
+	return {};
+}
+
+HttpApiServer::HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port)
+	: database(database)
 	, port(port)
-	, running(false)
+	, ioc(ioc)
 {
 }
 
@@ -36,74 +55,80 @@ HttpApiServer::~HttpApiServer()
 
 void HttpApiServer::start()
 {
-	running = true;
-	thread = std::make_unique<std::thread>([this]() { run(); });
-	logGlobal->info("HTTP API Server started on port %d", port);
 	startTime = std::chrono::system_clock::now();
+
+	acceptor = std::make_unique<tcp::acceptor>(ioc);
+	tcp::endpoint ep{tcp::v6(), port};
+	acceptor->open(ep.protocol());
+	acceptor->set_option(tcp::acceptor::reuse_address(true));
+	acceptor->set_option(boost::asio::ip::v6_only(false));
+	acceptor->bind(ep);
+	acceptor->listen();
+
+	doAccept();
+	logGlobal->info("HTTP API Server started on port %d", port);
 }
 
 void HttpApiServer::stop()
 {
-	if (running)
+	if (acceptor && acceptor->is_open())
 	{
-		running = false;
-		ioc.stop();
-		if (thread && thread->joinable())
-			thread->join();
+		acceptor->close();
 		logGlobal->info("HTTP API Server stopped");
 	}
 }
 
-void HttpApiServer::run()
+void HttpApiServer::doAccept()
 {
-	try
+	acceptor->async_accept([this](boost::system::error_code ec, tcp::socket socket)
 	{
-		tcp::acceptor acceptor{ioc};
-		tcp::endpoint ep{tcp::v6(), port};
-		acceptor.open(ep.protocol());
-		acceptor.set_option(tcp::acceptor::reuse_address(true));
-		acceptor.set_option(boost::asio::ip::v6_only(false));
-		acceptor.bind(ep);
-		acceptor.listen();
-
-		while (running)
+		if (!ec)
 		{
-			tcp::socket socket{ioc};
-			acceptor.accept(socket);
+			auto stream = std::make_shared<beast::tcp_stream>(std::move(socket));
+			auto buffer = std::make_shared<beast::flat_buffer>();
+			auto req = std::make_shared<http::request<http::string_body>>();
 
-			// Handle each connection asynchronously
-			std::thread([this, sock = std::move(socket)]() mutable {
-				try {
-					beast::tcp_stream stream(std::move(sock));
-					handleSession(std::move(stream));
-				} catch (const std::exception & e) {
-					logGlobal->error("HTTP session error: %s", e.what());
-				}
-			}).detach();
+			http::async_read(*stream, *buffer, *req,
+				[this, stream, buffer, req](boost::system::error_code readEc, std::size_t) mutable
+				{
+					if (readEc)
+					{
+						logGlobal->error("HTTP read error: %s", readEc.message());
+						return;
+					}
+					try
+					{
+						auto res = std::make_shared<http::response<http::string_body>>(handleRequest(std::move(*req), *stream));
+						http::async_write(*stream, *res,
+							[stream, res](boost::system::error_code, std::size_t)
+							{
+								beast::error_code shutdownEc;
+								stream->socket().shutdown(tcp::socket::shutdown_send, shutdownEc);
+							});
+					}
+					catch (const std::exception & e)
+					{
+						logGlobal->error("HTTP session error: %s", e.what());
+					}
+				});
 		}
-	}
-	catch (const std::exception & e)
-	{
-		logGlobal->error("HTTP API Server error: %s", e.what());
-	}
+		if (acceptor && acceptor->is_open())
+			doAccept();
+	});
 }
 
-void HttpApiServer::handleSession(beast::tcp_stream stream)
-{
-	beast::flat_buffer buffer;
-	http::request<http::string_body> req;
-	http::read(stream, buffer, req);
-	handleRequest(std::move(req), stream);
-}
-
-void HttpApiServer::handleRequest(http::request<http::string_body> && req, beast::tcp_stream & stream)
+http::response<http::string_body> HttpApiServer::handleRequest(http::request<http::string_body> && req, beast::tcp_stream & stream)
 {
 	// Log the request
 	std::string clientIP = "unknown";
 	try {
 		auto endpoint = stream.socket().remote_endpoint();
 		clientIP = endpoint.address().to_string();
-	} catch(...) {}
+	}
+	catch(const boost::system::system_error & e)
+	{
+		logGlobal->warn("HTTP API: could not get client IP: %s", e.what());
+	}
 	
 	std::string userAgent = std::string(req[http::field::user_agent]);
 	if (userAgent.empty()) userAgent = "unknown";
@@ -131,102 +156,64 @@ void HttpApiServer::handleRequest(http::request<http::string_body> && req, beast
 		{
 			JsonNode stats = getStats();
 			std::string json = stats.toCompactString();
-			auto res = createResponse(http::status::ok, json);
-			http::write(stream, res);
+			return createResponse(http::status::ok, json);
 		}
 		else if (req.target().starts_with("/api/v1/chats"))
 		{
-			// Parse query parameters
 			std::string channelName = "english";
-			auto target = std::string(req.target());
-			auto queryPos = target.find('?');
-			if (queryPos != std::string::npos)
-			{
-				auto query = target.substr(queryPos + 1);
-				auto channelPos = query.find("channelName=");
-				if (channelPos != std::string::npos)
-				{
-					auto valueStart = channelPos + 12; // length of "channelName="
-					auto valueEnd = query.find('&', valueStart);
-					channelName = query.substr(valueStart, valueEnd == std::string::npos ? std::string::npos : valueEnd - valueStart);
-				}
-			}
-			
+			if (auto val = queryParam(req.target(), "channelName"); !val.empty())
+				channelName = val;
+
 			JsonNode chats = getChats(channelName);
 			std::string json = chats.toCompactString();
-			auto res = createResponse(http::status::ok, json);
-			http::write(stream, res);
+			return createResponse(http::status::ok, json);
 		}
 		else if (req.target().starts_with("/api/v1/rooms"))
 		{
-			// Parse query parameters
 			int hours = -1;
 			int limit = 50;
-			auto target = std::string(req.target());
-			auto queryPos = target.find('?');
-			if (queryPos != std::string::npos)
+			if (auto val = queryParam(req.target(), "hours"); !val.empty())
 			{
-				auto query = target.substr(queryPos + 1);
-				auto hoursPos = query.find("hours=");
-				if (hoursPos != std::string::npos)
+				try { hours = std::stoi(val); }
+				catch (const std::invalid_argument &) { hours = -1; }
+				catch (const std::out_of_range &) { hours = -1; }
+			}
+			if (auto val = queryParam(req.target(), "limit"); !val.empty())
+			{
+				try
 				{
-					auto valueStart = hoursPos + 6; // length of "hours="
-					auto valueEnd = query.find('&', valueStart);
-					std::string hoursStr = query.substr(valueStart, valueEnd == std::string::npos ? std::string::npos : valueEnd - valueStart);
-					try {
-						hours = std::stoi(hoursStr);
-					} catch(...) {
-						hours = -1;
-					}
+					limit = std::stoi(val);
+					limit = std::clamp(limit, 1, 250);
 				}
-				auto limitPos = query.find("limit=");
-				if (limitPos != std::string::npos)
-				{
-					auto valueStart = limitPos + 6; // length of "limit="
-					auto valueEnd = query.find('&', valueStart);
-					std::string limitStr = query.substr(valueStart, valueEnd == std::string::npos ? std::string::npos : valueEnd - valueStart);
-					try {
-						limit = std::stoi(limitStr);
-						if (limit > 250) limit = 250;
-						if (limit < 1) limit = 50;
-					} catch(...) {
-						limit = 50;
-					}
-				}
+				catch (const std::invalid_argument &) { limit = 50; }
+				catch (const std::out_of_range &) { limit = 50; }
 			}
 			
 			JsonNode rooms = getRooms(hours, limit);
 			std::string json = rooms.toCompactString();
-			auto res = createResponse(http::status::ok, json);
-			http::write(stream, res);
+			return createResponse(http::status::ok, json);
 		}
 		else if (req.target() == "/api/docs" || req.target() == "/")
 		{
 			std::string html = EmbeddedFiles::SWAGGER_CONTENT;
-			auto res = createResponse(http::status::ok, html, "text/html");
-			http::write(stream, res);
+			return createResponse(http::status::ok, html, "text/html");
 		}
 		else if (req.target() == "/api/openapi.yaml")
 		{
 			std::string spec = EmbeddedFiles::OPENAPI_CONTENT;
-			auto res = createResponse(http::status::ok, spec, "text/yaml");
-			http::write(stream, res);
+			return createResponse(http::status::ok, spec, "text/yaml");
 		}
 		else
 		{
 			// 404 Not Found
 			std::string json = R"({ "error": "Not Found", "message": "The requested endpoint does not exist" })";
-			auto res = createResponse(http::status::not_found, json);
-			http::write(stream, res);
+			return createResponse(http::status::not_found, json);
 		}
-
-		// Graceful shutdown
-		beast::error_code ec;
-		stream.socket().shutdown(tcp::socket::shutdown_send, ec);
 	}
 	catch (const std::exception & e)
 	{
 		logGlobal->error("Error handling HTTP request: %s", e.what());
+		return createResponse(http::status::internal_server_error, R"({"error":"Internal Server Error"})");
 	}
 }
 
@@ -244,40 +231,40 @@ JsonNode HttpApiServer::getStats()
 {
 	JsonNode stats;
 	stats["onlinePlayers"].Vector() = JsonVector();
-	for (const auto & player : database->getActiveAccounts())
+	for (const auto & player : database.getActiveAccounts())
 		stats["onlinePlayers"].Vector().push_back(JsonNode(player.displayName));
 	stats["onlinePlayersCount"].Struct() = JsonMap{
 		{"current", JsonNode(static_cast<int64_t>(stats["onlinePlayers"].Vector().size()))},
-		{"lastHour", JsonNode(database->getActiveAccountsCount(1))},
-		{"lastDay", JsonNode(database->getActiveAccountsCount(24))},
-		{"lastWeek", JsonNode(database->getActiveAccountsCount(168))},
-		{"lastMonth", JsonNode(database->getActiveAccountsCount(720))},
-		{"lastYear", JsonNode(database->getActiveAccountsCount(8760))}
+		{"lastHour", JsonNode(database.getActiveAccountsCount(1))},
+		{"lastDay", JsonNode(database.getActiveAccountsCount(24))},
+		{"lastWeek", JsonNode(database.getActiveAccountsCount(168))},
+		{"lastMonth", JsonNode(database.getActiveAccountsCount(720))},
+		{"lastYear", JsonNode(database.getActiveAccountsCount(8760))}
 	};
 	stats["registeredPlayersCount"].Struct() = JsonMap{
-		{"total", JsonNode(database->getAccountCount())},
-		{"lastDay", JsonNode(database->getRegisteredAccountsCount(24))},
-		{"lastWeek", JsonNode(database->getRegisteredAccountsCount(168))},
-		{"lastMonth", JsonNode(database->getRegisteredAccountsCount(720))},
-		{"lastYear", JsonNode(database->getRegisteredAccountsCount(8760))}
+		{"total", JsonNode(database.getAccountCount())},
+		{"lastDay", JsonNode(database.getRegisteredAccountsCount(24))},
+		{"lastWeek", JsonNode(database.getRegisteredAccountsCount(168))},
+		{"lastMonth", JsonNode(database.getRegisteredAccountsCount(720))},
+		{"lastYear", JsonNode(database.getRegisteredAccountsCount(8760))}
 	};
 	std::map<LobbyRoomState, int> lobbysCount;
-	for (const auto & room : database->getActiveGameRooms())
+	for (const auto & room : database.getActiveGameRooms())
 		lobbysCount[room.roomState]++;
 	stats["gameCount"].Struct() = JsonMap{
 		{"current", JsonNode(lobbysCount[LobbyRoomState::BUSY])},
-		{"total", JsonNode(database->getClosedGameRoomsCount())},
-		{"lastDay", JsonNode(database->getClosedGameRoomsCount(24))},
-		{"lastWeek", JsonNode(database->getClosedGameRoomsCount(168))},
-		{"lastMonth", JsonNode(database->getClosedGameRoomsCount(720))},
-		{"lastYear", JsonNode(database->getClosedGameRoomsCount(8760))}
+		{"total", JsonNode(database.getClosedGameRoomsCount())},
+		{"lastDay", JsonNode(database.getClosedGameRoomsCount(24))},
+		{"lastWeek", JsonNode(database.getClosedGameRoomsCount(168))},
+		{"lastMonth", JsonNode(database.getClosedGameRoomsCount(720))},
+		{"lastYear", JsonNode(database.getClosedGameRoomsCount(8760))}
 	};
 	stats["lobbyCount"].Struct() = JsonMap{
 		{"current", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PUBLIC] + lobbysCount[LobbyRoomState::PRIVATE]))},
 		{"public", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PUBLIC]))},
 		{"private", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PRIVATE]))}
 	};
-	stats["registeredPlayersCount"].Integer() = database->getAccountCount();
+	stats["registeredPlayersCount"].Integer() = database.getAccountCount();
 
 	stats["lobbyStartTime"].String() = formatTimestamp(startTime);
 	
@@ -293,7 +280,7 @@ JsonNode HttpApiServer::getChats(const std::string & channelName)
 	chats["messages"].Vector() = JsonVector();
 	chats["channelName"].String() = channelName;
 	
-	auto messages = database->getRecentMessageHistory("global", channelName);
+	auto messages = database.getRecentMessageHistory("global", channelName);
 	
 	for (const auto & msg : messages)
 	{
@@ -320,7 +307,7 @@ JsonNode HttpApiServer::getRooms(int hours, int limit)
 	result["hours"].Integer() = hours;
 	result["limit"].Integer() = limit;
 	
-	auto rooms = database->getRooms(hours, limit);
+	auto rooms = database.getRooms(hours, limit);
 	
 	for (const auto & room : rooms)
 	{

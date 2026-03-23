@@ -11,6 +11,7 @@
 #include "LobbyServer.h"
 
 #include "LobbyDatabase.h"
+#include "../lib/network/NetworkHandler.h"
 
 #include "../lib/json/JsonFormatException.h"
 #include "../lib/json/JsonNode.h"
@@ -835,10 +836,20 @@ void LobbyServer::receiveSendInvite(const NetworkConnectionPtr & connection, con
 LobbyServer::~LobbyServer() = default;
 
 LobbyServer::LobbyServer(const boost::filesystem::path & databasePath)
-	: database(std::make_unique<LobbyDatabase>(databasePath, true))
-	, networkHandler(INetworkHandler::createHandler())
+	: database(std::make_unique<LobbyDatabase>(databasePath))
+	, networkHandler(NetworkHandler::createHandlerWithContext(ioc))
 	, networkServer(networkHandler->createServerTCP(*this))
 {
+}
+
+LobbyDatabase * LobbyServer::getDatabase() const
+{
+	return database.get();
+}
+
+boost::asio::io_context & LobbyServer::getNetworkContext()
+{
+	return ioc;
 }
 
 void LobbyServer::start(uint16_t port)
