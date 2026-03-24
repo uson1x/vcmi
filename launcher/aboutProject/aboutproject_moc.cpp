@@ -27,6 +27,29 @@
 #include "../../lib/json/JsonUtils.h"
 #include "../../lib/filesystem/Filesystem.h"
 
+namespace
+{
+void addLastSaveToArchiveIfAvailable(CZipSaver & saver)
+{
+	const auto json = JsonUtils::assembleFromFiles("config/settings.json");
+	if(json["general"].isNull() || json["general"]["lastSave"].isNull())
+		return;
+
+	const auto lastSavePath = json["general"]["lastSave"].String();
+	const auto rsave = ResourcePath(lastSavePath, EResType::SAVEGAME);
+	const auto * rhandler = CResourceHandler::get();
+	if(!rhandler->existsResource(rsave))
+		return;
+
+	size_t pos = lastSavePath.find_last_of("/\\");
+	std::string name = (pos == std::string::npos) ? lastSavePath : lastSavePath.substr(pos + 1);
+
+	const auto & [data, length] = rhandler->load(rsave)->readAll();
+	auto stream = saver.addFile(name + ".vsgm1");
+	stream->write(data.get(), length);
+}
+}
+
 void AboutProjectView::hideAndStretchWidget(QGridLayout * layout, QWidget * toHide, QWidget * toStretch)
 {
 	toHide->hide();
@@ -474,31 +497,7 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 		}
 
 		// try to include the last save reported in settings.json
-		{
-			auto json = JsonUtils::assembleFromFiles("config/settings.json");
-			if(!json["general"].isNull() && !json["general"]["lastSave"].isNull())
-			{
-				try
-				{
-					auto lastSavePath = json["general"]["lastSave"].String();
-					const auto rsave = ResourcePath(lastSavePath, EResType::SAVEGAME);
-					const auto * rhandler = CResourceHandler::get();
-					if(rhandler->existsResource(rsave))
-					{
-						size_t pos = lastSavePath.find_last_of("/\\");
-						std::string name = (pos == std::string::npos)? lastSavePath : lastSavePath.substr(pos + 1);
-
-						const auto & [data, length] = rhandler->load(rsave)->readAll();
-						auto stream = saver.addFile(name + ".VSGM1");
-						stream->write(data.get(), length);
-					}
-				}
-				catch(const std::exception&)
-				{
-					// ignore errors here
-				}
-			}
-		}
+		addLastSaveToArchiveIfAvailable(saver);
 		if(!advanceProgress(progress, progressValue, outPath))
 			return;
 
@@ -527,7 +526,14 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 
 		progress.hide();
 	}
-	catch(const std::exception & e)
+	catch(const std::runtime_error & e)
+	{
+		QFile::remove(outPath);
+		logGlobal->error("Log export failed while creating archive %s. Reason: %s", outPath.toStdString(), e.what());
+		QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
+		return;
+	}
+	catch(const boost::filesystem::filesystem_error & e)
 	{
 		QFile::remove(outPath);
 		logGlobal->error("Log export failed while creating archive %s. Reason: %s", outPath.toStdString(), e.what());
