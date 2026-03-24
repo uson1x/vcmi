@@ -1218,24 +1218,17 @@ int countSaveConflicts(const QStringList & saves, const QString & saveDestDir)
 		QString realSavePath = Helper::getRealPath(save);
 		if(realSavePath.endsWith(".zip", Qt::CaseInsensitive))
 		{
-			try
-			{
-				ZipArchive archive(qstringToPath(realSavePath));
-				auto fileList = archive.listFiles();
+			ZipArchive archive(qstringToPath(realSavePath));
+			auto fileList = archive.listFiles();
 
-				for(const auto & file : fileList)
-				{
-					QString relativePath = QString::fromUtf8(file.data(), static_cast<int>(file.size()));
-					if(!relativePath.endsWith(".vsgm1", Qt::CaseInsensitive))
-						continue;
-
-					if(QFile::exists(saveDestDir + relativePath))
-						conflictCount++;
-				}
-			}
-			catch(const std::runtime_error & e)
+			for(const auto & file : fileList)
 			{
-				logGlobal->warn("Failed to inspect saves archive %s. Reason: %s", realSavePath.toStdString(), e.what());
+				QString relativePath = QString::fromUtf8(file.data(), static_cast<int>(file.size()));
+				if(!relativePath.endsWith(".vsgm1", Qt::CaseInsensitive))
+					continue;
+
+				if(QFile::exists(saveDestDir + relativePath))
+					conflictCount++;
 			}
 			continue;
 		}
@@ -1314,7 +1307,15 @@ void CModListView::installSaves(QStringList saves)
 	const auto saveDestDir = savesDir.absolutePath() + QChar{'/'};
 
 	int importedCount = 0;
-	int conflictCount = countSaveConflicts(saves, saveDestDir);
+	int conflictCount = 0;
+	try
+	{
+		conflictCount = countSaveConflicts(saves, saveDestDir);
+	}
+	catch(const std::runtime_error & e)
+	{
+		logGlobal->warn("Failed to inspect selected saves for conflicts. Reason: %s", e.what());
+	}
 
 	bool applyToAll = false;
 	bool overwriteAll = false;
