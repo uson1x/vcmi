@@ -164,9 +164,7 @@ http::response<http::string_body> HttpApiServer::handleRequest(http::request<htt
 	{
 		if (req.target() == "/api/v1/stats")
 		{
-			JsonNode stats = getStats();
-			std::string json = stats.toCompactString();
-			return createResponse(http::status::ok, json);
+			return createResponse(http::status::ok, getStats());
 		}
 		else if (req.target().starts_with("/api/v1/chats"))
 		{
@@ -174,9 +172,7 @@ http::response<http::string_body> HttpApiServer::handleRequest(http::request<htt
 			if (auto val = queryParam(req.target(), "channelName"); !val.empty())
 				channelName = val;
 
-			JsonNode chats = getChats(channelName);
-			std::string json = chats.toCompactString();
-			return createResponse(http::status::ok, json);
+			return createResponse(http::status::ok, getChats(channelName));
 		}
 		else if (req.target().starts_with("/api/v1/rooms"))
 		{
@@ -200,9 +196,7 @@ http::response<http::string_body> HttpApiServer::handleRequest(http::request<htt
 				catch (const std::out_of_range &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})"); }
 			}
 			
-			JsonNode rooms = getRooms(hours, limit);
-			std::string json = rooms.toCompactString();
-			return createResponse(http::status::ok, json);
+			return createResponse(http::status::ok, getRooms(hours, limit));
 		}
 		else if (req.target() == "/api/docs" || req.target() == "/")
 		{
@@ -238,8 +232,18 @@ std::string HttpApiServer::formatTimestamp(std::chrono::system_clock::time_point
 	return oss.str();
 }
 
-JsonNode HttpApiServer::getStats()
+bool HttpApiServer::isCacheValid(const CacheEntry & entry) const
 {
+	return std::chrono::system_clock::now() - entry.timestamp < std::chrono::seconds(CACHE_TTL_SECONDS);
+}
+
+std::string HttpApiServer::getStats()
+{
+	{
+		std::lock_guard<std::mutex> lock(cacheMutex);
+		if (statsCache && isCacheValid(*statsCache))
+			return statsCache->json;
+	}
 	JsonNode stats;
 	stats["onlinePlayers"].Vector() = JsonVector();
 	for (const auto & player : database.getActiveAccounts())
@@ -282,11 +286,24 @@ JsonNode HttpApiServer::getStats()
 	
 	stats["server"].String() = "VCMI Lobby";
 	stats["apiVersion"].String() = "1.0";
-	return stats;
+
+	std::string json = stats.toCompactString();
+	{
+		std::lock_guard<std::mutex> lock(cacheMutex);
+		statsCache = CacheEntry{json, std::chrono::system_clock::now()};
+	}
+	return json;
 }
 
-JsonNode HttpApiServer::getChats(const std::string & channelName)
+std::string HttpApiServer::getChats(const std::string & channelName)
 {
+	{
+		std::lock_guard<std::mutex> lock(cacheMutex);
+		auto it = chatsCache.find(channelName);
+		if (it != chatsCache.end() && isCacheValid(it->second))
+			return it->second.json;
+	}
+
 	JsonNode chats;
 	chats["messages"].Vector() = JsonVector();
 	chats["channelName"].String() = channelName;
@@ -307,31 +324,40 @@ JsonNode HttpApiServer::getChats(const std::string & channelName)
 	}
 	
 	chats["count"].Integer() = chats["messages"].Vector().size();
-	
-	return chats;
+
+	std::string json = chats.toCompactString();
+	{
+		std::lock_guard<std::mutex> lock(cacheMutex);
+		chatsCache[channelName] = CacheEntry{json, std::chrono::system_clock::now()};
+	}
+	return json;
 }
 
-JsonNode HttpApiServer::getRooms(int hours, int limit)
+std::string HttpApiServer::serializeRooms(const std::vector<LobbyGameRoom> & rooms, int hours, int limit)
 {
 	JsonNode result;
 	result["rooms"].Vector() = JsonVector();
 	result["hours"].Integer() = hours;
 	result["limit"].Integer() = limit;
-	
-	auto rooms = database.getRooms(hours, limit);
-	
+
+	int count = 0;
 	for (const auto & room : rooms)
 	{
+		if (hours != -1 && room.age > std::chrono::hours(hours))
+			continue;
+		if (count >= limit)
+			break;
+
 		JsonNode roomNode;
 		roomNode["description"].String() = room.description;
 		roomNode["status"].Integer() = static_cast<int>(room.roomState);
 		roomNode["playerLimit"].Integer() = room.playerLimit;
 		roomNode["version"].String() = room.version;
 		roomNode["secondsElapsed"].Integer() = room.age.count();
-		
+
 		auto creationTime = std::chrono::system_clock::now() - room.age;
 		roomNode["createdAt"].String() = formatTimestamp(creationTime);
-		
+
 		// Parse mods JSON string
 		try {
 			JsonNode modsNode(reinterpret_cast<const std::byte*>(room.modsJson.data()), room.modsJson.size(), "");
@@ -340,11 +366,36 @@ JsonNode HttpApiServer::getRooms(int hours, int limit)
 			logGlobal->warn("HTTP API: failed to parse mods JSON: %s", e.what());
 			roomNode["mods"].Struct() = JsonMap{};
 		}
-		
+
 		result["rooms"].Vector().push_back(roomNode);
+		++count;
 	}
-	
+
 	result["count"].Integer() = result["rooms"].Vector().size();
-	
-	return result;
+	return result.toCompactString();
+}
+
+std::string HttpApiServer::getRooms(int hours, int limit)
+{
+	{
+		std::lock_guard<std::mutex> lock(cacheMutex);
+		if (roomsCache)
+		{
+			const auto & c = *roomsCache;
+			const bool ttlOk    = std::chrono::system_clock::now() - c.timestamp < std::chrono::seconds(CACHE_TTL_SECONDS);
+			const bool hoursOk  = c.fetchedHours == -1 || (hours != -1 && c.fetchedHours >= hours);
+			const bool limitOk  = c.fetchedLimit >= limit;
+			if (ttlOk && hoursOk && limitOk)
+				return serializeRooms(c.rooms, hours, limit);
+		}
+	}
+
+	auto fetchedRooms = database.getRooms(hours, limit);
+
+	{
+		std::lock_guard<std::mutex> lock(cacheMutex);
+		roomsCache = RoomsCacheEntry{fetchedRooms, hours, limit, std::chrono::system_clock::now()};
+	}
+
+	return serializeRooms(fetchedRooms, hours, limit);
 }
