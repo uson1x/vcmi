@@ -174,7 +174,7 @@ Changes to rules should go in `lib/battle/` (especially `DamageCalculator.h`, `B
 
 Game configuration uses JSON:
 
-- `config/` directory contains JSON schemas for entities
+- `config` directory contains configuration of all game entities and settings. It also contains JSON schemas for entities, under `config/schemas` path.
 - JSON parsing: `lib/json/JsonParser.h`, `lib/json/JsonNode.h`
 - JSON validation: `lib/json/JsonValidator.h`
 
