@@ -292,8 +292,12 @@ QStringList StartGameTab::stageUnreadableFiles(const QStringList & files)
 				baseName = QStringLiteral("import_%1").arg(index + 1);
 
 			QString stagedPath = importCacheDir.filePath(QStringLiteral("%1_%2").arg(index + 1).arg(baseName));
-			for(int duplicateIndex = 1; QFileInfo::exists(stagedPath); duplicateIndex++)
+			int duplicateIndex = 1;
+			while(QFileInfo::exists(stagedPath))
+			{
 				stagedPath = importCacheDir.filePath(QStringLiteral("%1_%2_%3").arg(index + 1).arg(duplicateIndex).arg(baseName));
+				duplicateIndex++;
+			}
 
 			if(!Helper::performNativeCopy(file, stagedPath))
 			{
