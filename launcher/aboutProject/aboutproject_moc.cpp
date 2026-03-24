@@ -526,14 +526,14 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 
 		progress.hide();
 	}
-	catch(const std::runtime_error & e)
+	catch(const boost::filesystem::filesystem_error & e)
 	{
 		QFile::remove(outPath);
 		logGlobal->error("Log export failed while creating archive %s. Reason: %s", outPath.toStdString(), e.what());
 		QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
 		return;
 	}
-	catch(const boost::filesystem::filesystem_error & e)
+	catch(const std::runtime_error & e)
 	{
 		QFile::remove(outPath);
 		logGlobal->error("Log export failed while creating archive %s. Reason: %s", outPath.toStdString(), e.what());
