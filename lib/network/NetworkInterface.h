@@ -9,6 +9,8 @@
  */
 #pragma once
 
+namespace boost::asio { class io_context; }
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 /// Base class for connections with other services, either incoming or outgoing
@@ -119,6 +121,8 @@ public:
 	/// Starts network processing on this thread. Does not returns until networking processing has been terminated
 	virtual void run() = 0;
 	virtual void stop() = 0;
+
+	virtual boost::asio::io_context & getContext() = 0;
 };
 
 VCMI_LIB_NAMESPACE_END

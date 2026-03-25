@@ -11,7 +11,6 @@
 #include "LobbyServer.h"
 
 #include "LobbyDatabase.h"
-#include "../lib/network/NetworkHandler.h"
 
 #include "../lib/json/JsonFormatException.h"
 #include "../lib/json/JsonNode.h"
@@ -849,7 +848,7 @@ LobbyDatabase * LobbyServer::getDatabase() const
 
 NetworkContext & LobbyServer::getNetworkContext()
 {
-	return static_cast<NetworkHandler &>(*networkHandler).getContext();
+	return networkHandler->getContext();
 }
 
 void LobbyServer::start(uint16_t port)

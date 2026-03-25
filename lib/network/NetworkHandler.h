@@ -13,7 +13,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-class DLL_LINKAGE NetworkHandler final : public INetworkHandler
+class NetworkHandler final : public INetworkHandler
 {
 	std::unique_ptr<NetworkContext> context;
 
@@ -29,7 +29,7 @@ public:
 	void run() override;
 	void stop() override;
 
-	NetworkContext & getContext();
+	NetworkContext & getContext() override;
 };
 
 VCMI_LIB_NAMESPACE_END
