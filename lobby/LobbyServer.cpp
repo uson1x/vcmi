@@ -837,7 +837,7 @@ LobbyServer::~LobbyServer() = default;
 
 LobbyServer::LobbyServer(const boost::filesystem::path & databasePath)
 	: database(std::make_unique<LobbyDatabase>(databasePath))
-	, networkHandler(NetworkHandler::createHandlerWithContext(ioc))
+	, networkHandler(INetworkHandler::createHandler())
 	, networkServer(networkHandler->createServerTCP(*this))
 {
 }
@@ -847,9 +847,9 @@ LobbyDatabase * LobbyServer::getDatabase() const
 	return database.get();
 }
 
-boost::asio::io_context & LobbyServer::getNetworkContext()
+NetworkContext & LobbyServer::getNetworkContext()
 {
-	return ioc;
+	return static_cast<NetworkHandler &>(*networkHandler).getContext();
 }
 
 void LobbyServer::start(uint16_t port)

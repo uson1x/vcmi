@@ -9,9 +9,7 @@
  */
 #pragma once
 
-#include "../lib/network/NetworkInterface.h"
-#include "../lib/network/NetworkHandler.h"
-#include <boost/asio.hpp>
+#include "../lib/network/NetworkDefines.h"
 #include "LobbyDefines.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -43,7 +41,6 @@ class LobbyServer final : public INetworkServerListener
 	std::map<NetworkConnectionPtr, std::string> activeGameRooms;
 
 	std::unique_ptr<LobbyDatabase> database;
-	boost::asio::io_context ioc;
 	std::unique_ptr<INetworkHandler> networkHandler;
 	std::unique_ptr<INetworkServer> networkServer;
 
@@ -106,5 +103,5 @@ public:
 	void run();
 
 	LobbyDatabase * getDatabase() const;
-	boost::asio::io_context & getNetworkContext();
+	NetworkContext & getNetworkContext();
 };

@@ -47,11 +47,9 @@ class LobbyDatabase
 	SQLiteStatementPtr getAccountInviteStatusStatement;
 	SQLiteStatementPtr getAccountGameRoomStatement;
 	SQLiteStatementPtr getAccountDisplayNameStatement;
-	SQLiteStatementPtr getAccountCountStatement;
-	SQLiteStatementPtr getActiveAccountsCountStatement;
-	SQLiteStatementPtr getRegisteredAccountsCountStatement;
-	SQLiteStatementPtr getClosedGameRoomsCountStatement;
-	SQLiteStatementPtr getClosedGameRoomsCountAllStatement;
+	SQLiteStatementPtr getActiveAccountsCountsBatchStatement;
+	SQLiteStatementPtr getRegisteredAccountsCountsBatchStatement;
+	SQLiteStatementPtr getClosedGameRoomsCountsBatchStatement;
 	SQLiteStatementPtr getRoomsStatement;
 	SQLiteStatementPtr getGameRoomPlayersStatement;
 	SQLiteStatementPtr getGameRoomInvitesStatement;
@@ -102,13 +100,17 @@ public:
 	std::string getIdleGameRoom(const std::string & hostAccountID);
 	std::string getAccountGameRoom(const std::string & accountID);
 	std::string getAccountDisplayName(const std::string & accountID);
-	int getAccountCount();
-	int getActiveAccountsCount(int hours);
-	int getRegisteredAccountsCount(int hours);
-	int getClosedGameRoomsCount(int hours = -1);
-	std::vector<int> getActiveAccountsCounts(const std::vector<int> & hours);
-	std::vector<int> getRegisteredAccountsCounts(const std::vector<int> & hours);
-	std::vector<int> getClosedGameRoomsCounts(const std::vector<int> & hours);
+	/// Batch account activity counts: total registered, plus active in last 1h/24h/1w/1m/1y
+	struct ActiveAccountsCounts { int h1, h24, h168, h720, h8760; };
+	ActiveAccountsCounts getActiveAccountsCounts();
+
+	/// Batch registration counts: total, plus registered in last 24h/1w/1m/1y
+	struct RegisteredAccountsCounts { int total, h24, h168, h720, h8760; };
+	RegisteredAccountsCounts getRegisteredAccountsCounts();
+
+	/// Batch closed game room counts: total, plus closed in last 24h/1w/1m/1y
+	struct ClosedGameRoomsCounts { int total, h24, h168, h720, h8760; };
+	ClosedGameRoomsCounts getClosedGameRoomsCounts();
 
 	LobbyCookieStatus getAccountCookieStatus(const std::string & accountID, const std::string & accessCookieUUID);
 	LobbyInviteStatus getAccountInviteStatus(const std::string & accountID, const std::string & roomID);

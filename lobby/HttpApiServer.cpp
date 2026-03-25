@@ -20,7 +20,8 @@ namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
-static std::string queryParam(boost::beast::string_view target, const std::string & key)
+/// Extracts the value of a URL query parameter by key (e.g. "hours" from "/api?hours=24")
+static std::string extractQueryParameter(boost::beast::string_view target, const std::string & key)
 {
 	std::string t(target);
 	auto qpos = t.find('?');
@@ -169,7 +170,7 @@ http::response<http::string_body> HttpApiServer::handleRequest(http::request<htt
 		else if (req.target().starts_with("/api/v1/chats"))
 		{
 			std::string channelName = "english";
-			if (auto val = queryParam(req.target(), "channelName"); !val.empty())
+			if (auto val = extractQueryParameter(req.target(), "channelName"); !val.empty())
 				channelName = val;
 
 			return createResponse(http::status::ok, getChats(channelName));
@@ -178,13 +179,13 @@ http::response<http::string_body> HttpApiServer::handleRequest(http::request<htt
 		{
 			int hours = -1;
 			int limit = 50;
-			if (auto val = queryParam(req.target(), "hours"); !val.empty())
+			if (auto val = extractQueryParameter(req.target(), "hours"); !val.empty())
 			{
 				try { hours = std::stoi(val); }
 				catch (const std::invalid_argument &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'hours' must be an integer"})"); }
 				catch (const std::out_of_range &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'hours' is out of range"})"); }
 			}
-			if (auto val = queryParam(req.target(), "limit"); !val.empty())
+			if (auto val = extractQueryParameter(req.target(), "limit"); !val.empty())
 			{
 				try
 				{
@@ -248,34 +249,34 @@ std::string HttpApiServer::getStats()
 	stats["onlinePlayers"].Vector() = JsonVector();
 	for (const auto & player : database.getActiveAccounts())
 		stats["onlinePlayers"].Vector().push_back(JsonNode(player.displayName));
-	auto activeCounts = database.getActiveAccountsCounts({1, 24, 168, 720, 8760});
+	auto activeCounts = database.getActiveAccountsCounts();
 	stats["onlinePlayersCount"].Struct() = JsonMap{
 		{"current", JsonNode(static_cast<int64_t>(stats["onlinePlayers"].Vector().size()))},
-		{"lastHour", JsonNode(activeCounts[0])},
-		{"lastDay", JsonNode(activeCounts[1])},
-		{"lastWeek", JsonNode(activeCounts[2])},
-		{"lastMonth", JsonNode(activeCounts[3])},
-		{"lastYear", JsonNode(activeCounts[4])}
+		{"lastHour", JsonNode(static_cast<int64_t>(activeCounts.h1))},
+		{"lastDay", JsonNode(static_cast<int64_t>(activeCounts.h24))},
+		{"lastWeek", JsonNode(static_cast<int64_t>(activeCounts.h168))},
+		{"lastMonth", JsonNode(static_cast<int64_t>(activeCounts.h720))},
+		{"lastYear", JsonNode(static_cast<int64_t>(activeCounts.h8760))}
 	};
-	auto registeredCounts = database.getRegisteredAccountsCounts({24, 168, 720, 8760});
+	auto registeredCounts = database.getRegisteredAccountsCounts();
 	stats["registeredPlayersCount"].Struct() = JsonMap{
-		{"total", JsonNode(database.getAccountCount())},
-		{"lastDay", JsonNode(registeredCounts[0])},
-		{"lastWeek", JsonNode(registeredCounts[1])},
-		{"lastMonth", JsonNode(registeredCounts[2])},
-		{"lastYear", JsonNode(registeredCounts[3])}
+		{"total", JsonNode(static_cast<int64_t>(registeredCounts.total))},
+		{"lastDay", JsonNode(static_cast<int64_t>(registeredCounts.h24))},
+		{"lastWeek", JsonNode(static_cast<int64_t>(registeredCounts.h168))},
+		{"lastMonth", JsonNode(static_cast<int64_t>(registeredCounts.h720))},
+		{"lastYear", JsonNode(static_cast<int64_t>(registeredCounts.h8760))}
 	};
 	std::map<LobbyRoomState, int> lobbysCount;
 	for (const auto & room : database.getActiveGameRooms())
 		lobbysCount[room.roomState]++;
-	auto closedCounts = database.getClosedGameRoomsCounts({24, 168, 720, 8760});
+	auto closedCounts = database.getClosedGameRoomsCounts();
 	stats["gameCount"].Struct() = JsonMap{
 		{"current", JsonNode(lobbysCount[LobbyRoomState::BUSY])},
-		{"total", JsonNode(closedCounts[0])},
-		{"lastDay", JsonNode(closedCounts[1])},
-		{"lastWeek", JsonNode(closedCounts[2])},
-		{"lastMonth", JsonNode(closedCounts[3])},
-		{"lastYear", JsonNode(closedCounts[4])}
+		{"total", JsonNode(static_cast<int64_t>(closedCounts.total))},
+		{"lastDay", JsonNode(static_cast<int64_t>(closedCounts.h24))},
+		{"lastWeek", JsonNode(static_cast<int64_t>(closedCounts.h168))},
+		{"lastMonth", JsonNode(static_cast<int64_t>(closedCounts.h720))},
+		{"lastYear", JsonNode(static_cast<int64_t>(closedCounts.h8760))}
 	};
 	stats["lobbyCount"].Struct() = JsonMap{
 		{"current", JsonNode(static_cast<int64_t>(lobbysCount[LobbyRoomState::PUBLIC] + lobbysCount[LobbyRoomState::PRIVATE]))},

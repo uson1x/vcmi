@@ -15,12 +15,10 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 class DLL_LINKAGE NetworkHandler final : public INetworkHandler
 {
-	std::unique_ptr<NetworkContext> ownedContext;
-	NetworkContext * context;
+	std::unique_ptr<NetworkContext> context;
 
 public:
 	NetworkHandler();
-	explicit NetworkHandler(NetworkContext & externalContext);
 
 	std::unique_ptr<INetworkServer> createServerTCP(INetworkServerListener & listener) override;
 	void connectToRemote(INetworkClientListener & listener, const std::string & host, uint16_t port) override;
@@ -31,7 +29,7 @@ public:
 	void run() override;
 	void stop() override;
 
-	static std::unique_ptr<INetworkHandler> createHandlerWithContext(NetworkContext & context);
+	NetworkContext & getContext();
 };
 
 VCMI_LIB_NAMESPACE_END

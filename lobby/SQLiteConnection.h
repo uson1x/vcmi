@@ -43,15 +43,11 @@ public:
 		setBindSingle(1, args...); // The leftmost SQL parameter has an index of 1
 	}
 
-	void setBindVector(const std::vector<int> & values);
-
 	template<typename... Args>
 	void getColumns(Args &... args)
 	{
 		getColumnSingle(0, args...); // The leftmost column of the result set has the index 0
 	}
-
-	void getColumnVector(std::vector<int> & result);
 
 private:
 	void setBindSingle(size_t index, const double & value);
