@@ -116,7 +116,7 @@ namespace
 					for(const auto & k : keysToAdd)
 					{
 						logAi->debug("MMAI: cache write: %s (%s)", k, path);
-						repo->models.try_emplace(k, std::pair(model, path));
+						repo->models.try_emplace(k, model, path);
 					}
 					break;
 				}
