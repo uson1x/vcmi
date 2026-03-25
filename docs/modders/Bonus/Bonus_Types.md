@@ -27,6 +27,62 @@ Changes mastery level of spells of affected heroes and units. Examples are magic
 - subtype: school of magic
 - val: level
 
+### ON_COMBAT_EVENT
+
+Allows to execute an action when specific event happens with affected unit
+
+Subtypes:
+
+- combatEventBeforeAttack: executed before unit attack another unit
+- combatEventAfterAttack: executed after unit attack another unit
+- combatEventBeforeAttacked: executed before unit is attacked by another unit
+- combatEventAfterAttacked: executed after unit is attacked by another unit
+- combatEventWait: executed when unit waits
+- combatEventDefend: executed when unit defends
+- combatEventBeforeMove: executed before unit starts movement
+- combatEventAfterMove: executed after unit ends movement
+- combatEventCast: executed after unit casts a spell
+
+Bonus action:
+
+- `targetEnemy`: if set to true, bonus will be added to opponent unit, if exists
+- `bonus`: bonus to give. See bonus format. WARNING: make sure to correctly set bonus duration of such bonus
+
+Spell action:
+
+- `targetEnemy`: if set to true, spell will be casts on opponent unit, if exists
+- `spell`: identifier of spell to cast
+- `mastery`: mastery level with which to cast the spell
+
+Example:
+
+```json
+{
+    "type" : "ON_COMBAT_EVENT",
+	"subtype" : "defend",
+	"addInfo" : {
+	    "effect" : [
+		    {
+			    "action" : "bonus"
+				"targetEnemy" : false,
+				"bonus" : {
+				    "type" : "STACKS_SPEED",
+					"val" : -1,
+					"duration" : "N_TURNS",
+					"turns" : 1
+				}				
+			},
+			{
+			    "action" : "spell",
+				"spell" : "bless",
+				"mastery" : 0,
+				"targetEnemy" : false
+			}
+		]
+	}
+}
+```
+
 ## Player bonuses
 
 Intended to be setup as global effect, AI cheat etc.
@@ -1190,7 +1246,7 @@ When a unit affected by this bonus dies, no corpse is left behind
 
 ### INVINCIBLE
 
-The unit affected by this bonus cannot be target of attacks or spells
+The unit affected by this bonus cannot be targeted by attacks or affected by negative spells.
 
 ### UNIT_DEFENDING
 
@@ -1201,3 +1257,10 @@ Bonus that is automatically granted to unit whenever unit uses defend action in 
 Increases amount of counted marketplaces when trading in town. You may want to use PLAYER_PROPAGATOR with this bonus to make its effect player wide.
 
 - val: additional number of 'marketplaces' to reduce costs
+
+### DEITYOFFIRE
+
+Enforce the "week of" to a special creature. If this bonus is existing multiple times, it's randomly selected from all bonus sources.
+
+- val: how many additional creatures should generated
+- subtype - id of creature

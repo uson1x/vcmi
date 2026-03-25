@@ -28,6 +28,7 @@
 #include "../BattleFieldHandler.h"
 #include "../VCMIDirs.h"
 #include "../GameLibrary.h"
+#include "../bonuses/BonusParameters.h"
 #include "../bonuses/Limiters.h"
 #include "../bonuses/Propagators.h"
 #include "../bonuses/Updaters.h"
@@ -124,27 +125,27 @@ HeroTypeID CGameState::pickUnusedHeroTypeRandomly(vstd::RNG & randomGenerator, c
 
 int CGameState::getDate(int d, Date mode)
 {
+	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
+	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_WEEKS_PER_MONTH) * daysPerWeek;
+
 	int temp;
 	switch (mode)
 	{
 	case Date::DAY:
 		return d;
 	case Date::DAY_OF_WEEK: //day of week
-		temp = (d)%7; // 1 - Monday, 7 - Sunday
-		return temp ? temp : 7;
+		temp = (d)%daysPerWeek; // 1 - Monday, 7 - Sunday
+		return temp ? temp : daysPerWeek;
 	case Date::WEEK:  //current week
-		temp = ((d-1)/7)+1;
-		if (!(temp%4))
-			return 4;
-		else
-			return (temp%4);
+		temp = ((d - 1) % daysPerMonth) + 1;
+		return ((temp - 1) / daysPerWeek) + 1;
 	case Date::MONTH: //current month
-		return ((d-1)/28)+1;
+		return ((d-1)/daysPerMonth)+1;
 	case Date::DAY_OF_MONTH: //day of month
-		temp = (d)%28;
+		temp = (d)%daysPerMonth;
 		if (temp)
 			return temp;
-		else return 28;
+		else return daysPerMonth;
 	}
 	return 0;
 }
@@ -287,7 +288,10 @@ void CGameState::updateOnLoad(const StartInfo & si)
 	assert(services);
 	scenarioOps->playerInfos = si.playerInfos;
 	for(auto & i : si.playerInfos)
+	{
 		players.at(i.first).human = i.second.isControlledByHuman();
+		logGlobal->debug("Player %d is controlled by %s, team %d", i.first.getNum(), i.second.isControlledByHuman() ? "human" : "AI", players.at(i.first).team.getNum());
+	}
 	scenarioOps->extraOptionsInfo = si.extraOptionsInfo;
 	scenarioOps->turnTimerInfo = si.turnTimerInfo;
 	scenarioOps->simturnsInfo = si.simturnsInfo;
@@ -510,6 +514,10 @@ void CGameState::randomizeMapObjects(IGameRandomizer & gameRandomizer)
 			}
 		}
 	}
+
+	for(auto & obj : map->getObjects<CGPandoraBox>())
+		if (!obj->presentOnDifficulties.contains(getStartInfo()->getDifficulty()))
+			map->eraseObject(obj->id);
 }
 
 void CGameState::initOwnedObjects()
@@ -531,6 +539,7 @@ void CGameState::initPlayerStates()
 		p.color=elem.first;
 		p.human = elem.second.isControlledByHuman();
 		p.team = map->players[elem.first.getNum()].team;
+		logGlobal->debug("Player %d is controlled by %s, team %d", elem.first.getNum(), p.human ? "human" : "AI", p.team.getNum());
 		teams[p.team].id = p.team;//init team
 		teams[p.team].players.insert(elem.first);//add player to team
 	}
@@ -632,6 +641,7 @@ void CGameState::initHeroes(IGameRandomizer & gameRandomizer)
 			boat->appearance = handler->getTemplates().front();
 			map->generateUniqueInstanceName(boat.get());
 			map->addNewObject(boat);
+			map->hideObject(boat.get());
 			hero->setBoat(boat.get());
 		}
 	}
@@ -923,10 +933,6 @@ void CGameState::initTowns(vstd::RNG & randomGenerator)
 void CGameState::initMapObjects(IGameRandomizer & gameRandomizer)
 {
 	logGlobal->debug("\tObject initialization");
-
-	for(auto & obj : map->getObjects<CGPandoraBox>())
-		if (!obj->presentOnDifficulties.contains(getStartInfo()->getDifficulty()))
-			map->eraseObject(obj->id);
 
 	for(auto & obj : map->getObjects())
 		obj->initObj(gameRandomizer);
@@ -1422,6 +1428,12 @@ void CGameState::obtainPlayersStats(SThievesGuildInfo & tgi, int level) const
 	{
 		if(!playerInactive(elem.second.color))
 			tgi.playerColors.push_back(elem.second.color);
+	}
+
+	if (tgi.playerColors.empty())
+	{
+		logGlobal->error("CGameState::obtainPlayersStats: all players are inactive, unable to obtain stats!");
+		return;
 	}
 
 	if(level >= 0) //num of towns & num of heroes

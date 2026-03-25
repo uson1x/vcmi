@@ -45,8 +45,10 @@
 #include "../lib/callback/CCallback.h"
 #include "../lib/entities/building/CBuilding.h"
 #include "../lib/entities/faction/CTownHandler.h"
+#include "../lib/entities/hero/CHeroClass.h"
 #include "../lib/entities/hero/CHeroHandler.h"
 #include "../lib/entities/ResourceTypeHandler.h"
+#include "../lib/mapping/CMap.h"
 #include "../lib/mapObjectConstructors/CObjectClassesHandler.h"
 #include "../lib/mapObjectConstructors/CommonConstructors.h"
 #include "../lib/mapObjects/CGHeroInstance.h"
@@ -140,7 +142,10 @@ void CRecruitmentWindow::select(std::shared_ptr<CCreatureCard> card)
 		totalCostValue->set(card->creature->getFullRecruitCost() * maxAmount);
 
 		//Recruit %s
-		title->setText(boost::str(boost::format(LIBRARY->generaltexth->tcommands[21]) % card->creature->getNamePluralTranslated()));
+		MetaString recruitText;
+		recruitText.appendTextID("core.tcommand.21");
+		recruitText.replaceNamePlural(card->creature->getId());
+		title->setText(recruitText.toString());
 
 		maxButton->block(maxAmount == 0);
 		slider->block(maxAmount == 0);
@@ -502,10 +507,26 @@ void CLevelWindow::createSkillBox()
 
 void CLevelWindow::close()
 {
-	//FIXME: call callback if there was nothing to select?
-	if (box && box->selectedIndex() != -1)
+	int idx = -1;
+
+	if(box)
+		idx = box->selectedIndex();
+
+	// If there are skills available, we must not close without producing a valid choice
+	// For a single available option, auto-pick it
+	if(!skills.empty())
 	{
-		auto it = std::find(skills.begin(), skills.end(), sortedSkills[(box->selectedIndex() + skillViewOffset) % skills.size()]);
+		if(idx == -1)
+		{
+			if(skills.size() == 1)
+				idx = 0;
+			else
+				return; // require explicit selection
+		}
+
+		const auto & chosen = sortedSkills[(idx + skillViewOffset) % skills.size()];
+		auto it = std::find(skills.begin(), skills.end(), chosen);
+
 		cb(std::distance(skills.begin(), it));
 	}
 
@@ -597,6 +618,54 @@ CTavernWindow::CTavernWindow(const CGObjectInstance * TavernObj, const std::func
 	addInvite();
 }
 
+void CTavernWindow::chooseHeroToInvite(CGHeroInstance* selectedHero, const std::map<HeroTypeID, CGHeroInstance*> & inviteableHeroes, const std::function<void(CGHeroInstance*)> & onChoose)
+{
+	auto comp = [](const HeroTypeID& a, const HeroTypeID& b)
+	{
+		auto heroA = a.toHeroType();
+		auto heroB = b.toHeroType();
+		if(heroA->heroClass->faction != heroB->heroClass->faction)
+			return heroA->heroClass->faction < heroB->heroClass->faction;
+		if(heroA->heroClass->getId() != heroB->heroClass->getId())
+			return heroA->heroClass->getId() < heroB->heroClass->getId();
+		return heroA->getNameTranslated() < heroB->getNameTranslated();
+	};
+	std::map<HeroTypeID, CGHeroInstance*, decltype(comp)> orderedHeroes(comp);
+	orderedHeroes.insert(inviteableHeroes.begin(), inviteableHeroes.end());
+
+	std::vector<std::string> texts;
+	std::vector<std::shared_ptr<IImage>> images;
+	std::vector<CGHeroInstance*> heroes;
+	for (const auto & h : orderedHeroes)
+	{
+		heroes.push_back(h.second);
+
+		auto heroFromMapPool = GAME->server().client->gameState().getMap().tryGetFromHeroPool(h.first);
+		auto hero = heroFromMapPool ? heroFromMapPool : h.second;
+
+		texts.push_back(hero->getNameTranslated());
+
+		auto image = ENGINE->renderHandler().loadImage(AnimationPath::builtin("PortraitsSmall"), hero->getIconIndex(), 0, EImageBlitMode::OPAQUE);
+		image->scaleTo(Point(35, 23), EScalingAlgorithm::NEAREST);
+		images.push_back(image);
+	}
+
+	int selectedIndex = 0;
+	if(selectedHero)
+	{
+		auto it = std::find(heroes.begin(), heroes.end(), selectedHero);
+		selectedIndex = std::distance(heroes.begin(), it);
+	}
+
+	auto window = std::make_shared<CObjectListWindow>(texts, nullptr, LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyModeHeroSelect"), [onChoose, heroes](int index){
+		onChoose(heroes.at(index));
+	}, selectedIndex, images, true, false);
+	window->onPopup = [heroes](int index) {
+		ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroes.at(index)));
+	};
+	ENGINE->windows().pushWindow(window);
+}
+
 void CTavernWindow::addInvite()
 {
 	OBJECT_CONSTRUCTION;
@@ -614,13 +683,23 @@ void CTavernWindow::addInvite()
 
 	if(!inviteableHeroes.empty())
 	{
-		int imageIndex = heroToInvite ? heroToInvite->getIconIndex() : 156; // 156 => special id for random
-		if(!heroToInvite)
+		bool isRandomHero = !heroToInvite;
+		int imageIndex = isRandomHero ? 156 : heroToInvite->getIconIndex(); // 156 => special id for random
+		if(isRandomHero)
 			heroToInvite = (*RandomGeneratorUtil::nextItem(inviteableHeroes, CRandomGenerator::getDefault())).second;
 
 		inviteHero = std::make_shared<CLabel>(170, 444, EFonts::FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->translate("vcmi.tavernWindow.inviteHero"));
 		inviteHeroImage = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsSmall"), imageIndex, 0, 245, 428);
-		inviteHeroImageArea = std::make_shared<LRClickableArea>(Rect(245, 428, 48, 32), [this](){ ENGINE->windows().createAndPushWindow<HeroSelector>(inviteableHeroes, [this](CGHeroInstance* h){ heroToInvite = h; addInvite(); }); }, [this](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroToInvite)); });
+		inviteHeroImageArea = std::make_shared<LRClickableArea>(Rect(245, 428, 48, 32), [this, isRandomHero](){
+			chooseHeroToInvite(isRandomHero ? nullptr : heroToInvite, inviteableHeroes, [this](CGHeroInstance* h){
+				heroToInvite = h; addInvite();
+			});
+		}, [this, isRandomHero](){
+			if(isRandomHero)
+				CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("core.genrltxt.522"));
+			else
+				ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(heroToInvite));
+		});
 	}
 }
 
@@ -732,66 +811,6 @@ void CTavernWindow::HeroPortrait::hover(bool on)
 		ENGINE->statusbar()->write(hoverName);
 	else
 		ENGINE->statusbar()->clear();
-}
-
-CTavernWindow::HeroSelector::HeroSelector(std::map<HeroTypeID, CGHeroInstance*> InviteableHeroes, std::function<void(CGHeroInstance*)> OnChoose)
-	: CWindowObject(BORDERED), inviteableHeroes(InviteableHeroes), onChoose(OnChoose)
-{
-	OBJECT_CONSTRUCTION;
-
-	pos = Rect(
-		pos.x,
-		pos.y,
-		ELEM_PER_LINES * 48,
-		std::min((int)(inviteableHeroes.size() / ELEM_PER_LINES + (inviteableHeroes.size() % ELEM_PER_LINES != 0)), MAX_LINES) * 32
-	);
-	background = std::make_shared<CFilledTexture>(ImagePath::builtin("DIBOXBCK"), Rect(0, 0, pos.w, pos.h));
-
-	if(inviteableHeroes.size() / ELEM_PER_LINES > MAX_LINES)
-	{
-		pos.w += 16;
-		slider = std::make_shared<CSlider>(Point(pos.w - 16, 0), pos.h, std::bind(&CTavernWindow::HeroSelector::sliderMove, this, _1), MAX_LINES, std::ceil((double)inviteableHeroes.size() / ELEM_PER_LINES), 0, Orientation::VERTICAL, CSlider::BROWN);
-		slider->setPanningStep(32);
-		slider->setScrollBounds(Rect(-pos.w + slider->pos.w, 0, pos.w, pos.h));
-	}
-
-	recreate();
-	center();
-}
-
-void CTavernWindow::HeroSelector::sliderMove(int slidPos)
-{
-	if(!slider)
-		return; // ignore spurious call when slider is being created
-	recreate();
-	redraw();
-}
-
-void CTavernWindow::HeroSelector::recreate()
-{
-	OBJECT_CONSTRUCTION;
-
-	int sliderLine = slider ? slider->getValue() : 0;
-	int x = 0;
-	int y = -sliderLine;
-	portraits.clear();
-	portraitAreas.clear();
-	for(auto & h : inviteableHeroes)
-	{
-		if(y >= 0 && y <= MAX_LINES - 1)
-		{
-			portraits.push_back(std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsSmall"), (*LIBRARY->heroh)[h.first]->imageIndex, 0, x * 48, y * 32));
-			portraitAreas.push_back(std::make_shared<LRClickableArea>(Rect(x * 48, y * 32, 48, 32), [this, h](){ close(); onChoose(inviteableHeroes[h.first]); }, [this, h](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(inviteableHeroes[h.first])); }));
-		}
-
-		if(x > 0 && x % 15 == 0)
-		{
-			x = 0;
-			y++;
-		}
-		else
-			x++;
-	}
 }
 
 CShipyardWindow::CShipyardWindow(const TResources & cost, int state, BoatId boatType, const std::function<void()> & onBuy)

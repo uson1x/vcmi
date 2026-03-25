@@ -195,6 +195,13 @@ void BattleActionsController::endCastingSpell()
 		owner.windowObject->blockUI(false);
 	}
 
+	if(monsterCaster)
+	{
+		monsterCaster = nullptr;
+		owner.stacksController->activateStack();
+	}
+	monsterSpellTargets.clear();
+
 	if(owner.stacksController->getActiveStack())
 	{
 		possibleActions = getPossibleActionsForStack(owner.stacksController->getActiveStack()); //restore actions after they were cleared
@@ -257,9 +264,7 @@ void BattleActionsController::enterCreatureCastingMode()
 		spells::BattleCast cast(owner.getBattle().get(), caster, spells::Mode::CREATURE_ACTIVE, spell);
 
 		auto m = spell->battleMechanics(&cast);
-		spells::detail::ProblemImpl ignored;
-
-		const bool isCastingPossible = m->canBeCastAt(target, ignored);
+		const bool isCastingPossible = m->canBeCastAt(target);
 
 		if (isCastingPossible)
 		{
@@ -343,16 +348,16 @@ void BattleActionsController::reorderPossibleActionsPriority(const CStack * stac
 			case PossiblePlayerBattleAction::WALK_AND_ATTACK:
 				return 7;
 				break;
-			case PossiblePlayerBattleAction::MOVE_STACK:
+			case PossiblePlayerBattleAction::WALK_AND_SPELLCAST:
 				return 8;
 				break;
-			case PossiblePlayerBattleAction::CATAPULT:
+			case PossiblePlayerBattleAction::MOVE_STACK:
 				return 9;
 				break;
-			case PossiblePlayerBattleAction::HEAL:
+			case PossiblePlayerBattleAction::CATAPULT:
 				return 10;
 				break;
-			case PossiblePlayerBattleAction::WALK_AND_SPELLCAST:
+			case PossiblePlayerBattleAction::HEAL:
 				return 11;
 				break;
 			case PossiblePlayerBattleAction::CREATURE_INFO:
@@ -768,7 +773,7 @@ bool BattleActionsController::actionIsLegal(PossiblePlayerBattleAction action, c
 		case PossiblePlayerBattleAction::WALK_AND_SPELLCAST:
 			{
 				const CStack * currentStack = owner.stacksController->getActiveStack();
-				if (!currentStack || !targetStack || !targetStack->alive())
+				if (!currentStack || !targetStack)
 					return false;
 
 				if (targetStack == currentStack)
@@ -782,7 +787,7 @@ bool BattleActionsController::actionIsLegal(PossiblePlayerBattleAction action, c
 				if(!owner.getBattle()->battleCanShoot(currentStack, targetHex))
 					return false;
 
-				if(targetStack == nullptr && owner.getBattle()->battleCanTargetEmptyHex(currentStack))
+				if(owner.getBattle()->battleCanTargetEmptyHex(currentStack))
 				{
 					auto spellLikeAttackBonus = currentStack->getBonus(Selector::type()(BonusType::SPELL_LIKE_ATTACK));
 					const CSpell * spellDataToCheck = spellLikeAttackBonus->subtype.as<SpellID>().toSpell();
@@ -929,6 +934,9 @@ void BattleActionsController::actionRealize(PossiblePlayerBattleAction action, c
 		{
 			if (action.get() == PossiblePlayerBattleAction::AIMED_SPELL_CREATURE )
 			{
+				monsterCaster = owner.stacksController->getActiveStack();
+				owner.windowObject->blockUI(true);
+				owner.stacksController->deactivateStack();
 				if (action.spell() == SpellID::SACRIFICE)
 				{
 					if(heroSpellToCast)
@@ -954,18 +962,20 @@ void BattleActionsController::actionRealize(PossiblePlayerBattleAction action, c
 
 			if (!heroSpellcastingModeActive())
 			{
+				if(monsterCaster)
+					owner.stacksController->activateStack();
+
 				if (action.spell().hasValue())
 				{
 					monsterSpellTargets.push_back(targetHex);
 					owner.giveCommand(EActionType::MONSTER_SPELL, monsterSpellTargets, action.spell());
-					monsterSpellTargets.clear();
 				}
 				else //unknown random spell
 				{
 					monsterSpellTargets.push_back(targetHex);
 					owner.giveCommand(EActionType::MONSTER_SPELL, monsterSpellTargets);
-					monsterSpellTargets.clear();
 				}
+				endCastingSpell();
 			}
 			else
 			{
@@ -992,11 +1002,12 @@ void BattleActionsController::actionRealize(PossiblePlayerBattleAction action, c
 
 PossiblePlayerBattleAction BattleActionsController::selectAction(const BattleHex & targetHex)
 {
-	assert(owner.stacksController->getActiveStack() != nullptr);
+	auto currentStack = monsterCaster ? monsterCaster : owner.stacksController->getActiveStack();
+	assert(currentStack != nullptr);
 	assert(!possibleActions.empty());
 	assert(targetHex.isValid());
 
-	if (owner.stacksController->getActiveStack() == nullptr)
+	if(currentStack == nullptr)
 		return PossiblePlayerBattleAction::INVALID;
 
 	if (possibleActions.empty())
@@ -1004,7 +1015,7 @@ PossiblePlayerBattleAction BattleActionsController::selectAction(const BattleHex
 
 	const CStack * targetStack = getStackForHex(targetHex);
 
-	reorderPossibleActionsPriority(owner.stacksController->getActiveStack(), targetStack);
+	reorderPossibleActionsPriority(currentStack, targetStack);
 
 	for (PossiblePlayerBattleAction action : possibleActions)
 	{
@@ -1023,7 +1034,7 @@ void BattleActionsController::onHexHovered(const BattleHex & hoveredHex)
 		return;
 	}
 
-	if (owner.stacksController->getActiveStack() == nullptr)
+	if (owner.stacksController->getActiveStack() == nullptr && monsterCaster == nullptr)
 		return;
 
 	if (hoveredHex == BattleHex::INVALID)
@@ -1072,7 +1083,7 @@ void BattleActionsController::onHoverEnded()
 
 void BattleActionsController::onHexLeftClicked(const BattleHex & clickedHex)
 {
-	if (owner.stacksController->getActiveStack() == nullptr)
+	if (owner.stacksController->getActiveStack() == nullptr && monsterCaster == nullptr)
 		return;
 
 	auto action = selectAction(clickedHex);
@@ -1086,26 +1097,24 @@ void BattleActionsController::onHexLeftClicked(const BattleHex & clickedHex)
 	ENGINE->statusbar()->clear();
 }
 
-void BattleActionsController::tryActivateStackSpellcasting(const CStack *casterStack)
+void BattleActionsController::tryActivateStackSpellcasting(const CStack * casterStack)
 {
 	creatureSpells.clear();
+	TConstBonusListPtr bl = casterStack->getBonusesOfType(BonusType::SPELLCASTER);
 
-	bool spellcaster = casterStack->hasBonusOfType(BonusType::SPELLCASTER);
-	if(casterStack->canCast() && spellcaster)
+	if(casterStack->canCast() && !bl->empty())
 	{
 		// faerie dragon can cast only one, randomly selected spell until their next move
 		//TODO: faerie dragon type spell should be selected by server
 		const auto spellToCast = owner.getBattle()->getRandomCastedSpell(CRandomGenerator::getDefault(), casterStack);
 
-		if (spellToCast.hasValue())
+		if(spellToCast.hasValue())
 			creatureSpells.push_back(spellToCast.toSpell());
 	}
 
-	TConstBonusListPtr bl = casterStack->getBonusesOfType(BonusType::SPELLCASTER);
-
 	for(const auto & bonus : *bl)
 	{
-		if (bonus->additionalInfo[0] <= 0 && bonus->subtype.as<SpellID>().hasValue())
+		if(!bonus->parameters && bonus->subtype.as<SpellID>().hasValue())
 			creatureSpells.push_back(bonus->subtype.as<SpellID>().toSpell());
 	}
 }
@@ -1114,17 +1123,18 @@ const spells::Caster * BattleActionsController::getCurrentSpellcaster() const
 {
 	if (heroSpellToCast)
 		return owner.currentHero();
+	else if(monsterCaster)
+		return monsterCaster;
 	else
 		return owner.stacksController->getActiveStack();
 }
 
 spells::Mode BattleActionsController::getCurrentCastMode() const
 {
-	if (heroSpellToCast)
+	if(heroSpellToCast)
 		return spells::Mode::HERO;
 	else
 		return spells::Mode::CREATURE_ACTIVE;
-
 }
 
 bool BattleActionsController::isCastingPossibleHere(const CSpell * currentSpell, const CStack *targetStack, const BattleHex & targetHex)

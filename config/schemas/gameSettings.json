@@ -34,6 +34,14 @@
 				"inTheWakeOfGods" :      { "type" : "object" }
 			}
 		},
+		"general": {
+			"type" : "object",
+			"additionalProperties" : false,
+			"properties" : {
+				"daysPerWeek" :  { "type" : "number" },
+				"weeksPerMonth" : { "type" : "number" }
+			}
+		},
 		"heroes" : {
 			"type" : "object",
 			"additionalProperties" : false,
@@ -112,13 +120,17 @@
 			"type" : "object",
 			"additionalProperties" : false,
 			"properties" : {
-				"weeklyGrowthPercent" :     { "type" : "number" },
-				"weeklyGrowthCap" :         { "type" : "number" },
-				"dailyStackExperience" :    { "type" : "number" },
-				"allowRandomSpecialWeeks" : { "type" : "boolean" },
-				"allowAllForDoubleMonth" :  { "type" : "boolean" },
-				"allowJoiningForFree" :     { "type" : "boolean" },
-				"joiningPercentage" :       { "type" : "number" }
+				"weeklyGrowthPercent" :               { "type" : "number" },
+				"weeklyGrowthCap" :                   { "type" : "number" },
+				"additionalWeeklyGrowthSpecialWeek" : { "type" : "number" },
+				"monthDoubleGrowthProbability" :      { "type" : "number" },
+				"monthPlagueProbability" :            { "type" : "number" },
+				"weekSpecialProbability" :            { "type" : "number" },
+				"dailyStackExperience" :              { "type" : "number" },
+				"allowRandomSpecialWeeks" :           { "type" : "boolean" },
+				"allowAllForDoubleMonth" :            { "type" : "boolean" },
+				"allowJoiningForFree" :               { "type" : "boolean" },
+				"joiningPercentage" :                 { "type" : "number" }
 			}
 		},
 		"dwellings": {

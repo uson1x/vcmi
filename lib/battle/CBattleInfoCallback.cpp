@@ -19,6 +19,7 @@
 #include "DamageCalculator.h"
 #include "IGameSettings.h"
 #include "PossiblePlayerBattleAction.h"
+#include "../bonuses/BonusParameters.h"
 #include "../entities/building/TownFortifications.h"
 #include "../GameLibrary.h"
 #include "../spells/ObstacleCasterProxy.h"
@@ -763,6 +764,9 @@ bool CBattleInfoCallback::battleCanAttackHex(const BattleHexArray & availableHex
 			if (attacker->doubleWide() && obstacle->getStoppingTile().contains(attacker->occupiedHex(fromHex)))
 				return false;
 		}
+		const battle::Unit * defender = battleGetUnitByPos(position, false); //Do not allow to target corpses when standing on them (a WALK_AND_SPELLCAST action)
+		if (defender && defender->isDead() && defender->coversPos(fromHex))
+			return false;
 	}
 
 	return true;
@@ -1008,7 +1012,7 @@ DamageEstimation CBattleInfoCallback::battleEstimateDamage(const BattleAttackInf
 	if(bai.shooting) //FIXME: handle RANGED_RETALIATION
 		return ret;
 
-	if (!bai.defender->ableToRetaliate())
+	if (!bai.defender->ableToRetaliate())	//FIXME: handle situation when NO_RETALIATION bonus is removed during attack
 		return ret;
 
 	if (bai.attacker->hasBonusOfType(BonusType::BLOCKS_RETALIATION) || bai.attacker->isInvincible())
@@ -1659,13 +1663,13 @@ AttackableTiles CBattleInfoCallback::getPotentiallyAttackableHexes(
 	const auto multihexAnimation = attacker->getBonusesOfType(BonusType::MULTIHEX_ANIMATION);
 
 	for (const auto & bonus : *multihexUnit)
-		at.friendlyCreaturePositions.insert(processTargets(bonus->additionalInfo.data()));
+		at.friendlyCreaturePositions.insert(processTargets(bonus->parameters->toVector()));
 
 	for (const auto & bonus : *multihexEnemy)
-		at.hostileCreaturePositions.insert(processTargets(bonus->additionalInfo.data()));
+		at.hostileCreaturePositions.insert(processTargets(bonus->parameters->toVector()));
 
 	for (const auto & bonus : *multihexAnimation)
-		at.overrideAnimationPositions.insert(processTargets(bonus->additionalInfo.data()));
+		at.overrideAnimationPositions.insert(processTargets(bonus->parameters->toVector()));
 
 	if(attacker->hasBonusOfType(BonusType::THREE_HEADED_ATTACK))
 		at.hostileCreaturePositions.insert(processTargets({2,6}));
@@ -1869,8 +1873,8 @@ bool CBattleInfoCallback::battleHasDistancePenalty(const IBonusBearer * shooter,
 		int range = GameConstants::BATTLE_SHOOTING_PENALTY_DISTANCE;
 
 		auto bonus = shooter->getBonus(Selector::type()(BonusType::LIMITED_SHOOTING_RANGE));
-		if(bonus != nullptr && bonus->additionalInfo != CAddInfo::NONE)
-			range = bonus->additionalInfo[0];
+		if(bonus != nullptr && bonus->parameters)
+			range = bonus->parameters->toNumber();
 
 		if(isEnemyUnitWithinSpecifiedRange(shooterPosition, target, range))
 			return false;
@@ -2069,9 +2073,7 @@ SpellID CBattleInfoCallback::getRandomBeneficialSpell(vstd::RNG & rand, const ba
 		spells::BattleCast cast(this, caster, spells::Mode::CREATURE_ACTIVE, spellPtr);
 
 		auto m = spellPtr->battleMechanics(&cast);
-		spells::detail::ProblemImpl problem;
-
-		if (!m->canBeCastAt(target, problem))
+		if (!m->canBeCastAt(target))
 			continue;
 
 		switch (spellID.toEnum())
@@ -2155,34 +2157,33 @@ SpellID CBattleInfoCallback::getRandomBeneficialSpell(vstd::RNG & rand, const ba
 	}
 }
 
-SpellID CBattleInfoCallback::getRandomCastedSpell(vstd::RNG & rand,const CStack * caster, bool includeAllowed) const
+SpellID CBattleInfoCallback::getRandomCastedSpell(vstd::RNG & rand, const CStack * caster) const
 {
 	RETURN_IF_NOT_BATTLE(SpellID::NONE);
 
 	TConstBonusListPtr bl = caster->getBonusesOfType(BonusType::SPELLCASTER);
-	if (!bl->size())
+
+	if(bl->empty())
 		return SpellID::NONE;
 
-	int totalWeight = 0;
+	std::vector<int> weights;
+
+	//spells with 0 weight are non-random, exclude them
 	for(const auto & b : *bl)
 	{
-		totalWeight += std::max(b->additionalInfo[0], includeAllowed ? 1 : 0); //spells with 0 weight are non-random, exclude them
+		if(b->parameters && b->parameters->toNumber() > 0)
+			weights.push_back(b->parameters->toNumber());
+		else
+			weights.push_back(0);
 	}
 
-	if (totalWeight == 0)
+	int64_t itemIndex = RandomGeneratorUtil::nextItemWeighted(weights, rand);
+
+	if(itemIndex < 0)
 		return SpellID::NONE;
 
-	int randomPos = rand.nextInt(totalWeight - 1);
-	for(const auto & b : *bl)
-	{
-		randomPos -= std::max(b->additionalInfo[0], includeAllowed ? 1 : 0);
-		if(randomPos < 0)
-		{
-			return b->subtype.as<SpellID>();
-		}
-	}
-
-	return SpellID::NONE;
+	auto result = *(bl->begin() + itemIndex);
+	return result->subtype.as<SpellID>();
 }
 
 int CBattleInfoCallback::battleGetSurrenderCost(const PlayerColor & Player) const

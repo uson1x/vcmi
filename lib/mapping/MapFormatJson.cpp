@@ -324,50 +324,77 @@ void CMapFormatJson::serializeAllowedFactions(JsonSerializeFormat & handler, std
 		value = temp;
 }
 
-void CMapFormatJson::fixStringsTextIDInJson(JsonNode & node, const std::string & mapPrefix) const
+void CMapFormatJson::fixStringsTextIDInJson(JsonNode & node, const std::string & mapPrefix, bool remove) const
 {
-	if(!node.isStruct())
-		return;
-	
-	// Check if stringsTextID exists without creating it
-	auto & nodeStruct = node.Struct();
-	auto it = nodeStruct.find("stringsTextID");
-	
-	// Process stringsTextID array if present (MetaString structure)
-	if(it != nodeStruct.end() && it->second.isVector())
+	auto fixTextIDString = [&](JsonNode & field)
 	{
-		for(auto & textID : it->second.Vector())
+		if (!field.isString())
+			return;
+		if (field.String().empty())
+			return;
+
+		if (remove)
 		{
-			if(textID.isString() && !textID.String().empty() 
-				&& textID.String().find("map.") != 0 
-				&& textID.String().find("core.") != 0
-				&& textID.String().find("vcmi.") != 0)
-			{
-				textID.String() = mapPrefix + textID.String();
-			}
+			if (field.String().find("map.") == 0)
+				field.String() = removeMapNamePrefix(field.String());
 		}
-	}
-	
-	// Recursively search for more stringsTextID arrays in child Struct nodes only
-	for(auto & child : nodeStruct)
+		else if (field.String().find("map.") != 0
+				 && field.String().find("core.") != 0
+				 && field.String().find("vcmi.") != 0)
+		{
+			field.String() = mapPrefix + field.String();
+		}
+	};
+
+	if(node.isStruct())
 	{
-		if(child.second.isStruct())
-			fixStringsTextIDInJson(child.second, mapPrefix);
+		auto & nodeStruct = node.Struct();
+		auto it = nodeStruct.find("stringsTextID");
+
+		// Process stringsTextID array if present (MetaString structure)
+		if(it != nodeStruct.end() && it->second.isVector())
+		{
+			for(auto & textID : it->second.Vector())
+				fixTextIDString(textID);
+		}
+
+		for(auto & child : nodeStruct)
+		{
+			if(child.second.isStruct() || child.second.isVector())
+				fixStringsTextIDInJson(child.second, mapPrefix, remove);
+		}
+		return;
+	}
+
+	if(node.isVector())
+	{
+		for(auto & elem : node.Vector())
+		{
+			// If the element is a struct which contains an `options` struct,
+			// fix hero's and town's `name`, `biography` fields. These doesn't use MetaString.
+			if (elem.isStruct())
+			{
+				auto & elemStruct = elem.Struct();
+				auto itOptions = elemStruct.find("options");
+				if (itOptions != elemStruct.end() && itOptions->second.isStruct())
+				{
+					for(auto & param : {"name", "biography"})
+					{
+						auto itParam = itOptions->second.Struct().find(param);
+						if (itParam != itOptions->second.Struct().end())
+							fixTextIDString(itParam->second);
+					}
+				}
+			}
+
+			if(elem.isStruct() || elem.isVector())
+				fixStringsTextIDInJson(elem, mapPrefix, remove);
+		}
 	}
 }
 
 void CMapFormatJson::serializeHeader(JsonSerializeFormat & handler)
 {
-	if(!handler.saving)
-	{
-		// When loading: Fix TextIDs in JSON to include map name prefix before deserialization
-		std::string actualMapName = TextOperations::convertMapName(mapName);
-		std::string mapPrefix = "map." + actualMapName + ".";
-		
-		JsonNode & headerData = const_cast<JsonNode &>(handler.getCurrent());
-		fixStringsTextIDInJson(headerData, mapPrefix);
-	}
-	
 	handler.serializeStruct("name", mapHeader->name);
 	handler.serializeStruct("description", mapHeader->description);
 	
@@ -838,6 +865,11 @@ CMapLoaderJson::CMapLoaderJson(CInputStream * stream, const std::string & mapNam
 	this->mapName = mapName;
 }
 
+void CMapLoaderJson::setRunningInMapEditor(bool val)
+{
+	runningInMapEditor = val;
+}
+
 std::unique_ptr<CMap> CMapLoaderJson::loadMap(IGameInfoCallback * cb)
 {
 	LOG_TRACE(logGlobal);
@@ -892,6 +924,7 @@ void CMapLoaderJson::readHeader(const bool complete)
 {
 	//do not use map field here, use only mapHeader
 	JsonNode header = getFromArchive(HEADER_FILE_NAME);
+	header.setModScope(ModScope::scopeGame());
 
 	fileVersionMajor = static_cast<int>(header["versionMajor"].Integer());
 
@@ -909,6 +942,15 @@ void CMapLoaderJson::readHeader(const bool complete)
 	}
 
 	JsonDeserializer handler(mapObjectResolver.get(), header);
+
+	// Fix TextIDs in JSON to include map name prefix before deserialization
+	// Skip this when called from map editor to preserve original TextIDs without mapname prefix
+	if(!runningInMapEditor)
+	{
+		std::string actualMapName = TextOperations::convertMapName(mapName);
+		std::string mapPrefix = "map." + actualMapName + ".";
+		fixStringsTextIDInJson(header, mapPrefix, false);
+	}
 
 	mapHeader->version = EMapFormat::VCMI;//todo: new version field
 	
@@ -977,7 +1019,6 @@ void CMapLoaderJson::readHeader(const bool complete)
 
 	if(complete)
 		readOptions(handler);
-	
 }
 
 void CMapLoaderJson::readTerrainTile(const std::string & src, TerrainTile & tile)
@@ -1221,6 +1262,15 @@ void CMapLoaderJson::readObjects()
 
 	JsonNode data = getFromArchive(OBJECTS_FILE_NAME);
 
+	// Fix TextIDs in JSON to include map name prefix before deserialization
+	// Skip this when called from map editor to preserve original TextIDs without mapname prefix
+	if(!runningInMapEditor)
+	{
+		std::string actualMapName = TextOperations::convertMapName(mapName);
+		std::string mapPrefix = "map." + actualMapName + ".";
+		fixStringsTextIDInJson(data, mapPrefix, false);
+	}
+
 	//get raw data
 	if (fileVersionMajor <= 2)
 	{
@@ -1289,7 +1339,9 @@ void CMapLoaderJson::readTranslations()
 			for(auto & str : translationsFromFile[baseLanguage].Struct())
 			{
 				// Keys in JSON don't have map name (e.g. "header.name"), add map name when registering: map.<mapName>.<identifier>
-				TextIdentifier fullIdentifier("map", actualMapName, str.first);
+				TextIdentifier fullIdentifier = runningInMapEditor 
+					? TextIdentifier(str.first)
+					: TextIdentifier("map", actualMapName, str.first);
 				mapRegisterLocalizedString("map", *mapHeader, fullIdentifier, str.second.String(), baseLanguage);
 			}
 		}
@@ -1300,7 +1352,9 @@ void CMapLoaderJson::readTranslations()
 			JsonNode translationOverrides;
 			for(auto & str : translationsFromFile[preferredLanguage].Struct())
 			{
-				TextIdentifier fullIdentifier("map", actualMapName, str.first);
+				TextIdentifier fullIdentifier = runningInMapEditor 
+					? TextIdentifier(str.first)
+					: TextIdentifier("map", actualMapName, str.first);
 				translationOverrides.Struct()[fullIdentifier.get()].String() = str.second.String();
 			}
 			mapHeader->texts.loadTranslationOverrides("map", preferredLanguage, translationOverrides);
@@ -1390,6 +1444,8 @@ void CMapSaverJson::writeHeader()
 	writeOptions(handler);
 
 	writeTranslations();
+	
+	fixStringsTextIDInJson(header, "", true);
 
 	addToArchive(header, HEADER_FILE_NAME);
 }
@@ -1456,6 +1512,8 @@ void CMapSaverJson::writeObjects()
 	{
 		JsonNode & objNode = data.Vector()[i];
 		CGObjectInstance * obj = map->getObject(ObjectInstanceID(i));
+		if(!obj)
+			continue;
 		JsonSerializer handler(mapObjectResolver.get(), objNode);
 		obj->serializeJson(handler);
 
@@ -1485,6 +1543,8 @@ void CMapSaverJson::writeObjects()
 		if(obj["options"].Struct().empty())
 			obj.Struct().erase("options");
 	}
+
+	fixStringsTextIDInJson(data, "", true);
 
 	addToArchive(data, OBJECTS_FILE_NAME);
 }

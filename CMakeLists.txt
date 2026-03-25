@@ -20,6 +20,9 @@ endif()
 if(POLICY CMP0142)
   cmake_policy(SET CMP0142 NEW)
 endif()
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
 if(POLICY CMP0177)
   cmake_policy(SET CMP0177 NEW)
 endif()
@@ -89,6 +92,7 @@ if(IOS OR ANDROID)
 	set(ENABLE_LOBBY OFF)
 	set(ENABLE_SERVER OFF)
 	set(COPY_CONFIG_ON_BUILD OFF)
+	set(ENABLE_DISCORD OFF)
 else()
 	option(ENABLE_MONOLITHIC_INSTALL "Install everything in single directory on Linux and Mac" OFF) # Used for Snap packages and also useful for debugging
 	option(COPY_CONFIG_ON_BUILD "Copies config folder into output directory at building phase" ON)
@@ -97,6 +101,31 @@ else()
 	option(ENABLE_SINGLE_APP_BUILD "Builds client and launcher as single executable" OFF)
 	option(ENABLE_TEST "Enable compilation of unit tests" OFF)
 	option(ENABLE_LOBBY "Enable compilation of lobby server" OFF)
+
+	include(CheckCXXCompilerFlag)
+	if(MSVC)
+		check_cxx_compiler_flag("/std:c++23" COMPILER_SUPPORTS_CXX23)
+		if(NOT COMPILER_SUPPORTS_CXX23)
+			check_cxx_compiler_flag("/std:c++23preview" COMPILER_SUPPORTS_CXX23_PREVIEW)
+			set(COMPILER_SUPPORTS_CXX23 ${COMPILER_SUPPORTS_CXX23_PREVIEW})
+		endif()
+	else()
+		check_cxx_compiler_flag("-std=c++23" COMPILER_SUPPORTS_CXX23)
+	endif()
+
+	option(ENABLE_DISCORD "Enable compilation of discord integration" ON)
+
+	# Determine if Glaze can be used
+	set(DISCORD_RPC_NO_GLAZE OFF)
+	if(
+		(MACOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "10.15")
+		OR
+		(IOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.0")
+		OR
+		(NOT COMPILER_SUPPORTS_CXX23)
+	)
+		set(DISCORD_RPC_NO_GLAZE ON)
+	endif()
 endif()
 
 # ERM depends on LUA implicitly
@@ -155,18 +184,35 @@ if(ENABLE_CCACHE)
 endif()
 
 if(ENABLE_CCACHE AND XCODE)
-	# https://stackoverflow.com/a/36515503/2278742
-	# Set up wrapper scripts
-	configure_file(xcode/launch-c.in   xcode/launch-c)
-	configure_file(xcode/launch-cxx.in xcode/launch-cxx)
-	execute_process(COMMAND chmod a+rx
-											"${CMAKE_BINARY_DIR}/xcode/launch-c"
-											"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
-	# Set Xcode project attributes to route compilation through our scripts
-	set(CMAKE_XCODE_ATTRIBUTE_CC         	"${CMAKE_BINARY_DIR}/xcode/launch-c")
-	set(CMAKE_XCODE_ATTRIBUTE_CXX        	"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
-	set(CMAKE_XCODE_ATTRIBUTE_LD         	"${CMAKE_BINARY_DIR}/xcode/launch-c")
-	set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS 	"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
+	set(compilerLauncherPermissions FILE_PERMISSIONS
+		OWNER_READ OWNER_WRITE OWNER_EXECUTE
+		GROUP_READ GROUP_EXECUTE
+		WORLD_READ WORLD_EXECUTE
+	)
+	set(compilerLauncherTemplate "xcode/compiler-launcher.in")
+	set(compilerLauncherC "${CMAKE_BINARY_DIR}/xcode/launch-c")
+	set(compilerLauncherCXX "${CMAKE_BINARY_DIR}/xcode/launch-cxx")
+
+	set(xcodeCompiler "clang")
+	configure_file(${compilerLauncherTemplate} ${compilerLauncherC} ${compilerLauncherPermissions})
+
+	set(xcodeCompiler "clang++")
+	configure_file(${compilerLauncherTemplate} ${compilerLauncherCXX} ${compilerLauncherPermissions})
+
+	if(XCODE_VERSION VERSION_GREATER_EQUAL 26)
+		set(compilerLauncherXcode26 "${CMAKE_BINARY_DIR}/xcode/launch-xc26")
+
+		set(xcodeCompiler)
+		configure_file(${compilerLauncherTemplate} ${compilerLauncherXcode26} ${compilerLauncherPermissions})
+
+		set(CMAKE_XCODE_ATTRIBUTE_C_COMPILER_LAUNCHER   ${compilerLauncherXcode26})
+		set(CMAKE_XCODE_ATTRIBUTE_CXX_COMPILER_LAUNCHER ${compilerLauncherXcode26})
+	else()
+		set(CMAKE_XCODE_ATTRIBUTE_CC  ${compilerLauncherC})
+		set(CMAKE_XCODE_ATTRIBUTE_CXX ${compilerLauncherCXX})
+	endif()
+	set(CMAKE_XCODE_ATTRIBUTE_LD         ${compilerLauncherC})
+	set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS ${compilerLauncherCXX})
 endif()
 
 # Allow to pass package name from Travis CI
@@ -306,7 +352,6 @@ endif()
 
 if(IOS)
 	set(CMAKE_MACOSX_RPATH 1)
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
 
 	if(NOT USING_CONAN)
 		list(APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_PREFIX_PATH}") # required for Boost
@@ -731,7 +776,7 @@ if(ENABLE_LUA)
 endif()
 
 # that script is useless for Windows / iOS / Android
-if(NOT WIN32 AND NOT IOS AND NOT ANDROID)
+if(NOT WIN32 AND NOT IOS AND NOT ANDROID AND NOT ENABLE_MINIMAL_LIB)
 	install(FILES vcmibuilder DESTINATION ${BIN_DIR} PERMISSIONS
 		OWNER_WRITE OWNER_READ OWNER_EXECUTE
 					GROUP_READ GROUP_EXECUTE

@@ -193,7 +193,16 @@ CMap::CMap(IGameInfoCallback * cb)
 	gameSettings->loadBase(LIBRARY->settingsHandler->getFullConfig());
 }
 
-CMap::~CMap() = default;
+CMap::~CMap()
+{
+	// Workaround for destruction order - parts are not "aware" of their composite artifact
+	// As result, destruction of part of a composite artifact leads to a hanging pointer in combined artifact
+	// Force-detach everything before executing actual deletion
+	for (const auto & artifact : artInstances)
+		if (artifact)
+			for (const auto & part : artifact->getPartsInfo())
+				artifact->detachFromSource(*part.getArtifact());
+}
 
 void CMap::hideObject(CGObjectInstance * obj)
 {
@@ -968,12 +977,16 @@ std::vector<HeroTypeID> CMap::getHeroesInPool() const
 
 CGObjectInstance * CMap::getObject(ObjectInstanceID obj)
 {
-	return objects.at(obj).get();
+	if (static_cast<size_t>(obj.getNum()) < objects.size())
+		return objects.at(obj).get();
+	return nullptr;
 }
 
 const CGObjectInstance * CMap::getObject(ObjectInstanceID obj) const
 {
-	return objects.at(obj).get();
+	if (static_cast<size_t>(obj.getNum()) < objects.size())
+		return objects.at(obj).get();
+	return nullptr;
 }
 
 void CMap::saveCompatibilityStoreAllocatedArtifactID()
@@ -1088,7 +1101,7 @@ bool CMap::compareObjectBlitOrder(const CGObjectInstance * a, const CGObjectInst
 
 void CMap::deserializeHeroPool(const std::vector<std::shared_ptr<CGHeroInstance> > & poolFromSave)
 {
-	heroesPool.resize(poolFromSave.size());
+	heroesPool.resize(LIBRARY->heroh->size());
 	for (const auto & hero : poolFromSave)
 		if (hero)
 			heroesPool.at(hero->getHeroTypeID().getNum()) = hero;

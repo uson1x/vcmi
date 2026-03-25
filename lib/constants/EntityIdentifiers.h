@@ -572,6 +572,7 @@ public:
 		PINE_TREES = 137,
 		PLANT = 138,
 		RIVER_DELTA = 143,
+		HOTA_CUSTOM_OBJECT_3 = 144,
 		HOTA_CUSTOM_OBJECT_1 = 145,
 		HOTA_CUSTOM_OBJECT_2 = 146,
 		ROCK = 147,
@@ -628,6 +629,8 @@ public:
 	{
 		return num;
 	}
+
+	static bool isRandomArtifact(MapObjectBaseID id);
 };
 
 class DLL_LINKAGE MapObjectSubID : public Identifier<MapObjectSubID>
@@ -748,7 +751,7 @@ public:
 		TRANSITION_POS = -3,
 		FIRST_AVAILABLE = -2,
 		PRE_FIRST = -1, //sometimes used as error, sometimes as first free in backpack
-		
+
 		// Hero
 		HEAD, SHOULDERS, NECK, RIGHT_HAND, LEFT_HAND, TORSO, //5
 		RIGHT_RING, LEFT_RING, FEET, //8
@@ -756,10 +759,10 @@ public:
 		MACH1, MACH2, MACH3, MACH4, //16
 		SPELLBOOK, MISC5, //18
 		BACKPACK_START = 19,
-		
+
 		// Creatures
 		CREATURE_SLOT = 0,
-		
+
 		// Commander
 		COMMANDER1 = 0, COMMANDER2, COMMANDER3, COMMANDER4, COMMANDER5, COMMANDER6, COMMANDER7, COMMANDER8, COMMANDER9,
 

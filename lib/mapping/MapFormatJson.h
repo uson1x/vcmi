@@ -69,7 +69,7 @@ protected:
 	static RiverId getRiverByCode(const std::string & code);
 	static RoadId getRoadByCode(const std::string & code);
 
-	void fixStringsTextIDInJson(JsonNode & node, const std::string & mapPrefix) const;
+	void fixStringsTextIDInJson(JsonNode & node, const std::string & mapPrefix, bool remove) const;
 
 	void serializeAllowedFactions(JsonSerializeFormat & handler, std::set<FactionID> & value) const;
 
@@ -184,6 +184,11 @@ public:
 	 */
 	std::unique_ptr<CMapHeader> loadMapHeader() override;
 
+	/**
+	 * Set whether map loading is performed by map editor (affects TextID handling)
+	 */
+	void setRunningInMapEditor(bool val);
+
 	struct MapObjectLoader
 	{
 		MapObjectLoader(CMapLoaderJson * _owner, JsonMap::value_type & json);
@@ -235,6 +240,8 @@ private:
 	std::shared_ptr<CIOApi> ioApi;
 
 	CZipLoader loader;///< object to handle zip archive operations
+
+	bool runningInMapEditor = false; ///< local flag replacing global isRunningInMapEditor
 };
 
 class DLL_LINKAGE CMapSaverJson : public CMapFormatJson, public IMapSaver
