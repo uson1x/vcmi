@@ -124,13 +124,72 @@ void HttpServer::doAccept()
 	});
 }
 
-http::response<http::string_body> HttpServer::handleRequest(http::request<http::string_body> && req, beast::tcp_stream & stream)
+HttpServer::Response HttpServer::makeResponse(const Request & req, http::status status, std::string body, const std::string & contentType)
 {
-	// Log the request
+	Response res{status, req.version()};
+	res.set(http::field::server, "VCMI-Lobby-API");
+	res.set(http::field::content_type, contentType);
+	res.keep_alive(req.keep_alive());
+	res.body() = std::move(body);
+	res.prepare_payload();
+	return res;
+}
+
+HttpServer::Response HttpServer::handleStatsV1(const Request & req)
+{
+	return makeResponse(req, http::status::ok, handler.getApiStats());
+}
+
+HttpServer::Response HttpServer::handleChatsV1(const Request & req)
+{
+	std::string channelName = "english";
+	if (auto val = extractQueryParameter(req.target(), "channelName"); !val.empty())
+		channelName = val;
+
+	return makeResponse(req, http::status::ok, handler.getApiChats(channelName));
+}
+
+HttpServer::Response HttpServer::handleRoomsV1(const Request & req)
+{
+	int hours = -1;
+	int limit = 50;
+	if (auto val = extractQueryParameter(req.target(), "hours"); !val.empty())
+	{
+		try { hours = std::stoi(val); }
+		catch (const std::invalid_argument &) { return makeResponse(req, http::status::bad_request, R"({"error":"Parameter 'hours' must be an integer"})"); }
+		catch (const std::out_of_range &)     { return makeResponse(req, http::status::bad_request, R"({"error":"Parameter 'hours' is out of range"})"); }
+	}
+	if (auto val = extractQueryParameter(req.target(), "limit"); !val.empty())
+	{
+		try
+		{
+			limit = std::stoi(val);
+			if (limit < 1 || limit > 250)
+				return makeResponse(req, http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})");
+		}
+		catch (const std::invalid_argument &) { return makeResponse(req, http::status::bad_request, R"({"error":"Parameter 'limit' must be an integer"})"); }
+		catch (const std::out_of_range &)     { return makeResponse(req, http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})"); }
+	}
+
+	return makeResponse(req, http::status::ok, handler.getApiRooms(hours, limit));
+}
+
+HttpServer::Response HttpServer::handleDocs(const Request & req)
+{
+	return makeResponse(req, http::status::ok, EmbeddedFiles::SWAGGER_CONTENT, "text/html");
+}
+
+HttpServer::Response HttpServer::handleOpenApiSpec(const Request & req)
+{
+	return makeResponse(req, http::status::ok, EmbeddedFiles::OPENAPI_CONTENT, "text/yaml");
+}
+
+HttpServer::Response HttpServer::handleRequest(Request && req, beast::tcp_stream & stream)
+{
 	std::string clientIP = "unknown";
-	try {
-		auto endpoint = stream.socket().remote_endpoint();
-		clientIP = endpoint.address().to_string();
+	try
+    {
+		clientIP = stream.socket().remote_endpoint().address().to_string();
 	}
 	catch(const boost::system::system_error & e)
 	{
@@ -138,7 +197,8 @@ http::response<http::string_body> HttpServer::handleRequest(http::request<http::
 	}
 
 	std::string userAgent = std::string(req[http::field::user_agent]);
-	if (userAgent.empty()) userAgent = "unknown";
+	if (userAgent.empty())
+        userAgent = "unknown";
 
 	logGlobal->info("HTTP API Request: %s %s from %s (User-Agent: %s)",
 		req.method_string().data(),
@@ -146,72 +206,21 @@ http::response<http::string_body> HttpServer::handleRequest(http::request<http::
 		clientIP.c_str(),
 		userAgent.c_str());
 
-	auto const createResponse = [&req](http::status status, const std::string & body, const std::string & contentType = "application/json")
-	{
-		http::response<http::string_body> res{status, req.version()};
-		res.set(http::field::server, "VCMI-Lobby-API");
-		res.set(http::field::content_type, contentType);
-		res.keep_alive(req.keep_alive());
-		res.body() = body;
-		res.prepare_payload();
-		return res;
-	};
-
 	try
 	{
-		if (req.target() == "/api/v1/stats")
-		{
-			return createResponse(http::status::ok, handler.getApiStats());
-		}
-		else if (req.target().starts_with("/api/v1/chats"))
-		{
-			std::string channelName = "english";
-			if (auto val = extractQueryParameter(req.target(), "channelName"); !val.empty())
-				channelName = val;
+		if (req.target() == "/api/v1/stats")             return handleStatsV1(req);
+		if (req.target().starts_with("/api/v1/chats"))   return handleChatsV1(req);
+		if (req.target().starts_with("/api/v1/rooms"))   return handleRoomsV1(req);
+		if (req.target() == "/api/docs" ||
+		    req.target() == "/")                         return handleDocs(req);
+		if (req.target() == "/api/openapi.yaml")         return handleOpenApiSpec(req);
 
-			return createResponse(http::status::ok, handler.getApiChats(channelName));
-		}
-		else if (req.target().starts_with("/api/v1/rooms"))
-		{
-			int hours = -1;
-			int limit = 50;
-			if (auto val = extractQueryParameter(req.target(), "hours"); !val.empty())
-			{
-				try { hours = std::stoi(val); }
-				catch (const std::invalid_argument &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'hours' must be an integer"})"); }
-				catch (const std::out_of_range &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'hours' is out of range"})"); }
-			}
-			if (auto val = extractQueryParameter(req.target(), "limit"); !val.empty())
-			{
-				try
-				{
-					limit = std::stoi(val);
-					if (limit < 1 || limit > 250)
-						return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})");
-				}
-				catch (const std::invalid_argument &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be an integer"})"); }
-				catch (const std::out_of_range &) { return createResponse(http::status::bad_request, R"({"error":"Parameter 'limit' must be between 1 and 250"})"); }
-			}
-
-			return createResponse(http::status::ok, handler.getApiRooms(hours, limit));
-		}
-		else if (req.target() == "/api/docs" || req.target() == "/")
-		{
-			return createResponse(http::status::ok, EmbeddedFiles::SWAGGER_CONTENT, "text/html");
-		}
-		else if (req.target() == "/api/openapi.yaml")
-		{
-			return createResponse(http::status::ok, EmbeddedFiles::OPENAPI_CONTENT, "text/yaml");
-		}
-		else
-		{
-			std::string json = R"({ "error": "Not Found", "message": "The requested endpoint does not exist" })";
-			return createResponse(http::status::not_found, json);
-		}
+		return makeResponse(req, http::status::not_found,
+			R"({ "error": "Not Found", "message": "The requested endpoint does not exist" })");
 	}
 	catch (const std::exception & e)
 	{
 		logGlobal->error("Error handling HTTP request: %s", e.what());
-		return createResponse(http::status::internal_server_error, R"({"error":"Internal Server Error"})");
+		return makeResponse(req, http::status::internal_server_error, R"({"error":"Internal Server Error"})");
 	}
 }

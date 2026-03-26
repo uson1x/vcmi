@@ -36,10 +36,19 @@ public:
 	void stop();
 
 private:
+	using Request  = boost::beast::http::request<boost::beast::http::string_body>;
+	using Response = boost::beast::http::response<boost::beast::http::string_body>;
+
 	void doAccept();
-	boost::beast::http::response<boost::beast::http::string_body> handleRequest(
-		boost::beast::http::request<boost::beast::http::string_body> && req,
-		boost::beast::tcp_stream & stream);
+	Response handleRequest(Request && req, boost::beast::tcp_stream & stream);
+
+	static Response makeResponse(const Request & req, boost::beast::http::status status, std::string body, const std::string & contentType = "application/json");
+
+	Response handleStatsV1(const Request & req);
+	Response handleChatsV1(const Request & req);
+	Response handleRoomsV1(const Request & req);
+	Response handleDocs(const Request & req);
+	Response handleOpenApiSpec(const Request & req);
 
 	ILobbyHttpHandler & handler;
 	unsigned short port;
