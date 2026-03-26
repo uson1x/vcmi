@@ -13,7 +13,7 @@
 #include "../CPlayerInterface.h"
 #include "../GameInstance.h"
 
-#include "../widgets/CGarrisonInt.h"
+#include "CGarrisonInt.h"
 
 #include "../../lib/callback/CCallback.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"

@@ -19,8 +19,8 @@
 #include <vcmi/spells/Service.h>
 
 #include "../renderSDL/SDL_Extensions.h"
-#include "../render/CAnimation.h"
-#include "../render/IImage.h"
+#include "CAnimation.h"
+#include "IImage.h"
 
 #include "../../lib/filesystem/Filesystem.h"
 #include "../../lib/filesystem/CBinaryReader.h"

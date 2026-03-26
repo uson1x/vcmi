@@ -10,7 +10,7 @@
 
 #include "StdInc.h"
 #include "ObstacleProxy.h"
-#include "../mapping/CMap.h"
+#include "CMap.h"
 #include "../mapObjectConstructors/AObjectTypeHandler.h"
 #include "../mapObjectConstructors/CObjectClassesHandler.h"
 #include "../mapObjects/CGObjectInstance.h"
