@@ -37,11 +37,8 @@ std::string LobbyHttpApi::formatTimestamp(std::chrono::system_clock::time_point 
 
 std::string LobbyHttpApi::getApiStats()
 {
-	{
-		std::lock_guard<std::mutex> lock(cacheMutex);
-		if (statsCache && isCacheValid(*statsCache))
-			return statsCache->json;
-	}
+	if (statsCache && isCacheValid(*statsCache))
+		return statsCache->json;
 	JsonNode stats;
 	stats["onlinePlayers"].Vector() = JsonVector();
 	for (const auto & player : database.getActiveAccounts())
@@ -86,21 +83,15 @@ std::string LobbyHttpApi::getApiStats()
 	stats["apiVersion"].String() = "1.0";
 
 	std::string json = stats.toCompactString();
-	{
-		std::lock_guard<std::mutex> lock(cacheMutex);
-		statsCache = CacheEntry{json, std::chrono::system_clock::now()};
-	}
+	statsCache = CacheEntry{json, std::chrono::system_clock::now()};
 	return json;
 }
 
 std::string LobbyHttpApi::getApiChats(const std::string & channelName)
 {
-	{
-		std::lock_guard<std::mutex> lock(cacheMutex);
-		auto it = chatsCache.find(channelName);
-		if (it != chatsCache.end() && isCacheValid(it->second))
-			return it->second.json;
-	}
+	auto it = chatsCache.find(channelName);
+	if (it != chatsCache.end() && isCacheValid(it->second))
+		return it->second.json;
 
 	JsonNode chats;
 	chats["messages"].Vector() = JsonVector();
@@ -124,10 +115,7 @@ std::string LobbyHttpApi::getApiChats(const std::string & channelName)
 	chats["count"].Integer() = chats["messages"].Vector().size();
 
 	std::string json = chats.toCompactString();
-	{
-		std::lock_guard<std::mutex> lock(cacheMutex);
-		chatsCache[channelName] = CacheEntry{json, std::chrono::system_clock::now()};
-	}
+	chatsCache[channelName] = CacheEntry{json, std::chrono::system_clock::now()};
 	return json;
 }
 
@@ -175,25 +163,19 @@ std::string LobbyHttpApi::serializeRooms(const std::vector<LobbyGameRoom> & room
 
 std::string LobbyHttpApi::getApiRooms(int hours, int limit)
 {
+	if (roomsCache)
 	{
-		std::lock_guard<std::mutex> lock(cacheMutex);
-		if (roomsCache)
-		{
-			const auto & c = *roomsCache;
-			const bool ttlOk    = std::chrono::system_clock::now() - c.timestamp < std::chrono::seconds(CACHE_TTL_SECONDS);
-			const bool hoursOk  = c.fetchedHours == -1 || (hours != -1 && c.fetchedHours >= hours);
-			const bool limitOk  = c.fetchedLimit >= limit;
-			if (ttlOk && hoursOk && limitOk)
-				return serializeRooms(c.rooms, hours, limit);
-		}
+		const auto & c = *roomsCache;
+		const bool ttlOk    = std::chrono::system_clock::now() - c.timestamp < std::chrono::seconds(CACHE_TTL_SECONDS);
+		const bool hoursOk  = c.fetchedHours == -1 || (hours != -1 && c.fetchedHours >= hours);
+		const bool limitOk  = c.fetchedLimit >= limit;
+		if (ttlOk && hoursOk && limitOk)
+			return serializeRooms(c.rooms, hours, limit);
 	}
 
 	auto fetchedRooms = database.getRooms(hours, limit);
 
-	{
-		std::lock_guard<std::mutex> lock(cacheMutex);
-		roomsCache = RoomsCacheEntry{fetchedRooms, hours, limit, std::chrono::system_clock::now()};
-	}
+	roomsCache = RoomsCacheEntry{fetchedRooms, hours, limit, std::chrono::system_clock::now()};
 
 	return serializeRooms(fetchedRooms, hours, limit);
 }

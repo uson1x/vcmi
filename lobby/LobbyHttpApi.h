@@ -41,7 +41,6 @@ private:
 	LobbyDatabase & database;
 	std::chrono::system_clock::time_point startTime;
 
-	mutable std::mutex cacheMutex;
 	std::optional<CacheEntry> statsCache;
 	std::map<std::string, CacheEntry> chatsCache;
 
