@@ -87,7 +87,7 @@ namespace
 		auto metadata = session->GetModelMetadata();
 		auto allocator = Ort::AllocatorWithDefaultOptions();
 		auto version = readVersion(session.get(), allocator, metadata);
-		return std::make_shared<NNContainer>(std::move(session), std::move(meminfo), std::move(metadata), std::move(allocator), version);
+		return std::make_shared<NNContainer>(path, std::move(session), std::move(meminfo), std::move(metadata), std::move(allocator), version);
 	}
 
 }

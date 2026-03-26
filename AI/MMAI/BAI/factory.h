@@ -21,14 +21,22 @@ namespace MMAI::BAI
 
 struct NNContainer
 {
+	std::string path;
 	std::unique_ptr<Ort::Session> session = nullptr;
 	Ort::MemoryInfo meminfo;
 	Ort::ModelMetadata metadata;
 	OrtAllocator * allocator;
 	int version;
 
-	NNContainer(std::unique_ptr<Ort::Session> session, Ort::MemoryInfo meminfo, Ort::ModelMetadata metadata, OrtAllocator * allocator, int version)
-		: session(std::move(session)), meminfo(std::move(meminfo)), metadata(std::move(metadata)), allocator(allocator), version(version)
+	NNContainer(
+		const std::string & path,
+		std::unique_ptr<Ort::Session> session,
+		Ort::MemoryInfo meminfo,
+		Ort::ModelMetadata metadata,
+		OrtAllocator * allocator,
+		int version
+	)
+		: path(path), session(std::move(session)), meminfo(std::move(meminfo)), metadata(std::move(metadata)), allocator(allocator), version(version)
 	{
 	}
 };
