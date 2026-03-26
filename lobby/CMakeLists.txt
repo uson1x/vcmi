@@ -2,8 +2,9 @@ set(lobby_SRCS
 		StdInc.cpp
 
 		EntryPoint.cpp
-		HttpApiServer.cpp
+		HttpServer.cpp
 		LobbyDatabase.cpp
+		LobbyHttpApi.cpp
 		LobbyServer.cpp
 		SQLiteConnection.cpp
 )
@@ -11,9 +12,10 @@ set(lobby_SRCS
 set(lobby_HEADERS
 		StdInc.h
 
-		HttpApiServer.h
+		HttpServer.h
 		LobbyDatabase.h
 		LobbyDefines.h
+		LobbyHttpApi.h
 		LobbyServer.h
 		SQLiteConnection.h
 )

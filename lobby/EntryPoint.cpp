@@ -10,7 +10,8 @@
 #include "StdInc.h"
 
 #include "LobbyServer.h"
-#include "HttpApiServer.h"
+#include "HttpServer.h"
+#include "LobbyHttpApi.h"
 
 #include "../lib/CConsoleHandler.h"
 #include "../lib/logging/CBasicLogConfigurator.h"
@@ -50,7 +51,8 @@ int main(int argc, const char * argv[])
 	}
 
 	// Start HTTP API Server
-	HttpApiServer httpServer(server.getNetworkContext(), *server.getDatabase(), HTTP_API_PORT, HTTP_API_LOCALHOST_ONLY);
+	LobbyHttpApi lobbyApi(*server.getDatabase());
+	HttpServer httpServer(server.getNetworkContext(), lobbyApi, HTTP_API_PORT, HTTP_API_LOCALHOST_ONLY);
 	try
 	{
 		httpServer.start();

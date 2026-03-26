@@ -1,5 +1,5 @@
 /*
- * HttpApiServer.h, part of VCMI engine
+ * LobbyHttpApi.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,22 +9,23 @@
  */
 #pragma once
 
-#include <boost/asio.hpp>
-#include <boost/beast.hpp>
+#include "HttpServer.h"
 #include "LobbyDefines.h"
 
 class LobbyDatabase;
 
-class HttpApiServer
+/// Concrete implementation of the VCMI lobby REST API.
+/// Fetches data from LobbyDatabase, applies caching, and serializes to JSON.
+class LobbyHttpApi : public ILobbyHttpHandler
 {
 public:
 	static constexpr int CACHE_TTL_SECONDS = 30;
 
-	HttpApiServer(boost::asio::io_context & ioc, LobbyDatabase & database, unsigned short port, bool localhostOnly);
-	~HttpApiServer();
+	explicit LobbyHttpApi(LobbyDatabase & database);
 
-	void start();
-	void stop();
+	std::string getApiStats() override;
+	std::string getApiChats(const std::string & channelName) override;
+	std::string getApiRooms(int hours, int limit) override;
 
 private:
 	struct CacheEntry
@@ -34,22 +35,10 @@ private:
 	};
 
 	bool isCacheValid(const CacheEntry & entry) const;
-
-	void doAccept();
-	boost::beast::http::response<boost::beast::http::string_body> handleRequest(boost::beast::http::request<boost::beast::http::string_body> && req, boost::beast::tcp_stream & stream);
 	std::string formatTimestamp(std::chrono::system_clock::time_point timePoint);
-
-	std::string getStats();
-	std::string getChats(const std::string & channelName);
-	std::string getRooms(int hours, int limit);
 	std::string serializeRooms(const std::vector<LobbyGameRoom> & rooms, int hours, int limit);
 
 	LobbyDatabase & database;
-
-	unsigned short port;
-	bool localhostOnly;
-	boost::asio::io_context & ioc;
-	std::unique_ptr<boost::asio::ip::tcp::acceptor> acceptor;
 	std::chrono::system_clock::time_point startTime;
 
 	mutable std::mutex cacheMutex;
