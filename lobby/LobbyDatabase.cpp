@@ -315,31 +315,31 @@ void LobbyDatabase::prepareStatements()
 
 	getActiveAccountsCountsBatchStatement = database->prepare(R"(
 		SELECT
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-' || ? || ' hours') THEN 1 END)
+			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-1 hours') THEN 1 END),
+			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-24 hours') THEN 1 END),
+			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-168 hours') THEN 1 END),
+			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-720 hours') THEN 1 END),
+			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-8760 hours') THEN 1 END)
 		FROM accounts
 	)");
 
 	getRegisteredAccountsCountsBatchStatement = database->prepare(R"(
 		SELECT
 			COUNT(*),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END)
+			COUNT(CASE WHEN creationTime >= datetime('now', '-24 hours') THEN 1 END),
+			COUNT(CASE WHEN creationTime >= datetime('now', '-168 hours') THEN 1 END),
+			COUNT(CASE WHEN creationTime >= datetime('now', '-720 hours') THEN 1 END),
+			COUNT(CASE WHEN creationTime >= datetime('now', '-8760 hours') THEN 1 END)
 		FROM accounts
 	)");
 
 	getClosedGameRoomsCountsBatchStatement = database->prepare(R"(
 		SELECT
 			COUNT(*),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-' || ? || ' hours') THEN 1 END)
+			COUNT(CASE WHEN creationTime >= datetime('now', '-24 hours') THEN 1 END),
+			COUNT(CASE WHEN creationTime >= datetime('now', '-168 hours') THEN 1 END),
+			COUNT(CASE WHEN creationTime >= datetime('now', '-720 hours') THEN 1 END),
+			COUNT(CASE WHEN creationTime >= datetime('now', '-8760 hours') THEN 1 END)
 		FROM gameRooms WHERE status = 5
 	)");
 
@@ -525,7 +525,6 @@ LobbyDatabase::ActiveAccountsCounts LobbyDatabase::getActiveAccountsCounts()
 	ActiveAccountsCounts result{};
 
 	getActiveAccountsCountsBatchStatement->reset();
-	getActiveAccountsCountsBatchStatement->setBinds(1, 24, 168, 720, 8760);
 
 	if(getActiveAccountsCountsBatchStatement->execute())
 		getActiveAccountsCountsBatchStatement->getColumns(result.h1, result.h24, result.h168, result.h720, result.h8760);
@@ -540,7 +539,6 @@ LobbyDatabase::RegisteredAccountsCounts LobbyDatabase::getRegisteredAccountsCoun
 	RegisteredAccountsCounts result{};
 
 	getRegisteredAccountsCountsBatchStatement->reset();
-	getRegisteredAccountsCountsBatchStatement->setBinds(24, 168, 720, 8760);
 
 	if(getRegisteredAccountsCountsBatchStatement->execute())
 		getRegisteredAccountsCountsBatchStatement->getColumns(result.total, result.h24, result.h168, result.h720, result.h8760);
@@ -555,7 +553,6 @@ LobbyDatabase::ClosedGameRoomsCounts LobbyDatabase::getClosedGameRoomsCounts()
 	ClosedGameRoomsCounts result{};
 
 	getClosedGameRoomsCountsBatchStatement->reset();
-	getClosedGameRoomsCountsBatchStatement->setBinds(24, 168, 720, 8760);
 
 	if(getClosedGameRoomsCountsBatchStatement->execute())
 		getClosedGameRoomsCountsBatchStatement->getColumns(result.total, result.h24, result.h168, result.h720, result.h8760);
