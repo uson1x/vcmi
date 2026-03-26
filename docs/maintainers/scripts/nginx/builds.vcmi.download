@@ -10,5 +10,5 @@ server {
         ssl_client_certificate /etc/nginx/certs/cloudflare-client.crt;
         ssl_verify_client on;
     
-        return 301 https://builds.vcmi.eu$request_uri;
+        return 301 https://download.vcmi.eu$request_uri;
 }

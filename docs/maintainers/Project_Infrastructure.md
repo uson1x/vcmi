@@ -79,13 +79,13 @@ All droplets can only be accessed using ssh login with public key. Currently acc
 | ------- | -------------- | -------- |
 | `vcmi-artifactory` | 4 Gb / 2 CPU / 80 Gb / $24 | [Conan Artifactory server](https://artifactory.vcmi.eu/) (WIP) |
 | `vcmi-forum` | 2 Gb / 1 CPU / 25 Gb / $12 (+20%) | [Discourse forum](https://forum.vcmi.eu/) |
-| `vcmi-second` | 1 Gb / 1 CPU / 20 Gb + 100 Gb / $6 + $10 | Multiplayer lobby (lobby.vcmi.eu or beholder.vcmi.eu - deprecated). Floating IP: 67.207.75.182, Builds uploading from Github, [Build download page](http://download.vcmi.eu/), [Legacy download page](https://builds.vcmi.download/) |
-| `vcmi-web` | 512 Mb / 1 CPU / 10 Gb / $4 (+20%) | Contains nginx server for redirecting [old bug tracker](https://bugs.vcmi.eu/), [old wiki](https://wiki.vcmi.eu/), and [old slack invite page](https://slack.vcmi.eu/) |
+| `vcmi-second` | 1 Gb / 1 CPU / 20 Gb / $6 | Multiplayer lobby (lobby.vcmi.eu or beholder.vcmi.eu - deprecated). Floating IP: 67.207.75.182 |
+| `vcmi-web` | 512 Mb / 1 CPU / 10 Gb + 100 Gb / $4 (+20%) + $10 | Builds uploading from Github, [Build download page](http://download.vcmi.eu/), [Legacy download page](https://builds.vcmi.download/). Also contains nginx server for redirecting [old bug tracker](https://bugs.vcmi.eu/), [old wiki](https://wiki.vcmi.eu/), and [old slack invite page](https://slack.vcmi.eu/) |
 
 Notes:
 
 - Droplets with deployed services have backups enabled (+20% costs)
-- In addition to droplets, we have separate 100 Gb volume for builds ($10 / month), currently attached to `vcmi-second`
+- In addition to droplets, we have separate 100 Gb volume for builds ($10 / month), currently attached to `vcmi-web`
 - There is snapshot for old `vcmi-main` droplet, preserved in case if we need to retrieve some data from it - old bugtracker, forum, and wiki ($1.5 / month)
 
 ### Rules to stick to
@@ -111,17 +111,16 @@ If new services added firewall rules can be adjusted in [DO control panel](https
 | Domain | Content | Hosted on | Notes |
 | ------ | ------- | --------- | ----- |
 | [vcmi.eu](https://vcmi.eu) | Main page redirect | CNAME | No content, redirects to [real main page](https://vcmi.github.io/) |
-| [download.vcmi.eu](https://download.vcmi.eu) | Public downloads & daily builds | `vcmi-second` | - |
-| [beholder.vcmi.eu](https://beholder.vcmi.eu) | Multiplayer lobby | `vcmi-second` | No http services. Used for VCMI 1.7 lobby and older. Also handles build uploads from Github. Deprecated in favor of lobby and uploads |
+| [download.vcmi.eu](https://download.vcmi.eu) | Public downloads & daily builds | `vcmi-web` | - |
+| [upload.vcmi.eu](https://upload.vcmi.eu) | Domain name for uploading daily builds from Github | `vcmi-web` | No http services |
+| [beholder.vcmi.eu](https://beholder.vcmi.eu) | Multiplayer lobby | `vcmi-second` | No http services. Used for VCMI 1.7.3 lobby and older. Deprecated in favor of `lobby` |
 | [lobby.vcmi.eu](https://lobby.vcmi.eu) | Multiplayer lobby | `vcmi-second` | No http services |
 | [forum.vcmi.eu](https://forum.vcmi.eu) | Discourse forum | `vcmi-forum` | - |
 | [bugs.vcmi.eu](https://bugs.vcmi.eu) | Bug tracker | `vcmi-web` | Redirects to [Github Issues](https://github.com/vcmi/vcmi/issues) |
 | [slack.vcmi.eu](https://slack.vcmi.eu) | Slack invite page | `vcmi-web` | Redirects to [main page](https://vcmi.eu/) |
 | [wiki.vcmi.eu](https://wiki.vcmi.eu) | Wiki | `vcmi-web` | Redirects to [main page](https://vcmi.eu/) |
 | [vcmi.download](https://vcmi.download) | Main page redirect | CNAME | No content, redirects to [main page](https://vcmi.eu/) |
-| [builds.vcmi.download](https://builds.vcmi.download) | Public downloads | `vcmi-second` | Same content as main download server. Known bug: excessive caching. Potentially deprecated in favor of main domain |
-| [dependencies.vcmi.download](https://dependencies.vcmi.download) | — | — | Not configured |
-| [mods.vcmi.download](https://mods.vcmi.download) | — | — | Not configured |
+| [builds.vcmi.download](https://builds.vcmi.download) | Public downloads | `vcmi-second` | Redirects to [download.vcmi.eu](https://download.vcmi.eu) |
 
 ## Self-hosted services
 
