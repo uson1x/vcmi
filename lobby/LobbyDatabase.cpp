@@ -315,31 +315,31 @@ void LobbyDatabase::prepareStatements()
 
 	getActiveAccountsCountsBatchStatement = database->prepare(R"(
 		SELECT
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-1 hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-24 hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-168 hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-720 hours') THEN 1 END),
-			COUNT(CASE WHEN lastLoginTime >= datetime('now', '-8760 hours') THEN 1 END)
+			SUM(lastLoginTime >= datetime('now', '-1 hours')),
+			SUM(lastLoginTime >= datetime('now', '-24 hours')),
+			SUM(lastLoginTime >= datetime('now', '-168 hours')),
+			SUM(lastLoginTime >= datetime('now', '-720 hours')),
+			SUM(lastLoginTime >= datetime('now', '-8760 hours'))
 		FROM accounts
 	)");
 
 	getRegisteredAccountsCountsBatchStatement = database->prepare(R"(
 		SELECT
 			COUNT(*),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-24 hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-168 hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-720 hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-8760 hours') THEN 1 END)
+			SUM(creationTime >= datetime('now', '-24 hours')),
+			SUM(creationTime >= datetime('now', '-168 hours')),
+			SUM(creationTime >= datetime('now', '-720 hours')),
+			SUM(creationTime >= datetime('now', '-8760 hours'))
 		FROM accounts
 	)");
 
 	getClosedGameRoomsCountsBatchStatement = database->prepare(R"(
 		SELECT
 			COUNT(*),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-24 hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-168 hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-720 hours') THEN 1 END),
-			COUNT(CASE WHEN creationTime >= datetime('now', '-8760 hours') THEN 1 END)
+			SUM(creationTime >= datetime('now', '-24 hours')),
+			SUM(creationTime >= datetime('now', '-168 hours')),
+			SUM(creationTime >= datetime('now', '-720 hours')),
+			SUM(creationTime >= datetime('now', '-8760 hours'))
 		FROM gameRooms WHERE status = 5
 	)");
 
