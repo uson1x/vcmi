@@ -63,6 +63,8 @@ class GlobalLobbyClient final : public INetworkClientListener, boost::noncopyabl
 	void setAccountCookie(const std::string & accountCookie);
 	void setAccountDisplayName(const std::string & accountDisplayName);
 
+	const JsonNode & getCurrentAccountDetails() const;
+
 public:
 	explicit GlobalLobbyClient();
 	~GlobalLobbyClient();

@@ -585,19 +585,36 @@ void GlobalLobbyClient::setAccountDisplayName(const std::string & accountDisplay
 	configName->String() = accountDisplayName;
 }
 
+const JsonNode & GlobalLobbyClient::getCurrentAccountDetails() const
+{
+	const std::string & currentHost = getServerHost();
+	const JsonNode & knownHosts = persistentStorage["lobby"];
+
+	// migration helper: use beholder.vcmi.eu account details for lobby.vcmi.eu
+	if (knownHosts[currentHost].isNull() && boost::ends_with(currentHost, "vcmi.eu"))
+	{
+		for (const auto & host : knownHosts[currentHost].Struct())
+		{
+			if (boost::ends_with(host.first, "vcmi.eu"))
+				return host.second;
+		}
+	}
+	return knownHosts[currentHost];
+}
+
 const std::string & GlobalLobbyClient::getAccountID() const
 {
-	return persistentStorage["lobby"][getServerHost()]["accountID"].String();
+	return getCurrentAccountDetails()["accountID"].String();
 }
 
 const std::string & GlobalLobbyClient::getAccountCookie() const
 {
-	return persistentStorage["lobby"][getServerHost()]["accountCookie"].String();
+	return getCurrentAccountDetails()["accountCookie"].String();
 }
 
 const std::string & GlobalLobbyClient::getAccountDisplayName() const
 {
-	return persistentStorage["lobby"][getServerHost()]["displayName"].String();
+	return getCurrentAccountDetails()["displayName"].String();
 }
 
 const std::string & GlobalLobbyClient::getServerHost() const
