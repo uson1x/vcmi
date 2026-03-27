@@ -47,6 +47,10 @@ class LobbyDatabase
 	SQLiteStatementPtr getAccountInviteStatusStatement;
 	SQLiteStatementPtr getAccountGameRoomStatement;
 	SQLiteStatementPtr getAccountDisplayNameStatement;
+	SQLiteStatementPtr getActiveAccountsCountsBatchStatement;
+	SQLiteStatementPtr getRegisteredAccountsCountsBatchStatement;
+	SQLiteStatementPtr getClosedGameRoomsCountsBatchStatement;
+	SQLiteStatementPtr getRoomsStatement;
 	SQLiteStatementPtr getGameRoomPlayersStatement;
 	SQLiteStatementPtr getGameRoomInvitesStatement;
 	SQLiteStatementPtr countRoomUsedSlotsStatement;
@@ -89,12 +93,24 @@ public:
 	std::vector<LobbyGameRoom> getAccountGameHistory(const std::string & accountID);
 	std::vector<LobbyGameRoom> getActiveGameRooms();
 	std::vector<LobbyAccount> getActiveAccounts();
+	std::vector<LobbyGameRoom> getRooms(int hours, int limit);
 	std::vector<LobbyChatMessage> getRecentMessageHistory(const std::string & channelType, const std::string & channelName);
 	std::vector<LobbyChatMessage> getFullMessageHistory(const std::string & channelType, const std::string & channelName);
 
 	std::string getIdleGameRoom(const std::string & hostAccountID);
 	std::string getAccountGameRoom(const std::string & accountID);
 	std::string getAccountDisplayName(const std::string & accountID);
+	/// Batch account activity counts: total registered, plus active in last 1h/24h/1w/1m/1y
+	struct ActiveAccountsCounts { int h1, h24, h168, h720, h8760; };
+	ActiveAccountsCounts getActiveAccountsCounts();
+
+	/// Batch registration counts: total, plus registered in last 24h/1w/1m/1y
+	struct RegisteredAccountsCounts { int total, h24, h168, h720, h8760; };
+	RegisteredAccountsCounts getRegisteredAccountsCounts();
+
+	/// Batch closed game room counts: total, plus closed in last 24h/1w/1m/1y
+	struct ClosedGameRoomsCounts { int total, h24, h168, h720, h8760; };
+	ClosedGameRoomsCounts getClosedGameRoomsCounts();
 
 	LobbyCookieStatus getAccountCookieStatus(const std::string & accountID, const std::string & accessCookieUUID);
 	LobbyInviteStatus getAccountInviteStatus(const std::string & accountID, const std::string & roomID);

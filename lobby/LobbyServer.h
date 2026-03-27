@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include "../lib/network/NetworkInterface.h"
+#include "../lib/network/NetworkDefines.h"
 #include "LobbyDefines.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -101,4 +101,7 @@ public:
 
 	void start(uint16_t port);
 	void run();
+
+	LobbyDatabase * getDatabase() const;
+	NetworkContext & getNetworkContext();
 };

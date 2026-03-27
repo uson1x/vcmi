@@ -841,6 +841,16 @@ LobbyServer::LobbyServer(const boost::filesystem::path & databasePath)
 {
 }
 
+LobbyDatabase * LobbyServer::getDatabase() const
+{
+	return database.get();
+}
+
+NetworkContext & LobbyServer::getNetworkContext()
+{
+	return networkHandler->getContext();
+}
+
 void LobbyServer::start(uint16_t port)
 {
 	networkServer->start(port);
