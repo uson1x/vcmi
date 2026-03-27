@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Normalize quoted relative includes in tracked C/C++ files."""
+"""Check local relative include directives in tracked C/C++ files."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ import os
 import re
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
 SOURCE_EXTENSIONS = {
@@ -17,17 +16,8 @@ SOURCE_EXTENSIONS = {
     ".h",
 }
 
-INCLUDE_RE = re.compile(
-    r'^(?P<prefix>\s*#\s*include\s*")(?P<path>[^"]+)(?P<suffix>".*)$'
-)
-
-
-@dataclass(frozen=True)
-class IncludeChange:
-    file_path: Path
-    line_no: int
-    before: str
-    after: str
+INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"]+)"')
+LOCAL_INCLUDE_PREFIXES = ("./", "../")
 
 
 def tracked_source_files(repo_root: Path) -> list[Path]:
@@ -45,78 +35,50 @@ def tracked_source_files(repo_root: Path) -> list[Path]:
     return files
 
 
-def canonical_include_path(
-    include_path: str, file_path: Path, line_no: int
-) -> str | None:
-    if not (include_path.startswith("../") or include_path.startswith("./")):
+def canonical_include_path(include_path: str, file_path: Path, line_no: int) -> str | None:
+    if not include_path.startswith(LOCAL_INCLUDE_PREFIXES):
         return None
 
     file_dir = file_path.parent
-    target = Path(os.path.normpath(str(file_dir / include_path)))
+    target = (file_dir / include_path).resolve(strict=False)
     if not target.is_file():
         raise FileNotFoundError(
             f"{file_path}:{line_no}: include target does not exist: "
             f"{include_path} -> {target}"
         )
 
-    normalized = os.path.relpath(target, start=file_dir)
-    normalized = Path(normalized).as_posix()
-    if normalized == include_path:
+    canonical = os.path.relpath(target, start=file_dir).replace(os.sep, "/")
+    if canonical == include_path:
         return None
 
-    return normalized
+    return canonical
 
 
-def split_eol(line: str) -> tuple[str, str]:
-    if line.endswith("\r\n"):
-        return line[:-2], "\r\n"
-    if line.endswith("\n"):
-        return line[:-1], "\n"
-    return line, ""
+def process_file(file_path: Path, repo_root: Path) -> list[str]:
+    lines = file_path.read_text(encoding="utf-8").splitlines()
+    issues: list[str] = []
+    rel_path = file_path.relative_to(repo_root).as_posix()
 
-
-def process_file(file_path: Path, write: bool) -> list[IncludeChange]:
-    original_lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
-    updated_lines = list(original_lines)
-    changes: list[IncludeChange] = []
-
-    for index, line in enumerate(original_lines):
-        content, eol = split_eol(line)
-        match = INCLUDE_RE.match(content)
+    for line_no, line in enumerate(lines, start=1):
+        match = INCLUDE_RE.match(line)
         if not match:
             continue
 
-        include_path = match.group("path")
-        canonical = canonical_include_path(include_path, file_path, index + 1)
+        include_path = match.group(1)
+        canonical = canonical_include_path(include_path, file_path, line_no)
         if canonical is None:
             continue
 
-        updated_lines[index] = (
-            f"{match.group('prefix')}{canonical}{match.group('suffix')}{eol}"
-        )
-        changes.append(
-            IncludeChange(
-                file_path=file_path,
-                line_no=index + 1,
-                before=include_path,
-                after=canonical,
-            )
+        issues.append(
+            f"{rel_path}:{line_no}: {include_path} -> {canonical}"
         )
 
-    if write and changes:
-        file_path.write_text("".join(updated_lines), encoding="utf-8")
-
-    return changes
+    return issues
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Normalize quoted relative include paths in tracked C/C++ files."
-    )
-    parser.add_argument(
-        "--write",
-        action="store_true",
-        help="Write updated include paths back to files.",
+        description="Check local relative include paths in tracked C/C++ files."
     )
     parser.add_argument(
         "--repo",
@@ -129,26 +91,21 @@ def main() -> int:
     repo_root = args.repo.resolve()
     files = tracked_source_files(repo_root)
 
-    all_changes: list[IncludeChange] = []
+    all_issues: list[str] = []
     try:
         for file_path in files:
-            all_changes.extend(process_file(file_path, write=args.write))
+            all_issues.extend(process_file(file_path, repo_root))
     except FileNotFoundError as exc:
         print(str(exc), file=sys.stderr)
         return 2
 
-    mode = "write" if args.write else "check"
-    print(f"Mode: {mode}")
     print(f"Files scanned: {len(files)}")
-    print(f"Includes to normalize: {len(all_changes)}")
+    print(f"Includes to normalize: {len(all_issues)}")
 
-    for change in all_changes:
-        rel_path = change.file_path.relative_to(repo_root).as_posix()
-        print(
-            f"{rel_path}:{change.line_no}: {change.before} -> {change.after}"
-        )
+    for issue in all_issues:
+        print(issue)
 
-    if not args.write and all_changes:
+    if all_issues:
         return 1
 
     return 0
