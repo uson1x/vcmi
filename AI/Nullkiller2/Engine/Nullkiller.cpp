@@ -11,9 +11,9 @@
 #include "Nullkiller.h"
 
 #include "../../../lib/CPlayerState.h"
-#include "../../lib/StartInfo.h"
-#include "../../lib/pathfinder/PathfinderCache.h"
-#include "../../lib/pathfinder/PathfinderOptions.h"
+#include "../../../lib/StartInfo.h"
+#include "../../../lib/pathfinder/PathfinderCache.h"
+#include "../../../lib/pathfinder/PathfinderOptions.h"
 #include "../AIGateway.h"
 #include "../Behaviors/BuildingBehavior.h"
 #include "../Behaviors/BuyArmyBehavior.h"

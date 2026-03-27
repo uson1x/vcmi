@@ -16,7 +16,7 @@
 
 #include "../modManager/cmodlistview_moc.h"
 #include "../helper.h"
-#include "../vcmiqt/jsonutils.h"
+#include "../../vcmiqt/jsonutils.h"
 #include "../languages.h"
 
 #include <QFileInfo>
