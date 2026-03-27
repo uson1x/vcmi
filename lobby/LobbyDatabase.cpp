@@ -389,11 +389,13 @@ LobbyDatabase::LobbyDatabase(const boost::filesystem::path & databasePath)
 
 void LobbyDatabase::insertChatMessage(const std::string & sender, const std::string & channelType, const std::string & channelName, const std::string & messageText)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	insertChatMessageStatement->executeOnce(sender, messageText, channelType, channelName);
 }
 
 bool LobbyDatabase::isPlayerInGameRoom(const std::string & accountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	bool result = false;
 
 	isPlayerInAnyGameRoomStatement->setBinds(accountID);
@@ -406,6 +408,7 @@ bool LobbyDatabase::isPlayerInGameRoom(const std::string & accountID)
 
 bool LobbyDatabase::isPlayerInGameRoom(const std::string & accountID, const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	bool result = false;
 
 	isPlayerInGameRoomStatement->setBinds(accountID, roomID);
@@ -418,6 +421,7 @@ bool LobbyDatabase::isPlayerInGameRoom(const std::string & accountID, const std:
 
 std::vector<LobbyChatMessage> LobbyDatabase::getRecentMessageHistory(const std::string & channelType, const std::string & channelName)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::vector<LobbyChatMessage> result;
 
 	getRecentMessageHistoryStatement->setBinds(channelType, channelName);
@@ -434,6 +438,7 @@ std::vector<LobbyChatMessage> LobbyDatabase::getRecentMessageHistory(const std::
 
 std::vector<LobbyChatMessage> LobbyDatabase::getFullMessageHistory(const std::string & channelType, const std::string & channelName)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::vector<LobbyChatMessage> result;
 
 	getFullMessageHistoryStatement->setBinds(channelType, channelName);
@@ -450,66 +455,79 @@ std::vector<LobbyChatMessage> LobbyDatabase::getFullMessageHistory(const std::st
 
 void LobbyDatabase::setAccountOnline(const std::string & accountID, bool isOnline)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	setAccountOnlineStatement->executeOnce(isOnline ? 1 : 0, accountID);
 }
 
 void LobbyDatabase::setGameRoomStatus(const std::string & roomID, LobbyRoomState roomStatus)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	setGameRoomStatusStatement->executeOnce(vstd::to_underlying(roomStatus), roomID);
 }
 
 void LobbyDatabase::insertPlayerIntoGameRoom(const std::string & accountID, const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	insertGameRoomPlayersStatement->executeOnce(roomID, accountID);
 }
 
 void LobbyDatabase::deletePlayerFromGameRoom(const std::string & accountID, const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	deleteGameRoomPlayersStatement->executeOnce(roomID, accountID);
 }
 
 void LobbyDatabase::deleteGameRoomInvite(const std::string & targetAccountID, const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	deleteGameRoomInvitesStatement->executeOnce(roomID, targetAccountID);
 }
 
 void LobbyDatabase::insertGameRoomInvite(const std::string & targetAccountID, const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	insertGameRoomInvitesStatement->executeOnce(roomID, targetAccountID);
 }
 
 void LobbyDatabase::insertGameRoom(const std::string & roomID, const std::string & hostAccountID, const std::string & serverVersion, const std::string & modListJson)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	insertGameRoomStatement->executeOnce(roomID, hostAccountID, serverVersion, modListJson);
 }
 
 void LobbyDatabase::insertAccount(const std::string & accountID, const std::string & displayName)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	insertAccountStatement->executeOnce(accountID, displayName);
 }
 
 void LobbyDatabase::insertAccessCookie(const std::string & accountID, const std::string & accessCookieUUID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	insertAccessCookieStatement->executeOnce(accountID, accessCookieUUID);
 }
 
 void LobbyDatabase::updateAccountLoginTime(const std::string & accountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	updateAccountLoginTimeStatement->executeOnce(accountID);
 }
 
 void LobbyDatabase::updateRoomPlayerLimit(const std::string & gameRoomID, int playerLimit)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	updateRoomPlayerLimitStatement->executeOnce(playerLimit, gameRoomID);
 }
 
 void LobbyDatabase::updateRoomDescription(const std::string & gameRoomID, const std::string & description)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	updateRoomDescriptionStatement->executeOnce(description, gameRoomID);
 }
 
 std::string LobbyDatabase::getAccountDisplayName(const std::string & accountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::string result;
 
 	getAccountDisplayNameStatement->setBinds(accountID);
@@ -564,6 +582,7 @@ LobbyDatabase::ClosedGameRoomsCounts LobbyDatabase::getClosedGameRoomsCounts()
 
 LobbyCookieStatus LobbyDatabase::getAccountCookieStatus(const std::string & accountID, const std::string & accessCookieUUID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	bool result = false;
 
 	isAccountCookieValidStatement->setBinds(accountID, accessCookieUUID);
@@ -576,6 +595,7 @@ LobbyCookieStatus LobbyDatabase::getAccountCookieStatus(const std::string & acco
 
 LobbyInviteStatus LobbyDatabase::getAccountInviteStatus(const std::string & accountID, const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	int result = 0;
 
 	getAccountInviteStatusStatement->setBinds(accountID, roomID);
@@ -591,6 +611,7 @@ LobbyInviteStatus LobbyDatabase::getAccountInviteStatus(const std::string & acco
 
 LobbyRoomState LobbyDatabase::getGameRoomStatus(const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	LobbyRoomState result;
 
 	getGameRoomStatusStatement->setBinds(roomID);
@@ -605,6 +626,7 @@ LobbyRoomState LobbyDatabase::getGameRoomStatus(const std::string & roomID)
 
 uint32_t LobbyDatabase::getGameRoomFreeSlots(const std::string & roomID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	uint32_t usedSlots = 0;
 	uint32_t totalSlots = 0;
 
@@ -626,6 +648,7 @@ uint32_t LobbyDatabase::getGameRoomFreeSlots(const std::string & roomID)
 
 bool LobbyDatabase::isAccountNameExists(const std::string & displayName)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	bool result = false;
 
 	isAccountNameExistsStatement->setBinds(displayName);
@@ -637,6 +660,7 @@ bool LobbyDatabase::isAccountNameExists(const std::string & displayName)
 
 bool LobbyDatabase::isAccountIDExists(const std::string & accountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	bool result = false;
 
 	isAccountIDExistsStatement->setBinds(accountID);
@@ -648,6 +672,7 @@ bool LobbyDatabase::isAccountIDExists(const std::string & accountID)
 
 std::vector<LobbyGameRoom> LobbyDatabase::getActiveGameRooms()
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::vector<LobbyGameRoom> result;
 
 	while(getActiveGameRoomsStatement->execute())
@@ -687,6 +712,7 @@ std::vector<LobbyGameRoom> LobbyDatabase::getActiveGameRooms()
 
 std::vector<LobbyGameRoom> LobbyDatabase::getAccountGameHistory(const std::string & accountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::vector<LobbyGameRoom> result;
 
 	getAccountGameHistoryStatement->setBinds(accountID);
@@ -714,6 +740,7 @@ std::vector<LobbyGameRoom> LobbyDatabase::getAccountGameHistory(const std::strin
 
 std::vector<LobbyAccount> LobbyDatabase::getActiveAccounts()
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::vector<LobbyAccount> result;
 
 	while(getActiveAccountsStatement->execute())
@@ -767,6 +794,7 @@ std::vector<LobbyGameRoom> LobbyDatabase::getRooms(int hours, int limit)
 
 std::string LobbyDatabase::getIdleGameRoom(const std::string & hostAccountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::string result;
 
 	getIdleGameRoomStatement->setBinds(hostAccountID);
@@ -779,6 +807,7 @@ std::string LobbyDatabase::getIdleGameRoom(const std::string & hostAccountID)
 
 std::string LobbyDatabase::getAccountGameRoom(const std::string & accountID)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::string result;
 
 	getAccountGameRoomStatement->setBinds(accountID);

@@ -17,9 +17,68 @@ class SQLiteStatement;
 using SQLiteInstancePtr = std::unique_ptr<SQLiteInstance>;
 using SQLiteStatementPtr = std::unique_ptr<SQLiteStatement>;
 
+class TimeTracker
+{
+public:
+	void store(const std::string & key, std::chrono::steady_clock::duration timeSpent)
+	{
+		auto & target = statistics[key];
+		target.count += 1;
+		target.total += timeSpent;
+		target.worst + std::max(target.worst, timeSpent);
+	}
+	void dumpToLog()
+	{
+		logGlobal->info("Performance statistics report");
+		logGlobal->info("Operation\tCount\tTotal,s\tAverage,mks\tWorst,mks");
+
+		for (const auto & entry : statistics)
+		{
+			logGlobal->info("%s\t%d\t%f\t%d\t%d",
+				entry.first,
+				entry.second.count,
+				std::chrono::duration<float>(entry.second.total).count(),
+				std::chrono::duration<float>(entry.second.total).count() / entry.second.count,
+				std::chrono::duration_cast<std::chrono::microseconds>(entry.second.worst).count()
+			);
+		}
+		statistics.clear();
+	}
+
+	~TimeTracker()
+	{
+		dumpToLog();
+	}
+private:
+	struct TimeStats
+	{
+		std::chrono::steady_clock::duration worst = {};
+		std::chrono::steady_clock::duration total = {};
+		uint32_t count = {};
+	};
+	std::map<std::string, TimeStats> statistics;
+};
+
+class TimeGuard : boost::noncopyable
+{
+	TimeTracker & owner;
+	std::chrono::steady_clock::time_point startTime;
+	std::string name;
+public:
+	explicit TimeGuard(TimeTracker & owner, const std::string & name)
+		:owner(owner), startTime(std::chrono::steady_clock::now()), name(name)
+	{}
+	~TimeGuard()
+	{
+		auto endTime = std::chrono::steady_clock::now();
+		owner.store(name, endTime - startTime);
+	}
+};
+
 class LobbyDatabase
 {
 	SQLiteInstancePtr database;
+	TimeTracker timeTracker;
 
 	SQLiteStatementPtr insertChatMessageStatement;
 	SQLiteStatementPtr insertAccountStatement;
