@@ -324,40 +324,61 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 	const auto attackerHero = battle.battleGetFightingHero(BattleSide::ATTACKER);
 	const auto defenderHero = battle.battleGetFightingHero(BattleSide::DEFENDER);
 
-	const auto winnerHero = battle.battleGetFightingHero(finishingBattle->winnerSide);
-	const auto loserHero = battle.battleGetFightingHero(CBattleInfoEssentials::otherSide(finishingBattle->winnerSide));
 
 	//give exp
 	if(!finishingBattle->isDraw() && battleResult->exp[finishingBattle->winnerSide])
 	{
+		const auto winnerHero = battle.battleGetFightingHero(finishingBattle->winnerSide);
+
 		gameHandler->giveStackExperience(battle.battleGetArmyObject(finishingBattle->winnerSide), battleResult->exp[finishingBattle->winnerSide]);
 		if (winnerHero)
 			gameHandler->giveExperience(winnerHero, battleResult->exp[finishingBattle->winnerSide]);
 	}
 
 	// Add statistics
-	if(loserHero && !finishingBattle->isDraw())
+	if(!finishingBattle->isDraw())
 	{
+		const CGHeroInstance * loserHero = battle.battleGetFightingHero(CBattleInfoEssentials::otherSide(finishingBattle->winnerSide));
 		const CGHeroInstance * strongestHero = nullptr;
-		for(auto & hero : gameHandler->gameState().getPlayerState(finishingBattle->loser)->getHeroes())
-			if(!strongestHero || hero->exp > strongestHero->exp)
-				strongestHero = hero;
-		if(strongestHero->id == finishingBattle->loserId && strongestHero->level > 5)
-			gameHandler->statistics->accumulatedValues[finishingBattle->victor].lastDefeatedStrongestHeroDay = gameHandler->gameState().getDate(Date::DAY);
+
+		if (loserHero != nullptr)
+		{
+			for(auto & hero : gameHandler->gameState().getPlayerState(finishingBattle->loser)->getHeroes())
+				if(!strongestHero || hero->exp > strongestHero->exp)
+					strongestHero = hero;
+			if(strongestHero->id == finishingBattle->loserId && strongestHero->level > 5 && finishingBattle->victor.isValidPlayer())
+				gameHandler->statistics->getPlayerAccumulator(finishingBattle->victor).lastDefeatedStrongestHeroDay = gameHandler->gameState().getDate(Date::DAY);
+		}
 	}
-	if(battle.sideToPlayer(BattleSide::ATTACKER) == PlayerColor::NEUTRAL || battle.sideToPlayer(BattleSide::DEFENDER) == PlayerColor::NEUTRAL)
+
+	auto attackerPlayer = battle.sideToPlayer(BattleSide::ATTACKER);
+	auto defenderPlayer = battle.sideToPlayer(BattleSide::DEFENDER);
+	auto isAttackerNeutral = attackerPlayer == PlayerColor::NEUTRAL;
+	auto isDefenderNeutral = defenderPlayer == PlayerColor::NEUTRAL;
+
+	if(isAttackerNeutral || isDefenderNeutral)
 	{
-		gameHandler->statistics->accumulatedValues[battle.sideToPlayer(BattleSide::ATTACKER)].numBattlesNeutral++;
-		gameHandler->statistics->accumulatedValues[battle.sideToPlayer(BattleSide::DEFENDER)].numBattlesNeutral++;
+		if(!isAttackerNeutral)
+			gameHandler->statistics->getPlayerAccumulator(attackerPlayer).numBattlesNeutral++;
+		if(!isDefenderNeutral)
+			gameHandler->statistics->getPlayerAccumulator(defenderPlayer).numBattlesNeutral++;
 		if(!finishingBattle->isDraw())
-			gameHandler->statistics->accumulatedValues[battle.sideToPlayer(finishingBattle->winnerSide)].numWinBattlesNeutral++;
+		{
+			auto winnerPlayer = battle.sideToPlayer(finishingBattle->winnerSide);
+			auto isWinnerNeutral = winnerPlayer == PlayerColor::NEUTRAL;
+			if (!isWinnerNeutral)
+				gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesNeutral++;
+		}
 	}
 	else
 	{
-		gameHandler->statistics->accumulatedValues[battle.sideToPlayer(BattleSide::ATTACKER)].numBattlesPlayer++;
-		gameHandler->statistics->accumulatedValues[battle.sideToPlayer(BattleSide::DEFENDER)].numBattlesPlayer++;
+		gameHandler->statistics->getPlayerAccumulator(attackerPlayer).numBattlesPlayer++;
+		gameHandler->statistics->getPlayerAccumulator(defenderPlayer).numBattlesPlayer++;
 		if(!finishingBattle->isDraw())
-			gameHandler->statistics->accumulatedValues[battle.sideToPlayer(finishingBattle->winnerSide)].numWinBattlesPlayer++;
+		{
+			auto winnerPlayer = battle.sideToPlayer(finishingBattle->winnerSide);
+			gameHandler->statistics->getPlayerAccumulator(winnerPlayer).numWinBattlesPlayer++;
+		}
 	}
 
 	BattleResultAccepted raccepted;
@@ -421,15 +442,21 @@ void BattleResultProcessor::battleFinalize(const BattleID & battleID, const Batt
 
 	BattleResultsApplied resultsApplied;
 
-	const auto addArtifactToDischarging = [&resultsApplied](const std::map<ArtifactPosition, ArtSlotInfo> & artMap,
+	std::vector<ArtifactInstanceID> dyingArtifacts;
+
+	const auto addArtifactToDischarging = [&resultsApplied, &dyingArtifacts](const std::map<ArtifactPosition, ArtSlotInfo> & artMap,
 			const ObjectInstanceID & id, const std::optional<SlotID> & creature = std::nullopt)
 	{
 		for(const auto & [slot, slotInfo] : artMap)
 		{
 			auto artInst = slotInfo.getArt();
 			assert(artInst);
-			if(const auto condition = artInst->getType()->getDischargeCondition(); condition == DischargeArtifactCondition::BATTLE)
+			const auto condition = artInst->getType()->getDischargeCondition();
+			if (condition == DischargeArtifactCondition::BATTLE)
 			{
+				if (artInst->getCharges() <= 1 && artInst->getType()->getRemoveOnDepletion())
+					dyingArtifacts.push_back(artInst->getId());
+
 				auto & discharging = resultsApplied.dischargingArtifacts.emplace_back(artInst->getId(), 1);
 				discharging.artLoc.emplace(id, creature, slot);
 			}
@@ -497,9 +524,12 @@ void BattleResultProcessor::battleFinalize(const BattleID & battleID, const Batt
 	if(result.result == EBattleResult::NORMAL && winnerHero && winnerHasUnitsLeft)
 	{
 		CArtifactFittingSet artFittingSet(*winnerHero);
-		const auto addArtifactToTransfer = [&artFittingSet](BulkMoveArtifacts & pack, const ArtifactPosition & srcSlot, const CArtifactInstance * art)
+		const auto addArtifactToTransfer = [&artFittingSet, &dyingArtifacts](BulkMoveArtifacts & pack, const ArtifactPosition & srcSlot, const CArtifactInstance * art)
 		{
 			assert(art);
+			if (vstd::contains(dyingArtifacts, art->getId()))
+				return; // artifact will be removed soon and can't be transferred to winner hero
+
 			const auto dstSlot = ArtifactUtils::getArtAnyPosition(&artFittingSet, art->getTypeId());
 			if(dstSlot != ArtifactPosition::PRE_FIRST)
 			{
@@ -603,13 +633,13 @@ void BattleResultProcessor::battleFinalize(const BattleID & battleID, const Batt
 
 	if (result.result == EBattleResult::SURRENDER)
 	{
-		gameHandler->statistics->accumulatedValues[finishingBattle->loser].numHeroSurrendered++;
+		gameHandler->statistics->getPlayerAccumulator(finishingBattle->loser).numHeroSurrendered++;
 		gameHandler->heroPool->onHeroSurrendered(finishingBattle->loser, loserHero);
 	}
 
 	if (result.result == EBattleResult::ESCAPE)
 	{
-		gameHandler->statistics->accumulatedValues[finishingBattle->loser].numHeroEscaped++;
+		gameHandler->statistics->getPlayerAccumulator(finishingBattle->loser).numHeroEscaped++;
 		gameHandler->heroPool->onHeroEscaped(finishingBattle->loser, loserHero);
 	}
 

@@ -172,7 +172,7 @@ namespace
 		// (e.g. peasant 7.48 => 7 is a lot, 74.8 => 75 is OK)
 		auto res = static_cast<int>(std::round(10 * (a + b) * c * d));
 
-		if(MMAI_VERBOSE)
+		if(isMMAIVerbose())
 		{
 			std::cout << "MMAI_VERBOSE: " << res << " " << cr->getId().toEntity(LIBRARY)->getJsonKey() << " (a=" << a << ", b=" << b << ", c=" << c
 					  << ", d=" << d << ")\n";
@@ -289,8 +289,11 @@ Stack::Stack(
 
 	auto valueOne = GetValue(cstack->unitType());
 
+	// Force a higher value clones (we want extra focus on them)
 	// Force a lower value for summons (we don't care about them, they are not permanent)
-	if(cstack->unitSlot() == SlotID::SUMMONED_SLOT_PLACEHOLDER)
+	if(cstack->isClone())
+		valueOne *= 5;
+	else if(cstack->unitSlot() == SlotID::SUMMONED_SLOT_PLACEHOLDER)
 		valueOne *= 0.2;
 
 	auto permille = [](int v1, int v2)

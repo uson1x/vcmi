@@ -105,13 +105,17 @@ private:
 	bool getAnswerAboutUnsavedChanges();
 	void setTitle();
 	void changed();
+	bool validate();
 	void saveTemplate();
 	void initContent();
+	void setDefaultContent(std::shared_ptr<CRmgTemplate> tpl);
+	void setDefaultContentZone(std::shared_ptr<rmg::ZoneOptions> zone, TRmgTemplateZoneId id);
 	void loadContent(bool autoPosition = false);
 	void saveContent();
 	void loadZoneMenuContent(bool onlyPosition = false);
 	void saveZoneMenuContent();
 	void loadZoneConnectionMenuContent();
+	void updateConnectionAddButton();
 	void updateConnectionLines(bool recreate = false);
 	void autoPositionZones();
 	void updateZonePositions();

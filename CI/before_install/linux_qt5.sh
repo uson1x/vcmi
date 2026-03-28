@@ -22,8 +22,8 @@ sudo eatmydata apt -yq --no-install-recommends \
   qtbase5-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools \
   libqt5svg5-dev \
   ninja-build zlib1g-dev libavformat-dev libswscale-dev libtbb-dev \
-  libluajit-5.1-dev libminizip-dev libfuzzylite-dev libsqlite3-dev \
-  libsquish-dev
+  libluajit-5.1-dev libminizip-dev libsqlite3-dev \
+  libsquish-dev libfmt-dev
 
 sudo rm -f  "$APT_CACHE/lock" || true
 sudo rm -rf "$APT_CACHE/partial" || true

@@ -19,7 +19,7 @@
 #include "../gameState/CGameState.h"
 #include "../mapObjectConstructors/AObjectTypeHandler.h"
 #include "../mapObjectConstructors/CRewardableConstructor.h"
-#include "../mapObjects/CGHeroInstance.h"
+#include "CGHeroInstance.h"
 #include "../networkPacks/PacksForClient.h"
 #include "../networkPacks/PacksForClientBattle.h"
 #include "../networkPacks/StackLocation.h"
@@ -218,7 +218,7 @@ std::string CRewardableObject::getDisplayTextImpl(PlayerColor player, const CGHe
 			if (wasVisited(hero))
 				result += "\n" + configuration.visitedTooltip.toString();
 			else
-				result += "\n " + configuration.notVisitedTooltip.toString();
+				result += "\n" + configuration.notVisitedTooltip.toString();
 		}
 	}
 	else

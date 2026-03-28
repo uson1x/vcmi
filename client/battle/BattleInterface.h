@@ -10,7 +10,7 @@
 #pragma once
 
 #include "BattleConstants.h"
-#include "../lib/battle/BattleHex.h"
+#include "../../lib/battle/BattleHex.h"
 #include "../gui/CIntObject.h"
 #include "../../lib/spells/CSpellHandler.h" //CSpell::TAnimation
 #include "../../lib/ConditionalWait.h"
@@ -165,6 +165,8 @@ public:
 	void requestAutofightingAIToTakeAction();
 
 	void giveCommand(EActionType action, const BattleHex & tile = BattleHex(), SpellID spell = SpellID::NONE);
+	void giveCommand(EActionType action, const std::vector<BattleHex> & tiles, SpellID spell = SpellID::NONE);
+
 	void sendCommand(BattleAction command, const CStack * actor = nullptr);
 
 	const CGHeroInstance *getActiveHero(); //returns hero that can currently cast a spell

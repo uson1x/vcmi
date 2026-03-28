@@ -8,7 +8,9 @@ This is list of all languages that are currently supported by VCMI. If your lang
 - Bulgarian
 - Czech
 - Chinese (Simplified)
+- Dutch
 - English
+- Filipino
 - Finnish
 - French
 - German
@@ -17,11 +19,13 @@ This is list of all languages that are currently supported by VCMI. If your lang
 - Italian
 - Japanese
 - Korean
+- Latvian
 - Norwegian
 - Polish
 - Portuguese (Brazilian)
 - Romanian
 - Russian
+- Serbian
 - Spanish
 - Swedish
 - Turkish
@@ -58,11 +62,11 @@ If you have already existing Heroes III translation you can:
 
 - Install VCMI and select your localized Heroes III data files for VCMI data files
 - Launch VCMI and start any map to get in game
-- Press Tab to activate chat and enter '/translate'
+- Press Tab to activate chat and enter `/translate`
 
 This will export all strings from game into `Documents/My Games/VCMI/extracted/translation/` directory which you can then use to update json files in your translation.
 
-To export maps and campaigns, use '/translate maps' command instead.
+To export maps and campaigns, use `/translate maps` command instead.
 
 ### Video subtitles
 
@@ -89,36 +93,19 @@ VCMI contains several new strings, to cover functionality not existing in Heroes
 - Linux specific
 - Android Launcher
 
-Before you start, make sure that you have copy of VCMI source code. If you are not familiar with git, you can use Github Desktop to clone VCMI repository.
-
 ### Translation of in-game data
 
-In order to translate in-game data you need:
+Most of game data is translated using [Weblate](https://hosted.weblate.org/projects/vcmi/)
 
-- Add section with your language to `<VCMI>/Mods/VCMI/mod.json`, similar to other languages
-- Copy English translation file in `<VCMI>/Mods/VCMI/config/vcmi/english.json` and rename it to name of your language. Note that while you can copy any language other than English, other files might not be up to date and may have missing strings.
-- Translate copied file to your language.
+For usage of Weblate, please refer to [Weblate documentation](https://docs.weblate.org/en/latest/user/translating.html)
 
-After this, you can set language in Launcher to your language and start game. All translated strings should show up in your language.
+If something is not clear - feel free to ask us on Discord or forum. Translation made via Weblate will be automatically integrated into VCMI for next release
 
-### Translation of Launcher and Editor
+### Data not covered by Weblate
 
-VCMI Launcher and Map Editor use translation system provided by Qt framework so it requires slightly different approach than in-game translations:
+Before you start, make sure that you have copy of VCMI source code. If you are not familiar with git, you can use Github Desktop to clone VCMI repository or use Github web interface
 
-- Install Qt Linguist. You can find find standalone version here: <https://download.qt.io/linguist_releases/>
-- Open `<VCMI Sources>/launcher/translation/` directory, copy `english.ts` file and rename it to your language
-- Open `<VCMI Sources>/launcher/CMakeLists.txt` file with a text editor. In there you need to find list of existing translation files and add new file to the list.
-- Launch Qt Linguist, select Open and navigate to your copied file
-- Select any untranslated string, enter translation in field below, and click "Done and Next" (Ctrl+Return) to navigate to next untranslated string
-- Once translation has been finished, save resulting file.
-
-Translation of Map Editor is identical, except for location of translation files. Open `<VCMI Sources>/editor/translation/` instead to translate Map Editor
-
-TODO: how to test translation locally
-
-### Translation of Linux specific files
-
-#### Translation of AppStream metainfo
+### Translation of Linux AppStream metainfo
 
 The [AppStream](https://freedesktop.org/software/appstream/docs/chap-Metadata.html) [metainfo file](https://github.com/vcmi/vcmi/blob/develop/launcher/eu.vcmi.VCMI.metainfo.xml) is used for Linux software centers.
 
@@ -128,21 +115,23 @@ It can be translated using a text editor or using [jdAppStreamEdit](https://flat
 - Open `<VCMI>/launcher/eu.vcmi.VCMI.metainfo.xml`
 - Translate and save the file
   
-##### Desktop file
+##### Linux Desktop file
 
 - Edit `<VCMI>/launcher/vcmilauncher.desktop` and `<VCMI>/launcher/vcmieditor.desktop`
 - Add `GenericName[xyz]` and `Comment[xyz]` with your language code and translation
 
-##### Translation of Android Launcher
+##### Android Launcher
 
 - Copy `<VCMI>/android/vcmi-app/src/main/res/values/strings.xml` to `<VCMI>/android/vcmi-app/src/main/res/values-xyz/strings.xml` (`xyz` is your language code)
 - Translate this file
 
 See also here: <https://developer.android.com/guide/topics/resources/localization>
 
-### Submitting changes
+#### Submitting changes
 
-Once you have finished with translation you need to submit these changes to vcmi team using git or Github Desktop
+For Weblate, all changes made in Weblate web UI will be submitted to VCMI automatically.
+
+For strings not migrated to Weblate, once you have finished with translation you need to submit these changes to vcmi team using git or Github Desktop
 
 - Commit all your changed files
 - Push changes to your forked repository
@@ -160,11 +149,11 @@ If you want to start new translation for a mod or to update existing one you may
 - Launch VCMI and start any map to get in game
 - Press Tab to activate chat and enter '/translate'
 
-After that, start Launcher, switch to Help tab and open "log files directory". You can find exported json's in 'extracted/translation' directory.
+After that, start Launcher, switch to Help tab and open "log files directory". You can find exported json's in `extracted/translation` directory.
 
-If your mod also contains maps or campaigns that you want to translate, then use '/translate maps' command instead.
+If your mod also contains maps or campaigns that you want to translate, then use `/translate maps` command instead.
 
-If you want to update existing translation, you can use '/translate missing' command that will export only strings that were not translated
+If you want to update existing translation, you can use `/translate missing` command that will export only strings that were not translated
 
 ### Translating mod information
 
@@ -195,7 +184,7 @@ Use any text editor (Notepad++ is recommended for Windows) and translate all str
 
 In order to add new language it needs to be added in multiple locations in source code:
 
-- Generate new .ts files for launcher and map editor, either by running `lupdate` with name of new .ts or by copying `english.ts` and editing language tag in the header.
+- Generate new .ts files for launcher and map editor, either by running `lupdate` with name of new `.ts` or by copying `english.ts` and editing language tag in the header.
 - Add new language into `lib/Languages.h` entry. This will trigger static_assert's in places that needs an update in code
 - Add new language into json schemas validation list - settings schema and mod schema
 - Add new language into mod json format - in order to allow translation into new language

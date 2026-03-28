@@ -206,6 +206,7 @@ set(vcmiclientcommon_SRCS
 	NetPacksLobbyClient.cpp
 	ServerRunner.cpp
 	UIHelper.cpp
+	Discord.cpp
 )
 
 set(vcmiclientcommon_HEADERS
@@ -443,6 +444,7 @@ set(vcmiclientcommon_HEADERS
 	ServerRunner.h
 	resource.h
 	UIHelper.h
+	Discord.h
 )
 
 if(IOS)
@@ -459,10 +461,6 @@ add_library(vcmiclientcommon STATIC ${vcmiclientcommon_SRCS} ${vcmiclientcommon_
 
 if(NOT ENABLE_STATIC_LIBS)
 	add_dependencies(vcmiclientcommon EmptyAI)
-
-	if(ENABLE_NULLKILLER_AI)
-		add_dependencies(vcmiclientcommon Nullkiller)
-	endif()
 
 	if(ENABLE_NULLKILLER2_AI)
 		add_dependencies(vcmiclientcommon Nullkiller2)
@@ -540,6 +538,27 @@ endif()
 
 if(VCMI_PORTMASTER)
 	target_compile_definitions(vcmiclientcommon PRIVATE VCMI_PORTMASTER)
+endif()
+
+if (ENABLE_DISCORD)
+	if(USING_CONAN)
+		# don't search for libs in system locations
+		set(findOptions NO_CMAKE_SYSTEM_PATH NO_SYSTEM_ENVIRONMENT_PATH)
+	endif()
+	find_package(fmt ${findOptions})
+	find_package(glaze ${findOptions})
+
+	if(MSVC AND ENABLE_STRICT_COMPILATION)
+		# fmt built via CPM has compile warning which becomes an error
+		set(OLD_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
+	endif()
+	add_subdirectory(lib/discord-presence)
+	target_link_libraries(vcmiclientcommon PRIVATE discord-rpc)
+	target_compile_definitions(vcmiclientcommon PRIVATE ENABLE_DISCORD)
+	if(OLD_CMAKE_CXX_FLAGS)
+		set(CMAKE_CXX_FLAGS ${OLD_CMAKE_CXX_FLAGS})
+	endif()
 endif()
 
 vcmi_set_output_dir(vcmiclientcommon "")

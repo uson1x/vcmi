@@ -15,9 +15,6 @@
 #include "../VCMIDirs.h"
 
 #ifdef STATIC_AI
-#  ifdef ENABLE_NULLKILLER_AI
-#    include "../../AI/Nullkiller/AIGateway.h"
-#  endif
 #  ifdef ENABLE_NULLKILLER2_AI
 #    include "../../AI/Nullkiller2/AIGateway.h"
 #  endif
@@ -41,8 +38,8 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-	template<typename rett>
-	std::shared_ptr<rett> createAny(const boost::filesystem::path & libpath, const std::string & methodName)
+template<typename rett>
+std::shared_ptr<rett> createAny(const boost::filesystem::path & libpath, const std::string & methodName)
 {
 #ifdef STATIC_AI
 	// android currently doesn't support loading libs dynamically, so the access to the known libraries
@@ -120,11 +117,6 @@ std::shared_ptr<CGlobalAI> createAny(const boost::filesystem::path & libpath, co
 #ifdef ENABLE_NULLKILLER2_AI
 	if(libpath.stem() == "libNullkiller2")
 		return std::make_shared<NK2AI::AIGateway>();
-#endif
-
-#ifdef ENABLE_NULLKILLER_AI
-	if(libpath.stem() == "libNullkiller")
-		return std::make_shared<NKAI::AIGateway>();
 #endif
 
 	return std::make_shared<CEmptyAI>();

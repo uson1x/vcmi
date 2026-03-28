@@ -9,18 +9,18 @@
  */
 #include "StdInc.h"
 #include "inspector.h"
-#include "../lib/entities/hero/CHeroClass.h"
-#include "../lib/entities/hero/CHeroHandler.h"
-#include "../lib/spells/CSpellHandler.h"
-#include "../lib/CRandomGenerator.h"
-#include "../lib/mapObjectConstructors/AObjectTypeHandler.h"
-#include "../lib/mapObjectConstructors/CObjectClassesHandler.h"
-#include "../lib/mapObjectConstructors/CommonConstructors.h"
-#include "../lib/mapObjects/ObjectTemplate.h"
-#include "../lib/mapping/CMap.h"
-#include "../lib/constants/StringConstants.h"
-#include "../lib/CPlayerState.h"
-#include "../lib/texts/CGeneralTextHandler.h"
+#include "../../lib/entities/hero/CHeroClass.h"
+#include "../../lib/entities/hero/CHeroHandler.h"
+#include "../../lib/spells/CSpellHandler.h"
+#include "../../lib/CRandomGenerator.h"
+#include "../../lib/mapObjectConstructors/AObjectTypeHandler.h"
+#include "../../lib/mapObjectConstructors/CObjectClassesHandler.h"
+#include "../../lib/mapObjectConstructors/CommonConstructors.h"
+#include "../../lib/mapObjects/ObjectTemplate.h"
+#include "../../lib/mapping/CMap.h"
+#include "../../lib/constants/StringConstants.h"
+#include "../../lib/CPlayerState.h"
+#include "../../lib/texts/CGeneralTextHandler.h"
 
 #include "townbuildingswidget.h"
 #include "towneventswidget.h"
@@ -77,7 +77,7 @@ void Initializer::initialize(CGCreature * o)
 {
 	if(!o) return;
 
-	o->character = CGCreature::Character::HOSTILE;
+	o->initialCharacter = CGCreature::Character::HOSTILE;
 	if(!o->hasStackAtSlot(SlotID(0)))
 		o->putStack(SlotID(0), std::make_unique<CStackInstance>(o->cb, CreatureID(o->subID), 1, false));
 }
@@ -380,9 +380,12 @@ void Inspector::updateProperties(CGArtifact * o)
 
 	addProperty(QObject::tr("Message"), o->message, false);
 
-	const CArtifactInstance * instance = o->getArtifactInstance();
-	if(instance && o->ID == Obj::SPELL_SCROLL)
+	if(o->ID == Obj::SPELL_SCROLL)
 	{
+		const CArtifactInstance * instance = o->getArtifactInstance();
+		if(!instance)
+			return;
+
 		SpellID spellId = instance->getScrollSpellID();
 		if(spellId != SpellID::NONE)
 		{
@@ -430,7 +433,7 @@ void Inspector::updateProperties(CGCreature * o)
 	{ //Character
 		auto * delegate = new InspectorDelegate;
 		delegate->options = characterIdentifiers;
-		addProperty<CGCreature::Character>("Character", (CGCreature::Character)o->character, delegate, false);
+		addProperty<CGCreature::Character>(QObject::tr("Character"), o->initialCharacter, delegate, false);
 	}
 	addProperty(QObject::tr("Never flees"), o->neverFlees, false);
 	addProperty(QObject::tr("Not growing"), o->notGrowingTeam, false);
@@ -770,7 +773,7 @@ void Inspector::setProperty(CGCreature * o, const QString & key, const QVariant 
 		o->message = MetaString::createFromTextID(mapRegisterLocalizedString("map", *controller.map(),
 			TextIdentifier("monster", o->instanceName, "message"), value.toString().toStdString()));
 	if(key == QObject::tr("Character"))
-		o->character = CGCreature::Character(value.toInt());
+		o->initialCharacter = static_cast<CGCreature::Character>(value.toInt());
 	if(key == QObject::tr("Never flees"))
 		o->neverFlees = value.toBool();
 	if(key == QObject::tr("Not growing"))
@@ -908,7 +911,7 @@ QTableWidgetItem * Inspector::addProperty(CGCreature::Character value)
 	
 	for(const auto & i : characterIdentifiers)
 	{
-		if(i.second.toInt() == value)
+		if(i.second.toInt() == static_cast<int>(value))
 		{
 			item->setText(i.first);
 			break;

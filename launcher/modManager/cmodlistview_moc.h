@@ -61,6 +61,7 @@ class CModListView : public QWidget
 
 	QString genChangelogText(const ModState & mod);
 	QString genModInfoText(const ModState & mod);
+	QString getRepoUrl(const ModState & mod);
 
 	void changeEvent(QEvent *event) override;
 
@@ -85,7 +86,7 @@ public:
 	void doInstallMod(const QString & modName);
 
 	/// uninstall mod by name
-	void doUninstallMod(const QString & modName);
+	void doUninstallMod(const QString & modName, bool silent = false);
 
 	/// update mod by name
 	void doUpdateMod(const QString & modName);

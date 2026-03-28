@@ -88,9 +88,51 @@ void TemplateEditor::initContent()
 		ui->comboBoxTemplateSelection->addItem(QString::fromStdString(tpl.first));
 }
 
+void TemplateEditor::setDefaultContent(std::shared_ptr<CRmgTemplate> tpl)
+{
+	tpl->players.range = {{1, 2}};
+}
+
+void TemplateEditor::setDefaultContentZone(std::shared_ptr<rmg::ZoneOptions> zone, TRmgTemplateZoneId id)
+{
+	// Determine next unused player slot (stored as 1..PLAYER_LIMIT_I in zone->owner)
+	std::set<int> used;
+	for (auto & z : templates[selectedTemplate]->getZones())
+	{
+		if (z.first == id) // skip the zone we are creating
+			continue;
+		auto opt = z.second->getOwner();
+		if (opt.has_value())
+			used.insert(opt.value());
+	}
+	int nextOwner = -1;
+	for (int p = 1; p <= PlayerColor::PLAYER_LIMIT_I; ++p)
+	{
+		if (!used.count(p))
+		{
+			nextOwner = p;
+			break;
+		}
+	}
+	if (nextOwner != -1)
+	{
+		zone->setType(ETemplateZoneType::PLAYER_START);
+		zone->owner = std::optional<int>(nextOwner);
+	}
+	else
+	{
+		// all player slots used -> create a non-player zone by default
+		zone->setType(ETemplateZoneType::TREASURE);
+		zone->owner = std::nullopt;
+	}
+}
+
 void TemplateEditor::autoPositionZones()
 {
 	auto & zones = templates[selectedTemplate]->getZones();
+
+	if (zones.empty())
+		return;
 
 	std::vector<GeometryAlgorithm::Node> nodes;
 	std::default_random_engine rng(0);
@@ -106,10 +148,13 @@ void TemplateEditor::autoPositionZones()
 	}
 	std::vector<GeometryAlgorithm::Edge> edges;
 	for(auto & item : templates[selectedTemplate]->getConnectedZoneIds())
-		edges.push_back({
-			vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneA(); }),
-			vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneB(); })
-		});
+	{
+		const auto from = vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneA(); });
+		const auto to = vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneB(); });
+		if (from >= nodes.size() || to >= nodes.size())
+			continue;
+		edges.push_back({from, to});
+	}
 		
 	GeometryAlgorithm::forceDirectedLayout(nodes, edges, 1000, 500, 500);
 
@@ -130,7 +175,7 @@ void TemplateEditor::loadContent(bool autoPosition)
 		return;
 
 	auto & zones = templates[selectedTemplate]->getZones();
-	if(autoPosition || std::all_of(zones.begin(), zones.end(), [](auto & item){ return item.second->getVisiblePosition().x == 0 && item.second->getVisiblePosition().y == 0; }))
+	if(!zones.empty() && (autoPosition || std::all_of(zones.begin(), zones.end(), [](auto & item){ return item.second->getVisiblePosition().x == 0 && item.second->getVisiblePosition().y == 0; })))
 		autoPositionZones();
 
 	for(auto & zone : zones)
@@ -269,7 +314,7 @@ void TemplateEditor::updateZoneCards(TRmgTemplateZoneId id)
 		auto type = zone->getType();
 
 		if(type == ETemplateZoneType::PLAYER_START || type == ETemplateZoneType::CPU_START)
-			card.second->setPlayerColor(PlayerColor(*zone->getOwner()));
+			card.second->setPlayerColor(PlayerColor(*zone->getOwner() - 1));
 		else if(type == ETemplateZoneType::TREASURE)
 			card.second->setMultiFillColor(QColor(165, 125, 55), QColor(250, 229, 157));
 		else if(type == ETemplateZoneType::WATER)
@@ -353,10 +398,10 @@ void TemplateEditor::loadZoneMenuContent(bool onlyPosition)
 		{
 			MetaString str;
 			str.appendName(color);
-			ui->comboBoxZoneOwner->addItem(QString::fromStdString(str.toString()), QVariant(static_cast<int>(color)));
+			ui->comboBoxZoneOwner->addItem(QString::fromStdString(str.toString()), QVariant(static_cast<int>(color + 1)));
 		}
 		for (int i = 0; i < ui->comboBoxZoneOwner->count(); ++i)
-			if (ui->comboBoxZoneOwner->itemData(i).toInt() == static_cast<int>(*zone->getOwner()))
+			if (ui->comboBoxZoneOwner->itemData(i).toInt() == static_cast<int>(*zone->getOwner() + 1))
 				ui->comboBoxZoneOwner->setCurrentIndex(i);
 	}
 	else
@@ -386,6 +431,8 @@ void TemplateEditor::loadZoneMenuContent(bool onlyPosition)
 
 void TemplateEditor::loadZoneConnectionMenuContent()
 {
+	updateConnectionAddButton();
+
 	auto widget = ui->tableWidgetConnections;
 	auto & connections = templates[selectedTemplate]->connections;
 
@@ -465,6 +512,12 @@ void TemplateEditor::loadZoneConnectionMenuContent()
 		widget->setCellWidget(i, 5, delButton);
 	};
 	widget->resizeColumnsToContents();
+}
+
+void TemplateEditor::updateConnectionAddButton()
+{
+	const bool canAddConnection = templates.count(selectedTemplate) && templates[selectedTemplate]->getZones().size() >= 2;
+	ui->pushButtonConnectionAdd->setEnabled(canAddConnection);
 }
 
 void TemplateEditor::saveZoneMenuContent()
@@ -605,6 +658,91 @@ void TemplateEditor::changed()
 	setTitle();
 }
 
+bool TemplateEditor::validate()
+{
+	QString vf = tr("Validation failed!");
+	for(auto tpl : templates)
+	{
+		if(!tpl.second->players.range.size())
+		{
+			QMessageBox::critical(this, vf, tr("No player range defined."));
+			return false;
+		}
+		for(auto & range : tpl.second->players.range)
+		{
+			if(range.second < range.first || range.first < 1)
+			{
+				QMessageBox::critical(this, vf, tr("Invalid range for players."));
+				return false;
+			}
+		}
+		for(auto & range : tpl.second->humanPlayers.range)
+		{
+			if(range.second < range.first)
+			{
+				QMessageBox::critical(this, vf, tr("Invalid range for human players."));
+				return false;
+			}
+		}
+
+		{
+			auto & connections = tpl.second->connections;
+			auto & zones = tpl.second->getZones();
+
+			for (const auto & c : connections)
+			{
+				int a = c.getZoneA();
+				int b = c.getZoneB();
+				if (!zones.count(a) || !zones.count(b))
+				{
+					QMessageBox::critical(this, vf, tr("Connection references non-existing zone(s): %1 - %2").arg(QString::number(a)).arg(QString::number(b)));
+					return false;
+				}
+			}
+			for (auto & zp : zones)
+			{
+				int zoneId = zp.first;
+				bool hasConnection = std::any_of(connections.begin(), connections.end(), [zoneId](const rmg::ZoneConnection &c){
+					return c.getZoneA() == zoneId || c.getZoneB() == zoneId;
+				});
+				if(!hasConnection)
+				{
+					QMessageBox::critical(nullptr, vf, tr("Zone %1 has no connections.").arg(QString::number(zoneId)));
+					return false;
+				}
+			}
+
+			// Validate that for number of players (max from players.range) each player has exactly one PLAYER_START zone
+			{
+				int maxPlayers = 0;
+				for (auto & r : tpl.second->players.range)
+					maxPlayers = std::max(maxPlayers, r.second);
+
+				if (maxPlayers > 0)
+				{
+					for (int player = 1; player <= maxPlayers; ++player)
+					{
+						int count = 0;
+						for (auto & z : zones)
+						{
+							auto & zone = *z.second;
+								if (zone.getType() == ETemplateZoneType::PLAYER_START && zone.getOwner().has_value() && zone.getOwner().value() == player)
+									++count;
+							}
+						if (count != 1)
+						{
+							QMessageBox::critical(this, vf, tr("Player %1 must have exactly one player start zone (found %2).").arg(QString::number(player)).arg(QString::number(count)));
+							return false;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return true;
+}
+
 void TemplateEditor::saveTemplate()
 {
 	saveContent();
@@ -624,6 +762,9 @@ void TemplateEditor::showTemplateEditor(QWidget *parent)
 
 void TemplateEditor::on_actionOpen_triggered()
 {
+	if(!validate())
+		return;
+
 	if(!getAnswerAboutUnsavedChanges())
 		return;
 	
@@ -642,6 +783,9 @@ void TemplateEditor::on_actionOpen_triggered()
 
 void TemplateEditor::on_actionSave_as_triggered()
 {
+	if(!validate())
+		return;
+
 	auto filenameSelect = QFileDialog::getSaveFileName(this, tr("Save template"), "", tr("VCMI templates (*.json)"));
 
 	if(filenameSelect.isNull())
@@ -664,6 +808,7 @@ void TemplateEditor::on_actionNew_triggered()
 
 	templates = std::map<std::string, std::shared_ptr<CRmgTemplate>>();
 	templates["TemplateEditor"] = std::make_shared<CRmgTemplate>();
+	setDefaultContent(templates["TemplateEditor"]);
 	
 	changed();
 	initContent();
@@ -719,7 +864,9 @@ void TemplateEditor::on_actionAddZone_triggered()
 	{
 		if(!templates[selectedTemplate]->zones.count(i))
 		{
-			templates[selectedTemplate]->zones[i] = std::make_shared<rmg::ZoneOptions>();
+			auto zonePtr = std::make_shared<rmg::ZoneOptions>();
+			templates[selectedTemplate]->zones[i] = zonePtr;
+			setDefaultContentZone(zonePtr, i);
 			break;
 		}
 	}
@@ -768,6 +915,7 @@ void TemplateEditor::on_pushButtonAddSubTemplate_clicked()
 
 	selectedTemplate = text.toStdString();
 	templates[selectedTemplate] = std::make_shared<CRmgTemplate>();
+	setDefaultContent(templates[selectedTemplate]);
 	ui->comboBoxTemplateSelection->addItem(text);
 	ui->comboBoxTemplateSelection->setCurrentIndex(ui->comboBoxTemplateSelection->count() - 1);
 
@@ -1025,8 +1173,20 @@ void TemplateEditor::on_checkBoxAllowedWaterContentIslands_stateChanged(int stat
 
 void TemplateEditor::on_pushButtonConnectionAdd_clicked()
 {
+	const auto & zones = templates[selectedTemplate]->getZones();
+	if (zones.size() < 2)
+	{
+		QMessageBox::warning(this, tr("Too few zones"), tr("Create at least two zones before adding a connection."));
+		return;
+	}
+
 	auto & connections = templates[selectedTemplate]->connections;
-	connections.push_back(rmg::ZoneConnection());
+	rmg::ZoneConnection connection;
+	auto zoneIt = zones.begin();
+	connection.zoneA = zoneIt->first;
+	++zoneIt;
+	connection.zoneB = zoneIt->first;
+	connections.push_back(connection);
 	loadZoneConnectionMenuContent();
 }
 
