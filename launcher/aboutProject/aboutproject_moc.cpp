@@ -533,13 +533,6 @@ void AboutProjectView::on_pushButtonExportLogs_clicked()
 		QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
 		return;
 	}
-	catch(const std::runtime_error & e)
-	{
-		QFile::remove(outPath);
-		logGlobal->error("Log export failed while creating archive %s. Reason: %s", outPath.toStdString(), e.what());
-		QMessageBox::critical(this, tr("Error"), tr("Failed to create archive: %1").arg(QString::fromUtf8(e.what())));
-		return;
-	}
 
 	// On mobile platforms, let user choose between share and saving to selected destination.
 #if defined(VCMI_MOBILE)
