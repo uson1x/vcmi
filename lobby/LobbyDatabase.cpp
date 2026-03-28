@@ -12,107 +12,6 @@
 
 #include "SQLiteConnection.h"
 
-void LobbyDatabase::createTables()
-{
-	static const std::string createChatMessages = R"(
-		CREATE TABLE IF NOT EXISTS chatMessages (
-			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			senderName TEXT,
-			channelType TEXT,
-			channelName TEXT,
-			messageText TEXT,
-			creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-		);
-	)";
-
-	static const std::string createTableGameRooms = R"(
-		CREATE TABLE IF NOT EXISTS gameRooms (
-			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			roomID TEXT,
-			hostAccountID TEXT,
-			description TEXT NOT NULL DEFAULT '',
-			status INTEGER NOT NULL DEFAULT 0,
-			playerLimit INTEGER NOT NULL,
-			creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-		);
-	)";
-
-	static const std::string createTableGameRoomPlayers = R"(
-		CREATE TABLE IF NOT EXISTS gameRoomPlayers (
-			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			roomID TEXT,
-			accountID TEXT
-		);
-	)";
-
-	static const std::string createTableAccounts = R"(
-		CREATE TABLE IF NOT EXISTS accounts (
-			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			accountID TEXT,
-			displayName TEXT,
-			online INTEGER NOT NULL,
-			lastLoginTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-			creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-		);
-	)";
-
-	static const std::string createTableAccountCookies = R"(
-		CREATE TABLE IF NOT EXISTS accountCookies (
-			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			accountID TEXT,
-			cookieUUID TEXT,
-			creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-		);
-	)";
-
-	static const std::string createTableGameRoomInvites = R"(
-		CREATE TABLE IF NOT EXISTS gameRoomInvites (
-			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-			roomID TEXT,
-			accountID TEXT
-		);
-	)";
-
-	database->prepare(createChatMessages)->execute();
-	database->prepare(createTableGameRoomPlayers)->execute();
-	database->prepare(createTableGameRooms)->execute();
-	database->prepare(createTableAccounts)->execute();
-	database->prepare(createTableAccountCookies)->execute();
-	database->prepare(createTableGameRoomInvites)->execute();
-}
-
-void LobbyDatabase::upgradeDatabase()
-{
-	auto getDatabaseVersionStatement = database->prepare(R"(
-		PRAGMA user_version
-	)");
-
-	auto upgradeDatabaseVersionStatement = database->prepare(R"(
-		PRAGMA user_version = 10501
-	)");
-
-	int databaseVersion;
-	getDatabaseVersionStatement->execute();
-	getDatabaseVersionStatement->getColumns(databaseVersion);
-	getDatabaseVersionStatement->reset();
-
-	if (databaseVersion < 10501)
-	{
-		database->prepare(R"(
-			ALTER TABLE gameRooms
-			ADD COLUMN mods TEXT NOT NULL DEFAULT '{}'
-		)")->execute();
-
-		database->prepare(R"(
-			ALTER TABLE gameRooms
-			ADD COLUMN version TEXT NOT NULL DEFAULT ''
-		)")->execute();
-
-		upgradeDatabaseVersionStatement->execute();
-		upgradeDatabaseVersionStatement->reset();
-	}
-}
-
 void LobbyDatabase::clearOldData()
 {
 	static const std::string removeActiveAccounts = R"(
@@ -381,8 +280,6 @@ LobbyDatabase::~LobbyDatabase() = default;
 LobbyDatabase::LobbyDatabase(const boost::filesystem::path & databasePath)
 {
 	database = SQLiteInstance::open(databasePath, true);
-	createTables();
-	upgradeDatabase();
 	clearOldData();
 	prepareStatements();
 }

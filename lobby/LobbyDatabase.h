@@ -123,8 +123,6 @@ class LobbyDatabase
 	SQLiteStatementPtr isAccountNameExistsStatement;
 
 	void prepareStatements();
-	void createTables();
-	void upgradeDatabase();
 	void clearOldData();
 
 public:

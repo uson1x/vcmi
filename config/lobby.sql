@@ -41,12 +41,20 @@ CREATE TABLE gameRoomInvites (
 			accountID TEXT
 		);
 CREATE TABLE sqlite_stat1(tbl,idx,stat);
+
 CREATE INDEX idx_accounts_online ON accounts(online);
+CREATE INDEX idx_accounts_accountID ON accounts(accountID);
+CREATE INDEX idx_accounts_displayName ON accounts(displayName COLLATE NOCASE);
+
+CREATE INDEX idx_gameRooms_roomID ON gameRooms(roomID);
 CREATE INDEX idx_gameRooms_status ON gameRooms(status);
+
 CREATE INDEX idx_chatMessages_creationTime ON chatMessages(creationTime);
 CREATE INDEX idx_chatMessages_channelTypeName ON chatMessages(channelType, channelName);
-CREATE INDEX idx_gameRooomPlayers_account ON gameRoomPlayers(accountID);
-CREATE INDEX gameRoomPlayersAccountID ON gameRoomPlayers(accountID);
-CREATE INDEX gameRooms_roomID ON gameRooms(roomID);
-CREATE INDEX accounts_accountID ON accounts(accountID);
-CREATE INDEX gameRoomPlayers_roomID ON gameRoomPlayers(roomID);
+
+CREATE INDEX idx_gameRoomPlayers_accountID ON gameRoomPlayers(accountID);
+CREATE INDEX idx_gameRoomPlayers_roomID ON gameRoomPlayers(roomID);
+
+CREATE INDEX idx_accountCookies_accountID ON accountCookies(accountID);
+
+CREATE INDEX idx_gameRoomInvites_accountID ON gameRoomInvites(accountID);
