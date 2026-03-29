@@ -82,7 +82,7 @@ void CZoneGridPlacer::getRandomGridEdge(vstd::RNG * rand, size_t gridSize, size_
 
 bool CZoneGridPlacer::isWithinGrid(const int3 & cell, size_t gridSize)
 {
-	const si32 n = static_cast<si32>(gridSize);
+	const auto n = static_cast<si32>(gridSize);
 	return cell.x >= 0 && cell.x < n && cell.y >= 0 && cell.y < n;
 }
 
