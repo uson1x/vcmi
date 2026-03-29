@@ -18,6 +18,7 @@
 #include "../mapObjects/ObstacleSetHandler.h"
 #include "../GameLibrary.h"
 
+#include <algorithm>
 #include <vstd/RNG.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -41,6 +42,7 @@ void ObstacleProxy::collectPossibleObstacles(TerrainId terrain)
 		}
 	}
 	sortObstacles();
+	clearRecentObstacleQueue();
 }
 
 void ObstacleProxy::sortObstacles()
@@ -53,6 +55,30 @@ void ObstacleProxy::sortObstacles()
 	{
 		return p1.first > p2.first; //bigger obstacles first
 	});
+}
+
+void ObstacleProxy::clearRecentObstacleQueue()
+{
+	recentPlacedObstacleTemplates.clear();
+}
+
+void ObstacleProxy::recordPlacedObstacleTemplate(const ObjectTemplate * templ)
+{
+	if (!templ || recentObstacleQueueMaxSize == 0)
+		return;
+
+	recentPlacedObstacleTemplates.push_back(templ);
+	while (recentPlacedObstacleTemplates.size() > recentObstacleQueueMaxSize)
+		recentPlacedObstacleTemplates.pop_front();
+}
+
+bool ObstacleProxy::isObstacleTemplateRecentlyUsed(const ObjectTemplate * templ) const
+{
+	if (!templ || recentObstacleQueueMaxSize == 0)
+		return false;
+
+	return std::find(recentPlacedObstacleTemplates.begin(), recentPlacedObstacleTemplates.end(), templ)
+		!= recentPlacedObstacleTemplates.end();
 }
 
 bool ObstacleProxy::prepareBiome(const ObstacleSetFilter & filter, vstd::RNG & rand)
@@ -201,6 +227,7 @@ bool ObstacleProxy::prepareBiome(const ObstacleSetFilter & filter, vstd::RNG & r
 		}
 
 		sortObstacles();
+		clearRecentObstacleQueue();
 
 		return true;
 	}
@@ -241,7 +268,17 @@ int ObstacleProxy::getWeightedObjects(const int3 & tile, vstd::RNG & rand, IGame
 		auto shuffledObstacles = possibleObstacle.second;
 		RandomGeneratorUtil::randomShuffle(shuffledObstacles, rand);
 
-		for(const auto & temp : shuffledObstacles)
+		ObstacleVector templatesToTry;
+		for (const auto & temp : shuffledObstacles)
+		{
+			if (!isObstacleTemplateRecentlyUsed(temp.get()))
+				templatesToTry.push_back(temp);
+		}
+		// All variants in this bucket were used recently: skip tier and try smaller obstacles.
+		if (templatesToTry.empty())
+			continue;
+
+		for(const auto & temp : templatesToTry)
 		{
 			auto handler = LIBRARY->objtypeh->getHandlerFor(temp->id, temp->subid);
 			auto obj = handler->create(cb, temp);
@@ -335,6 +372,15 @@ std::set<std::shared_ptr<CGObjectInstance>> ObstacleProxy::createObstacles(vstd:
 		auto objIter = RandomGeneratorUtil::nextItem(weightedObjects, rand);
 		objIter->first->setPosition(objIter->second);
 		placeObject(*objIter->first, objs);
+
+		for (const auto * inst : objIter->first->instances())
+		{
+			if (inst->object().appearance)
+			{
+				recordPlacedObstacleTemplate(inst->object().appearance.get());
+				break;
+			}
+		}
 
 		blockedArea.subtract(objIter->first->getArea());
 		tilePos = 0;
