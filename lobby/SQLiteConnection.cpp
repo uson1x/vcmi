@@ -192,3 +192,8 @@ SQLiteStatementPtr SQLiteInstance::prepare(const std::string & sql_text)
 	sqlite3_finalize(statement);
 	handleSQLiteError(m_connection);
 }
+
+void SQLiteInstance::setBusyTimeout(int milliseconds)
+{
+	sqlite3_busy_timeout(m_connection, milliseconds);
+}

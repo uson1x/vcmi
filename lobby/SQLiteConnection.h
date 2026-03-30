@@ -117,6 +117,7 @@ public:
 	~SQLiteInstance();
 
 	SQLiteStatementPtr prepare(const std::string & statement);
+	void setBusyTimeout(int milliseconds);
 
 private:
 	explicit SQLiteInstance(sqlite3 * connection);

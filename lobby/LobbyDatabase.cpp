@@ -288,7 +288,12 @@ LobbyDatabase::~LobbyDatabase() = default;
 
 LobbyDatabase::LobbyDatabase(const boost::filesystem::path & databasePath)
 {
+	// how long to wait before aborting with "SQLite Busy" error code
+	// can happen for example due to accessing same database via sqlite3 command line interface
+	static constexpr int sqliteBusyTimeout = 5000;
+
 	database = SQLiteInstance::open(databasePath, true);
+	database->setBusyTimeout(sqliteBusyTimeout);
 	clearOldData();
 	prepareStatements();
 }
