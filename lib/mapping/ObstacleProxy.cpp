@@ -93,7 +93,7 @@ void addPlantSets(ObstacleSetFilter & localFilter, vstd::RNG & rand, std::vector
 	localFilter.setType(ObstacleSet::EObstacleType::PLANTS);
 	TObstacleTypes plantSets = LIBRARY->biomeHandler->getObstacles(localFilter);
 
-	const int plantUpper = static_cast<int>(std::max<size_t>(3 - rockSetsCount, 2));
+	const auto plantUpper = static_cast<int>(std::max<size_t>(3 - rockSetsCount, 2));
 	const size_t plantSetsCount = std::min<size_t>(plantSets.size(), rand.nextInt(1, plantUpper));
 	for (size_t i = 0; i < plantSetsCount; i++)
 	{
@@ -111,8 +111,7 @@ size_t addFromCategoryPair(
 	TObstacleTypes & poolB,
 	std::vector<std::shared_ptr<ObstacleSet>> & obstacleSets,
 	size_t & selectedSets,
-	size_t maxAdd,
-	const char * logContext)
+	size_t maxAdd)
 {
 	if (maxAdd == 0)
 		return 0;
@@ -144,7 +143,6 @@ size_t addFromCategoryPair(
 		obstacleSets.push_back(first);
 		obstacleSets.push_back(second);
 		selectedSets += 2;
-		logGlobal->info("Added paired %s: types %d and %d", logContext, static_cast<int>(first->getType()), static_cast<int>(second->getType()));
 		return 2;
 	}
 
@@ -164,7 +162,6 @@ size_t addFromCategoryPair(
 	pool->erase(it);
 	obstacleSets.push_back(one);
 	selectedSets++;
-	logGlobal->info("Added single %s: type %d", logContext, static_cast<int>(one->getType()));
 	return 1;
 }
 
@@ -200,14 +197,18 @@ void addLeftoverPairedSmallSets(
 
 		const size_t beforeIter = addedSmall;
 
-		addedSmall += addFromCategoryPair(
-			rand,
-			structurePool,
-			animalPool,
-			obstacleSets,
-			selectedSets,
-			std::min<size_t>(budget, 2),
-			"structures/animals");
+		{
+			const size_t n = addFromCategoryPair(
+				rand,
+				structurePool,
+				animalPool,
+				obstacleSets,
+				selectedSets,
+				std::min<size_t>(budget, 2));
+			addedSmall += n;
+			if (n > 0)
+				logGlobal->info("Added %d structure/animal obstacle set(s)", static_cast<int>(n));
+		}
 
 		// One OTHER set after structures/animals attempt (mirrors former small-set + other fill).
 		{
@@ -226,14 +227,18 @@ void addLeftoverPairedSmallSets(
 			break;
 
 		const size_t bAfterOther = static_cast<size_t>(targetSmall) - addedSmall;
-		addedSmall += addFromCategoryPair(
-			rand,
-			rockPool,
-			plantPool,
-			obstacleSets,
-			selectedSets,
-			std::min<size_t>(bAfterOther, 2),
-			"rocks/plants");
+		{
+			const size_t n = addFromCategoryPair(
+				rand,
+				rockPool,
+				plantPool,
+				obstacleSets,
+				selectedSets,
+				std::min<size_t>(bAfterOther, 2));
+			addedSmall += n;
+			if (n > 0)
+				logGlobal->info("Added %d rock/plant obstacle set(s)", static_cast<int>(n));
+		}
 
 		if (addedSmall == beforeIter)
 			break;
