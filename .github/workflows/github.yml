@@ -773,12 +773,12 @@ jobs:
           ${{ github.workspace }}/CI/wininstaller/Output/*.exe
 
     - name: Upload Installer
-      if: ${{ github.event.number == '' && env.DEPLOY_RSA != '' }}
+      if: ${{ github.event.number == '' && env.BUILDS_UPLOADER_PRIVATE_KEY != '' }}
       run: |
         cd '${{github.workspace}}/CI/wininstaller/Output'
         source '${{github.workspace}}/CI/upload_package.sh'
       env:
-        DEPLOY_RSA: ${{ secrets.DEPLOY_RSA }}
+        BUILDS_UPLOADER_PRIVATE_KEY: ${{ secrets.BUILDS_UPLOADER_PRIVATE_KEY }}
         PACKAGE_EXTENSION: exe
 
     - name: Prepare partial JSON with installer informations
