@@ -21,6 +21,7 @@ FactionSelector::FactionSelector(std::set<FactionID> & factions) :
 	factionsSelected(factions)
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	setWindowTitle(tr("Faction Selector"));
 	

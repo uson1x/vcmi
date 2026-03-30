@@ -23,6 +23,7 @@ TownSpellsWidget::TownSpellsWidget(CGTownInstance & town, QWidget * parent) :
 	town(town)
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	possibleSpellLists = { ui->possibleSpellList1, ui->possibleSpellList2, ui->possibleSpellList3, ui->possibleSpellList4, ui->possibleSpellList5 };
 	requiredSpellLists = { ui->requiredSpellList1, ui->requiredSpellList2, ui->requiredSpellList3, ui->requiredSpellList4, ui->requiredSpellList5 };

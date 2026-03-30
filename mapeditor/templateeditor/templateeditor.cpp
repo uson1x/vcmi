@@ -30,7 +30,11 @@ TemplateEditor::TemplateEditor():
 	ui(new Ui::TemplateEditor)
 {
 	ui->setupUi(this);
-	
+
+#ifdef VCMI_MOBILE
+	ui->menubar->setNativeMenuBar(false);
+#endif
+
 	setWindowIcon(QIcon{":/icons/menu-game.png"});
 	ui->actionOpen->setIcon(QIcon{":/icons/document-open.png"});
 	ui->actionSave->setIcon(QIcon{":/icons/document-save.png"});

@@ -11,6 +11,7 @@
 #include <QApplication>
 #include "mainwindow.h"
 
+#ifndef ENABLE_SINGLE_APP_BUILD
 int main(int argc, char * argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -21,3 +22,4 @@ int main(int argc, char * argv[])
 	MainWindow mainWindow;
 	return vcmieditor.exec();
 }
+#endif

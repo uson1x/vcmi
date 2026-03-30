@@ -20,6 +20,7 @@ TownHintSelector::TownHintSelector(std::vector<rmg::ZoneOptions::CTownHints> & t
 	townHints(townHints)
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	setWindowTitle(tr("Town hint Selector"));
 	

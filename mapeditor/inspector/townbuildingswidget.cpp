@@ -127,6 +127,7 @@ TownBuildingsWidget::TownBuildingsWidget(CGTownInstance & t, QWidget *parent) :
 	ui(new Ui::TownBuildingsWidget)
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 	ui->treeView->setModel(&model);
 	//ui->treeView->setColumnCount(3);
 	model.setHorizontalHeaderLabels(QStringList() << tr("Type") << tr("Enabled") << tr("Built"));

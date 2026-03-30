@@ -28,6 +28,7 @@ HeroArtifactsWidget::HeroArtifactsWidget(MapController & controller, CGHeroInsta
 	fittingSet(CArtifactFittingSet(h))
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	connect(ui->saveButton, &QPushButton::clicked, this, &HeroArtifactsWidget::onSaveButtonClicked);
 	connect(ui->cancelButton, &QPushButton::clicked, this, &HeroArtifactsWidget::onCancelButtonClicked);

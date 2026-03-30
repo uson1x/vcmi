@@ -36,7 +36,11 @@ CampaignEditor::CampaignEditor(EditorCallback * cb):
 	cb(cb)
 {
 	ui->setupUi(this);
-	
+
+#ifdef VCMI_MOBILE
+	ui->menubar->setNativeMenuBar(false);
+#endif
+
 	setAcceptDrops(true);
 	
 	setWindowIcon(QIcon{":/icons/menu-game.png"});

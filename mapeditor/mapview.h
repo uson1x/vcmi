@@ -21,7 +21,14 @@ VCMI_LIB_NAMESPACE_BEGIN
 class CGObjectInstance;
 VCMI_LIB_NAMESPACE_END
 
+VCMI_LIB_USING_NAMESPACE
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS { class MainWindow; }
+using MapEditorNS::MainWindow;
+#else
 class MainWindow;
+#endif
 class MapController;
 
 class MapSceneBase : public QGraphicsScene
@@ -83,6 +90,10 @@ protected:
 
 };
 
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS {
+#endif
+
 class MapView : public QGraphicsView
 {
 	Q_OBJECT
@@ -127,6 +138,11 @@ private:
 	
 	std::set<int3> temporaryTiles;
 };
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+} // namespace MapEditorNS
+using MapEditorNS::MapView;
+#endif
 
 class MinimapView : public QGraphicsView
 {

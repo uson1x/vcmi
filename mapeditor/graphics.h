@@ -26,8 +26,15 @@ class CHeroClass;
 
 VCMI_LIB_NAMESPACE_END
 
+VCMI_LIB_USING_NAMESPACE
+
 struct InfoAboutHero;
 struct InfoAboutTown;
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS {
+#endif
+
 class Animation;
 
 /// Handles fonts, hero images, town images, various graphics
@@ -89,3 +96,9 @@ public:
 };
 
 extern Graphics * graphics;
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+} // namespace MapEditorNS
+using MapEditorNS::Graphics;
+using MapEditorNS::graphics;
+#endif

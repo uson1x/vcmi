@@ -2,6 +2,7 @@ set(editor_SRCS
 		StdInc.cpp
 		main.cpp
 		mainwindow.cpp
+		editorbridge.cpp
 		BitmapHandler.cpp
 		maphandler.cpp
 		Animation.cpp
@@ -183,7 +184,7 @@ if(ENABLE_TEMPLATE_EDITOR)
 endif()
 
 set(editor_RESOURCES
-	resources.qrc
+	editor_resources.qrc
 )
 
 set(translationsDir "translation")
@@ -221,7 +222,7 @@ if(ENABLE_TRANSLATIONS)
 		set_source_files_properties(${editor_TS} PROPERTIES OUTPUT_LOCATION "${translationsDir}")
 		qt5_add_translation(editor_QM ${editor_TS})
 
-		set(translationsResource "${CMAKE_CURRENT_BINARY_DIR}/translations.qrc")
+		set(translationsResource "${CMAKE_CURRENT_BINARY_DIR}/editor_translations.qrc")
 		list(APPEND editor_RESOURCES "${translationsResource}")
 
 		set(rccQmFiles "")

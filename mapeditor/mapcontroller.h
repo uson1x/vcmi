@@ -20,7 +20,14 @@ using ModCompatibilityInfo = std::map<std::string, ModVerificationInfo>;
 class EditorObstaclePlacer;
 VCMI_LIB_NAMESPACE_END
 
+VCMI_LIB_USING_NAMESPACE
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS { class MainWindow; }
+using MapEditorNS::MainWindow;
+#else
 class MainWindow;
+#endif
 class MapController : public QObject
 {
 	Q_OBJECT

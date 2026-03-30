@@ -28,6 +28,11 @@
 
 VCMI_LIB_USING_NAMESPACE
 
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS { class MainWindow; }
+using namespace MapEditorNS;
+#endif
+
 using NumericPointer = typename std::conditional_t<sizeof(void *) == sizeof(unsigned long long),
 												 unsigned long long, unsigned int>;
 

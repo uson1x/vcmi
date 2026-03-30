@@ -44,7 +44,7 @@ void PlayerSelectionDialog::setupDialogComponents()
 {
 	setWindowTitle(tr("Select Player"));
 	setFixedWidth(dialogWidth);
-	setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
 	font.setPointSize(10);
 	setFont(font);
 

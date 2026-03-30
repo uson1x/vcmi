@@ -16,6 +16,7 @@ MessageWidget::MessageWidget(QWidget *parent) :
 	ui(new Ui::MessageWidget)
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 }
 
 MessageWidget::~MessageWidget()

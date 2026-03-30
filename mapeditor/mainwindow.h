@@ -19,11 +19,17 @@ class CBasicLogConfigurator;
 class CGObjectInstance;
 VCMI_LIB_NAMESPACE_END
 
+VCMI_LIB_USING_NAMESPACE
+
 namespace Ui
 {
-	class MainWindow;
+	class EditorMainWindow;
 	const QString appName = "mapeditor";
 }
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS {
+#endif
 
 class MainWindow : public QMainWindow
 {
@@ -193,7 +199,7 @@ private:
 	void updateRecentMenu(const QString & filenameSelect);
 
 private:
-	Ui::MainWindow * ui;
+	Ui::EditorMainWindow * ui;
 	ObjectBrowserProxyModel * objectBrowser = nullptr;
 	QGraphicsScene * scenePreview;
 	MapSettings * mapSettings = nullptr;
@@ -217,3 +223,7 @@ private:
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dropEvent(QDropEvent* event) override;
 };
+
+#ifdef ENABLE_SINGLE_APP_BUILD
+} // namespace MapEditorNS
+#endif

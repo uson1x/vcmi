@@ -40,7 +40,8 @@ RewardsWidget::RewardsWidget(CMap & m, CRewardableObject & p, QWidget *parent) :
 	ui(new Ui::RewardsWidget)
 {
 	ui->setupUi(this);
-	
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+
 	//fill core elements
 	for(const auto & s : Rewardable::VisitModeString)
 		ui->visitMode->addItem(QString::fromUtf8(s.data(), s.size()));

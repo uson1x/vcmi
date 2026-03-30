@@ -14,9 +14,16 @@
 #include <QVBoxLayout>
 #include "../lib/constants/EntityIdentifiers.h"
 
+VCMI_LIB_USING_NAMESPACE
+
 class QRadioButton;
 class QButtonGroup;
+#ifdef ENABLE_SINGLE_APP_BUILD
+namespace MapEditorNS { class MainWindow; }
+using MapEditorNS::MainWindow;
+#else
 class MainWindow;
+#endif
 
 /// Dialog shown when a hero cannot be placed as NEUTRAL.
 /// Allows the user to select a valid player via checkboxes,

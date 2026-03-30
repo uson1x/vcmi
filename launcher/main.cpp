@@ -49,6 +49,10 @@ int MAIN_EXPORT main(int argc, char * argv[])
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
+#ifdef VCMI_MOBILE
+	// Scale the entire Qt UI to 75% to make it usable on high-DPI tablet screens
+	qputenv("QT_SCALE_FACTOR", "0.75");
+#endif
 	QApplication vcmilauncher(argc, argv);
 
 	// use system proxy
@@ -111,7 +115,12 @@ void startGame(const QStringList & args)
 void startEditor(const QStringList & args)
 {
 #ifdef ENABLE_EDITOR
+# ifdef VCMI_ANDROID
+	extern void openMapEditor();
+	openMapEditor();
+# else
 	startExecutable(pathToQString(VCMIDirs::get().mapEditorPath()), args);
+# endif
 #endif
 }
 

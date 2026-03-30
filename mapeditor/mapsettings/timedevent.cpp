@@ -24,6 +24,7 @@ TimedEvent::TimedEvent(MapController & c, QListWidgetItem * t, QWidget *parent) 
 	target(t)
 {
 	ui->setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 
 

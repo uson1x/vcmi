@@ -18,6 +18,7 @@
 #include <QFileInfo>
 #include <QDialog>
 #include <QListWidget>
+#include <QTimer>
 
 #include "../lib/VCMIDirs.h"
 #include "../lib/GameLibrary.h"
@@ -192,7 +193,7 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow),
+	ui(new Ui::EditorMainWindow),
 	controller(this)
 {
 	// Set current working dir to executable folder.
@@ -208,8 +209,12 @@ MainWindow::MainWindow(QWidget* parent) :
 
 	//configure logging
 	const boost::filesystem::path logPath = VCMIDirs::get().userLogsPath() / "VCMI_Editor_log.txt";
+#ifndef VCMI_MOBILE
 	console = std::make_unique<CConsoleHandler>();
 	logConfig = std::make_unique<CBasicLogConfigurator>(logPath, console.get());
+#else
+	logConfig = std::make_unique<CBasicLogConfigurator>(logPath, nullptr);
+#endif
 	logConfig->configureDefault();
 	logGlobal->info("Starting map editor of '%s'", GameConstants::VCMI_VERSION);
 	logGlobal->info("The log file will be saved to %s", logPath);
@@ -241,6 +246,11 @@ MainWindow::MainWindow(QWidget* parent) :
 	loadTranslation();
 
 	ui->setupUi(this);
+
+#ifdef VCMI_MOBILE
+	// On Android the native menu bar is hidden; force it into the window content area
+	menuBar()->setNativeMenuBar(false);
+#endif
 
 	setWindowIcon(QIcon{":/icons/menu-game.png"});
 	ui->toolBrush->setIcon(QIcon{":/icons/brush-1.png"});
@@ -372,7 +382,15 @@ MainWindow::MainWindow(QWidget* parent) :
 	onPlayersChanged();
 	
 	show();
-	
+
+#ifdef VCMI_MOBILE
+	QTimer::singleShot(0, this, [this]() {
+		QMessageBox::information(this,
+			tr("Map Editor"),
+			tr("For the best experience, we recommend using the map editor on a tablet or desktop with a mouse or pen."));
+	});
+#endif
+
 	//Load map from command line
 	if(!mapFilePath.isEmpty())
 		openMap(mapFilePath);
@@ -543,6 +561,7 @@ void MainWindow::on_actionOpenRecent_triggered()
 			: QDialog(parent), layout(new QVBoxLayout(this)), listWidget(new QListWidget(this))
 		{
 			setMinimumWidth(600);
+			setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 			connect(listWidget, &QListWidget::itemActivated, this, [this](QListWidgetItem *item)
 			{

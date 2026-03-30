@@ -15,13 +15,10 @@
 #include "../StdInc.h"
 #include "../../lib/constants/EntityIdentifiers.h"
 #include "../../lib/GameConstants.h"
+#include "../../lib/rmg/CRmgTemplate.h"
 
-class CRmgTemplate;
 class CardItem;
 class LineItem;
-namespace rmg {
-class ZoneOptions;
-}
 
 namespace Ui {
 class TemplateEditor;

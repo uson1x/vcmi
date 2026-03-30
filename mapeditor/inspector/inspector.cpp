@@ -414,8 +414,8 @@ void Inspector::updateProperties(CGResource * o)
 {
 	if(!o) return;
 
-	addProperty(QObject::tr("Amount"), o->amount, false);
-	addProperty(QObject::tr("Message"), o->message, false);
+	addProperty(QObject::tr("Amount"), o->getAmount(), false);
+	addProperty(QObject::tr("Message"), o->getMessage(), false);
 }
 
 void Inspector::updateProperties(CGSignBottle * o)
@@ -762,7 +762,7 @@ void Inspector::setProperty(CGResource * o, const QString & key, const QVariant 
 	if(!o) return;
 
 	if(key == QObject::tr("Amount"))
-		o->amount = value.toString().toInt();
+		o->setAmount(value.toString().toInt());
 }
 
 void Inspector::setProperty(CGCreature * o, const QString & key, const QVariant & value)
