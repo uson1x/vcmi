@@ -4,6 +4,7 @@ set(lobby_SRCS
 		EntryPoint.cpp
 		HttpServer.cpp
 		LobbyDatabase.cpp
+		LobbyDefines.cpp
 		LobbyHttpApi.cpp
 		LobbyServer.cpp
 		SQLiteConnection.cpp

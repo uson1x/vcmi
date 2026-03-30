@@ -84,6 +84,7 @@ class LobbyDatabase
 	SQLiteStatementPtr insertAccountStatement;
 	SQLiteStatementPtr insertAccessCookieStatement;
 	SQLiteStatementPtr insertGameRoomStatement;
+	SQLiteStatementPtr insertGameRoomModStatement;
 	SQLiteStatementPtr insertGameRoomPlayersStatement;
 	SQLiteStatementPtr insertGameRoomInvitesStatement;
 
@@ -111,6 +112,7 @@ class LobbyDatabase
 	SQLiteStatementPtr getClosedGameRoomsCountsBatchStatement;
 	SQLiteStatementPtr getRoomsStatement;
 	SQLiteStatementPtr getGameRoomPlayersStatement;
+	SQLiteStatementPtr getGameRoomModsStatement;
 	SQLiteStatementPtr getGameRoomInvitesStatement;
 	SQLiteStatementPtr countRoomUsedSlotsStatement;
 	SQLiteStatementPtr countRoomTotalSlotsStatement;
@@ -138,7 +140,8 @@ public:
 	void deleteGameRoomInvite(const std::string & targetAccountID, const std::string & roomID);
 	void insertGameRoomInvite(const std::string & targetAccountID, const std::string & roomID);
 
-	void insertGameRoom(const std::string & roomID, const std::string & hostAccountID, const std::string & serverVersion, const std::string & modListJson);
+	void insertGameRoom(const std::string & roomID, const std::string & hostAccountID, const std::string & serverVersion);
+	void insertGameRoomMod(const std::string & roomID, const std::string & modID, const std::string & modName, const std::string & modVersion);
 	void insertAccount(const std::string & accountID, const std::string & displayName);
 	void insertAccessCookie(const std::string & accountID, const std::string & accessCookieUUID);
 	void insertChatMessage(const std::string & sender, const std::string & channelType, const std::string & roomID, const std::string & messageText);

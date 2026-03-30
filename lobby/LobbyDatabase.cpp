@@ -56,6 +56,9 @@ void LobbyDatabase::prepareStatements()
 		INSERT INTO gameRooms(roomID, hostAccountID, status, playerLimit, version, mods) VALUES(?, ?, 0, 8, ?, ?);
 	)");
 
+	insertGameRoomModStatement = database->prepare(R"(
+		INSERT INTO gameRoomsMods(roomID, modID, modName, modVersion) VALUES(?, ?, ?, ?);
+	)");
 	insertGameRoomPlayersStatement = database->prepare(R"(
 		INSERT INTO gameRoomPlayers(roomID, accountID) VALUES(?,?);
 	)");
@@ -191,6 +194,12 @@ void LobbyDatabase::prepareStatements()
 		SELECT a.accountID, a.displayName
 		FROM gameRoomPlayers grp
 		LEFT JOIN accounts a ON a.accountID = grp.accountID
+		WHERE roomID = ?
+	)");
+
+	getGameRoomModsStatement = database->prepare(R"(
+		SELECT modID, modName, modVersion
+		FROM gameRoomMods grm
 		WHERE roomID = ?
 	)");
 
@@ -386,10 +395,16 @@ void LobbyDatabase::insertGameRoomInvite(const std::string & targetAccountID, co
 	insertGameRoomInvitesStatement->executeOnce(roomID, targetAccountID);
 }
 
-void LobbyDatabase::insertGameRoom(const std::string & roomID, const std::string & hostAccountID, const std::string & serverVersion, const std::string & modListJson)
+void LobbyDatabase::insertGameRoom(const std::string & roomID, const std::string & hostAccountID, const std::string & serverVersion)
 {
 	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
-	insertGameRoomStatement->executeOnce(roomID, hostAccountID, serverVersion, modListJson);
+	insertGameRoomStatement->executeOnce(roomID, hostAccountID, serverVersion);
+}
+
+void LobbyDatabase::insertGameRoomMod(const std::string & roomID, const std::string & modID, const std::string & modName, const std::string & modVersion)
+{
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
+	insertGameRoomModStatement->executeOnce(roomID, modID, modName, modVersion);
 }
 
 void LobbyDatabase::insertAccount(const std::string & accountID, const std::string & displayName)
@@ -437,6 +452,7 @@ std::string LobbyDatabase::getAccountDisplayName(const std::string & accountID)
 
 LobbyDatabase::ActiveAccountsCounts LobbyDatabase::getActiveAccountsCounts()
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	ActiveAccountsCounts result{};
 
 	getActiveAccountsCountsBatchStatement->reset();
@@ -451,6 +467,7 @@ LobbyDatabase::ActiveAccountsCounts LobbyDatabase::getActiveAccountsCounts()
 
 LobbyDatabase::RegisteredAccountsCounts LobbyDatabase::getRegisteredAccountsCounts()
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	RegisteredAccountsCounts result{};
 
 	getRegisteredAccountsCountsBatchStatement->reset();
@@ -465,6 +482,7 @@ LobbyDatabase::RegisteredAccountsCounts LobbyDatabase::getRegisteredAccountsCoun
 
 LobbyDatabase::ClosedGameRoomsCounts LobbyDatabase::getClosedGameRoomsCounts()
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	ClosedGameRoomsCounts result{};
 
 	getClosedGameRoomsCountsBatchStatement->reset();
@@ -575,7 +593,7 @@ std::vector<LobbyGameRoom> LobbyDatabase::getActiveGameRooms()
 	while(getActiveGameRoomsStatement->execute())
 	{
 		LobbyGameRoom entry;
-		getActiveGameRoomsStatement->getColumns(entry.roomID, entry.hostAccountID, entry.hostAccountDisplayName, entry.description, entry.roomState, entry.playerLimit, entry.version, entry.modsJson, entry.age);
+		getActiveGameRoomsStatement->getColumns(entry.roomID, entry.hostAccountID, entry.hostAccountDisplayName, entry.description, entry.roomState, entry.playerLimit, entry.version, entry.age);
 		result.push_back(entry);
 	}
 	getActiveGameRoomsStatement->reset();
@@ -590,6 +608,18 @@ std::vector<LobbyGameRoom> LobbyDatabase::getActiveGameRooms()
 			room.participants.push_back(account);
 		}
 		getGameRoomPlayersStatement->reset();
+	}
+
+	for (auto & room : result)
+	{
+		getGameRoomModsStatement->setBinds(room.roomID);
+		while(getGameRoomModsStatement->execute())
+		{
+			LobbyGameRoomMod mod;
+			getGameRoomModsStatement->getColumns(mod.ID, mod.name, mod.version);
+			room.mods.push_back(mod);
+		}
+		getGameRoomModsStatement->reset();
 	}
 
 	for (auto & room : result)
@@ -652,6 +682,7 @@ std::vector<LobbyAccount> LobbyDatabase::getActiveAccounts()
 
 std::vector<LobbyGameRoom> LobbyDatabase::getRooms(int hours, int limit)
 {
+	TimeGuard timeGuard(this->timeTracker, __FUNCTION__);
 	std::vector<LobbyGameRoom> result;
 
 	getRoomsStatement->reset();
@@ -662,7 +693,7 @@ std::vector<LobbyGameRoom> LobbyDatabase::getRooms(int hours, int limit)
 		LobbyGameRoom entry;
 		std::string hostAccountDisplayName;
 		int64_t secondsElapsed;
-		getRoomsStatement->getColumns(entry.roomID, entry.hostAccountID, hostAccountDisplayName, entry.description, entry.roomState, entry.playerLimit, entry.version, entry.modsJson, secondsElapsed);
+		getRoomsStatement->getColumns(entry.roomID, entry.hostAccountID, hostAccountDisplayName, entry.description, entry.roomState, entry.playerLimit, entry.version, secondsElapsed);
 		entry.age = std::chrono::seconds(secondsElapsed);
 		
 		LobbyAccount hostAccount;
@@ -686,6 +717,18 @@ std::vector<LobbyGameRoom> LobbyDatabase::getRooms(int hours, int limit)
 		getGameRoomPlayersStatement->reset();
 	}
 	
+	for (auto & room : result)
+	{
+		getGameRoomModsStatement->setBinds(room.roomID);
+		while(getGameRoomModsStatement->execute())
+		{
+			LobbyGameRoomMod mod;
+			getGameRoomModsStatement->getColumns(mod.ID, mod.name, mod.version);
+			room.mods.push_back(mod);
+		}
+		getGameRoomModsStatement->reset();
+	}
+
 	return result;
 }
 

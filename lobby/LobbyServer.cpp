@@ -184,46 +184,6 @@ void LobbyServer::broadcastActiveAccounts()
 		sendMessage(connection.first, reply);
 }
 
-static JsonNode loadLobbyAccountToJson(const LobbyAccount & account)
-{
-	JsonNode jsonEntry;
-	jsonEntry["accountID"].String() = account.accountID;
-	jsonEntry["displayName"].String() = account.displayName;
-	return jsonEntry;
-}
-
-static JsonNode loadLobbyGameRoomToJson(const LobbyGameRoom & gameRoom)
-{
-	static constexpr std::array LOBBY_ROOM_STATE_NAMES = {
-		"idle",
-		"public",
-		"private",
-		"busy",
-		"cancelled",
-		"closed"
-	};
-
-	JsonNode jsonEntry;
-	jsonEntry["gameRoomID"].String() = gameRoom.roomID;
-	jsonEntry["hostAccountID"].String() = gameRoom.hostAccountID;
-	jsonEntry["hostAccountDisplayName"].String() = gameRoom.hostAccountDisplayName;
-	jsonEntry["description"].String() = gameRoom.description;
-	jsonEntry["version"].String() = gameRoom.version;
-	jsonEntry["status"].String() = LOBBY_ROOM_STATE_NAMES[vstd::to_underlying(gameRoom.roomState)];
-	jsonEntry["playerLimit"].Integer() = gameRoom.playerLimit;
-	jsonEntry["ageSeconds"].Integer() = gameRoom.age.count();
-	if (!gameRoom.modsJson.empty()) // not present in match history
-		jsonEntry["mods"] = JsonNode(reinterpret_cast<const std::byte *>(gameRoom.modsJson.data()), gameRoom.modsJson.size(), "<lobby "+gameRoom.roomID+">");
-
-	for(const auto & account : gameRoom.participants)
-		jsonEntry["participants"].Vector().push_back(loadLobbyAccountToJson(account));
-
-	for(const auto & account : gameRoom.invited)
-		jsonEntry["invited"].Vector().push_back(loadLobbyAccountToJson(account));
-
-	return jsonEntry;
-}
-
 void LobbyServer::sendMatchesHistory(const NetworkConnectionPtr & target)
 {
 	std::string accountID = activeAccounts.at(target);
@@ -234,7 +194,7 @@ void LobbyServer::sendMatchesHistory(const NetworkConnectionPtr & target)
 	reply["matchesHistory"].Vector(); // force creation of empty vector
 
 	for(const auto & gameRoom : matchesHistory)
-		reply["matchesHistory"].Vector().push_back(loadLobbyGameRoomToJson(gameRoom));
+		reply["matchesHistory"].Vector().push_back(gameRoom.toJsonFull());
 
 	sendMessage(target, reply);
 }
@@ -247,7 +207,7 @@ JsonNode LobbyServer::prepareActiveGameRooms()
 	reply["gameRooms"].Vector(); // force creation of empty vector
 
 	for(const auto & gameRoom : activeGameRoomStats)
-		reply["gameRooms"].Vector().push_back(loadLobbyGameRoomToJson(gameRoom));
+		reply["gameRooms"].Vector().push_back(gameRoom.toJsonFull());
 
 	return reply;
 }
@@ -641,8 +601,15 @@ void LobbyServer::receiveServerLogin(const NetworkConnectionPtr & connection, co
 	}
 	else
 	{
-		std::string modListString = json["mods"].isNull() ? "[]" : json["mods"].toCompactString();
-		database->insertGameRoom(gameRoomID, accountID, version, modListString);
+		database->insertGameRoom(gameRoomID, accountID, version);
+		for (const auto & modJson : json["mods"].Vector())
+		{
+			std::string modID = modJson["modId"].String();
+			std::string modName = modJson["modName"].String();
+			std::string modVersion = modJson["version"].String();
+			database->insertGameRoomMod(gameRoomID, modID, modName, modVersion);
+		}
+
 		activeGameRooms[connection] = gameRoomID;
 		sendServerLoginSuccess(connection, accountCookie);
 		broadcastActiveGameRooms();
