@@ -53,11 +53,11 @@ void LobbyDatabase::prepareStatements()
 	)");
 
 	insertGameRoomStatement = database->prepare(R"(
-		INSERT INTO gameRooms(roomID, hostAccountID, status, playerLimit, version, mods) VALUES(?, ?, 0, 8, ?, ?);
+		INSERT INTO gameRooms(roomID, hostAccountID, status, playerLimit, version) VALUES(?, ?, 0, 8, ?);
 	)");
 
 	insertGameRoomModStatement = database->prepare(R"(
-		INSERT INTO gameRoomsMods(roomID, modID, modName, modVersion) VALUES(?, ?, ?, ?);
+		INSERT INTO gameRoomMods(roomID, modID, modName, modVersion) VALUES(?, ?, ?, ?);
 	)");
 	insertGameRoomPlayersStatement = database->prepare(R"(
 		INSERT INTO gameRoomPlayers(roomID, accountID) VALUES(?,?);
@@ -167,7 +167,7 @@ void LobbyDatabase::prepareStatements()
 	)");
 
 	getActiveGameRoomsStatement = database->prepare(R"(
-		SELECT roomID, hostAccountID, displayName, description, status, playerLimit, version, mods, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime)  AS secondsElapsed
+		SELECT roomID, hostAccountID, displayName, description, status, playerLimit, version, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime)  AS secondsElapsed
 		FROM gameRooms gr
 		LEFT JOIN accounts a ON gr.hostAccountID = a.accountID
 		WHERE status IN (1, 2, 3)
@@ -175,7 +175,7 @@ void LobbyDatabase::prepareStatements()
 	)");
 
 	getRoomsStatement = database->prepare(R"(
-		SELECT roomID, hostAccountID, displayName, description, status, playerLimit, version, mods, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime) AS secondsElapsed
+		SELECT roomID, hostAccountID, displayName, description, status, playerLimit, version, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime) AS secondsElapsed
 		FROM gameRooms gr
 		LEFT JOIN accounts a ON gr.hostAccountID = a.accountID
 		WHERE (? = -1 OR strftime('%s',CURRENT_TIMESTAMP) - strftime('%s',gr.creationTime) < ? * 3600)

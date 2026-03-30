@@ -26,7 +26,7 @@ JsonNode LobbyGameRoomMod::toJson() const
 	modJson["modId"].String() = ID;
 	modJson["name"].String() = name;
 	modJson["version"].String() = version;
-	if (ID.find('.' != std::string::npos))
+	if (ID.find('.') != std::string::npos)
 		modJson["parent"].String() = ID.substr(ID.find('.'));
 
 	return modJson;

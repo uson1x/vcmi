@@ -17,15 +17,21 @@ class SQLiteStatement;
 using SQLiteInstancePtr = std::unique_ptr<SQLiteInstance>;
 using SQLiteStatementPtr = std::unique_ptr<SQLiteStatement>;
 
-class TimeTracker
+class TimeTracker : boost::noncopyable
 {
+	static constexpr int dumpLimitCounter = 100'000;
+	int statsCounter = 0;
 public:
 	void store(const std::string & key, std::chrono::steady_clock::duration timeSpent)
 	{
 		auto & target = statistics[key];
 		target.count += 1;
 		target.total += timeSpent;
-		target.worst + std::max(target.worst, timeSpent);
+		target.worst = std::max(target.worst, timeSpent);
+
+		statsCounter += 1;
+		if (statsCounter > dumpLimitCounter)
+			dumpToLog();
 	}
 	void dumpToLog()
 	{
@@ -38,11 +44,12 @@ public:
 				entry.first,
 				entry.second.count,
 				std::chrono::duration<float>(entry.second.total).count(),
-				std::chrono::duration<float>(entry.second.total).count() / entry.second.count,
-				std::chrono::duration_cast<std::chrono::microseconds>(entry.second.worst).count()
+				static_cast<int>(std::chrono::duration<float>(entry.second.total).count() * 1000 * 1000 / entry.second.count),
+				static_cast<int>(std::chrono::duration<float>(entry.second.worst).count() * 1000 * 1000)
 			);
 		}
 		statistics.clear();
+		statsCounter = 0;
 	}
 
 	~TimeTracker()
