@@ -22,6 +22,10 @@
 
 #include "../helper.h"
 
+#ifdef VCMI_ANDROID
+#include "../androidfilepicker.h"
+#endif
+
 #include "../../lib/VCMIDirs.h"
 #include "../../lib/rmg/CRmgTemplate.h"
 #include "../../lib/texts/MetaString.h"
@@ -758,9 +762,16 @@ void TemplateEditor::on_actionOpen_triggered()
 	if(!getAnswerAboutUnsavedChanges())
 		return;
 	
+#ifdef VCMI_ANDROID
+	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, tr("Open template"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		tr("VCMI templates(*.json)"),
+		AndroidFilePicker::Mode::ExternalOnly);
+#else
 	auto filenameSelect = QFileDialog::getOpenFileName(this, tr("Open template"),
 		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
 		tr("VCMI templates(*.json)"));
+#endif
 	if(filenameSelect.isEmpty())
 		return;
 
@@ -776,7 +787,15 @@ void TemplateEditor::on_actionSave_as_triggered()
 	if(!validate())
 		return;
 
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, tr("Save template"),
+		QString(),
+		tr("VCMI templates (*.json)"),
+		AndroidFilePicker::Mode::ExternalOnly, contentUri);
+#else
 	auto filenameSelect = QFileDialog::getSaveFileName(this, tr("Save template"), "", tr("VCMI templates (*.json)"));
+#endif
 
 	if(filenameSelect.isNull())
 		return;
@@ -789,6 +808,11 @@ void TemplateEditor::on_actionSave_as_triggered()
 	filename = filenameSelect;
 	saveTemplate();
 	setTitle();
+
+#ifdef VCMI_ANDROID
+	if(!contentUri.isEmpty())
+		AndroidFilePicker::writeFileToUri(filename, contentUri);
+#endif
 }
 
 void TemplateEditor::on_actionNew_triggered()

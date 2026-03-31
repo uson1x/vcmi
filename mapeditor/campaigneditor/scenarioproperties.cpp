@@ -14,6 +14,12 @@
 #include "campaigneditor.h"
 
 #include "callback/EditorCallback.h"
+
+#ifdef VCMI_ANDROID
+#include "../androidfilepicker.h"
+#endif
+
+#include "../../lib/VCMIDirs.h"
 #include "../../lib/GameLibrary.h"
 #include "../../lib/CCreatureHandler.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
@@ -389,7 +395,14 @@ void ScenarioProperties::on_pushButtonCreatureTypeNone_clicked()
 
 void ScenarioProperties::on_pushButtonImport_clicked()
 {
+#ifdef VCMI_ANDROID
+	auto filename = AndroidFilePicker::getOpenFileName(this, tr("Open map"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)"),
+		AndroidFilePicker::Mode::InternalOrExternal);
+#else
 	auto filename = QFileDialog::getOpenFileName(this, tr("Open map"), "", tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)"));
+#endif
 	if(filename.isEmpty())
 		return;
 
@@ -422,7 +435,15 @@ void ScenarioProperties::on_pushButtonExport_clicked()
 {
 	auto mapName = QString::fromStdString(campaignState->scenarios.at(scenario).mapName);
 	bool isVmap = mapName.toLower().endsWith(".vmap");
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	QString fileName = AndroidFilePicker::getSaveFileName(this, tr("Save map"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		isVmap ? tr("VCMI maps (*.vmap);") : tr("HoMM3 maps (*.h3m);"),
+		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+#else
 	QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save map"), mapName, isVmap ? tr("VCMI maps (*.vmap);") : tr("HoMM3 maps (*.h3m);"));
+#endif
 	if (fileName.isEmpty())
 		return;
 
@@ -437,6 +458,11 @@ void ScenarioProperties::on_pushButtonExport_clicked()
 	QByteArray fileData(reinterpret_cast<const char*>(byteArray.data()), byteArray.size());
 
 	file.write(fileData);
+
+#ifdef VCMI_ANDROID
+	if(!contentUri.isEmpty())
+		AndroidFilePicker::writeFileToUri(fileName, contentUri);
+#endif
 }
 
 void ScenarioProperties::on_pushButtonRemove_clicked()

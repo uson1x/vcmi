@@ -58,6 +58,96 @@
 #include "templateeditor/templateeditor.h"
 #endif
 
+#ifdef VCMI_ANDROID
+#include "androidfilepicker.h"
+
+#include <QAndroidJniObject>
+#include <QtAndroid>
+#include <QWindow>
+#endif
+
+#ifdef VCMI_ANDROID
+// Qt 5 bug on Android with QT_SCALE_FACTOR (S < 1):
+// In androidjniinput.cpp, mouse/tablet handlers compute:
+//   localPos = globalPos(device_pixels) - tlw->position()(logical_pixels)
+// mixing coordinate spaces. After QHighDpiScaling the widget receives
+// a localPos that is off by windowPos*(1-1/S) for any window not at (0,0).
+// Touch events use normalized coordinates and are NOT affected.
+//
+// Fix: recompute localPos from the (correct) screen/global position:
+//   correctedLocal = screenPos - window->position()
+// Both are in logical coordinates after QHighDpiScaling, so this is exact.
+// We modify the event in-place (protected members l,w / mPos) to preserve
+// the spontaneous flag and Qt's internal mouse-grab state.
+class AndroidInputOffsetFix : public QObject
+{
+	bool active = false;
+
+public:
+	AndroidInputOffsetFix(QObject * parent) : QObject(parent)
+	{
+		qreal s = qgetenv("QT_SCALE_FACTOR").toDouble();
+		active = (s > 0 && !qFuzzyCompare(s, 1.0));
+	}
+
+	bool eventFilter(QObject * obj, QEvent * event) override
+	{
+		if(!active)
+			return false;
+
+		auto * window = qobject_cast<QWindow *>(obj);
+		if(!window)
+			return false;
+
+		switch(event->type())
+		{
+			case QEvent::MouseButtonPress:
+			case QEvent::MouseButtonRelease:
+			case QEvent::MouseMove:
+			case QEvent::MouseButtonDblClick:
+			{
+				auto * me = static_cast<QMouseEvent *>(event);
+				// Skip mouse events synthesized from touch — already correct.
+				if(me->source() != Qt::MouseEventNotSynthesized)
+					return false;
+				// Recompute correct local position from undamaged screenPos.
+				QPointF correct = me->screenPos() - QPointF(window->position());
+				struct Accessor : QMouseEvent
+				{
+					void set(const QPointF & p) { l = p; w = p; }
+				};
+				static_cast<Accessor *>(me)->set(correct);
+				return false;
+			}
+			case QEvent::TabletPress:
+			case QEvent::TabletRelease:
+			case QEvent::TabletMove:
+			{
+				auto * te = static_cast<QTabletEvent *>(event);
+				QPointF correct = te->globalPosF() - QPointF(window->position());
+				struct Accessor : QTabletEvent
+				{
+					void set(const QPointF & p) { mPos = p; }
+				};
+				static_cast<Accessor *>(te)->set(correct);
+				return false;
+			}
+			default:
+				return false;
+		}
+	}
+};
+
+static void androidFinishActivity()
+{
+	QAndroidJniObject activity = QtAndroid::androidActivity();
+	if(activity.isValid())
+	{
+		activity.callMethod<void>("finishAffinity");
+	}
+}
+#endif
+
 QJsonValue jsonFromPixmap(const QPixmap &p)
 {
   QBuffer buffer;
@@ -252,6 +342,10 @@ MainWindow::MainWindow(QWidget* parent) :
 	menuBar()->setNativeMenuBar(false);
 #endif
 
+#ifdef VCMI_ANDROID
+	qApp->installEventFilter(new AndroidInputOffsetFix(qApp));
+#endif
+
 	setWindowIcon(QIcon{":/icons/menu-game.png"});
 	ui->toolBrush->setIcon(QIcon{":/icons/brush-1.png"});
 	ui->toolBrush2->setIcon(QIcon{":/icons/brush-2.png"});
@@ -418,7 +512,15 @@ bool MainWindow::getAnswerAboutUnsavedChanges()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if(getAnswerAboutUnsavedChanges())
+	{
 		QMainWindow::closeEvent(event);
+#ifdef VCMI_ANDROID
+		// On Android the Qt event loop may not quit automatically when the last
+		// window closes. Quit the app and finish the Activity to avoid a black screen.
+		QApplication::quit();
+		androidFinishActivity();
+#endif
+	}
 	else
 		event->ignore();
 }
@@ -539,9 +641,16 @@ void MainWindow::on_actionOpen_triggered()
 	if(!getAnswerAboutUnsavedChanges())
 		return;
 	
+#ifdef VCMI_ANDROID
+	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, tr("Open map"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()) + "/Maps",
+		tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)"),
+		AndroidFilePicker::Mode::InternalOrExternal);
+#else
 	auto filenameSelect = QFileDialog::getOpenFileName(this, tr("Open map"),
 		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
 		tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)"));
+#endif
 	if(filenameSelect.isEmpty())
 		return;
 	
@@ -693,7 +802,15 @@ void MainWindow::on_actionSave_as_triggered()
 	if(!controller.map())
 		return;
 
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, tr("Save map"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()) + "/Maps",
+		tr("VCMI maps (*.vmap)"),
+		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+#else
 	auto filenameSelect = QFileDialog::getSaveFileName(this, tr("Save map"), lastSavingDir, tr("VCMI maps (*.vmap)"));
+#endif
 
 	if(filenameSelect.isNull())
 		return;
@@ -707,6 +824,11 @@ void MainWindow::on_actionSave_as_triggered()
 	filename = filenameSelect;
 
 	saveMap();
+
+#ifdef VCMI_ANDROID
+	if(!contentUri.isEmpty())
+		AndroidFilePicker::writeFileToUri(filename, contentUri);
+#endif
 }
 
 void MainWindow::on_actionCampaignEditor_triggered()
@@ -1485,7 +1607,14 @@ void MainWindow::on_actionPaste_triggered()
 
 void MainWindow::on_actionExport_triggered()
 {
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	QString fileName = AndroidFilePicker::getSaveFileName(this, tr("Save to image"), lastSavingDir,
+		"BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)",
+		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+#else
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir, "BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)");
+#endif
 	if(!fileName.isNull())
 	{
 		auto * sc = static_cast<MapScene*>(ui->mapView->scene());
@@ -1505,6 +1634,11 @@ void MainWindow::on_actionExport_triggered()
 		
 		// Restore viewport to visible area
 		ui->mapView->setViewports();
+
+#ifdef VCMI_ANDROID
+		if(!contentUri.isEmpty())
+			AndroidFilePicker::writeFileToUri(fileName, contentUri);
+#endif
 	}
 }
 

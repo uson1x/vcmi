@@ -137,7 +137,7 @@ public class FileUtil
 	}
 
 	@SuppressWarnings(Const.JNI_METHOD_SUPPRESS)
-	private static String getFilenameFromUri(String sourceFileUri, Context context)
+	public static String getFilenameFromUri(String sourceFileUri, Context context)
 	{
 		String fileName = "";
 		try

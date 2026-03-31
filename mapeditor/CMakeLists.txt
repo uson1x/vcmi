@@ -50,6 +50,12 @@ set(editor_SRCS
 		campaigneditor/startingbonus.cpp
 		campaigneditor/campaignview.cpp
 )
+if(ANDROID)
+	set(editor_SRCS
+		${editor_SRCS}
+		androidfilepicker.cpp
+	)
+endif()
 if(ENABLE_TEMPLATE_EDITOR)
 	set(editor_SRCS
 		${editor_SRCS}
@@ -119,6 +125,12 @@ set(editor_HEADERS
 		campaigneditor/startingbonus.h
 		campaigneditor/campaignview.h
 )
+if(ANDROID)
+	set(editor_HEADERS
+		${editor_HEADERS}
+		androidfilepicker.h
+	)
+endif()
 if(ENABLE_TEMPLATE_EDITOR)
 	set(editor_HEADERS
 		${editor_HEADERS}
@@ -319,6 +331,9 @@ if(ENABLE_STATIC_LIBS OR NOT (ENABLE_EDITOR AND ENABLE_LAUNCHER))
 endif()
 
 target_link_libraries(vcmieditor vcmi vcmiqt Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Network)
+if(ANDROID)
+	target_link_libraries(vcmieditor Qt${QT_VERSION_MAJOR}::AndroidExtras)
+endif()
 if(ENABLE_TEMPLATE_EDITOR)
 	target_link_libraries(vcmieditor vcmi vcmiqt Qt${QT_VERSION_MAJOR}::Svg Qt${QT_VERSION_MAJOR}::Xml)
 	if(QT_VERSION_MAJOR EQUAL 6)

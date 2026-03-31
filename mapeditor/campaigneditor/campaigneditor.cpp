@@ -19,6 +19,10 @@
 #include "../BitmapHandler.h"
 #include "../helper.h"
 
+#ifdef VCMI_ANDROID
+#include "../androidfilepicker.h"
+#endif
+
 #include "../../lib/VCMIDirs.h"
 #include "../../lib/campaign/CampaignHandler.h"
 #include "../../lib/campaign/CampaignRegionsHandler.h"
@@ -252,9 +256,16 @@ void CampaignEditor::on_actionOpen_triggered()
 	if(!getAnswerAboutUnsavedChanges())
 		return;
 	
+#ifdef VCMI_ANDROID
+	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, tr("Open campaign"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		tr("All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)"),
+		AndroidFilePicker::Mode::InternalOrExternal);
+#else
 	auto filenameSelect = QFileDialog::getOpenFileName(this, tr("Open map"),
 		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
 		tr("All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)"));
+#endif
 	if(filenameSelect.isEmpty())
 		return;
 	
@@ -309,7 +320,15 @@ void CampaignEditor::on_actionSave_as_triggered()
 	if(!campaignState)
 		return;
 
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, tr("Save campaign"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		tr("VCMI campaigns (*.vcmp)"),
+		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+#else
 	auto filenameSelect = QFileDialog::getSaveFileName(this, tr("Save campaign"), "", tr("VCMI campaigns (*.vcmp)"));
+#endif
 
 	if(filenameSelect.isNull())
 		return;
@@ -322,6 +341,11 @@ void CampaignEditor::on_actionSave_as_triggered()
 	filename = filenameSelect;
 	saveCampaign();
 	setTitle();
+
+#ifdef VCMI_ANDROID
+	if(!contentUri.isEmpty())
+		AndroidFilePicker::writeFileToUri(filename, contentUri);
+#endif
 }
 
 void CampaignEditor::on_actionNew_triggered()

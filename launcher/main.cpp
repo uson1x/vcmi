@@ -76,6 +76,9 @@ int MAIN_EXPORT main(int argc, char * argv[])
 		launcher::prepare();
 		openMapEditor();
 		result = vcmilauncher.exec();
+		// Qt event loop has ended but the Android Activity stays alive,
+		// leaving a black screen. Terminate the editor process.
+		exit(0);
 		return result;
 	}
 #endif
