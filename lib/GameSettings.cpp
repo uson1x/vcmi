@@ -78,6 +78,8 @@ const std::vector<GameSettings::SettingOption> GameSettings::settingProperties =
 		{EGameSettings::DWELLINGS_ACCUMULATE_WHEN_NEUTRAL,                "dwellings", "accumulateWhenNeutral"                },
 		{EGameSettings::DWELLINGS_ACCUMULATE_WHEN_OWNED,                  "dwellings", "accumulateWhenOwned"                  },
 		{EGameSettings::DWELLINGS_MERGE_ON_RECRUIT,                       "dwellings", "mergeOnRecruit"                       },
+		{EGameSettings::GENERAL_DAYS_PER_WEEK,                            "general",   "daysPerWeek"                          },
+		{EGameSettings::GENERAL_WEEKS_PER_MONTH,                          "general",   "weeksPerMonth"                        },
 		{EGameSettings::HEROES_BACKPACK_CAP,                              "heroes",    "backpackSize"                         },
 		{EGameSettings::HEROES_BASE_SCOUNTING_RANGE,                      "heroes",    "baseScoutingRange"                    },
 		{EGameSettings::HEROES_MINIMAL_PRIMARY_SKILLS,                    "heroes",    "minimalPrimarySkills"                 },

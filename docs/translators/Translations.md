@@ -101,44 +101,6 @@ For usage of Weblate, please refer to [Weblate documentation](https://docs.webla
 
 If something is not clear - feel free to ask us on Discord or forum. Translation made via Weblate will be automatically integrated into VCMI for next release
 
-### Data not covered by Weblate
-
-Before you start, make sure that you have copy of VCMI source code. If you are not familiar with git, you can use Github Desktop to clone VCMI repository or use Github web interface
-
-### Translation of Linux AppStream metainfo
-
-The [AppStream](https://freedesktop.org/software/appstream/docs/chap-Metadata.html) [metainfo file](https://github.com/vcmi/vcmi/blob/develop/launcher/eu.vcmi.VCMI.metainfo.xml) is used for Linux software centers.
-
-It can be translated using a text editor or using [jdAppStreamEdit](https://flathub.org/apps/page.codeberg.JakobDev.jdAppStreamEdit):
-
-- Install jdAppStreamEdit
-- Open `<VCMI>/launcher/eu.vcmi.VCMI.metainfo.xml`
-- Translate and save the file
-  
-##### Linux Desktop file
-
-- Edit `<VCMI>/launcher/vcmilauncher.desktop` and `<VCMI>/launcher/vcmieditor.desktop`
-- Add `GenericName[xyz]` and `Comment[xyz]` with your language code and translation
-
-##### Android Launcher
-
-- Copy `<VCMI>/android/vcmi-app/src/main/res/values/strings.xml` to `<VCMI>/android/vcmi-app/src/main/res/values-xyz/strings.xml` (`xyz` is your language code)
-- Translate this file
-
-See also here: <https://developer.android.com/guide/topics/resources/localization>
-
-#### Submitting changes
-
-For Weblate, all changes made in Weblate web UI will be submitted to VCMI automatically.
-
-For strings not migrated to Weblate, once you have finished with translation you need to submit these changes to vcmi team using git or Github Desktop
-
-- Commit all your changed files
-- Push changes to your forked repository
-- Create pull request in VCMI repository with your changes
-
-If everything is OK, your changes will be accepted and will be part of next release.
-
 ## Translating mods
 
 ### Exporting translation

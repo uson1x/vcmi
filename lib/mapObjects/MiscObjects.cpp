@@ -628,6 +628,7 @@ bool CGWhirlpool::isProtected(const CGHeroInstance * h)
 
 const CArtifactInstance * CGArtifact::getArtifactInstance() const
 {
+	assert(storedArtifact.hasValue());
 	if(!storedArtifact.hasValue())
 		return nullptr;
 
