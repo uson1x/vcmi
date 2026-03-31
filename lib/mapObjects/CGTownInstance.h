@@ -143,6 +143,7 @@ public:
 	//int3 getSightCenter() const override; //"center" tile from which the sight distance is calculated
 	int getSightRadius() const override; //returns sight distance
 	BoatId getBoatType() const override; //0 - evil (if a ship can be evil...?), 1 - good, 2 - neutral
+	EPathfindingLayer getBoatLayer() const override;
 	void getOutOffsets(std::vector<int3> &offsets) const override; //offsets to obj pos when we boat can be placed. Parameter will be cleared
 	EGeneratorState shipyardStatus() const override;
 	const IObjectInterface * getObject() const override;

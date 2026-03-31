@@ -556,6 +556,11 @@ bool CGTownInstance::passableFor(PlayerColor color) const
 	return cb->getPlayerRelations(tempOwner, color) != PlayerRelations::ENEMIES;
 }
 
+EPathfindingLayer CGTownInstance::getBoatLayer() const
+{
+	return EPathfindingLayer::SAIL;
+}
+
 void CGTownInstance::getOutOffsets( std::vector<int3> &offsets ) const
 {
 	offsets = {int3(-1,2,0), int3(+1,2,0)};
