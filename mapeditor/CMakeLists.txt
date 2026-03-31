@@ -244,7 +244,7 @@ if(ENABLE_TRANSLATIONS)
 		file(WRITE "${translationsResource}"
 "<!DOCTYPE RCC>
 <RCC version=\"1.0\">
-<qresource prefix=\"/\">
+<qresource prefix=\"/editor\">
 ${rccQmFiles}
 </qresource>
 </RCC>"
@@ -285,7 +285,7 @@ if(ENABLE_TRANSLATIONS)
 	if(TARGET Qt6::Core)
 		qt_add_translations(vcmieditor
 			TS_FILES ${editor_TS}
-			RESOURCE_PREFIX "/${translationsDir}"
+			RESOURCE_PREFIX "/editor/${translationsDir}"
 			INCLUDE_DIRECTORIES
 				${CMAKE_CURRENT_BINARY_DIR})
 	endif()

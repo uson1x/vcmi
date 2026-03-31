@@ -226,7 +226,7 @@ void MainWindow::loadTranslation()
 		return;
 
 	const std::string translationFile = settings["general"]["language"].String()+ ".qm";
-	QString translationFileResourcePath = QString{":/translation/%1"}.arg(translationFile.c_str());
+	QString translationFileResourcePath = QString{":/editor/translation/%1"}.arg(translationFile.c_str());
 
 	logGlobal->info("Loading translation %s", translationFile);
 
