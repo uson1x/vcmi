@@ -3,7 +3,6 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QStandardItemModel>
-#include <QTranslator>
 #include <QTableWidgetItem>
 #include <QComboBox>
 #include "mapcontroller.h"
@@ -41,7 +40,6 @@ class MainWindow : public QMainWindow
 	const QString recentlyOpenedFilesSetting = "MainWindow/RecentlyOpenedFiles";
 
 #ifdef ENABLE_QT_TRANSLATIONS
-	QTranslator translator;
 #endif
 
 #ifndef VCMI_MOBILE

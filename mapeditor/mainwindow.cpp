@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QMessageBox>
+#include <QTranslator>
 #include <QFileInfo>
 #include <QDialog>
 #include <QListWidget>
@@ -67,34 +68,27 @@
 #endif
 
 #ifdef VCMI_ANDROID
-// Qt 5 bug on Android with QT_SCALE_FACTOR (S < 1):
+// Qt 5 bug on Android with QT_SCALE_FACTOR:
 // In androidjniinput.cpp, mouse/tablet handlers compute:
 //   localPos = globalPos(device_pixels) - tlw->position()(logical_pixels)
 // mixing coordinate spaces. After QHighDpiScaling the widget receives
 // a localPos that is off by windowPos*(1-1/S) for any window not at (0,0).
 // Touch events use normalized coordinates and are NOT affected.
 //
-// Fix: recompute localPos from the (correct) screen/global position:
-//   correctedLocal = screenPos - window->position()
-// Both are in logical coordinates after QHighDpiScaling, so this is exact.
+// Fix: recompute localPos from the already-correct global/screen position.
+// After QHighDpi scaling, screenPos() (mouse) and globalPosF() (tablet)
+// are in logical coordinates.  window->position() is also logical.
+// So: correctedLocal = globalLogical - window->position().
 // We modify the event in-place (protected members l,w / mPos) to preserve
 // the spontaneous flag and Qt's internal mouse-grab state.
+// The fix is always active (harmless no-op when scale == 1.0).
 class AndroidInputOffsetFix : public QObject
 {
-	bool active = false;
-
 public:
-	AndroidInputOffsetFix(QObject * parent) : QObject(parent)
-	{
-		qreal s = qgetenv("QT_SCALE_FACTOR").toDouble();
-		active = (s > 0 && !qFuzzyCompare(s, 1.0));
-	}
+	AndroidInputOffsetFix(QObject * parent) : QObject(parent) {}
 
 	bool eventFilter(QObject * obj, QEvent * event) override
 	{
-		if(!active)
-			return false;
-
 		auto * window = qobject_cast<QWindow *>(obj);
 		if(!window)
 			return false;
@@ -107,10 +101,8 @@ public:
 			case QEvent::MouseButtonDblClick:
 			{
 				auto * me = static_cast<QMouseEvent *>(event);
-				// Skip mouse events synthesized from touch — already correct.
-				if(me->source() != Qt::MouseEventNotSynthesized)
-					return false;
-				// Recompute correct local position from undamaged screenPos.
+				// screenPos() (= global logical pos) is always correct after
+				// QHighDpi scaling.  Recompute the local position from it.
 				QPointF correct = me->screenPos() - QPointF(window->position());
 				struct Accessor : QMouseEvent
 				{
@@ -124,12 +116,16 @@ public:
 			case QEvent::TabletMove:
 			{
 				auto * te = static_cast<QTabletEvent *>(event);
-				QPointF correct = te->globalPosF() - QPointF(window->position());
+				// globalPosF() is already in correct logical coordinates after
+				// QHighDpi::fromNativePixels in handleTabletEvent().  Only the
+				// local position (mPos) was computed incorrectly by the JNI
+				// layer (native_px - logical_px mismatch).  Recompute it.
+				QPointF correctedLocal = te->globalPosF() - QPointF(window->position());
 				struct Accessor : QTabletEvent
 				{
-					void set(const QPointF & p) { mPos = p; }
+					void set(const QPointF & lp) { mPos = lp; }
 				};
-				static_cast<Accessor *>(te)->set(correct);
+				static_cast<Accessor *>(te)->set(correctedLocal);
 				return false;
 			}
 			default:
@@ -223,6 +219,12 @@ void MainWindow::parseCommandLine(ExtractionOptions & extractionOptions)
 void MainWindow::loadTranslation()
 {
 #ifdef ENABLE_QT_TRANSLATIONS
+	// Use a static translator parented to qApp so it outlives MainWindow and
+	// stays registered for the campaign/template editors.
+	static bool translationInstalled = false;
+	if(translationInstalled)
+		return;
+
 	const std::string translationFile = settings["general"]["language"].String()+ ".qm";
 	QString translationFileResourcePath = QString{":/translation/%1"}.arg(translationFile.c_str());
 
@@ -234,22 +236,29 @@ void MainWindow::loadTranslation()
 		return;
 	}
 
-	if (!translator.load(translationFileResourcePath))
-	{
-		logGlobal->error("Failed to load translation file %s", translationFileResourcePath.toStdString());
-		return;
-	}
-
 	if(translationFile == "english.qm")
 	{
-		// translator doesn't need to be installed for English
+		// No translator needed for English
+		translationInstalled = true;
 		return;
 	}
 
-	if (!qApp->installTranslator(&translator))
+	auto * translator = new QTranslator(qApp);
+	if(!translator->load(translationFileResourcePath))
+	{
+		logGlobal->error("Failed to load translation file %s", translationFileResourcePath.toStdString());
+		delete translator;
+		return;
+	}
+
+	if(!qApp->installTranslator(translator))
 	{
 		logGlobal->error("Failed to install translator for translation file %s", translationFileResourcePath.toStdString());
+		delete translator;
+		return;
 	}
+
+	translationInstalled = true;
 #endif
 }
 
@@ -477,11 +486,11 @@ MainWindow::MainWindow(QWidget* parent) :
 	
 	show();
 
-#ifdef VCMI_MOBILE
+#ifdef VCMI_ANDROID
 	QTimer::singleShot(0, this, [this]() {
 		QMessageBox::information(this,
-			tr("Map Editor"),
-			tr("For the best experience, we recommend using the map editor on a tablet or desktop with a mouse or pen."));
+			tr("Mapeditor"),
+			tr("Mapeditor on Android is experimental.\n\nFor the best experience, we recommend using the map editor on a tablet (or with a mouse/pen)."));
 	});
 #endif
 
@@ -1608,11 +1617,30 @@ void MainWindow::on_actionPaste_triggered()
 void MainWindow::on_actionExport_triggered()
 {
 #ifdef VCMI_ANDROID
+	// On Android, ask for image format before opening the SAF file picker so
+	// we can pass the correct MIME type and file extension.
+	QMessageBox fmtBox(this);
+	fmtBox.setWindowTitle(tr("Image format"));
+	fmtBox.setText(tr("Select image format:"));
+	auto * btnPng  = fmtBox.addButton("PNG",  QMessageBox::AcceptRole);
+	auto * btnJpeg = fmtBox.addButton("JPEG", QMessageBox::AcceptRole);
+	auto * btnBmp  = fmtBox.addButton("BMP",  QMessageBox::AcceptRole);
+	fmtBox.addButton(QMessageBox::Cancel);
+	fmtBox.exec();
+
+	QString imgFilter;
+	QByteArray imgFormat;
+	if     (fmtBox.clickedButton() == btnPng)  { imgFilter = "PNG (*.png)";   imgFormat = "PNG";  }
+	else if(fmtBox.clickedButton() == btnJpeg) { imgFilter = "JPEG (*.jpeg)"; imgFormat = "JPEG"; }
+	else if(fmtBox.clickedButton() == btnBmp)  { imgFilter = "BMP (*.bmp)";   imgFormat = "BMP";  }
+	else return;
+
 	QString contentUri;
 	QString fileName = AndroidFilePicker::getSaveFileName(this, tr("Save to image"), lastSavingDir,
-		"BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)",
-		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+		imgFilter,
+		AndroidFilePicker::Mode::ExternalOnly, contentUri);
 #else
+	QString imgFormat;
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir, "BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)");
 #endif
 	if(!fileName.isNull())
@@ -1630,7 +1658,7 @@ void MainWindow::on_actionExport_triggered()
 		QImage image(sceneRect.size().toSize(), QImage::Format_RGB888);
 		QPainter painter(&image);
 		sc->render(&painter, QRectF(), sceneRect);
-		image.save(fileName);
+		image.save(fileName, imgFormat.isEmpty() ? nullptr : imgFormat.constData());
 		
 		// Restore viewport to visible area
 		ui->mapView->setViewports();
@@ -1656,10 +1684,21 @@ void MainWindow::on_actionh3m_converter_triggered()
 		tr("HoMM3 maps(*.h3m)"));
 	if(mapFiles.empty())
 		return;
-	
+
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	QString saveDirectory = AndroidFilePicker::getSaveFileName(this, tr("Choose directory to save converted maps"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()) + "/Maps",
+		tr("Directory"),
+		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+	if(saveDirectory.isEmpty())
+		return;
+	saveDirectory = QFileInfo(saveDirectory).absolutePath();
+#else
 	auto saveDirectory = QFileDialog::getExistingDirectory(this, tr("Choose directory to save converted maps"), QCoreApplication::applicationDirPath());
 	if(saveDirectory.isEmpty())
 		return;
+#endif
 	
 	try
 	{
@@ -1669,7 +1708,8 @@ void MainWindow::on_actionh3m_converter_triggered()
 			auto map = Helper::openMapInternal(m, controller.getCallback());
 			controller.getCallback()->setMap(map.get());
 			controller.repairMap(map.get());
-			mapService.saveMap(map, (saveDirectory + '/' + QFileInfo(m).completeBaseName() + ".vmap").toStdString());
+			QString outVmap = saveDirectory + '/' + QFileInfo(m).completeBaseName() + ".vmap";
+			mapService.saveMap(map, outVmap.toStdString());
 		}
 		QMessageBox::information(this, tr("Operation completed"), tr("Successfully converted %1 maps").arg(mapFiles.size()));
 	}
@@ -1681,24 +1721,43 @@ void MainWindow::on_actionh3m_converter_triggered()
 
 void MainWindow::on_actionh3c_converter_triggered()
 {
+#ifdef VCMI_ANDROID
+	auto campaignFile = AndroidFilePicker::getOpenFileName(this, tr("Select campaign to convert"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		tr("HoMM3 campaigns (*.h3c)"),
+		AndroidFilePicker::Mode::InternalOrExternal);
+#else
 	auto campaignFile = QFileDialog::getOpenFileName(this, tr("Select campaign to convert"),
 		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
 		tr("HoMM3 campaigns (*.h3c)"));
+#endif
 	if(campaignFile.isEmpty())
 		return;
-	
+
+#ifdef VCMI_ANDROID
+	QString contentUri;
+	auto campaignFileDest = AndroidFilePicker::getSaveFileName(this, tr("Select destination file"),
+		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
+		tr("VCMI campaigns (*.vcmp)"),
+		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+#else
 	auto campaignFileDest = QFileDialog::getSaveFileName(this, tr("Select destination file"),
 		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
 		tr("VCMI campaigns (*.vcmp)"));
+#endif
 	if(campaignFileDest.isEmpty())
 		return;
-	
+
 	QFileInfo fileInfo(campaignFileDest);
 	if(fileInfo.suffix().toLower() != "vcmp")
 		campaignFileDest += ".vcmp";
 	auto campaign = Helper::openCampaignInternal(campaignFile);
-
 	Helper::saveCampaign(campaign, campaignFileDest);
+
+#ifdef VCMI_ANDROID
+	if(!contentUri.isEmpty())
+		AndroidFilePicker::writeFileToUri(campaignFileDest, contentUri);
+#endif
 }
 
 void MainWindow::on_actionLock_triggered()

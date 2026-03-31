@@ -24,6 +24,8 @@
 
 #ifdef VCMI_ANDROID
 #include "../androidfilepicker.h"
+#include <QAndroidJniObject>
+#include <QtAndroid>
 #endif
 
 #include "../../lib/VCMIDirs.h"
@@ -752,6 +754,7 @@ void TemplateEditor::showTemplateEditor(QWidget *parent)
 	dialog->move(parent->geometry().center() - dialog->rect().center());
 
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	QObject::connect(dialog, &QObject::destroyed, parent, [parent]{ parent->show(); });
 }
 
 void TemplateEditor::on_actionOpen_triggered()
@@ -908,9 +911,24 @@ void TemplateEditor::on_comboBoxTemplateSelection_activated(int index)
 void TemplateEditor::closeEvent(QCloseEvent *event)
 {
 	if(getAnswerAboutUnsavedChanges())
+	{
 		QWidget::closeEvent(event);
+#ifdef VCMI_ANDROID
+		QApplication::quit();
+		QAndroidJniObject activity = QtAndroid::androidActivity();
+		if(activity.isValid())
+			activity.callMethod<void>("finishAffinity");
+#endif
+	}
 	else
 		event->ignore();
+}
+
+void TemplateEditor::changeEvent(QEvent *event)
+{
+	QWidget::changeEvent(event);
+	if(event->type() == QEvent::LanguageChange)
+		ui->retranslateUi(this);
 }
 
 void TemplateEditor::on_pushButtonAddSubTemplate_clicked()

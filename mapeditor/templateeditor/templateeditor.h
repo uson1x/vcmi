@@ -119,6 +119,7 @@ private:
 	void updateZoneCards(TRmgTemplateZoneId id = -1);
 
 	void closeEvent(QCloseEvent *event) override;
+	void changeEvent(QEvent *event) override;
 
 	Ui::TemplateEditor *ui;
 

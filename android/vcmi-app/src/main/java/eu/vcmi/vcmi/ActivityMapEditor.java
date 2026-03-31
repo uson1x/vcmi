@@ -174,18 +174,29 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 	{
 		try
 		{
+			File localFile = new File(localPath);
+			if (!localFile.exists() || localFile.length() == 0)
+			{
+				System.err.println("writeFileToUri: local file missing or empty: " + localPath);
+				return false;
+			}
 			Uri uri = Uri.parse(contentUri);
-			try (InputStream in = new FileInputStream(localPath);
-				 OutputStream out = getContentResolver().openOutputStream(uri, "wt"))
+			OutputStream out = getContentResolver().openOutputStream(uri);
+			if (out == null)
+			{
+				System.err.println("writeFileToUri: openOutputStream returned null for: " + contentUri);
+				return false;
+			}
+			try (InputStream in = new FileInputStream(localFile); OutputStream o = out)
 			{
 				byte[] buf = new byte[8192];
 				int len;
 				while ((len = in.read(buf)) != -1)
-					out.write(buf, 0, len);
+					o.write(buf, 0, len);
 			}
 			return true;
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			return false;

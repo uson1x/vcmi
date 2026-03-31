@@ -21,6 +21,8 @@
 
 #ifdef VCMI_ANDROID
 #include "../androidfilepicker.h"
+#include <QAndroidJniObject>
+#include <QtAndroid>
 #endif
 
 #include "../../lib/VCMIDirs.h"
@@ -204,6 +206,7 @@ void CampaignEditor::showCampaignEditor(QWidget *parent, EditorCallback * cb)
 	dialog->move(parent->geometry().center() - dialog->rect().center());
 
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	QObject::connect(dialog, &QObject::destroyed, parent, [parent]{ parent->show(); });
 }
 
 void CampaignEditor::showCampaignEditor(QWidget *parent, const QString &campaignFile, EditorCallback * cb)
@@ -213,6 +216,7 @@ void CampaignEditor::showCampaignEditor(QWidget *parent, const QString &campaign
 	dialog->move(parent->geometry().center() - dialog->rect().center());
 
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
+	QObject::connect(dialog, &QObject::destroyed, parent, [parent]{ parent->show(); });
 
 	try
 	{
@@ -403,9 +407,24 @@ void CampaignEditor::on_actionScenarioProperties_triggered()
 void CampaignEditor::closeEvent(QCloseEvent *event)
 {
 	if(getAnswerAboutUnsavedChanges())
+	{
 		QWidget::closeEvent(event);
+#ifdef VCMI_ANDROID
+		QApplication::quit();
+		QAndroidJniObject activity = QtAndroid::androidActivity();
+		if(activity.isValid())
+			activity.callMethod<void>("finishAffinity");
+#endif
+	}
 	else
 		event->ignore();
+}
+
+void CampaignEditor::changeEvent(QEvent *event)
+{
+	QWidget::changeEvent(event);
+	if(event->type() == QEvent::LanguageChange)
+		ui->retranslateUi(this);
 }
 
 void CampaignEditor::dragEnterEvent(QDragEnterEvent *event)
