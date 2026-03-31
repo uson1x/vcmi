@@ -44,7 +44,6 @@ JsonNode LobbyGameRoom::toJsonShort() const
 	};
 
 	JsonNode jsonEntry;
-	jsonEntry["gameRoomID"].String() = roomID;
 	jsonEntry["description"].String() = description;
 	jsonEntry["version"].String() = version;
 	jsonEntry["status"].String() = LOBBY_ROOM_STATE_NAMES[vstd::to_underlying(roomState)];
@@ -59,6 +58,7 @@ JsonNode LobbyGameRoom::toJsonShort() const
 JsonNode LobbyGameRoom::toJsonFull() const
 {
 	JsonNode jsonEntry = toJsonShort();
+	jsonEntry["gameRoomID"].String() = roomID;
 	jsonEntry["hostAccountID"].String() = hostAccountID;
 	jsonEntry["hostAccountDisplayName"].String() = hostAccountDisplayName;
 

@@ -135,6 +135,7 @@ std::string LobbyHttpApi::serializeRooms(const std::vector<LobbyGameRoom> & room
 			break;
 
 		JsonNode roomNode = room.toJsonShort();
+		roomNode["createdAt"].String() = formatTimestamp(std::chrono::system_clock::now() - room.age);
 		result["rooms"].Vector().push_back(roomNode);
 		++count;
 	}
