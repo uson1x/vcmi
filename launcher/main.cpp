@@ -26,8 +26,10 @@
 int argcForClient;
 char ** argvForClient;
 #elif defined(VCMI_ANDROID)
+# include <QAndroidJniEnvironment>
 # include <QAndroidJniObject>
 # include <QtAndroid>
+# include "../lib/CAndroidVMHelper.h"
 #else
 # include <QMessageBox>
 # include <QProcess>
@@ -49,9 +51,13 @@ int MAIN_EXPORT main(int argc, char * argv[])
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-#ifdef VCMI_MOBILE
-	// Scale the entire Qt UI to 75% to make it usable on high-DPI tablet screens
-	qputenv("QT_SCALE_FACTOR", "0.75");
+#ifdef VCMI_ANDROID
+	// Initialize JNI classloader before QApplication - Qt's platform plugin
+	// may trigger VCMIDirs::get() which needs CAndroidVMHelper
+	{
+		QAndroidJniEnvironment jniEnv;
+		CAndroidVMHelper::initClassloader(static_cast<JNIEnv *>(jniEnv));
+	}
 #endif
 	QApplication vcmilauncher(argc, argv);
 
@@ -62,6 +68,17 @@ int MAIN_EXPORT main(int argc, char * argv[])
 		if(!systemProxies.isEmpty())
 			QNetworkProxy::setApplicationProxy(systemProxies[0]);
 	}
+
+#ifdef VCMI_ANDROID
+	if (qgetenv("VCMI_MAP_EDITOR") == "1")
+	{
+		extern void openMapEditor();
+		launcher::prepare();
+		openMapEditor();
+		result = vcmilauncher.exec();
+		return result;
+	}
+#endif
 
 	launcher::prepare();
 
@@ -116,8 +133,7 @@ void startEditor(const QStringList & args)
 {
 #ifdef ENABLE_EDITOR
 # ifdef VCMI_ANDROID
-	extern void openMapEditor();
-	openMapEditor();
+	QtAndroid::androidActivity().callMethod<void>("openMapEditor");
 # else
 	startExecutable(pathToQString(VCMIDirs::get().mapEditorPath()), args);
 # endif

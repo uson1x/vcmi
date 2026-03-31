@@ -92,6 +92,11 @@ public class ActivityLauncher extends org.qtproject.qt5.android.bindings.QtActiv
         startActivity(new Intent(ActivityLauncher.this, VcmiSDLActivity.class));
     }
 
+    public void openMapEditor()
+    {
+        startActivity(new Intent(ActivityLauncher.this, ActivityMapEditor.class));
+    }
+
     public void shareFile(String filePath)
     {
         File src = new File(filePath);
