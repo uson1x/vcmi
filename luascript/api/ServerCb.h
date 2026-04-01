@@ -31,6 +31,10 @@ public:
 	template<typename NetPack>
 	static int apply(lua_State * L);
 	static int commitPackage(lua_State * L);
+
+	static int createUnit(lua_State * L);
+	static int updateUnit(lua_State * L);
+	static int removeUnit(lua_State * L);
 };
 
 }

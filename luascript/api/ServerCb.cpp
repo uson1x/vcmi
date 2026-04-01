@@ -27,26 +27,24 @@ VCMI_REGISTER_CORE_SCRIPT_API(ServerCbProxy, "game.Server");
 
 const std::vector<ServerCbProxy::CustomRegType> ServerCbProxy::REGISTER_CUSTOM =
 {
-	{
-		"addToBattleLog",
-		&ServerCbProxy::apply<BattleLogMessage>,
-		false
-	},
-	{
-		"moveUnit",
-		&ServerCbProxy::apply<BattleStackMoved>,
-		false
-	},
-	{
-		"changeUnits",
-		&ServerCbProxy::apply<BattleUnitsChanged>,
-		false
-	},
-	{
-		"commitPackage",
-		&ServerCbProxy::commitPackage,
-		false
-	}
+//	{
+//		"addToBattleLog",
+//		&ServerCbProxy::apply<BattleLogMessage>,
+//		false
+//	},
+//	{
+//		"moveUnit",
+//		&ServerCbProxy::apply<BattleStackMoved>,
+//		false
+//	},
+		{ "createUnit", &ServerCbProxy::createUnit, false },
+		{ "updateUnit", &ServerCbProxy::updateUnit, false },
+		{ "removeUnit", &ServerCbProxy::removeUnit, false },
+//	{
+//		"commitPackage",
+//		&ServerCbProxy::commitPackage,
+//		false
+//	}
 };
 
 int ServerCbProxy::commitPackage(lua_State * L)
@@ -100,6 +98,61 @@ int ServerCbProxy::apply(lua_State * L)
 
 	return S.retVoid();
 }
+
+int ServerCbProxy::createUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	uc.operation = UnitChanges::EOperation::UPDATE;
+
+	if (!S.tryGetAll(1, object, buc.battleID, uc.data))
+		return S.retVoid();
+
+	buc.changedStacks.push_back(uc);
+
+	object->apply(buc);
+	return S.retVoid();
+}
+
+int ServerCbProxy::updateUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	uc.operation = UnitChanges::EOperation::UPDATE;
+
+	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data, uc.healthDelta))
+		return S.retVoid();
+
+	buc.changedStacks.push_back(uc);
+
+	object->apply(buc);
+	return S.retVoid();
+}
+
+int ServerCbProxy::removeUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	uc.operation = UnitChanges::EOperation::REMOVE;
+
+	if (!S.tryGetAll(1, object, buc.battleID, uc.id))
+		return S.retVoid();
+
+	buc.changedStacks.push_back(uc);
+
+	object->apply(buc);
+	return S.retVoid();
+}
+
 
 }
 }

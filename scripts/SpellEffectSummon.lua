@@ -1,4 +1,3 @@
-local BattleUnitsChanged = require("netpacks.BattleUnitsChanged")
 local MetaString = require("texts.MetaString")
 
 -- expected globals:
@@ -52,21 +51,19 @@ applicable = function(parameters, mechanics, problem)
 	-- check if there are summoned creatures of other type
 	if parameters.exclusive then
 		local battle = mechanics:getBattle();
-		local otherSummoned = battle:getAnyUnitIf(function(unit)
+		local elemental = battle:getAnyUnitIf(function(unit)
 			return (unit:getOwner() == mechanics:getCasterColor())
 				and (unit:isSummoned())
 				and (not unit:isClone())
 				and (unit:getCreature() ~= creature)
 		end)
 
-		if otherSummoned ~= nil then
-			local elemental = otherSummoned[1]
-
+		if elemental ~= nil then
 			local text = MetaString.new()
 			text:appendTextID("core.genrltxt.538")
 
 --			local hero = mechanics:caster():getHeroCaster()
---			if caster then
+--			if caster ~= nil then
 --				text:replaceRawString(caster:getNameTranslated())
 --				text:replaceNamePlural(elemental:creatureId())
 --
@@ -100,18 +97,16 @@ apply = function(parameters, mechanics, server, target)
 				(parameters.permanent and EHealPower.PERMANENT or EHealPower.ONE_BATTLE)
 			)
 			
-			server:battleUnitChanged(
+			server:updateUnit(
 				mechanics:getBattleID(),
 				summoned:unitId(),
-				UnitChanges.EOperation.UPDATE,
-				state:save()
+				state:save(),
+				healthValue
 			)
 			
 		else
-			server:battleUnitChanged(
+			server:createUnit(
 				mechanics:getBattleID(),
-				mechanics:getBattle():getNextUnitId(),
-				UnitChanges.EOperation.ADD,
 				{
 					count = summonedCreatureAmount(parameters, mechanics),
 					type = creature,
@@ -137,8 +132,6 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 			and (unit:getCreature() == creature)
 			and (unit:isAlive())
 	end)
-
-	local effectTarget = {}
 
 	if sameSummoned == nil or not parameters.summonSameUnit then
 		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:casterSide())

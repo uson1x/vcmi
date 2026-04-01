@@ -263,6 +263,16 @@ public:
 		return tryGetUData<std::shared_ptr<T>>(position, value);
 	}
 
+	template<typename... Args>
+	bool tryGetAll(int position, Args &...args) {
+		bool failed = false;
+		int i = 0;
+
+		((tryGet(position + i, args) ? ++i : (failed = true, ++i, false)), ...);
+
+		return failed;
+	}
+
 	template<typename U>
 	bool tryGetUData(int position, U & value)
 	{
