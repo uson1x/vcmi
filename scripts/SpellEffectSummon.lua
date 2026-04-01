@@ -20,7 +20,7 @@ end
 local function summonedCreatureHealth(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
 
-	local creature = SERVICES.creatures.getByName(parameters.creature)
+	local creature = SERVICES:creatures():getByName(parameters.creature)
 	if parameters.summonByHealth then
 		return valueWithBonus
 	else
@@ -31,7 +31,7 @@ end
 local function summonedCreatureAmount(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
 
-	local creature = SERVICES.creatures.getByName(parameters.creature)
+	local creature = SERVICES:creatures():getByName(parameters.creature)
 	if parameters.summonByHealth then
 		return math.floor(valueWithBonus / creature:getMaxHealth())
 	else
@@ -40,7 +40,7 @@ local function summonedCreatureAmount(parameters, mechanics)
 end
 
 applicable = function(parameters, mechanics, problem)
-	local creature = SERVICES.creatures.getByName(parameters.creature)
+	local creature = SERVICES:creatures():getByName(parameters.creature)
 	if creature == "nil" then
 		return false -- mechanics:adaptGenericProblem(problem)
 	end
@@ -56,7 +56,7 @@ applicable = function(parameters, mechanics, problem)
 			return (unit:getOwner() == mechanics:getCasterColor())
 				and (unit:isSummoned())
 				and (not unit:isClone())
-				and (unit:getCreature() ~= parameters.creature)
+				and (unit:getCreature() ~= creature)
 		end)
 
 		if otherSummoned ~= nil then
@@ -65,19 +65,19 @@ applicable = function(parameters, mechanics, problem)
 			local text = MetaString.new()
 			text:appendTextID("core.genrltxt.538")
 
-			local hero = mechanics:caster():getHeroCaster()
-			if caster then
-				text:replaceRawString(caster:getNameTranslated())
-				text:replaceNamePlural(elemental:creatureId())
+--			local hero = mechanics:caster():getHeroCaster()
+--			if caster then
+--				text:replaceRawString(caster:getNameTranslated())
+--				text:replaceNamePlural(elemental:creatureId())
+--
+--				if caster.gender == EHeroGender.FEMALE then
+--					text:replaceTextID("core.genrltxt.540")
+--				else
+--					text:replaceTextID("core.genrltxt.539")
+--				end
+--			end
 
-				if caster.gender == EHeroGender.FEMALE then
-					text:replaceTextID("core.genrltxt.540")
-				else
-					text:replaceTextID("core.genrltxt.539")
-				end
-			end
-
-			problem:add(text, Problem.NORMAL)
+--			problem:add(text, Problem.NORMAL)
 			return false
 		end
 	end
@@ -86,7 +86,7 @@ applicable = function(parameters, mechanics, problem)
 end
 
 apply = function(parameters, mechanics, server, target)
-	local creature = SERVICES.creatures.getByName(parameters.creature)
+	local creature = SERVICES:creatures():getByName(parameters.creature)
 
 	for _, dest in ipairs(target) do
 		if dest.unitValue then
@@ -114,7 +114,7 @@ apply = function(parameters, mechanics, server, target)
 				UnitChanges.EOperation.ADD,
 				{
 					count = summonedCreatureAmount(parameters, mechanics),
-					type = parameters.creature,
+					type = creature,
 					side = mechanics:casterSide(),
 					position = dest.hexValue,
 					summoned = not parameters.permanent
@@ -129,19 +129,19 @@ apply = function(parameters, mechanics, server, target)
 end
 
 transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
-	local creature = SERVICES.creatures.getByName(parameters.creature)
+	local creature = SERVICES:creatures():getByName(parameters.creature)
 	local sameSummoned = mechanics:getBattle():getAnyUnitIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())
 			and (not unit:isClone())
-			and (unit:getCreature() == parameters.creature)
+			and (unit:getCreature() == creature)
 			and (unit:isAlive())
 	end)
 
 	local effectTarget = {}
 
 	if sameSummoned == nil or not parameters.summonSameUnit then
-		local hex = mechanics:getBattle():getAvailableHex(parameters.creature, mechanics:casterSide())
+		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:casterSide())
 		if not hex:isValid() then
 			return {} -- no free space. FIXME: should be in isApplicable
 		else

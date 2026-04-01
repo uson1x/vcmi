@@ -25,7 +25,7 @@ namespace api
 namespace battle
 {
 
-VCMI_REGISTER_SCRIPT_API(UnitProxy, "battle.Unit")
+VCMI_REGISTER_CORE_SCRIPT_API(UnitProxy, "battle.Unit")
 
 const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 {

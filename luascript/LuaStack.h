@@ -111,6 +111,11 @@ public:
 		*ptr = value;
 
 		luaL_getmetatable(L, KEY);
+		if(lua_isnil(L, -1))
+		{
+			assert(0);
+			throw std::runtime_error(std::string("Unregistered type pushed on Lua stack: ") + KEY);
+		}
 		lua_setmetatable(L, -2);
 	}
 
@@ -137,6 +142,8 @@ public:
 		new(raw) UData(value);
 
 		luaL_getmetatable(L, KEY);
+		if(lua_isnil(L, -1))
+			throw std::runtime_error(std::string("Unregistered type pushed on Lua stack: ") + KEY);
 		lua_setmetatable(L, -2);
 	}
 
@@ -163,6 +170,8 @@ public:
 		new(raw) UData(std::move(value));
 
 		luaL_getmetatable(L, KEY);
+		if(lua_isnil(L, -1))
+			throw std::runtime_error(std::string("Unregistered type pushed on Lua stack: ") + KEY);
 		lua_setmetatable(L, -2);
 	}
 
@@ -289,7 +298,11 @@ public:
 		void * raw = lua_touserdata(L, position);
 
 		if(!raw)
+		{
+			int t = lua_type(L, position);
+			logGlobal->error("index=%d type=%s top=%d\n", position, lua_typename(L,t), lua_gettop(L));
 			return false;
+		}
 
 		if(lua_getmetatable(L, position) == 0)
 			return false;
