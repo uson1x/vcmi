@@ -1671,7 +1671,13 @@ void EditorMainWindow::on_actionExport_triggered()
 		QImage image(sceneRect.size().toSize(), QImage::Format_RGB888);
 		QPainter painter(&image);
 		sc->render(&painter, QRectF(), sceneRect);
-		image.save(fileName, imgFormat.isEmpty() ? nullptr : imgFormat.toLatin1().constData());
+		QByteArray imgFormatBytes = imgFormat.isEmpty() ? QByteArray{} :
+#ifdef VCMI_ANDROID
+			imgFormat;
+#else
+			imgFormat.toLatin1();
+#endif
+		image.save(fileName, imgFormatBytes.isEmpty() ? nullptr : imgFormatBytes.constData());
 		
 		// Restore viewport to visible area
 		ui->mapView->setViewports();
