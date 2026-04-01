@@ -19,7 +19,7 @@ int main(int argc, char * argv[])
 #endif
 
 	QApplication vcmieditor(argc, argv);
-	MainWindow mainWindow;
+	EditorMainWindow mainWindow;
 	return vcmieditor.exec();
 }
 #endif

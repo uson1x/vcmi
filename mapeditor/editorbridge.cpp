@@ -10,9 +10,23 @@
 #include "StdInc.h"
 #include "mainwindow.h"
 
+#ifdef ENABLE_SINGLE_APP_BUILD
+// Q_INIT_RESOURCE must be called outside any namespace.
+// The linker may strip static initializers from OBJECT libraries,
+// so we force resource registration here (global namespace).
+static void initEditorResources()
+{
+	Q_INIT_RESOURCE(editor_resources);
+	Q_INIT_RESOURCE(editor_translations);
+}
+#endif
+
 void openMapEditor()
 {
-	auto * editorWindow = new MainWindow();
+#ifdef ENABLE_SINGLE_APP_BUILD
+	initEditorResources();
+#endif
+	auto * editorWindow = new EditorMainWindow();
 	editorWindow->setAttribute(Qt::WA_DeleteOnClose);
 	editorWindow->show();
 }

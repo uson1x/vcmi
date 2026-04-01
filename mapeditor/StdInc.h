@@ -29,7 +29,7 @@
 VCMI_LIB_USING_NAMESPACE
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS { class MainWindow; }
+namespace MapEditorNS { class EditorMainWindow; }
 using namespace MapEditorNS;
 #endif
 

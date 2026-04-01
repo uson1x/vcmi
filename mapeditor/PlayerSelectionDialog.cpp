@@ -19,7 +19,7 @@
 #include <QLabel>
 
 
-PlayerSelectionDialog::PlayerSelectionDialog(MainWindow * mainWindow)
+PlayerSelectionDialog::PlayerSelectionDialog(EditorMainWindow * mainWindow)
 	: QDialog(mainWindow), selectedPlayer(PlayerColor::NEUTRAL)
 {
 	setupDialogComponents();

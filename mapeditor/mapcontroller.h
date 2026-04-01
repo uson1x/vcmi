@@ -23,10 +23,10 @@ VCMI_LIB_NAMESPACE_END
 VCMI_LIB_USING_NAMESPACE
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS { class MainWindow; }
-using MapEditorNS::MainWindow;
+namespace MapEditorNS { class EditorMainWindow; }
+using MapEditorNS::EditorMainWindow;
 #else
-class MainWindow;
+class EditorMainWindow;
 #endif
 class MapController : public QObject
 {
@@ -34,7 +34,7 @@ class MapController : public QObject
 
 public:
 	explicit MapController(QObject * parent = nullptr);
-	MapController(MainWindow *);
+	MapController(EditorMainWindow *);
 	MapController(const MapController &) = delete;
 	MapController(const MapController &&) = delete;
 	~MapController();
@@ -107,7 +107,7 @@ private:
 	std::unique_ptr<EditorCallback> _cb;
 	std::unique_ptr<CMap> _map;
 	std::unique_ptr<MapHandler> _mapHandler;
-	MainWindow * main;
+	EditorMainWindow * main;
 	mutable std::map<int, std::unique_ptr<MapScene>> _scenes;
 	mutable std::map<int, std::unique_ptr<MinimapScene>> _miniscenes;
 	std::vector<std::unique_ptr<CGObjectInstance>> _clipboard;

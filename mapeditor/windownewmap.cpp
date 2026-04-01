@@ -202,7 +202,7 @@ void WindowNewMap::on_cancelButton_clicked()
 	close();
 }
 
-void generateRandomMap(CMapGenerator & gen, MainWindow * window)
+void generateRandomMap(CMapGenerator & gen, EditorMainWindow * window)
 {
 	window->controller.setMap(gen.generate());
 }
@@ -285,7 +285,7 @@ void WindowNewMap::on_okButton_clicked()
 	saveUserSettings();
 
 	std::unique_ptr<CMap> nmap;
-	auto & mapController = static_cast<MainWindow *>(parent())->controller;
+	auto & mapController = static_cast<EditorMainWindow *>(parent())->controller;
 
 	if(ui->randomMapCheck->isChecked())
 	{
@@ -325,7 +325,7 @@ void WindowNewMap::on_okButton_clicked()
 	
 	nmap->mods = MapController::modAssessmentMap(*nmap);
 	mapController.setMap(std::move(nmap));
-	static_cast<MainWindow *>(parent())->initializeMap(true);
+	static_cast<EditorMainWindow *>(parent())->initializeMap(true);
 	close();
 }
 

@@ -24,10 +24,10 @@ VCMI_LIB_NAMESPACE_END
 VCMI_LIB_USING_NAMESPACE
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS { class MainWindow; }
-using MapEditorNS::MainWindow;
+namespace MapEditorNS { class EditorMainWindow; }
+using MapEditorNS::EditorMainWindow;
 #else
-class MainWindow;
+class EditorMainWindow;
 #endif
 class MapController;
 

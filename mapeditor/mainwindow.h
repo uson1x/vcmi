@@ -30,7 +30,7 @@ namespace Ui
 namespace MapEditorNS {
 #endif
 
-class MainWindow : public QMainWindow
+class EditorMainWindow : public QMainWindow
 {
 	Q_OBJECT
 
@@ -48,8 +48,8 @@ class MainWindow : public QMainWindow
 	std::unique_ptr<CBasicLogConfigurator> logConfig;
 
 public:
-	explicit MainWindow(QWidget *parent = nullptr);
-	~MainWindow();
+	explicit EditorMainWindow(QWidget *parent = nullptr);
+	~EditorMainWindow();
 
 	void initializeMap(bool isNew);
 

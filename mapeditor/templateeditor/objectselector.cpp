@@ -54,7 +54,7 @@ QMainWindow* getMainWindow()
 std::map<CompoundMapObjectID, QString> ObjectSelector::getAdventureMapItems()
 {
 	std::map<CompoundMapObjectID, QString> objects;
-	auto& controller = qobject_cast<MainWindow *>(getMainWindow())->controller;
+	auto& controller = qobject_cast<EditorMainWindow *>(getMainWindow())->controller;
 
 	auto knownObjects = LIBRARY->objtypeh->knownObjects();
 	for(auto & id : knownObjects)
