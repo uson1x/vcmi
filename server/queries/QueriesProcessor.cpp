@@ -99,7 +99,10 @@ void QueriesProcessor::popIfTop(QueryPtr query)
 {
 	LOG_TRACE_PARAMS(logGlobal, "query='%d'", query);
 	if(!query)
+	{
 		logGlobal->error("The query is nullptr! Ignoring.");
+		return;
+	}
 
 	popIfTop(*query);
 }
