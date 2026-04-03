@@ -161,10 +161,40 @@ CModListView::CModListView(QWidget * parent)
 #endif
 }
 
+bool CModListView::isDemoDataPresent()
+{
+	QDir mapsDir(pathToQString(VCMIDirs::get().userDataPath()) + "/Maps");
+
+	for(const QString & name : mapsDir.entryList(QDir::Files | QDir::Readable))
+		if(name.compare("h3demo.h3m", Qt::CaseInsensitive) == 0)
+			return true;
+
+	return false;
+}
+
+void CModListView::showEvent(QShowEvent * event)
+{
+	QWidget::showEvent(event);
+	filterModel->reloadFilter();
+}
+
 void CModListView::reload(const QString & modToSelect)
 {
 	modStateModel->reloadLocalState();
 	modModel->reloadViewModel();
+
+	// Auto-enable/disable roe-demo based on demo asset presence
+	if(modStateModel->isModExists("roe-demo") && modStateModel->getMod("roe-demo").isInstalled())
+	{
+		bool demoPresent = isDemoDataPresent();
+		bool demoEnabled = modStateModel->isModEnabled("roe-demo");
+		if(demoPresent && !demoEnabled)
+			enableModByName("roe-demo");
+		else if(!demoPresent && demoEnabled)
+			disableModByName("roe-demo");
+	}
+
+	filterModel->reloadFilter();
 
 	if (!modToSelect.isEmpty())
 	{

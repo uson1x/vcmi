@@ -3,7 +3,7 @@
 	"contact" : "",
 	"name" : "RoE demo",
 	"description" : "Support for RoE demo",
-	"modType" : "Other",
+	"modType" : "Demo",
 	"version" : "1.0",
 	"factions" :
 	[

@@ -25,12 +25,12 @@ class FirstLaunchView : public QWidget
 	Q_OBJECT
 
 	std::unique_ptr<Demo> demo;
+	bool demoDataActive = false;
 
 	void changeEvent(QEvent *event) override;
 	CModListView * getModView();
 
 	void setSetupProgress(int progress);
-	void enterSetup();
 	void activateTabLanguage();
 	void activateTabHeroesData();
 	void activateTabModPreset();
@@ -48,6 +48,7 @@ class FirstLaunchView : public QWidget
 	QString getHeroesInstallDir();
 	void extractGogData();
 	void extractGogDataAsync(QString filePathBin, QString filePathExe);
+	ProgressOverlay * createOverlay(const QString & title, bool indeterminate = true);
 	bool performCopyFlow(const QString& path, ProgressOverlay* overlay, bool removeSource);
 	void copyHeroesData(const QString & path = {}, bool removeSource = false);
 
@@ -58,7 +59,6 @@ class FirstLaunchView : public QWidget
 
 	bool checkCanInstallTranslation();
 	bool checkCanInstallExtras();
-	bool checkCanInstallDemo();
 	bool checkCanInstallHota();
 	bool checkCanInstallWog();
 	bool checkCanInstallTow();
@@ -68,6 +68,8 @@ class FirstLaunchView : public QWidget
 public:
 	explicit FirstLaunchView(QWidget * parent = nullptr);
 	~FirstLaunchView() override;
+
+	void enterSetup();
 
 	// Tab Heroes III Data
 	bool heroesDataUpdate(bool checkDemo);

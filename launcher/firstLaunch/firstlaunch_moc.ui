@@ -275,7 +275,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
          <property name="spacing">
           <number>6</number>
          </property>
-         <item row="4" column="2">
+         <item row="5" column="2">
           <widget class="QPushButton" name="pushButtonDataCopy">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -306,7 +306,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="0" colspan="3">
+         <item row="8" column="0" colspan="3">
           <widget class="QLabel" name="labelDataManualDescr">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -338,7 +338,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="0" colspan="2">
+         <item row="7" column="0" colspan="2">
           <widget class="QLabel" name="labelDataManualTitle">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -356,7 +356,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="2">
+         <item row="7" column="2">
           <widget class="QPushButton" name="pushButtonDataSearch">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -369,7 +369,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="2">
+         <item row="9" column="2">
           <widget class="QProgressBar" name="progressBarGog">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
@@ -397,7 +397,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="1" colspan="2">
+         <item row="9" column="1" colspan="2">
           <widget class="QLineEdit" name="lineEditDataUser">
            <property name="enabled">
             <bool>true</bool>
@@ -413,7 +413,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="0" colspan="3">
+         <item row="6" column="0" colspan="3">
           <widget class="QLabel" name="labelDataCopyDescr">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -432,7 +432,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="0">
+         <item row="9" column="0">
           <widget class="QLabel" name="labelDataFiles">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -451,7 +451,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="5" column="0">
           <widget class="QLabel" name="labelDataCopyTitle">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -470,14 +470,36 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QPushButton" name="pushButtonDemo">
+         <item row="4" column="0" colspan="2">
+          <widget class="QLabel" name="labelDataDemoDescr">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>100</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>No Heroes III data? Download the free demo to try VCMI</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="9" column="1" colspan="2">
+         <item row="4" column="2">
+          <widget class="QPushButton" name="pushButtonDemo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>25</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Download Demo</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1" colspan="2">
           <widget class="QLineEdit" name="lineEditDataSystem">
            <property name="enabled">
             <bool>true</bool>
@@ -493,7 +515,7 @@ Heroes® of Might and Magic® III HD is currently not supported!</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="0" colspan="3">
+         <item row="11" column="0" colspan="3">
           <widget class="QLabel" name="labelDataFound">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -850,22 +872,7 @@ Offline installer consists of two files: &quot;.exe&quot; and &quot;.bin&quot; -
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="labelPresetDemoDescr">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>100</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Heroes III Demo files detected. This mod is required to use demo assets in VCMI, or the game will crash</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
+
          <item row="3" column="1">
           <widget class="QLabel" name="labelPresetExtrasDescr">
            <property name="sizePolicy">
@@ -997,47 +1004,7 @@ Offline installer consists of two files: &quot;.exe&quot; and &quot;.bin&quot; -
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QToolButton" name="buttonPresetDemo">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Demo support</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../resources.qrc">
-             <normaloff>:/icons/mod-disabled.png</normaloff>
-             <normalon>:icons/mod-enabled.png</normalon>:/icons/mod-disabled.png</iconset>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <property name="toolButtonStyle">
-            <enum>Qt::ToolButtonTextBesideIcon</enum>
-           </property>
-           <property name="autoRaise">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
+
         </layout>
        </item>
        <item>

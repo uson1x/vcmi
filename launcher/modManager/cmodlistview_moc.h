@@ -126,6 +126,12 @@ public:
 	/// returns true if mod is currently installed
 	bool isModInstalled(const QString & modName);
 
+	static bool isDemoDataPresent();
+
+protected:
+	void showEvent(QShowEvent * event) override;
+
+public:
 	void downloadMod(const ModState & mod);
 	void downloadFile(QString file, QUrl url, QString description, qint64 sizeBytes = 0);
 	void installFiles(QStringList mods);
