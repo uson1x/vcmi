@@ -46,6 +46,9 @@ class DLL_LINKAGE CGeneralTextHandler: public TextLocalizationContainer
 	JsonNode roeMapping;
 
 public:
+	/// Returns true if the installed Heroes III data is RoE (Restoration of Erathia) or RoE Demo,
+	/// i.e. TENTCOLR.TXT (a SoD-specific file) is absent from the game data.
+	static bool isRoEData();
 	LegacyTextContainer allTexts;
 
 	LegacyTextContainer arraytxt;

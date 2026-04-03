@@ -37,6 +37,7 @@
 #include "../lib/modding/IdentifierStorage.h"
 #include "../lib/modding/CModHandler.h"
 #include "../lib/modding/ModDescription.h"
+#include "../lib/texts/CGeneralTextHandler.h"
 #include "../lib/texts/MetaString.h"
 #include "../lib/GameLibrary.h"
 #include "../lib/ScopeGuard.h"
@@ -296,7 +297,7 @@ int main(int argc, char * argv[])
 	if(!settings["session"]["headless"].Bool())
 	{
 		GameEngine::GameDataMode mode = GameEngine::GameDataMode::SOD;
-		if(!CResourceHandler::get()->existsResource(ResourcePath("DATA/TENTCOLR.TXT")))
+		if(CGeneralTextHandler::isRoEData())
 		{
 			if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
 				mode = GameEngine::GameDataMode::DEMO_ROE;

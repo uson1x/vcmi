@@ -19,6 +19,11 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+bool CGeneralTextHandler::isRoEData()
+{
+	return !CResourceHandler::get("core")->existsResource(ResourcePath("DATA/TENTCOLR.TXT"));
+}
+
 /// Detects language and encoding of H3 text files based on matching against pregenerated footprints of H3 file
 void CGeneralTextHandler::detectInstallParameters()
 {
@@ -150,8 +155,10 @@ CGeneralTextHandler::CGeneralTextHandler():
 	seerNames        (*this, "core.seerhut.names"  ),
 	capColors        (*this, "vcmi.capitalColors"  ),
 
-	roeMapping(JsonNode(JsonPath::builtin("config/roeStringMapping.json")))
+	roeMapping()
 {
+	if(isRoEData())
+		roeMapping = JsonNode(JsonPath::builtin("config/roeStringMapping.json"));
 	readToVector("core.vcdesc",   "DATA/VCDESC.TXT"   );
 	readToVector("core.lcdesc",   "DATA/LCDESC.TXT"   );
 	readToVector("core.tcommand", "DATA/TCOMMAND.TXT" );

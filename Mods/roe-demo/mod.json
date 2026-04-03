@@ -4,6 +4,7 @@
 	"name" : "RoE demo",
 	"description" : "Support for RoE demo",
 	"modType" : "Demo",
+	"keepDisabled" : true,
 	"version" : "1.0",
 	"factions" :
 	[

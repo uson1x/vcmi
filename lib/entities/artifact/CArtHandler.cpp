@@ -79,7 +79,9 @@ std::vector<JsonNode> CArtHandler::loadLegacyData()
 	if(isRoe)
 		artSlots.erase(artSlots.begin() + 5);
 
-	JsonNode roeMapping(JsonPath::builtin("config/roeStringMapping.json"));
+	JsonNode roeMapping;
+	if(isRoe)
+		roeMapping = JsonNode(JsonPath::builtin("config/roeStringMapping.json"));
 	const JsonVector & artNewLines = roeMapping["newLines"]["DATA/ARTRAITS.TXT"].Vector();
 
 	for (size_t i = 0; i < dataSize; i++)

@@ -163,10 +163,16 @@ CModListView::CModListView(QWidget * parent)
 
 bool CModListView::isDemoDataPresent()
 {
-	QDir mapsDir(pathToQString(VCMIDirs::get().userDataPath()) + "/Maps");
+	// Use CResourceHandler so LOD archives are also checked (same as firstlaunch_moc.cpp and EntryPoint.cpp)
+	bool hasFullData = CResourceHandler::get()->existsResource(ResourcePath("DATA/TENTCOLR.TXT"));
+	if (hasFullData)
+		return false;
 
-	for(const QString & name : mapsDir.entryList(QDir::Files | QDir::Readable))
-		if(name.compare("h3demo.h3m", Qt::CaseInsensitive) == 0)
+	// H3DEMO.H3M is a loose file, QDir is fine here
+	QString mapsPath = pathToQString(VCMIDirs::get().userDataPath()) + "/Maps";
+	QDir mapsDir(mapsPath);
+	for (const QString & name : mapsDir.entryList(QDir::Files | QDir::Readable))
+		if (name.compare("h3demo.h3m", Qt::CaseInsensitive) == 0)
 			return true;
 
 	return false;
@@ -183,14 +189,12 @@ void CModListView::reload(const QString & modToSelect)
 	modStateModel->reloadLocalState();
 	modModel->reloadViewModel();
 
-	// Auto-enable/disable roe-demo based on demo asset presence
-	if(modStateModel->isModExists("roe-demo") && modStateModel->getMod("roe-demo").isInstalled())
+	// Sync roe-demo enabled state with demo data presence
+	if (modStateModel->isModExists("roe-demo") && modStateModel->getMod("roe-demo").isInstalled())
 	{
-		bool demoPresent = isDemoDataPresent();
-		bool demoEnabled = modStateModel->isModEnabled("roe-demo");
-		if(demoPresent && !demoEnabled)
+		if (isDemoDataPresent() && !modStateModel->isModEnabled("roe-demo"))
 			enableModByName("roe-demo");
-		else if(!demoPresent && demoEnabled)
+		else if (!isDemoDataPresent() && modStateModel->isModEnabled("roe-demo"))
 			disableModByName("roe-demo");
 	}
 
