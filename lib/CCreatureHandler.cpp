@@ -564,7 +564,8 @@ std::vector<JsonNode> CCreatureHandler::loadLegacyData()
 	{
 		//loop till non-empty line
 		while (parser.isNextEntryEmpty())
-			parser.endLine();
+			if(!parser.endLine())
+				break;
 
 		JsonNode data;
 
