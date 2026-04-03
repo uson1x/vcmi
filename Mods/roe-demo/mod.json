@@ -7,6 +7,9 @@
 	"version" : "1.0",
 	"factions" :
 	[
+		"config/roe-demo/factions/castle.json",
+		"config/roe-demo/factions/dungeon.json",
+		"config/roe-demo/factions/necropolis.json",
 		"config/roe-demo/factions-without-town/conflux.json",
 		"config/roe-demo/factions-without-town/fortress.json",
 		"config/roe-demo/factions-without-town/inferno.json",
@@ -16,31 +19,36 @@
 	],
 	"creatures" :
 	[
-		"config/roe-demo/disabled-creatures/conflux.json",
-		"config/roe-demo/disabled-creatures/fortress.json",
-		"config/roe-demo/disabled-creatures/inferno.json",
-		"config/roe-demo/disabled-creatures/rampart.json",
-		"config/roe-demo/disabled-creatures/stronghold.json",
-		"config/roe-demo/disabled-creatures/tower.json",
-		"config/roe-demo/disabled-creatures/neutral.json"
+		"config/roe-demo/creatures/conflux.json",
+		"config/roe-demo/creatures/fortress.json",
+		"config/roe-demo/creatures/inferno.json",
+		"config/roe-demo/creatures/rampart.json",
+		"config/roe-demo/creatures/stronghold.json",
+		"config/roe-demo/creatures/tower.json",
+		"config/roe-demo/creatures/neutral.json"
 	],
 	"heroes" :
 	[
-		"config/roe-demo/disabled-heroes/castle.json",
-		"config/roe-demo/disabled-heroes/conflux.json",
-		"config/roe-demo/disabled-heroes/fortress.json",
-		"config/roe-demo/disabled-heroes/inferno.json",
-		"config/roe-demo/disabled-heroes/rampart.json",
-		"config/roe-demo/disabled-heroes/stronghold.json",
-		"config/roe-demo/disabled-heroes/tower.json"
+		"config/roe-demo/heroes/castle.json",
+		"config/roe-demo/heroes/conflux.json",
+		"config/roe-demo/heroes/fortress.json",
+		"config/roe-demo/heroes/inferno.json",
+		"config/roe-demo/heroes/rampart.json",
+		"config/roe-demo/heroes/stronghold.json",
+		"config/roe-demo/heroes/tower.json"
 	],
-	"heroClasses" :
+	"terrains":
 	[
-		"config/roe-demo/patched-hero-classes.json"
+		"config/roe-demo/terrains.json"
+	],
+	"objects" : 
+	[
+		"config/roe-demo/patched-objects/banks.json",
+		"config/roe-demo/patched-objects/dwellings.json"
 	],
 	"spells" :
 	[
-		"config/roe-demo/disabled-spells.json"
+		"config/roe-demo/spells.json"
 	],
 	"settings":
 	{

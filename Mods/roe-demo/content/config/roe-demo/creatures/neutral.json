@@ -1,0 +1,185 @@
+{
+	"core:goldGolem" :
+	{
+		"special" : true,
+		"graphics" : null
+	},
+	"core:diamondGolem" :
+	{
+		"special" : true,
+		"graphics" : null
+	},
+	"core:azureDragon" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:crystalDragon" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:fairieDragon" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:rustDragon" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:enchanter" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:sharpshooter" :
+	{
+		"special" : true,
+		"graphics" : null
+	},
+	"core:troll" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:boar" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:halfling" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:mummy" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:nomad" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:peasant" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	},
+	"core:rogue" :
+	{
+		"special" : true,
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"shoot": "null.wav",
+			"wince": "null.wav"
+		}
+	}
+}

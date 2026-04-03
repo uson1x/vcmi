@@ -1,244 +1,303 @@
 {
 	"core:creatureBank" : {
 		"types" : {
-			"nagaBank" : {
-				"levels#override": [
+			"impCache" :  {
+				"rewards" : [
 					{
-						"chance": 100,
-						"guards": [
-							{ "amount": 200, "type": "core:peasant" },
-							{ "amount": 200, "type": "core:peasant" },
-							{ "amount": 200, "type": "core:peasant" },
-							{ "amount": 200, "type": "core:peasant" },
-							{ "amount": 200, "type": "core:peasant" }
+						"message" : 34,
+						"appearChance" : { "min" : 0, "max" : 30 },
+						"guards" : [
+							{ "amount" : 20, "type" : "imp" },
+							{ "amount" : 20, "type" : "imp" },
+							{ "amount" : 20, "type" : "imp" },
+							{ "amount" : 20, "type" : "imp" },
+							{ "amount" : 20, "type" : "imp" }
 						],
-						"combat_value": 403,
-						"reward" : {
-							"value": 8000,
-							"resources":
-							{
-								"gems" : 8,
-								"gold" : 4000
-							}
+						"resources" :
+						{
+							"gold" : 1000
+						}
+					},
+					{
+						"appearChance" : { "min" : 30, "max" : 60 },
+						"guards" : [
+							{ "amount" : 30, "type" : "imp" },
+							{ "amount" : 30, "type" : "imp" },
+							{ "amount" : 30, "type" : "imp" },
+							{ "amount" : 30, "type" : "imp" },
+							{ "amount" : 30, "type" : "imp" }
+						],
+						"resources" :
+						{
+							"mercury" : 3,
+							"gold" : 1500
+						}
+					},
+					{
+						"message" : 34,
+						"appearChance" : { "min" : 60, "max" : 90 },
+						"guards" : [
+							{ "amount" : 40, "type" : "imp" },
+							{ "amount" : 40, "type" : "imp" },
+							{ "amount" : 40, "type" : "imp" },
+							{ "amount" : 40, "type" : "imp" },
+							{ "amount" : 40, "type" : "imp" }
+						],
+						"resources" :
+						{
+							"mercury" : 4,
+							"gold" : 2000
+						}
+					},
+					{
+						"message" : 34,
+						"appearChance" : { "min" : 90, "max" : 100 },
+						"guards" : [
+							{ "amount" : 60, "type" : "imp" },
+							{ "amount" : 60, "type" : "imp" },
+							{ "amount" : 60, "type" : "imp" },
+							{ "amount" : 60, "type" : "imp" },
+							{ "amount" : 60, "type" : "imp" }
+						],
+						"resources" :
+						{
+							"mercury" : 6,
+							"gold" : 3000
+						}
+					}
+				]
+			},
+			"nagaBank" : {
+				"rewards" : [
+					{
+						"message" : 34,
+						"appearChance" : { "min" : 0, "max" : 30 },
+						"guards" : [
+							{ "amount" : 2, "type" : "masterGremlin" },
+							{ "amount" : 2, "type" : "masterGremlin" },
+							{ "amount" : 2, "type" : "masterGremlin" },
+							{ "amount" : 2, "type" : "masterGremlin" },
+							{ "amount" : 2, "type" : "masterGremlin" }
+						],
+						"resources" :
+						{
+							"gems" : 8,
+							"gold" : 4000
+						}
+					},
+					{
+						"message" : 34,
+						"appearChance" : { "min" : 30, "max" : 60 },
+						"guards" : [
+							{ "amount" : 3, "type" : "masterGremlin" },
+							{ "amount" : 3, "type" : "masterGremlin" },
+							{ "amount" : 3, "type" : "masterGremlin" },
+							{ "amount" : 3, "type" : "masterGremlin" },
+							{ "amount" : 3, "type" : "masterGremlin" }
+						],
+						"resources" :
+						{
+							"gems" : 12,
+							"gold" : 6000
+						}
+					},
+					{
+						"message" : 34,
+						"appearChance" : { "min" : 60, "max" : 90 },
+						"guards" : [
+							{ "amount" : 4, "type" : "masterGremlin" },
+							{ "amount" : 4, "type" : "masterGremlin" },
+							{ "amount" : 4, "type" : "masterGremlin" },
+							{ "amount" : 4, "type" : "masterGremlin" },
+							{ "amount" : 4, "type" : "masterGremlin" }
+						],
+						"resources" :
+						{
+							"gems" : 16,
+							"gold" : 8000
+						}
+					},
+					{
+						"message" : 34,
+						"appearChance" : { "min" : 90, "max" : 100 },
+						"guards" : [
+							{ "amount" : 6, "type" : "masterGremlin" },
+							{ "amount" : 6, "type" : "masterGremlin" },
+							{ "amount" : 6, "type" : "masterGremlin" },
+							{ "amount" : 6, "type" : "masterGremlin" },
+							{ "amount" : 6, "type" : "masterGremlin" }
+						],
+						"resources" :
+						{
+							"gems" : 24,
+							"gold" : 12000
 						}
 					}
 				]
 			},
 			"dragonFlyHive" : {
-				"index" : 6,
-				"resetDuration" : 0,
-				"name" : "Dragon Fly Hive",
-				"sounds" : {
-					"ambient" : ["LOOPLEAR"]
-				},
-				"rmg" : {
-					"value"		: 9000,
-					"rarity"	: 100
-				},
-				"levels#override": [
+				"rewards" : [
 					{
-						"chance": 30,
-						"guards": [
-							{ "amount": 10, "type": "core:serpentFly" },
-							{ "amount": 10, "type": "core:serpentFly" },
-							{ "amount": 10, "type": "core:serpentFly" },
-							{ "amount": 10, "type": "core:serpentFly" },
-							{ "amount": 10, "type": "core:serpentFly" }
+						"message" : 34,
+						"appearChance" : { "min" : 0, "max" : 30 },
+						"guards" : [
+							{ "amount" : 6, "type" : "serpentFly" },
+							{ "amount" : 6, "type" : "serpentFly" },
+							{ "amount" : 6, "type" : "serpentFly" },
+							{ "amount" : 6, "type" : "serpentFly" },
+							{ "amount" : 6, "type" : "serpentFly" }
 						],
-						"combat_value": 154,
-						"reward" : {
-							"value": 3200,
-							"creatures": [ { "amount": 25, "type": "core:serpentFly" } ]
-						}
+						"creatures" : [ { "amount" : 40, "type" : "serpentFly" } ]
 					},
 					{
-						"chance": 30,
-						"guards": [
-							{ "amount": 14, "type": "core:serpentFly" },
-							{ "amount": 14, "type": "core:serpentFly" },
-							{ "amount": 14, "type": "core:serpentFly" },
-							{ "amount": 14, "type": "core:serpentFly" },
-							{ "amount": 14, "type": "core:serpentFly" }
+						"message" : 34,
+						"appearChance" : { "min" : 30, "max" : 60 },
+						"guards" : [
+							{ "amount" : 9, "type" : "serpentFly" },
+							{ "amount" : 9, "type" : "serpentFly" },
+							{ "amount" : 9, "type" : "serpentFly" },
+							{ "amount" : 9, "type" : "serpentFly" },
+							{ "amount" : 9, "type" : "serpentFly" }
 						],
-						"combat_value": 230,
-						"reward" : {
-							"value": 4800,
-							"creatures": [ { "amount": 50, "type": "core:serpentFly" } ]
-						}
+						"creatures" : [ { "amount" : 60, "type" : "serpentFly" } ]
 					},
 					{
-						"chance": 30,
-						"guards": [
-							{ "amount": 20, "type": "core:serpentFly" },
-							{ "amount": 20, "type": "core:serpentFly" },
-							{ "amount": 20, "type": "core:serpentFly" },
-							{ "amount": 20, "type": "core:serpentFly" },
-							{ "amount": 20, "type": "core:serpentFly" }
+						"message" : 34,
+						"appearChance" : { "min" : 60, "max" : 90 },
+						"guards" : [
+							{ "amount" : 12, "type" : "serpentFly" },
+							{ "amount" : 12, "type" : "serpentFly" },
+							{ "amount" : 12, "type" : "serpentFly" },
+							{ "amount" : 12, "type" : "serpentFly" },
+							{ "amount" : 12, "type" : "serpentFly" }
 						],
-						"combat_value": 307,
-						"reward" : {
-							"value": 6400,
-							"creatures": [ { "amount": 75, "type": "core:serpentFly" } ]
-						}
+						"creatures" : [ { "amount" : 80, "type" : "serpentFly" } ]
 					},
 					{
-						"chance": 10,
-						"guards": [
-							{ "amount": 30, "type": "core:serpentFly" },
-							{ "amount": 30, "type": "core:serpentFly" },
-							{ "amount": 30, "type": "core:serpentFly" },
-							{ "amount": 30, "type": "core:serpentFly" },
-							{ "amount": 30, "type": "core:serpentFly" }
+						"message" : 34,
+						"appearChance" : { "min" : 90, "max" : 100 },
+						"guards" : [
+							{ "amount" : 18, "type" : "serpentFly" },
+							{ "amount" : 18, "type" : "serpentFly" },
+							{ "amount" : 18, "type" : "serpentFly" },
+							{ "amount" : 18, "type" : "serpentFly" },
+							{ "amount" : 18, "type" : "serpentFly" }
 						],
-						"combat_value": 461,
-						"reward" : {
-							"value": 9600,
-							"creatures": [ { "amount": 100, "type": "core:serpentFly" } ]
-						}
+						"creatures" : [ { "amount" : 120, "type" : "serpentFly" } ]
 					}
 				]
 			}
 		}
 	},
 	"core:dragonUtopia" : {
-		"index" :25,
-		"handler": "bank",
-		"base" : {
-			"sounds" : {
-				"ambient" : ["LOOPDRAG"],
-				"visit" : ["DRAGON"]
-			}
-		},
 		"types" : {
 			"dragonUtopia" : {
-				"index" : 0,
-				"resetDuration" : 0,
-				"name" : "Dragon Utopia",
-				"rmg" : {
-					"value"		: 10000,
-					"rarity"	: 100
-				},
-				"levels#override": [
+				"rewards" : [
 					{
-						"chance": 30,
-						"guards": [
-							{ "amount": 10, "type": "core:boneDragon" },
-							{ "amount": 8, "type": "core:boneDragon" },
-							{ "amount": 4, "type": "core:ghostDragon" },
-							{ "amount": 2, "type": "core:ghostDragon" }
+						"message" : 34,
+						"appearChance" : { "min" : 0, "max" : 30 },
+						"guards" : [
+							{ "amount" : 8, "type" : "redDragon" },
+							{ "amount" : 5, "type" : "ghostDragon" },
+							{ "amount" : 2, "type" : "boneDragon" },
+							{ "amount" : 1, "type" : "blackDragon" }
 						],
-						"combat_value": 769,
-						"reward" : {
-							"value": 38000,
-							"resources":
-							{
-								"gold" : 20000
-							},
-							"artifacts": [
-								{ "class" : "TREASURE" },
-								{ "class" : "MINOR" },
-								{ "class" : "MAJOR" },
-								{ "class" : "RELIC" }
-							]
-						}
+						"resources" :
+						{
+							"gold" : 20000
+						},
+						"artifacts" : [
+							{ "class" : "TREASURE" },
+							{ "class" : "MINOR" },
+							{ "class" : "MAJOR" },
+							{ "class" : "RELIC" }
+						]
 					},
 					{
-						"chance": 30,
-						"guards": [
-							{ "amount": 12, "type": "core:boneDragon" },
-							{ "amount": 10, "type": "core:boneDragon" },
-							{ "amount": 6, "type": "core:ghostDragon" },
-							{ "amount": 4, "type": "core:ghostDragon" }
+						"message" : 34,
+						"appearChance" : { "min" : 30, "max" : 60 },
+						"guards" : [
+							{ "amount" : 8, "type" : "redDragon" },
+							{ "amount" : 6, "type" : "ghostDragon" },
+							{ "amount" : 3, "type" : "boneDragon" },
+							{ "amount" : 2, "type" : "blackDragon" }
 						],
-						"combat_value": 209,
-						"reward" : {
-							"value": 57000,
-							"resources":
-							{
-								"gold" : 30000
-							},
-							"artifacts": [
-								{ "class" : "MINOR" },
-								{ "class" : "MAJOR" },
-								{ "class" : "RELIC" },
-								{ "class" : "RELIC" }
-							]
-						}
+						"resources" :
+						{
+							"gold" : 30000
+						},
+						"artifacts" : [
+							{ "class" : "MINOR" },
+							{ "class" : "MAJOR" },
+							{ "class" : "RELIC" },
+							{ "class" : "RELIC" }
+						]
 					},
 					{
-						"chance": 30,
-						"guards": [
-							{ "amount": 16, "type": "core:boneDragon" },
-							{ "amount": 12, "type": "core:boneDragon" },
-							{ "amount": 8, "type": "core:ghostDragon" },
-							{ "amount": 6, "type": "core:ghostDragon" }
+						"message" : 34,
+						"appearChance" : { "min" : 60, "max" : 90 },
+						"guards" : [
+							{ "amount" : 8, "type" : "redDragon" },
+							{ "amount" : 6, "type" : "ghostDragon" },
+							{ "amount" : 4, "type" : "boneDragon" },
+							{ "amount" : 3, "type" : "blackDragon" }
 						],
-						"combat_value": 556,
-						"reward" : {
-							"value": 75000,
-							"resources":
-							{
-								"gold" : 40000
-							},
-							"artifacts": [
-								{ "class" : "MAJOR" },
-								{ "class" : "RELIC" },
-								{ "class" : "RELIC" },
-								{ "class" : "RELIC" }
-							]
-						}
+						"resources" :
+						{
+							"gold" : 40000
+						},
+						"artifacts" : [
+							{ "class" : "MAJOR" },
+							{ "class" : "RELIC" },
+							{ "class" : "RELIC" },
+							{ "class" : "RELIC" }
+						]
 					},
 					{
-						"chance": 10,
-						"guards": [
-							{ "amount": 15, "type": "core:boneDragon" },
-							{ "amount": 15, "type": "core:boneDragon" },
-							{ "amount": 10, "type": "core:ghostDragon" },
-							{ "amount": 10, "type": "core:ghostDragon" }
+						"message" : 34,
+						"appearChance" : { "min" : 90, "max" : 100 },
+						"guards" : [
+							{ "amount" : 8, "type" : "boneDragon" },
+							{ "amount" : 7, "type" : "ghostDragon" },
+							{ "amount" : 6, "type" : "boneDragon" },
+							{ "amount" : 5, "type" : "blackDragon" }
 						],
-						"combat_value": 343,
-						"reward" : {
-							"value": 90000,
-							"resources":
-							{
-								"gold" : 50000
-							},
-							"artifacts": [
-								{ "class" : "RELIC" },
-								{ "class" : "RELIC" },
-								{ "class" : "RELIC" },
-								{ "class" : "RELIC" }
-							]
-						}
+						"resources" :
+						{
+							"gold" : 50000
+						},
+						"artifacts" : [
+							{ "class" : "RELIC" },
+							{ "class" : "RELIC" },
+							{ "class" : "RELIC" },
+							{ "class" : "RELIC" }
+						]
 					}
 				]
+				
+	
 			}
 		}
 	},
 	"core:pyramid" : {
 		"types" : {
 			"pyramid" : {
-				"index" : 0,
-				"resetDuration" : 0,
-				"name" : "Pyramid",
-				"rmg" : {
-					"value"		: 5000,
-					"rarity"	: 20
-				},
-				"levels#override": [
+				"rewards" : [
 					{
-						"chance": 100,
-						"guards": [
-							{ "amount": 50, "type": "core:ironGolem" },
-							{ "amount": 60, "type": "core:ironGolem" },
-							{ "amount": 50, "type": "core:ironGolem" },
-							{ "amount": 60, "type": "core:ironGolem" }
+						"limiter" : {
+							"canLearnSpells" : [
+								"@gainedSpell"
+							]
+						},
+						"spells" : [
+							"@gainedSpell"
 						],
-						"combat_value": 786,
-						"reward" : {
-							"value": 15000,
-							"spells" : [ { "level" : 5 } ]
-						}
+						"message" : [ 106, "{%s}." ], // Upon defeating monsters, you learn new spell
+						"guards" : [
+							{ "amount" : 40, "type" : "ironGolem" },
+							{ "amount" : 10, "type" : "ironGolem" },
+							{ "amount" : 10, "type" : "ironGolem" }
+						]
 					}
 				]
 			}

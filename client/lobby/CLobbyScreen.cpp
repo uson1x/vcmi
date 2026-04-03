@@ -58,7 +58,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		buttonOptions = std::make_shared<CButton>(Point(411, 510), AnimationPath::builtin("GSPBUTT.DEF"), LIBRARY->generaltexth->zelp[46], std::bind(&CLobbyScreen::toggleTab, this, tabOpt), EShortcut::LOBBY_ADDITIONAL_OPTIONS);
 		if(settings["general"]["enableUiEnhancements"].Bool())
 		{
-			if(screenType == ESelectionScreen::newGame)
+			if(screenType == ESelectionScreen::newGame && !ENGINE->isDemoData())
 				buttonBattleMode = std::make_shared<CButton>(Point(619, 105), AnimationPath::builtin("GSPButton2Arrow"), CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyMode.help")), [this](){
 					updateAfterStateChange(); // creates tabBattleOnlyMode -> cannot created by init of object because GAME->server().isGuest() isn't valid at that point
 					toggleTab(tabBattleOnlyMode);
