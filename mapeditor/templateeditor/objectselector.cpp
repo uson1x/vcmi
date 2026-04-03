@@ -29,7 +29,6 @@ ObjectSelector::ObjectSelector(ObjectConfig & obj) :
 	advObjects(getAdventureMapItems())
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	setWindowTitle(tr("Object Selector"));
 	

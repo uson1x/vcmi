@@ -30,7 +30,6 @@ StartingBonus::StartingBonus(PlayerColor color, std::shared_ptr<CMap> map, Campa
 	color(color)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	setWindowTitle(tr("Edit Starting Bonus"));
 	

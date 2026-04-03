@@ -22,7 +22,6 @@ HeroSpellWidget::HeroSpellWidget(CGHeroInstance & h, QWidget * parent) :
 	hero(h)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 }
 
 HeroSpellWidget::~HeroSpellWidget()

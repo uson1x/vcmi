@@ -39,8 +39,6 @@ TownEventDialog::TownEventDialog(CGTownInstance & t, QListWidgetItem * item, QWi
 	townEventListItem(item)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-
 	ui->buildingsTree->setModel(&buildingsModel);
 
 	params = townEventListItem->data(MapEditorRoles::TownEventRole).toMap();

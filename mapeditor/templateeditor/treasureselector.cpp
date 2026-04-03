@@ -22,7 +22,6 @@ TreasureSelector::TreasureSelector(std::vector<CTreasureInfo> & treasures) :
 	treasures(treasures)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 
 	setWindowTitle(tr("Treasure Selector"));
 	

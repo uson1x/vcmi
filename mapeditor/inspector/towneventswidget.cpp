@@ -24,7 +24,6 @@ TownEventsWidget::TownEventsWidget(CGTownInstance & town, QWidget * parent) :
 	town(town)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 }
 
 TownEventsWidget::~TownEventsWidget()
