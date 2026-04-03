@@ -1,6 +1,7 @@
 {
 	"core:pixie" :
 	{
+		"index": 145,
 		"special" : true,
 		"graphics" : null,
 		"sound" :
@@ -15,6 +16,7 @@
 	},
 	"core:sprite" :
 	{
+		"index": 146,
 		"special" : true,
 		"graphics" : null,
 		"sound" :
@@ -43,6 +45,7 @@
 	},
 	"core:psychicElemental" :
 	{
+		"index": 147,
 		"special" : true,
 		"graphics" : null,
 		"sound" :
@@ -57,6 +60,7 @@
 	},
 	"core:magicElemental" :
 	{
+		"index": 148,
 		"special" : true,
 		"graphics" : null,
 		"sound" :

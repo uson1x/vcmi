@@ -181,5 +181,21 @@
 			"shoot": "null.wav",
 			"wince": "null.wav"
 		}
+	},
+	"core:catapult" :
+	{
+		"index": 118
+	},
+	"core:ballista" :
+	{
+		"index": 119
+	},
+	"core:firstAidTent" :
+	{
+		"index": 120
+	},
+	"core:ammoCart" :
+	{
+		"index": 121
 	}
 }
