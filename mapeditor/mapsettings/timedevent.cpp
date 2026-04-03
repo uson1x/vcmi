@@ -24,10 +24,6 @@ TimedEvent::TimedEvent(MapController & c, QListWidgetItem * t, QWidget *parent) 
 	target(t)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-
-
-
 	const auto params = t->data(Qt::UserRole).toMap();
 	ui->eventNameText->setText(params.value("name").toString());
 	ui->eventMessageText->setPlainText(params.value("message").toString());

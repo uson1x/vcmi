@@ -19,6 +19,10 @@
 #include "../BitmapHandler.h"
 #include "../helper.h"
 
+#ifdef ENABLE_SINGLE_APP_BUILD
+using namespace MapEditorNS;
+#endif
+
 #ifdef VCMI_ANDROID
 #include "../androidfilepicker.h"
 #include <QAndroidJniObject>

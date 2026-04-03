@@ -18,12 +18,7 @@ VCMI_LIB_USING_NAMESPACE
 
 class QRadioButton;
 class QButtonGroup;
-#ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS { class EditorMainWindow; }
-using MapEditorNS::EditorMainWindow;
-#else
 class EditorMainWindow;
-#endif
 
 /// Dialog shown when a hero cannot be placed as NEUTRAL.
 /// Allows the user to select a valid player via checkboxes,

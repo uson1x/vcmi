@@ -24,8 +24,6 @@ CampaignProperties::CampaignProperties(std::shared_ptr<CampaignState> campaignSt
 	regions(campaignState->campaignRegions)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-
 	setWindowTitle(tr("Campaign Properties"));
 	
 	setWindowModality(Qt::ApplicationModal);

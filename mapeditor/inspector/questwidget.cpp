@@ -35,8 +35,6 @@ QuestWidget::QuestWidget(MapController & _controller, CQuest & _sh, QWidget *par
 {
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-
 	ui->lDayOfWeek->addItem(tr("None"));
 	for(int i = 1; i <= 7; ++i)
 		ui->lDayOfWeek->addItem(tr("Day %1").arg(i));

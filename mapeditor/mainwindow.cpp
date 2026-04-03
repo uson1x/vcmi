@@ -238,14 +238,7 @@ void EditorMainWindow::loadTranslation()
 
 	if(!QFile::exists(translationFileResourcePath))
 	{
-		logGlobal->warn("Translation file %s does not exist! Listing available resources:", translationFileResourcePath.toStdString());
-		QDirIterator it(":/", QDirIterator::Subdirectories);
-		while(it.hasNext())
-		{
-			QString path = it.next();
-			if(path.endsWith(".qm"))
-				logGlobal->warn("  Found QM resource: %s", path.toStdString());
-		}
+		logGlobal->warn("Translation file %s does not exist!", translationFileResourcePath.toStdString());
 		return;
 	}
 
@@ -692,8 +685,6 @@ void EditorMainWindow::on_actionOpenRecent_triggered()
 			: QDialog(parent), layout(new QVBoxLayout(this)), listWidget(new QListWidget(this))
 		{
 			setMinimumWidth(600);
-			setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-
 			connect(listWidget, &QListWidget::itemActivated, this, [this](QListWidgetItem *item)
 			{
 				accept();

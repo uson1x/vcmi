@@ -46,7 +46,7 @@ public:
 	uint32_t getAmount() const;
 	void setAmount(uint32_t value);
 	const MetaString & getMessage() const;
-	void setMessage(MetaString value);
+	void setMessage(MetaString && value);
 
 	template <typename Handler> void serialize(Handler &h)
 	{

@@ -54,7 +54,7 @@ const MetaString & CGResource::getMessage() const
 	return message;
 }
 
-void CGResource::setMessage(MetaString value)
+void CGResource::setMessage(MetaString && value)
 {
 	message = std::move(value);
 }

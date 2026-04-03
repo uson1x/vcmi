@@ -18,17 +18,11 @@ class CBasicLogConfigurator;
 class CGObjectInstance;
 VCMI_LIB_NAMESPACE_END
 
-VCMI_LIB_USING_NAMESPACE
-
 namespace Ui
 {
 	class EditorMainWindow;
 	const QString appName = "mapeditor";
 }
-
-#ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
-#endif
 
 class EditorMainWindow : public QMainWindow
 {
@@ -222,6 +216,3 @@ private:
 	void dropEvent(QDropEvent* event) override;
 };
 
-#ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
-#endif

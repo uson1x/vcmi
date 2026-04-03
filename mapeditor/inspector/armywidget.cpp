@@ -22,8 +22,6 @@ ArmyWidget::ArmyWidget(CArmedInstance & a, QWidget *parent) :
 	ui(new Ui::ArmyWidget)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-
 	uiCounts[0]= ui->count0; uiSlots[0] = ui->slot0;
 	uiCounts[1] = ui->count1; uiSlots[1] = ui->slot1;
 	uiCounts[2] = ui->count2; uiSlots[2] = ui->slot2;
