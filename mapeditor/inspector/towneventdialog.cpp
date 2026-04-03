@@ -39,6 +39,7 @@ TownEventDialog::TownEventDialog(CGTownInstance & t, QListWidgetItem * item, QWi
 	townEventListItem(item)
 {
 	ui->setupUi(this);
+
 	ui->buildingsTree->setModel(&buildingsModel);
 
 	params = townEventListItem->data(MapEditorRoles::TownEventRole).toMap();
