@@ -10,6 +10,7 @@
 #pragma once
 
 #include "TextLocalizationContainer.h"
+#include "../json/JsonNode.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -41,6 +42,8 @@ public:
 class DLL_LINKAGE CGeneralTextHandler: public TextLocalizationContainer
 {
 	void readToVector(const std::string & sourceID, const std::string & sourceName);
+
+	JsonNode roeMapping;
 
 public:
 	LegacyTextContainer allTexts;

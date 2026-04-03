@@ -109,10 +109,19 @@ void CGeneralTextHandler::detectInstallParameters()
 
 void CGeneralTextHandler::readToVector(const std::string & sourceID, const std::string & sourceName)
 {
+	bool resExists = CResourceHandler::get()->existsResource(ResourcePath(sourceName));
+	if(!resExists && roeMapping["newLines"][sourceName].isVector())
+		return;
+
 	CLegacyConfigParser parser(TextPath::builtin(sourceName));
 	size_t index = 0;
 	do
 	{
+		while(vstd::contains_if(roeMapping["newLines"][sourceName].Vector(), [index](JsonNode item) -> bool {
+			return item.Integer() == index;
+		}))
+			index += 1;
+
 		registerString( "core", {sourceID, index}, parser.readString());
 		index += 1;
 	}
@@ -139,7 +148,9 @@ CGeneralTextHandler::CGeneralTextHandler():
 	// pseudo-array, that don't have H3 file with same name
 	seerEmpty        (*this, "core.seerhut.empty"  ),
 	seerNames        (*this, "core.seerhut.names"  ),
-	capColors        (*this, "vcmi.capitalColors"  )
+	capColors        (*this, "vcmi.capitalColors"  ),
+
+	roeMapping(JsonNode(JsonPath::builtin("config/roeStringMapping.json")))
 {
 	readToVector("core.vcdesc",   "DATA/VCDESC.TXT"   );
 	readToVector("core.lcdesc",   "DATA/LCDESC.TXT"   );
@@ -184,6 +195,11 @@ CGeneralTextHandler::CGeneralTextHandler():
 		size_t index = 0;
 		do
 		{
+			while(vstd::contains_if(roeMapping["newLines"]["DATA/GENRLTXT.TXT"].Vector(), [index](JsonNode item) -> bool {
+				return item.Integer() == index;
+			}))
+				index += 1;
+
 			registerString("core", {"core.genrltxt", index}, parser.readString());
 			index += 1;
 		}
@@ -194,6 +210,11 @@ CGeneralTextHandler::CGeneralTextHandler():
 		size_t index = 0;
 		do
 		{
+			while(vstd::contains_if(roeMapping["newLines"]["DATA/HELP.TXT"].Vector(), [index](JsonNode item) -> bool {
+				return item.Integer() == index;
+			}))
+				index += 1;
+
 			std::string first = parser.readString();
 			std::string second = parser.readString();
 			registerString("core", "core.help." + std::to_string(index) + ".hover", first);

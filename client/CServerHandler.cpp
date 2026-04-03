@@ -673,7 +673,8 @@ void CServerHandler::showHighScoresAndEndGameplay(PlayerColor player, bool victo
 
 		endGameplay();
 		GAME->mainmenu()->menu->switchToTab("main");
-		ENGINE->windows().createAndPushWindow<CHighScoreInputScreen>(victory, scenarioHighScores, statistic);
+		if(!ENGINE->isDemoData())
+			ENGINE->windows().createAndPushWindow<CHighScoreInputScreen>(victory, scenarioHighScores, statistic);
 	}
 }
 

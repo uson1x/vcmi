@@ -61,7 +61,7 @@ std::vector<JsonNode> CArtHandler::loadLegacyData()
 	h3Data.reserve(dataSize);
 
 	#define ART_POS(x) #x ,
-	const std::vector<std::string> artSlots = { ART_POS_LIST };
+	std::vector<std::string> artSlots = { ART_POS_LIST };
 	#undef ART_POS
 
 	static const std::map<char, std::string> classes =
@@ -71,7 +71,13 @@ std::vector<JsonNode> CArtHandler::loadLegacyData()
 	CLegacyConfigParser events(TextPath::builtin("DATA/ARTEVENT.TXT"));
 
 	parser.endLine(); // header
+	for(int i = 0; i < 7; i++)
+		parser.readString();
+	bool isRoe = parser.readString() != "Misc 5";
 	parser.endLine();
+
+	if(isRoe)
+		artSlots.erase(artSlots.begin() + 5);
 
 	for (size_t i = 0; i < dataSize; i++)
 	{

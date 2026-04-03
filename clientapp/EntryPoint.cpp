@@ -288,14 +288,34 @@ int main(int argc, char * argv[])
 	};
 
 	testFile("DATA/HELP.TXT", "VCMI requires Heroes III: Shadow of Death or Heroes III: Complete data files to run!");
-	testFile("DATA/TENTCOLR.TXT", "Heroes III: Restoration of Erathia (including HD Edition) data files are not supported!");
 	testFile("MODS/VCMI/MOD.JSON", "VCMI installation is corrupted!\nBuilt-in mod was not found!");
 	testFile("DATA/NOTOSERIF-MEDIUM.TTF", "VCMI installation is corrupted!\nBuilt-in font was not found!\nManually deleting '" + VCMIDirs::get().userDataPath().string() + "/Mods/VCMI' directory (if it exists)\nor clearing app data and reimporting Heroes III files may fix this problem.");
 	testFile("DATA/PLAYERS.PAL", "Heroes III data files (Data/H3Bitmap.lod) are incomplete or corruped!\n Please reinstall them.");
 	testFile("SPRITES/DEFAULT.DEF", "Heroes III data files (Data/H3Sprite.lod) are incomplete or corruped!\n Please reinstall them.");
 
 	if(!settings["session"]["headless"].Bool())
-		ENGINE = std::make_unique<GameEngine>();
+	{
+		GameEngine::GameDataMode mode = GameEngine::GameDataMode::SOD;
+		if(!CResourceHandler::get()->existsResource(ResourcePath("DATA/TENTCOLR.TXT")))
+		{
+			if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
+				mode = GameEngine::GameDataMode::DEMO_ROE;
+			else
+				mode = GameEngine::GameDataMode::ROE;
+		}
+		else if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
+			mode = GameEngine::GameDataMode::DEMO_SOD;
+
+		if(mode == GameEngine::GameDataMode::ROE)
+			handleFatalError("Heroes III: Restoration of Erathia (including HD Edition) data files are not supported!", false);
+
+		if(mode == GameEngine::GameDataMode::DEMO_ROE || mode == GameEngine::GameDataMode::DEMO_SOD)
+			logGlobal->info("Game started with demo data");
+		if(mode == GameEngine::GameDataMode::ROE || mode == GameEngine::GameDataMode::DEMO_ROE)
+			logGlobal->info("Game started with RoE data");
+
+		ENGINE = std::make_unique<GameEngine>(mode);
+	}
 
 	GAME = std::make_unique<GameInstance>();
 
