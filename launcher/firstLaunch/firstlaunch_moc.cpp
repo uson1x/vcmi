@@ -302,7 +302,7 @@ void FirstLaunchView::heroesDataDetected()
 	ui->pushButtonDataNext->setEnabled(true);
 	ui->labelDataDemoDescr->setVisible(false);
 	ui->pushButtonDemo->setVisible(false);
-	demoDataActive = true;
+	demoDataActive = CModListView::isDemoDataPresent();
 
 	CGeneralTextHandler::detectInstallParameters();
 }
