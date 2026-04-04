@@ -67,9 +67,6 @@ void QueriesProcessor::addQuery(QueryPtr query)
 {
 	for(auto player : query->players)
 		addQuery(player, query);
-
-	for(auto player : query->players)
-		query->onAdded(player);
 }
 
 void QueriesProcessor::addQuery(PlayerColor player, QueryPtr query)
@@ -84,6 +81,7 @@ void QueriesProcessor::addQuery(PlayerColor player, QueryPtr query)
 		return;
 	query->onAdding(player);
 	queries[player].push_back(query);
+	query->onAdded(player);
 }
 
 QueryPtr QueriesProcessor::topQuery(PlayerColor player)
