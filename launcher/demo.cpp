@@ -23,6 +23,7 @@
 #include "helper.h"
 
 QString DEMO_URL = "http://updates.lokigames.com/loki_demos/heroes3-demo.run";
+QString DEMO_URL_ALTERNATIVE = "https://web.archive.org/web/20150506062114if_/http://updates.lokigames.com/loki_demos/heroes3-demo.run"; // alternative if fails or HTTPS is required
 
 Demo::Demo(std::function<void ()> onFinish, std::function<void ()> onError, std::function<void (float percent)> onProgress) :
     onFinish(onFinish), onError(onError), onProgress(onProgress)
@@ -37,7 +38,20 @@ void Demo::downloadProgress(qint64 current, qint64 max)
 void Demo::downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors)
 {
 	if(failedFiles.empty())
+	{
         install(savedFiles.first());
+	}
+    else if(!usedAlternative)
+    {
+        logGlobal->warn("Primary demo URL failed, trying alternative: %s", errors.first().toStdString());
+        usedAlternative = true;
+        dlManager->deleteLater();
+        dlManager = nullptr;
+        if(onProgress)
+            onProgress(0.0f);
+        startDownload(QUrl(DEMO_URL_ALTERNATIVE));
+        return;
+    }
     else
     {
         logGlobal->error("Download failed: %s", errors.first().toStdString());
@@ -51,7 +65,11 @@ void Demo::downloadFinished(QStringList savedFiles, QStringList failedFiles, QSt
 
 void Demo::download()
 {
-    QUrl url(DEMO_URL);
+    startDownload(QUrl(DEMO_URL));
+}
+
+void Demo::startDownload(const QUrl & url)
+{
     dlManager = new CDownloadManager();
     
     connect(dlManager, SIGNAL(downloadProgress(qint64, qint64)),

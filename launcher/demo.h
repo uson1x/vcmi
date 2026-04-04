@@ -18,11 +18,14 @@ class Demo : public QObject
 	Q_OBJECT
 
     CDownloadManager * dlManager;
+    bool usedAlternative = false;
 
     std::function<void ()> onFinish;
     std::function<void ()> onError;
     std::function<void (float percent)> onProgress;
 
+private:
+	void startDownload(const QUrl & url);
 private slots:
 	void downloadProgress(qint64 current, qint64 max);
 	void downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors);
