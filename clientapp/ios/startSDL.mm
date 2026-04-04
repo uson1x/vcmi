@@ -55,6 +55,8 @@ int startSDL(int argc, char * argv[], BOOL startManually)
 		// TODO: check with Qt 6
 		// https://code.qt.io/cgit/qt/qtbase.git/tree/src/plugins/platforms/ios/qiosscreen.mm?h=5.15
 		removeQtNotificationObserver(@"QIOSScreenTracker", @[UIScreenDidConnectNotification, UIScreenDidDisconnectNotification]);
+		// https://code.qt.io/cgit/qt/qtbase.git/tree/src/plugins/platforms/ios/qioseventdispatcher.mm?h=5.15
+		removeQtNotificationObserver(@"QIOSApplicationStateTracker", @[UIApplicationWillTerminateNotification]);
 
 		int result;
 		if (startManually)
