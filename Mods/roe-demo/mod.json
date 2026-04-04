@@ -51,6 +51,10 @@
 	[
 		"config/roe-demo/spells.json"
 	],
+	"artifacts" :
+	[
+		"config/roe-demo/artifacts.json"
+	],
 	"settings":
 	{
 		"textData" :
