@@ -56,7 +56,7 @@ enum class QueryType : uint8_t
 class CQuery : boost::noncopyable
 {
 public:
-	std::vector<PlayerColor> players; //players that are affected (often "blocked") by query
+	boost::container::small_vector<PlayerColor, PlayerColor::PLAYER_LIMIT_I> players; //players that are affected (often "blocked") by query
 	QueryID queryID;
 
 	QueryType getType() const
