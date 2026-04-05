@@ -42,8 +42,13 @@ CQuery::~CQuery()
 
 void CQuery::addPlayer(PlayerColor color)
 {
-	if(color.isValidPlayer())
-		players.push_back(color);
+	if(!color.isValidPlayer())
+		return;
+
+	if(vstd::contains(players, color))
+		return;
+
+	players.push_back(color);
 }
 
 std::string CQuery::toString() const
