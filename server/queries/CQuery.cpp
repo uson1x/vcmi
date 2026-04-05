@@ -97,8 +97,7 @@ void CQuery::notifyObjectAboutRemoval(const CGObjectInstance * visitedObject, co
 
 void CQuery::onExposure(QueryPtr topQuery)
 {
-	logGlobal->trace("Exposed query with id %d", queryID);
-	owner->popQuery(*this);
+
 }
 
 void CQuery::onAdding(PlayerColor color)
