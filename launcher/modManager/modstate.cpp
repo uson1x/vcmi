@@ -25,6 +25,11 @@ QString ModState::getName() const
 	return QString::fromStdString(impl.getName());
 }
 
+QString ModState::getNameEnglish() const
+{
+	return QString::fromStdString(impl.getValue("name").String());
+}
+
 QString ModState::getType() const
 {
 	return QString::fromStdString(impl.getValue("modType").String());
