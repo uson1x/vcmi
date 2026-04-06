@@ -306,6 +306,8 @@ void LobbyServer::onDisconnected(const NetworkConnectionPtr & connection, const 
 		activeGameRooms.erase(connection);
 	}
 
+	vstd::erase_if(awaitingProxies, [&connection](const AwaitingProxyState & p) { return p.roomConnection.lock() == connection || p.accountConnection.lock() == connection; });
+
 	if(activeProxies.count(connection))
 	{
 		const auto otherConnection = activeProxies.at(connection);
@@ -325,13 +327,13 @@ JsonNode LobbyServer::parseAndValidateMessage(const std::vector<std::byte> & mes
 {
 	JsonParsingSettings parserSettings;
 	parserSettings.mode = JsonParsingSettings::JsonFormatMode::JSON;
-	parserSettings.maxDepth = 2;
+	parserSettings.maxDepth = 4;
 	parserSettings.strict = true;
 
 	JsonNode json;
 	try
 	{
-		JsonNode jsonTemp(message.data(), message.size(), "<lobby message>");
+		JsonNode jsonTemp(message.data(), message.size(), parserSettings, "<lobby message>");
 		json = std::move(jsonTemp);
 	}
 	catch (const JsonFormatException & e)
@@ -370,6 +372,7 @@ void LobbyServer::onPacketReceived(const NetworkConnectionPtr & connection, cons
 			return lockedPtr->sendPacket(message);
 
 		logGlobal->info("Received unexpected message for inactive proxy!");
+		return;
 	}
 
 	JsonNode json = parseAndValidateMessage(message);
@@ -584,6 +587,16 @@ void LobbyServer::receiveClientLogin(const NetworkConnectionPtr & connection, co
 	database->setAccountOnline(accountID, true);
 
 	std::string displayName = database->getAccountDisplayName(accountID);
+
+	// drop existing connection of this account, if any
+	for (const auto & account : activeAccounts)
+	{
+		if (account.second == accountID)
+		{
+			account.first->close();
+			break;
+		}
+	}
 
 	activeAccounts[connection] = accountID;
 

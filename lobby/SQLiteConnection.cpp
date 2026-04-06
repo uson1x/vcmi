@@ -71,7 +71,7 @@ void SQLiteStatement::setBindSingle(size_t index, const double & value)
 
 void SQLiteStatement::setBindSingle(size_t index, const bool & value)
 {
-	int result = sqlite3_bind_int(m_statement, static_cast<int>(value), value);
+	int result = sqlite3_bind_int(m_statement, static_cast<int>(index), value);
 	checkSQLiteError(m_instance.m_connection, result);
 }
 
