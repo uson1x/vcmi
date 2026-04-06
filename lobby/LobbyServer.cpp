@@ -179,9 +179,13 @@ void LobbyServer::broadcastActiveAccounts()
 		jsonEntry["status"].String() = "In Lobby"; // TODO: in room status, in match status, offline status(?)
 		reply["accounts"].Vector().push_back(jsonEntry);
 	}
+	
+	const auto & bytes = reply.toBytes();
+	logGlobal->info("Sending message of type %s", reply["type"].String());
+	assert(JsonUtils::validate(reply, "vcmi:lobbyProtocol/" + reply["type"].String(), reply["type"].String() + " pack"));
 
 	for(const auto & connection : activeAccounts)
-		sendMessage(connection.first, reply);
+		connection.first->sendPacket(bytes);
 }
 
 void LobbyServer::sendMatchesHistory(const NetworkConnectionPtr & target)
@@ -214,11 +218,30 @@ JsonNode LobbyServer::prepareActiveGameRooms()
 
 void LobbyServer::broadcastActiveGameRooms()
 {
-	auto reply = prepareActiveGameRooms();
+	const auto & reply = prepareActiveGameRooms();
+	const auto & bytes = reply.toBytes();
+	logGlobal->info("Sending message of type %s", reply["type"].String());
+	assert(JsonUtils::validate(reply, "vcmi:lobbyProtocol/" + reply["type"].String(), reply["type"].String() + " pack"));
 
 	for(const auto & connection : activeAccounts)
-		sendMessage(connection.first, reply);
+		connection.first->sendPacket(bytes);
 }
+
+void LobbyServer::broadcastGameRoomDescription(const std::string & gameRoomID)
+{
+	const auto & roomData = database->getGameRoom(gameRoomID);
+	JsonNode reply;
+	reply["type"].String() = "updateGameRoom";
+	reply["room"] = roomData.toJsonFull();
+
+	const auto & bytes = reply.toBytes();
+	logGlobal->info("Sending message of type %s", reply["type"].String());
+	assert(JsonUtils::validate(reply, "vcmi:lobbyProtocol/" + reply["type"].String(), reply["type"].String() + " pack"));
+
+	for(const auto & connection : activeAccounts)
+		connection.first->sendPacket(bytes);
+}
+
 
 void LobbyServer::sendAccountJoinsRoom(const NetworkConnectionPtr & target, const std::string & accountID)
 {
@@ -706,7 +729,7 @@ void LobbyServer::receiveActivateGameRoom(const NetworkConnectionPtr & connectio
 
 	database->updateRoomPlayerLimit(gameRoomID, playerLimit);
 	database->insertPlayerIntoGameRoom(accountID, gameRoomID);
-	broadcastActiveGameRooms();
+	broadcastGameRoomDescription(gameRoomID);
 	sendJoinRoomSuccess(connection, gameRoomID, false);
 }
 
@@ -741,7 +764,7 @@ void LobbyServer::receiveJoinGameRoom(const NetworkConnectionPtr & connection, c
 	sendAccountJoinsRoom(targetRoom, accountID);
 	//No reply to client - will be sent once match server establishes proxy connection with lobby
 
-	broadcastActiveGameRooms();
+	broadcastGameRoomDescription(gameRoomID);
 }
 
 void LobbyServer::receiveChangeRoomDescription(const NetworkConnectionPtr & connection, const JsonNode & json)
@@ -750,7 +773,7 @@ void LobbyServer::receiveChangeRoomDescription(const NetworkConnectionPtr & conn
 	std::string description = json["description"].String();
 
 	database->updateRoomDescription(gameRoomID, description);
-	broadcastActiveGameRooms();
+	broadcastGameRoomDescription(gameRoomID);
 }
 
 void LobbyServer::receiveGameStarted(const NetworkConnectionPtr & connection, const JsonNode & json)
@@ -758,7 +781,7 @@ void LobbyServer::receiveGameStarted(const NetworkConnectionPtr & connection, co
 	std::string gameRoomID = activeGameRooms[connection];
 
 	database->setGameRoomStatus(gameRoomID, LobbyRoomState::BUSY);
-	broadcastActiveGameRooms();
+	broadcastActiveGameRooms(); //FIXME: use broadcastGameRoomDescription when there are no 1.7.3 clients
 }
 
 void LobbyServer::receiveLeaveGameRoom(const NetworkConnectionPtr & connection, const JsonNode & json)
@@ -771,7 +794,7 @@ void LobbyServer::receiveLeaveGameRoom(const NetworkConnectionPtr & connection, 
 
 	database->deletePlayerFromGameRoom(accountID, gameRoomID);
 
-	broadcastActiveGameRooms();
+	broadcastGameRoomDescription(gameRoomID);
 }
 
 void LobbyServer::receiveSendInvite(const NetworkConnectionPtr & connection, const JsonNode & json)
@@ -796,7 +819,7 @@ void LobbyServer::receiveSendInvite(const NetworkConnectionPtr & connection, con
 
 	database->insertGameRoomInvite(accountID, gameRoomID);
 	sendInviteReceived(targetAccountConnection, senderName, gameRoomID);
-	broadcastActiveGameRooms();
+	broadcastGameRoomDescription(gameRoomID);
 }
 
 LobbyServer::~LobbyServer() = default;

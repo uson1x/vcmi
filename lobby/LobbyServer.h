@@ -60,6 +60,7 @@ class LobbyServer final : public INetworkServerListener
 
 	void broadcastActiveAccounts();
 	void broadcastActiveGameRooms();
+	void broadcastGameRoomDescription(const std::string & gameRoomID);
 
 	JsonNode prepareActiveGameRooms();
 

@@ -174,6 +174,13 @@ void LobbyDatabase::prepareStatements()
 		ORDER BY secondsElapsed ASC
 	)");
 
+	getGameRoomStatement = database->prepare(R"(
+		SELECT hostAccountID, displayName, description, status, playerLimit, version, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime)  AS secondsElapsed
+		FROM gameRooms gr
+		LEFT JOIN accounts a ON gr.hostAccountID = a.accountID
+		WHERE roomID = ?
+	)");
+
 	getRoomsStatement = database->prepare(R"(
 		SELECT roomID, hostAccountID, displayName, description, status, playerLimit, version, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime) AS secondsElapsed
 		FROM gameRooms gr
@@ -599,45 +606,79 @@ std::vector<LobbyGameRoom> LobbyDatabase::getActiveGameRooms()
 	{
 		LobbyGameRoom entry;
 		getActiveGameRoomsStatement->getColumns(entry.roomID, entry.hostAccountID, entry.hostAccountDisplayName, entry.description, entry.roomState, entry.playerLimit, entry.version, entry.age);
+		entry.participants = getGameRoomPlayers(entry.roomID);
+		entry.invited = getGameRoomInvites(entry.roomID);
+		entry.mods = getGameRoomMods(entry.roomID);
 		result.push_back(entry);
 	}
 	getActiveGameRoomsStatement->reset();
 
-	for (auto & room : result)
-	{
-		getGameRoomPlayersStatement->setBinds(room.roomID);
-		while(getGameRoomPlayersStatement->execute())
-		{
-			LobbyAccount account;
-			getGameRoomPlayersStatement->getColumns(account.accountID, account.displayName);
-			room.participants.push_back(account);
-		}
-		getGameRoomPlayersStatement->reset();
-	}
+	return result;
+}
 
-	for (auto & room : result)
-	{
-		getGameRoomModsStatement->setBinds(room.roomID);
-		while(getGameRoomModsStatement->execute())
-		{
-			LobbyGameRoomMod mod;
-			getGameRoomModsStatement->getColumns(mod.ID, mod.name, mod.version);
-			room.mods.push_back(mod);
-		}
-		getGameRoomModsStatement->reset();
-	}
+LobbyGameRoom LobbyDatabase::getGameRoom(const std::string & roomID)
+{
+	LobbyGameRoom entry;
 
-	for (auto & room : result)
+	entry.roomID = roomID;
+
+	getGameRoomStatement->setBinds(roomID);
+	if(getGameRoomStatement->execute())
+		getGameRoomStatement->getColumns(entry.hostAccountID, entry.hostAccountDisplayName, entry.description, entry.roomState, entry.playerLimit, entry.version, entry.age);
+
+	getGameRoomStatement->reset();
+
+	entry.participants = getGameRoomPlayers(entry.roomID);
+	entry.invited = getGameRoomInvites(entry.roomID);
+	entry.mods = getGameRoomMods(entry.roomID);
+
+	return entry;
+}
+
+std::vector<LobbyAccount> LobbyDatabase::getGameRoomPlayers(const std::string & room)
+{
+	std::vector<LobbyAccount> result;
+
+	getGameRoomPlayersStatement->setBinds(room);
+	while(getGameRoomPlayersStatement->execute())
 	{
-		getGameRoomInvitesStatement->setBinds(room.roomID);
-		while(getGameRoomInvitesStatement->execute())
-		{
-			LobbyAccount account;
-			getGameRoomInvitesStatement->getColumns(account.accountID, account.displayName);
-			room.invited.push_back(account);
-		}
-		getGameRoomInvitesStatement->reset();
+		LobbyAccount account;
+		getGameRoomPlayersStatement->getColumns(account.accountID, account.displayName);
+		result.push_back(account);
 	}
+	getGameRoomPlayersStatement->reset();
+
+	return result;
+}
+
+std::vector<LobbyAccount> LobbyDatabase::getGameRoomInvites(const std::string & room)
+{
+	std::vector<LobbyAccount> result;
+
+	getGameRoomInvitesStatement->setBinds(room);
+	while(getGameRoomInvitesStatement->execute())
+	{
+		LobbyAccount account;
+		getGameRoomInvitesStatement->getColumns(account.accountID, account.displayName);
+		result.push_back(account);
+	}
+	getGameRoomInvitesStatement->reset();
+
+	return result;
+}
+
+std::vector<LobbyGameRoomMod> LobbyDatabase::getGameRoomMods(const std::string & room)
+{
+	std::vector<LobbyGameRoomMod> result;
+
+	getGameRoomModsStatement->setBinds(room);
+	while(getGameRoomModsStatement->execute())
+	{
+		LobbyGameRoomMod mod;
+		getGameRoomModsStatement->getColumns(mod.ID, mod.name, mod.version);
+		result.push_back(mod);
+	}
+	getGameRoomModsStatement->reset();
 
 	return result;
 }
@@ -657,16 +698,8 @@ std::vector<LobbyGameRoom> LobbyDatabase::getAccountGameHistory(const std::strin
 	getAccountGameHistoryStatement->reset();
 
 	for (auto & room : result)
-	{
-		getGameRoomPlayersStatement->setBinds(room.roomID);
-		while(getGameRoomPlayersStatement->execute())
-		{
-			LobbyAccount account;
-			getGameRoomPlayersStatement->getColumns(account.accountID, account.displayName);
-			room.participants.push_back(account);
-		}
-		getGameRoomPlayersStatement->reset();
-	}
+		room.participants = getGameRoomPlayers(room.roomID);
+
 	return result;
 }
 
@@ -711,28 +744,10 @@ std::vector<LobbyGameRoom> LobbyDatabase::getRooms(int hours, int limit)
 	getRoomsStatement->reset();
 
 	for (auto & room : result)
-	{
-		getGameRoomPlayersStatement->setBinds(room.roomID);
-		while(getGameRoomPlayersStatement->execute())
-		{
-			LobbyAccount account;
-			getGameRoomPlayersStatement->getColumns(account.accountID, account.displayName);
-			room.participants.push_back(account);
-		}
-		getGameRoomPlayersStatement->reset();
-	}
-	
+		room.participants = getGameRoomPlayers(room.roomID);
+
 	for (auto & room : result)
-	{
-		getGameRoomModsStatement->setBinds(room.roomID);
-		while(getGameRoomModsStatement->execute())
-		{
-			LobbyGameRoomMod mod;
-			getGameRoomModsStatement->getColumns(mod.ID, mod.name, mod.version);
-			room.mods.push_back(mod);
-		}
-		getGameRoomModsStatement->reset();
-	}
+		room.mods = getGameRoomMods(room.roomID);
 
 	return result;
 }

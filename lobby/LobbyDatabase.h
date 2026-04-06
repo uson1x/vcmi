@@ -110,6 +110,7 @@ class LobbyDatabase
 	SQLiteStatementPtr getGameRoomStatusStatement;
 	SQLiteStatementPtr getAccountGameHistoryStatement;
 	SQLiteStatementPtr getActiveGameRoomsStatement;
+	SQLiteStatementPtr getGameRoomStatement;
 	SQLiteStatementPtr getActiveAccountsStatement;
 	SQLiteStatementPtr getAccountInviteStatusStatement;
 	SQLiteStatementPtr getAccountGameRoomStatement;
@@ -133,6 +134,10 @@ class LobbyDatabase
 
 	void prepareStatements();
 	void clearOldData();
+
+	std::vector<LobbyAccount> getGameRoomPlayers(const std::string & gameRoomID);
+	std::vector<LobbyAccount> getGameRoomInvites(const std::string & gameRoomID);
+	std::vector<LobbyGameRoomMod> getGameRoomMods(const std::string & gameRoomID);
 
 public:
 	explicit LobbyDatabase(const boost::filesystem::path & databasePath);
@@ -159,6 +164,7 @@ public:
 
 	std::vector<LobbyGameRoom> getAccountGameHistory(const std::string & accountID);
 	std::vector<LobbyGameRoom> getActiveGameRooms();
+	LobbyGameRoom getGameRoom(const std::string & roomID);
 	std::vector<LobbyAccount> getActiveAccounts();
 	std::vector<LobbyGameRoom> getRooms(int hours, int limit);
 	std::vector<LobbyChatMessage> getRecentMessageHistory(const std::string & channelType, const std::string & channelName);
