@@ -44,6 +44,8 @@ public:
 	void saveOptions(const CMapGenOptions & options);
 	void loadOptions();
 	CMapGenOptions & obtainMapGenOptions() {return *mapGenOptions;}
+	bool isCustomMapSizeMode() const { return customMapSizeMode; }
+	size_t getCustomMapSizeIconFrame() const;
 
 	CFunctionList<void(std::shared_ptr<CMapInfo>, std::shared_ptr<CMapGenOptions>)> mapInfoChanged;
 
@@ -65,6 +67,7 @@ private:
 	std::set<int> compTeamsAllowed;
 	std::map<int, int> mapSizeButtons;
 	std::set<int> customSizeButtons;
+	bool customMapSizeMode = false;
 
 	int templateIndex;
 };
