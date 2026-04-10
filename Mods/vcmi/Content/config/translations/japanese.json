@@ -405,8 +405,6 @@
 	"vcmi.creatureWindow.showBonuses.hover": "ボーナスビューに切り替え",
 	"vcmi.creatureWindow.showSkills.help": "指揮官が習得したすべてのスキルを表示。",
 	"vcmi.creatureWindow.showSkills.hover": "スキルビューに切り替え",
-	"vcmi.credits.developing": "",
-	"vcmi.credits.heroes": "",
 	"vcmi.dimensionDoor.seaToLandError": "ディメンジョンドアーを使って海から陸へ、またはその逆にテレポートすることはできません。",
 	"vcmi.heroOverview.secondarySkills": "サブスキル",
 	"vcmi.heroOverview.spells": "呪文",
