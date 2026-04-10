@@ -14,6 +14,7 @@
 #include "TurnTimerHandler.h"
 #include "ServerNetPackVisitors.h"
 #include "ServerSpellCastEnvironment.h"
+#include "TurnStartVisitScheduler.h"
 #include "battles/BattleProcessor.h"
 #include "processors/HeroPoolProcessor.h"
 #include "processors/NewTurnProcessor.h"
@@ -542,6 +543,7 @@ CGameHandler::CGameHandler(IGameServer & server)
 	, heroPool(std::make_unique<HeroPoolProcessor>(this))
 	, battles(std::make_unique<BattleProcessor>(this))
 	, queries(std::make_unique<QueriesProcessor>())
+	, turnStartVisitScheduler(std::make_unique<TurnStartVisitScheduler>(*this, *queries))
 	, turnOrder(std::make_unique<TurnOrderProcessor>(this))
 	, turnTimerHandler(std::make_unique<TurnTimerHandler>(*this))
 	, newTurnProcessor(std::make_unique<NewTurnProcessor>(this))
@@ -553,6 +555,7 @@ CGameHandler::CGameHandler(IGameServer & server)
 	, complainNotEnoughCreatures("Cannot split that stack, not enough creatures!")
 	, complainInvalidSlot("Invalid slot accessed!")
 {
+	queries->setListener(turnStartVisitScheduler.get());
 }
 
 CGameHandler::~CGameHandler() = default;
@@ -4214,6 +4217,9 @@ bool CGameHandler::isBlockedByQueries(const CPackForServer *pack, PlayerColor pl
 		return false;
 
 	if (dynamic_cast<const SaveLocalState *>(pack) != nullptr)
+		return false;
+
+	if(dynamic_cast<const AdvInterfaceReady *>(pack) != nullptr)
 		return false;
 
 	auto query = queries->topQuery(player);

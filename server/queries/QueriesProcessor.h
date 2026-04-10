@@ -12,6 +12,7 @@
 #include "../../lib/GameConstants.h"
 #include "constants/EntityIdentifiers.h"
 #include "queries/CQuery.h"
+#include "IQueryStackListener.h"
 
 class CQuery;
 using QueryPtr = std::shared_ptr<CQuery>;
@@ -22,11 +23,15 @@ public:
 	using QueriesStack = std::vector<QueryPtr>;
 	using QueriesPerPlayer = std::array<QueriesStack, PlayerColor::PLAYER_LIMIT_I>;
 
+	// Sets an optional listener notified when a player's query stack changes.
+	void setListener(IQueryStackListener * listener);
+
 private:
 	void addQuery(PlayerColor player, QueryPtr query);
 	void popQuery(PlayerColor player, QueryPtr query);
 
 	QueriesPerPlayer queries;
+	IQueryStackListener * queriesStackListener = nullptr;
 
 	template<typename StorageT>
 	class AllQueriesViewT
@@ -55,7 +60,7 @@ private:
 
 			decltype(auto) operator*() const
 			{
-				return (*storage)[outer][inner]; // QueryPtr& albo const QueryPtr&
+				return (*storage)[outer][inner]; // QueryPtr& or const QueryPtr&
 			}
 
 			iterator & operator++()

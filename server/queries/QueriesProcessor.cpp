@@ -33,6 +33,9 @@ void QueriesProcessor::popQuery(PlayerColor player, QueryPtr query)
 	//Exposure on query below happens only if removal didn't trigger any new query
 	if(nextQuery && nextQuery == topQuery(player))
 		nextQuery->onExposure(query);
+
+	if(queriesStackListener)
+		queriesStackListener->onQueryStackChanged(player);
 }
 
 void QueriesProcessor::popQuery(const CQuery &query)
@@ -82,6 +85,9 @@ void QueriesProcessor::addQuery(PlayerColor player, QueryPtr query)
 	query->onAdding(player);
 	queries[player].push_back(query);
 	query->onAdded(player);
+
+	if(queriesStackListener)
+		queriesStackListener->onQueryStackChanged(player);
 }
 
 QueryPtr QueriesProcessor::topQuery(PlayerColor player)
@@ -143,5 +149,10 @@ int QueriesProcessor::countQuery(const QueryPtr & query) const
 			++result;
 	}
 	return result;
+}
+
+void QueriesProcessor::setListener(IQueryStackListener * listener)
+{
+	queriesStackListener = listener;
 }
 
