@@ -870,7 +870,7 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="782"/>
         <source>empty = map name prefix</source>
-        <translation>(використовувати назву карти)</translation>
+        <translation>(використовувати назву мапи)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="490"/>
@@ -1189,7 +1189,7 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="863"/>
         <source>Install mod that provides various interface improvements, such as a better interface for random maps and selectable actions in battles</source>
-        <translation>Встановити різноманітні покращення інтерфейсу, такі як покращений інтерфейс випадкових карт та вибір варіантів дій у боях</translation>
+        <translation>Встановити різноманітні покращення інтерфейсу, такі як покращений інтерфейс випадкових мап та вибір варіантів дій у боях</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="928"/>
