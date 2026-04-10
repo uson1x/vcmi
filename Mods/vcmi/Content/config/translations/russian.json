@@ -11,6 +11,7 @@
 	"core.bonus.CHANGES_SPELL_COST_FOR_ALLY.description": "{Снижение стоимости заклинаний (${val})}\nСнижает стоимость применения заклинаний героя на ${val}",
 	"core.bonus.CHANGES_SPELL_COST_FOR_ENEMY.description": "{Подавитель магии (${val})}\nУвеличивает стоимость применения заклинаний противника на ${val}",
 	"core.bonus.CHARGE_IMMUNITY.description": "{Иммунитет к разгону}\nЭтот отряд не получает дополнительного урона от рыцарской атаки",
+	"core.bonus.CPU_CONTROLLED.description": "",
 	"core.bonus.DAMAGE_RECEIVED_CAP.description": "{Лимит урона (${val}%) }\nНи одна атака не может нанести больше урона, чем ${val}% от максимального здоровья",
 	"core.bonus.DEATH_STARE.description": "{Смертельный взгляд (${val}%)}\n${val}% шанс уничтожить одно живое существо",
 	"core.bonus.DEFENSIVE_STANCE.description": "{Защитная стойка}\nПовышает защиту на +${val} после использования действия \"Защита\"",

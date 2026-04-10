@@ -11,6 +11,7 @@
 	"core.bonus.CHANGES_SPELL_COST_FOR_ALLY.description": "{Giảm (${val}) năng lượng}\nGiảm ${val} năng lượng khi tướng dùng phép",
 	"core.bonus.CHANGES_SPELL_COST_FOR_ENEMY.description": "{Tốn thêm (${val}) năng lượng}\nTướng địch dùng phép tốn thêm ${val} năng lượng",
 	"core.bonus.CHARGE_IMMUNITY.description": "{Bộ binh}\nKháng lại kỹ năng đặc biệt của Cavalier và Champion",
+	"core.bonus.CPU_CONTROLLED.description": "",
 	"core.bonus.DAMAGE_RECEIVED_CAP.description": "{Giới hạn sát thương (${val}%) }\nĐòn đánh không thể gây sát thương vượt quá ${val}% máu tối đa",
 	"core.bonus.DEATH_STARE.description": "{Ánh mắt tử thần (${val}%)}\nCó ${val}% cơ hội giết chết kẻ địch",
 	"core.bonus.DEFENSIVE_STANCE.description": "{Thưởng phòng thủ}\n+${val} phòng thủ khi đang ở thế thủ",
