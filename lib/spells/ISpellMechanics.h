@@ -234,6 +234,8 @@ public:
 	virtual IBattleCast::Value64 getEffectValue() const = 0;
 
 	virtual PlayerColor getCasterColor() const = 0;
+	virtual BattleSide getCasterSide() const { return casterSide; };
+	virtual const CGHeroInstance * getHeroCaster() const = 0;
 
 	//Spell facade
 	virtual int32_t getSpellIndex() const = 0;
@@ -297,6 +299,7 @@ public:
 	IBattleCast::Value64 getEffectValue() const override;
 
 	PlayerColor getCasterColor() const override;
+	const CGHeroInstance * getHeroCaster() const override;
 
 	bool isSmart() const override;
 	bool isMassive() const override;

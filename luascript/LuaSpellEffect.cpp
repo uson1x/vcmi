@@ -67,7 +67,7 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 
-	JsonNode response = context->callGlobalWithParameters(APPLICABLE_GENERAL, parameters, m);
+	JsonNode response = context->callGlobalWithParameters(APPLICABLE_GENERAL, parameters, m, &problem);
 
 	if(response.getType() != JsonNode::JsonType::DATA_BOOL)
 	{

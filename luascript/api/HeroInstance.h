@@ -25,6 +25,9 @@ namespace api
 
 class HeroInstanceProxy : public OpaqueWrapper<const CGHeroInstance, HeroInstanceProxy>
 {
+	static int isMale(lua_State * L);
+	static int isFemale(lua_State * L);
+
 public:
 	using Wrapper = OpaqueWrapper<const CGHeroInstance, HeroInstanceProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;

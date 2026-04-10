@@ -90,12 +90,13 @@ void EffectFixture::setUp()
 
 	EXPECT_CALL(*battleFake, getScriptContextPool()).WillRepeatedly(ReturnRef(*pool));
 
+	EXPECT_CALL(servicesMock, creatures()).WillRepeatedly(Return(&creatureServiceMock));
+	EXPECT_CALL(mechanicsMock, creatures()).WillRepeatedly(Return(&creatureServiceMock));
+
 	ON_CALL(*battleFake, getUnitsIf(_)).WillByDefault(Invoke(&unitsFake, &battle::UnitsFake::getUnitsIf));
 	ON_CALL(mechanicsMock, spells()).WillByDefault(Return(&spellServiceMock));
 	ON_CALL(spellServiceMock, getById(_)).WillByDefault(Return(&spellStub));
 
-	ON_CALL(servicesMock, creatures()).WillByDefault(Return(&creatureServiceMock));
-	ON_CALL(mechanicsMock, creatures()).WillByDefault(Return(&creatureServiceMock));
 	ON_CALL(creatureServiceMock, getById(_)).WillByDefault(Return(&creatureStub));
 	ON_CALL(creatureServiceMock, getByIndex(_)).WillByDefault(Return(&creatureStub));
 	ON_CALL(creatureServiceMock, getByName(_)).WillByDefault(Return(&creatureStub));

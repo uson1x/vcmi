@@ -1,8 +1,7 @@
 local MetaString = require("texts.MetaString")
 
--- expected globals:
--- parameters:
--- - creature
+-- expected parameters:
+-- - id
 -- - permanent
 -- - exclusive
 -- - summonByHealth
@@ -18,8 +17,7 @@ end
 
 local function summonedCreatureHealth(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
-
-	local creature = SERVICES:creatures():getByName(parameters.creature)
+	local creature = LIBRARY:creatures():getByName(parameters.id)
 	if parameters.summonByHealth then
 		return valueWithBonus
 	else
@@ -29,8 +27,7 @@ end
 
 local function summonedCreatureAmount(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
-
-	local creature = SERVICES:creatures():getByName(parameters.creature)
+	local creature = LIBRARY:creatures():getByName(parameters.id)
 	if parameters.summonByHealth then
 		return math.floor(valueWithBonus / creature:getMaxHealth())
 	else
@@ -39,13 +36,13 @@ local function summonedCreatureAmount(parameters, mechanics)
 end
 
 applicable = function(parameters, mechanics, problem)
-	local creature = SERVICES:creatures():getByName(parameters.creature)
+	local creature = LIBRARY:creatures():getByName(parameters.id)
 	if creature == "nil" then
-		return false -- mechanics:adaptGenericProblem(problem)
+		return mechanics:adaptGenericProblem(problem)
 	end
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then
-		return false -- mechanics:adaptGenericProblem(problem)
+		return mechanics:adaptGenericProblem(problem)
 	end
 
 	-- check if there are summoned creatures of other type
@@ -59,31 +56,34 @@ applicable = function(parameters, mechanics, problem)
 		end)
 
 		if elemental ~= nil then
-			local text = MetaString.new()
-			text:appendTextID("core.genrltxt.538")
+			local hero = mechanics:getHeroCaster()
+			local himHer = "core.genrltxt.539"
+			if hero ~= nil and hero.isFemale() then
+				himHer = "core.genrltxt.540"
+			end
 
---			local hero = mechanics:caster():getHeroCaster()
---			if caster ~= nil then
---				text:replaceRawString(caster:getNameTranslated())
---				text:replaceNamePlural(elemental:creatureId())
---
---				if caster.gender == EHeroGender.FEMALE then
---					text:replaceTextID("core.genrltxt.540")
---				else
---					text:replaceTextID("core.genrltxt.539")
---				end
---			end
-
---			problem:add(text, Problem.NORMAL)
+			if hero ~= nil then
+				problem:add({
+					append = "core.genrltxt.538",
+					replace = {
+						hero:getNameTextID(),
+						elemental:getNamePluralTextID(),
+						himHer
+					}
+				})
+			else
+				problem:add({
+					append = "core.genrltxt.538"
+				})
+			end
 			return false
 		end
 	end
-
 	return true
 end
 
 apply = function(parameters, mechanics, server, target)
-	local creature = SERVICES:creatures():getByName(parameters.creature)
+	local creature = LIBRARY:creatures():getByName(parameters.id)
 
 	for _, dest in ipairs(target) do
 		if dest.unitValue then
@@ -96,35 +96,30 @@ apply = function(parameters, mechanics, server, target)
 				EHealLevel.OVERHEAL, 
 				(parameters.permanent and EHealPower.PERMANENT or EHealPower.ONE_BATTLE)
 			)
-			
+
 			server:updateUnit(
 				mechanics:getBattleID(),
 				summoned:unitId(),
 				state:save(),
 				healthValue
 			)
-			
 		else
 			server:createUnit(
 				mechanics:getBattleID(),
 				{
 					count = summonedCreatureAmount(parameters, mechanics),
 					type = creature,
-					side = mechanics:casterSide(),
+					side = mechanics:getCasterSide(),
 					position = dest.hexValue,
 					summoned = not parameters.permanent
 				}
 			)
 		end
 	end
-
-	if #pack.changedStacks > 0 then
-		server:apply(pack)
-	end
 end
 
 transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
-	local creature = SERVICES:creatures():getByName(parameters.creature)
+	local creature = LIBRARY:creatures():getByName(parameters.id)
 	local sameSummoned = mechanics:getBattle():getAnyUnitIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())
@@ -134,7 +129,7 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 	end)
 
 	if sameSummoned == nil or not parameters.summonSameUnit then
-		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:casterSide())
+		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:getCasterSide())
 		if not hex:isValid() then
 			return {} -- no free space. FIXME: should be in isApplicable
 		else

@@ -70,7 +70,7 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 	lua_setglobal(L, "GAME");
 
 	S.push(env->services());
-	lua_setglobal(L, "SERVICES");
+	lua_setglobal(L, "LIBRARY");
 
 	popAll();
 }

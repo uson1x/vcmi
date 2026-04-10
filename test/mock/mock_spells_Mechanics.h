@@ -48,6 +48,7 @@ public:
 	MOCK_CONST_METHOD0(getEffectValue, IBattleCast::Value64());
 
 	MOCK_CONST_METHOD0(getCasterColor, PlayerColor());
+	MOCK_CONST_METHOD0(getHeroCaster, const CGHeroInstance*());
 
 	MOCK_CONST_METHOD0(getSpellIndex, int32_t());
 	MOCK_CONST_METHOD0(getSpellId, SpellID());

@@ -29,6 +29,8 @@ set(lib_SRCS
 		api/netpacks/SetResources.cpp
 
 		api/spells/Mechanics.cpp
+		api/spells/Problem.cpp
+
 		api/texts/MetaString.cpp
 
 		api/Artifact.cpp
@@ -77,6 +79,8 @@ set(lib_HDRS
 		api/netpacks/SetResources.h
 
 		api/spells/Mechanics.h
+		api/spells/Problem.h
+
 		api/texts/MetaString.h
 
 		api/Artifact.h

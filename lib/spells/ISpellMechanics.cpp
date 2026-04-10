@@ -541,6 +541,11 @@ PlayerColor BaseMechanics::getCasterColor() const
 	return caster->getCasterOwner();
 }
 
+const CGHeroInstance * BaseMechanics::getHeroCaster() const
+{
+	return caster->getHeroCaster();
+}
+
 std::vector<AimType> BaseMechanics::getTargetTypes() const
 {
 	std::vector<AimType> ret;

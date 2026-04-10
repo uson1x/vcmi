@@ -17,10 +17,11 @@
 
 #include "../../../lib/battle/CBattleInfoCallback.h"
 #include "../../../lib/spells/Problem.h"
+#include "../../../lib/mapObjects/CGHeroInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-	namespace scripting
+namespace scripting
 {
 	namespace api
 	{
@@ -39,6 +40,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 			{"getEffectDuration", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getEffectDuration), &Mechanics::getEffectDuration>::invoke, false},
 			{"getEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getEffectValue), &Mechanics::getEffectValue>::invoke, false},
 			{"getCasterColor", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getCasterColor), &Mechanics::getCasterColor>::invoke, false},
+			{"getCasterSide", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getCasterSide), &Mechanics::getCasterSide>::invoke, false},
+			{"getHeroCaster", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getHeroCaster), &Mechanics::getHeroCaster>::invoke, false},
 			{"getBattle", LuaMethodWrapper<Mechanics, decltype(&Mechanics::battle), &Mechanics::battle>::invoke, false},
 			{"getBattleID", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getBattleID), &Mechanics::getBattleID>::invoke, false},
 			{"calculateRawEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::calculateRawEffectValue), &Mechanics::calculateRawEffectValue>::invoke, false},
