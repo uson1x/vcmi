@@ -2244,7 +2244,7 @@ UWAGA: W niektórych przypadkach zaktualizowane wersje modów mogą być niekomp
         <source>If you own Heroes Chronicles on gog.com, you can use offline backup installers provided by gog to import Heroes Chronicles data into VCMI as custom campaigns.
 To import Heroes Chronicles, download offline backup installer of each chronicle that you wish to install, select &apos;Import files&apos; option and select downloaded file. This will generate and install mod for VCMI that contains imported chronicles.</source>
         <translation>Jeśli posiadasz Heroes Chronicles na gog.com, możesz użyć instalatorów offline dostarczanych przez GOG, aby zaimportować dane Heroes Chronicles do VCMI jako niestandardowe kampanie.
-Aby zaimportować Heroes Chronicles, pobierz instalator offline każdej kroniki, którą chcesz zainstalować, wybierz opcję 'Importuj pliki' i wskaż pobrany plik. To spowoduje wygenerowanie i zainstalowanie moda dla VCMI zawierającego zaimportowane Kroniki.</translation>
+Aby zaimportować Heroes Chronicles, pobierz instalator offline każdej kroniki, którą chcesz zainstalować, wybierz opcję &apos;Importuj pliki&apos; i wskaż pobrany plik. To spowoduje wygenerowanie i zainstalowanie moda dla VCMI zawierającego zaimportowane Kroniki.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="359"/>
