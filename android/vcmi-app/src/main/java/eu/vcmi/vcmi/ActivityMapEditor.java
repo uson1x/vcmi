@@ -7,13 +7,9 @@ import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.util.DisplayMetrics;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import androidx.annotation.Nullable;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
+
+import eu.vcmi.vcmi.util.ActivityHelper;
 import org.libsdl.app.SDL;
 
 import java.io.File;
@@ -64,7 +60,7 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 		SDL.setContext(this);
 		super.onCreate(savedInstanceState);
 
-		applyImmersiveFullscreen();
+		ActivityHelper.applyImmersiveFullscreen(this);
 	}
 
 	@Override
@@ -72,7 +68,7 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 	{
 		super.onWindowFocusChanged(hasFocus);
 		if (hasFocus)
-			applyImmersiveFullscreen();
+			ActivityHelper.applyImmersiveFullscreen(this);
 	}
 
 	@Override
@@ -120,10 +116,7 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 			try (InputStream in = getContentResolver().openInputStream(uri);
 				 OutputStream out = new FileOutputStream(tempFile))
 			{
-				byte[] buf = new byte[8192];
-				int len;
-				while ((len = in.read(buf)) != -1)
-					out.write(buf, 0, len);
+				FileUtil.copyStream(in, out);
 			}
 			return tempFile.getAbsolutePath();
 		}
@@ -189,10 +182,7 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 			}
 			try (InputStream in = new FileInputStream(localFile); OutputStream o = out)
 			{
-				byte[] buf = new byte[8192];
-				int len;
-				while ((len = in.read(buf)) != -1)
-					o.write(buf, 0, len);
+				FileUtil.copyStream(in, o);
 			}
 			return true;
 		}
@@ -218,27 +208,4 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	private void applyImmersiveFullscreen()
-	{
-		Window window = getWindow();
-		View decorView = window.getDecorView();
-
-		window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-		decorView.setSystemUiVisibility(
-				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-				| View.SYSTEM_UI_FLAG_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-		);
-
-		WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, decorView);
-		if (insetsController != null)
-		{
-			insetsController.hide(WindowInsetsCompat.Type.systemBars());
-			insetsController.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-		}
-	}
 }

@@ -26,7 +26,7 @@ VCMI_LIB_USING_NAMESPACE
  */
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 class DefFile;
@@ -103,6 +103,6 @@ public:
 };
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
-using MapEditorNS::Animation;
+} // namespace MapEditor
+using MapEditor::Animation;
 #endif

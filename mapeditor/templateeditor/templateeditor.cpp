@@ -754,7 +754,7 @@ void TemplateEditor::showTemplateEditor(QWidget *parent)
 	dialog->move(parent->geometry().center() - dialog->rect().center());
 
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
-	QObject::connect(dialog, &QObject::destroyed, parent, [parent]{ parent->show(); });
+	connect(dialog, &QObject::destroyed, parent, &QWidget::show);
 }
 
 void TemplateEditor::on_actionOpen_triggered()
@@ -765,15 +765,15 @@ void TemplateEditor::on_actionOpen_triggered()
 	if(!getAnswerAboutUnsavedChanges())
 		return;
 	
+	auto title = tr("Open template");
+	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
+	auto filter = tr("VCMI templates(*.json)");
+
 #ifdef VCMI_ANDROID
-	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, tr("Open template"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		tr("VCMI templates(*.json)"),
+	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, title, dir, filter,
 		AndroidFilePicker::Mode::ExternalOnly);
 #else
-	auto filenameSelect = QFileDialog::getOpenFileName(this, tr("Open template"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		tr("VCMI templates(*.json)"));
+	auto filenameSelect = QFileDialog::getOpenFileName(this, title, dir, filter);
 #endif
 	if(filenameSelect.isEmpty())
 		return;
@@ -790,14 +790,17 @@ void TemplateEditor::on_actionSave_as_triggered()
 	if(!validate())
 		return;
 
+	auto title = tr("Save template");
+	auto filter = tr("VCMI templates (*.json)");
+
 #ifdef VCMI_ANDROID
 	QString contentUri;
-	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, tr("Save template"),
+	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, title,
 		QString(),
-		tr("VCMI templates (*.json)"),
+		filter,
 		AndroidFilePicker::Mode::ExternalOnly, contentUri);
 #else
-	auto filenameSelect = QFileDialog::getSaveFileName(this, tr("Save template"), "", tr("VCMI templates (*.json)"));
+	auto filenameSelect = QFileDialog::getSaveFileName(this, title, "", filter);
 #endif
 
 	if(filenameSelect.isNull())

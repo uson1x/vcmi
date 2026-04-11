@@ -84,7 +84,7 @@ protected:
 };
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 class MapView : public QGraphicsView
@@ -133,8 +133,8 @@ private:
 };
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
-using MapEditorNS::MapView;
+} // namespace MapEditor
+using MapEditor::MapView;
 #endif
 
 class MinimapView : public QGraphicsView

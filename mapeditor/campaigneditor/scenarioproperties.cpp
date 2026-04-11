@@ -393,13 +393,15 @@ void ScenarioProperties::on_pushButtonCreatureTypeNone_clicked()
 
 void ScenarioProperties::on_pushButtonImport_clicked()
 {
+	auto title = tr("Open map");
+	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
+	auto filter = tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)");
+
 #ifdef VCMI_ANDROID
-	auto filename = AndroidFilePicker::getOpenFileName(this, tr("Open map"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)"),
+	auto filename = AndroidFilePicker::getOpenFileName(this, title, dir, filter,
 		AndroidFilePicker::Mode::InternalOrExternal);
 #else
-	auto filename = QFileDialog::getOpenFileName(this, tr("Open map"), "", tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)"));
+	auto filename = QFileDialog::getOpenFileName(this, title, dir, filter);
 #endif
 	if(filename.isEmpty())
 		return;
@@ -433,14 +435,17 @@ void ScenarioProperties::on_pushButtonExport_clicked()
 {
 	auto mapName = QString::fromStdString(campaignState->scenarios.at(scenario).mapName);
 	bool isVmap = mapName.toLower().endsWith(".vmap");
+
+	auto title = tr("Save map");
+	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
+	auto filter = isVmap ? tr("VCMI maps (*.vmap);") : tr("HoMM3 maps (*.h3m);");
+
 #ifdef VCMI_ANDROID
 	QString contentUri;
-	QString fileName = AndroidFilePicker::getSaveFileName(this, tr("Save map"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		isVmap ? tr("VCMI maps (*.vmap);") : tr("HoMM3 maps (*.h3m);"),
+	QString fileName = AndroidFilePicker::getSaveFileName(this, title, dir, filter,
 		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
 #else
-	QString fileName = QFileDialog::getSaveFileName(nullptr, tr("Save map"), mapName, isVmap ? tr("VCMI maps (*.vmap);") : tr("HoMM3 maps (*.h3m);"));
+	QString fileName = QFileDialog::getSaveFileName(nullptr, title, mapName, filter);
 #endif
 	if (fileName.isEmpty())
 		return;

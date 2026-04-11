@@ -26,7 +26,7 @@
 typedef std::map<size_t, std::vector<JsonNode>> source_map;
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 /// Class for def loading
@@ -839,5 +839,5 @@ void Animation::createFlippedGroup(const size_t sourceGroup, const size_t target
 }
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
+} // namespace MapEditor
 #endif

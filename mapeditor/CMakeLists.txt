@@ -241,11 +241,7 @@ if(ENABLE_TRANSLATIONS)
 		foreach(qmFile ${editor_QM})
 			string(APPEND rccQmFiles "<file>${qmFile}</file>\n")
 		endforeach()
-		if(ENABLE_SINGLE_APP_BUILD)
-			set(editor_qrc_prefix "/editor")
-		else()
-			set(editor_qrc_prefix "/")
-		endif()
+		set(editor_qrc_prefix "/editor")
 		file(WRITE "${translationsResource}"
 "<!DOCTYPE RCC>
 <RCC version=\"1.0\">
@@ -288,11 +284,7 @@ endif()
 
 if(ENABLE_TRANSLATIONS)
 	if(TARGET Qt6::Core)
-		if(ENABLE_SINGLE_APP_BUILD)
-			set(_editor_res_prefix "/editor/${translationsDir}")
-		else()
-			set(_editor_res_prefix "/${translationsDir}")
-		endif()
+		set(_editor_res_prefix "/editor/${translationsDir}")
 		qt_add_translations(vcmieditor
 			TS_FILES ${editor_TS}
 			RESOURCE_PREFIX "${_editor_res_prefix}"

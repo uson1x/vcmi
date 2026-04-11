@@ -19,7 +19,7 @@
 #include "Animation.h"
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-using namespace MapEditorNS;
+using namespace MapEditor;
 #endif
 
 #include <boost/filesystem/path.hpp>

@@ -20,7 +20,7 @@
 #include "../helper.h"
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-using namespace MapEditorNS;
+using namespace MapEditor;
 #endif
 
 #ifdef VCMI_ANDROID
@@ -210,7 +210,7 @@ void CampaignEditor::showCampaignEditor(QWidget *parent, EditorCallback * cb)
 	dialog->move(parent->geometry().center() - dialog->rect().center());
 
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
-	QObject::connect(dialog, &QObject::destroyed, parent, [parent]{ parent->show(); });
+	connect(dialog, &QObject::destroyed, parent, &QWidget::show);
 }
 
 void CampaignEditor::showCampaignEditor(QWidget *parent, const QString &campaignFile, EditorCallback * cb)
@@ -220,7 +220,7 @@ void CampaignEditor::showCampaignEditor(QWidget *parent, const QString &campaign
 	dialog->move(parent->geometry().center() - dialog->rect().center());
 
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
-	QObject::connect(dialog, &QObject::destroyed, parent, [parent]{ parent->show(); });
+	connect(dialog, &QObject::destroyed, parent, &QWidget::show);
 
 	try
 	{
@@ -264,15 +264,15 @@ void CampaignEditor::on_actionOpen_triggered()
 	if(!getAnswerAboutUnsavedChanges())
 		return;
 	
+	auto title = tr("Open campaign");
+	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
+	auto filter = tr("All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)");
+
 #ifdef VCMI_ANDROID
-	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, tr("Open campaign"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		tr("All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)"),
+	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, title, dir, filter,
 		AndroidFilePicker::Mode::InternalOrExternal);
 #else
-	auto filenameSelect = QFileDialog::getOpenFileName(this, tr("Open map"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		tr("All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)"));
+	auto filenameSelect = QFileDialog::getOpenFileName(this, title, dir, filter);
 #endif
 	if(filenameSelect.isEmpty())
 		return;
@@ -328,14 +328,16 @@ void CampaignEditor::on_actionSave_as_triggered()
 	if(!campaignState)
 		return;
 
+	auto title = tr("Save campaign");
+	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
+	auto filter = tr("VCMI campaigns (*.vcmp)");
+
 #ifdef VCMI_ANDROID
 	QString contentUri;
-	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, tr("Save campaign"),
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()),
-		tr("VCMI campaigns (*.vcmp)"),
+	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, title, dir, filter,
 		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
 #else
-	auto filenameSelect = QFileDialog::getSaveFileName(this, tr("Save campaign"), "", tr("VCMI campaigns (*.vcmp)"));
+	auto filenameSelect = QFileDialog::getSaveFileName(this, title, dir, filter);
 #endif
 
 	if(filenameSelect.isNull())

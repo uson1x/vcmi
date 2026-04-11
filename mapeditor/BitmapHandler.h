@@ -12,7 +12,7 @@
 #include <QImage>
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 namespace BitmapHandler
@@ -22,5 +22,5 @@ namespace BitmapHandler
 }
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
+} // namespace MapEditor
 #endif

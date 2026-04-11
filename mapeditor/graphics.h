@@ -32,7 +32,7 @@ struct InfoAboutHero;
 struct InfoAboutTown;
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 class Animation;
@@ -98,7 +98,7 @@ public:
 extern Graphics * graphics;
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
-using MapEditorNS::Graphics;
-using MapEditorNS::graphics;
+} // namespace MapEditor
+using MapEditor::Graphics;
+using MapEditor::graphics;
 #endif

@@ -56,7 +56,7 @@ void MinimapView::mousePressEvent(QMouseEvent* event)
 }
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 MapView::MapView(QWidget * parent):
@@ -691,7 +691,7 @@ void MapView::setViewports()
 }
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
+} // namespace MapEditor
 #endif
 
 MapSceneBase::MapSceneBase(int lvl):

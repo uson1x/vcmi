@@ -36,7 +36,7 @@
 #include "../lib/mapObjects/ObjectTemplate.h"
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-namespace MapEditorNS {
+namespace MapEditor {
 #endif
 
 Graphics * graphics = nullptr;
@@ -351,5 +351,5 @@ void Graphics::initializeImageLists()
 }
 
 #ifdef ENABLE_SINGLE_APP_BUILD
-} // namespace MapEditorNS
+} // namespace MapEditor
 #endif
