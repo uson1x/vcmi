@@ -1,10 +1,18 @@
 {
-	"core:pasis":
-	{
-		"special" : true
-	},
-	"core:monere":
-	{
-		"special" : true
-	}
+	"core:pasis":      { "special" : true },
+	"core:thunar":     { "special" : true },
+	"core:ignissa":    { "special" : true },
+	"core:lacus":      { "special" : true },
+	"core:monere":     { "special" : true },
+	"core:erdamon":    { "special" : true },
+	"core:fiur":       { "special" : true },
+	"core:kalt":       { "special" : true },
+	"core:luna":       { "special" : true },
+	"core:brissa":     { "special" : true },
+	"core:ciele":      { "special" : true },
+	"core:labetha":    { "special" : true },
+	"core:inteus":     { "special" : true },
+	"core:aenain":     { "special" : true },
+	"core:gelare":     { "special" : true },
+	"core:grindan":    { "special" : true }
 }
