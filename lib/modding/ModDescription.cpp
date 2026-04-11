@@ -216,7 +216,7 @@ bool ModDescription::isTranslation() const
 	return getValue("modType").String() == "Translation";
 }
 
-bool ModDescription::isDemo() const
+bool ModDescription::isDemoSupport() const
 {
 	return getValue("modType").String() == "Demo";
 }

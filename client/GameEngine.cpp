@@ -59,10 +59,9 @@ ObjectConstruction::~ObjectConstruction()
 	ENGINE->captureChildren = !ENGINE->createdObj.empty();
 }
 
-GameEngine::GameEngine(GameDataMode gameDataMode)
+GameEngine::GameEngine()
 	: captureChildren(false)
 	, fakeStatusBar(std::make_shared<EmptyStatusBar>())
-	, gameDataMode(gameDataMode)
 {
 	inGuiThread = true;
 
@@ -191,19 +190,14 @@ Point GameEngine::screenDimensions() const
 	return screenHandlerInstance->getLogicalResolution();
 }
 
-GameEngine::GameDataMode GameEngine::getGameDataMode() const
-{
-	return gameDataMode;
-}
-
 bool GameEngine::isRoeData() const
 {
-	return gameDataMode == GameEngine::GameDataMode::ROE || gameDataMode == GameEngine::GameDataMode::DEMO_ROE;
+	return LIBRARY->isRoeData();
 }
 
 bool GameEngine::isDemoData() const
 {
-	return gameDataMode == GameEngine::GameDataMode::DEMO_ROE || gameDataMode == GameEngine::GameDataMode::DEMO_SOD;
+	return LIBRARY->isDemoData();
 }
 
 void GameEngine::drawPerformanceOverlay()

@@ -24,7 +24,7 @@ class FirstLaunchView : public QWidget
 {
 	Q_OBJECT
 
-	std::unique_ptr<Demo> demo;
+	std::unique_ptr<DemoInstaller> demo;
 	bool demoDataActive = false;
 
 	void changeEvent(QEvent *event) override;

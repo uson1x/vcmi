@@ -34,14 +34,6 @@ class Discord;
 
 class GameEngine
 {
-public:
-	enum GameDataMode
-	{
-		SOD,
-		ROE,
-		DEMO_SOD,
-		DEMO_ROE
-	};
 private:
 	/// Fake no-op version status bar, for use in windows that have no status bar
 	std::shared_ptr<IStatusBar> fakeStatusBar;
@@ -65,8 +57,6 @@ private:
 	std::unique_ptr<AsyncRunner> asyncTasks;
 
 	std::unique_ptr<Discord> discordInstance;
-
-	GameDataMode gameDataMode;
 
 	IGameEngineUser *engineUser = nullptr;
 
@@ -112,8 +102,7 @@ public:
 	/// returns true if Shift is currently pressed down
 	bool isKeyboardShiftDown() const;
 
-	/// returns game data
-	GameDataMode getGameDataMode() const;
+	/// returns game data mode
 	bool isRoeData() const;
 	bool isDemoData() const;
 
@@ -133,7 +122,7 @@ public:
 	bool captureChildren; //all newly created objects will get their parents from stack and will be added to parents children list
 	std::list<CIntObject *> createdObj; //stack of objs being created
 
-	GameEngine(GameDataMode gameDataMode);
+	GameEngine();
 	~GameEngine();
 
 	/// Performs main game loop till game shutdown

@@ -96,15 +96,6 @@ void StartGameTab::refreshState()
 {
 	bool demoActive = CModListView::isDemoDataPresent();
 
-	CModListView * modView = Helper::getMainWindow()->getModView();
-	if (modView->isModInstalled("roe-demo"))
-	{
-		if (demoActive && !modView->isModEnabled("roe-demo"))
-			modView->enableModByName("roe-demo");
-		else if (!demoActive && modView->isModEnabled("roe-demo"))
-			modView->disableModByName("roe-demo");
-	}
-
 	refreshGameData();
 	refreshUpdateStatus(EGameUpdateStatus::NOT_CHECKED);//TODO - follow automatic check on startup setting
 

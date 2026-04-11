@@ -822,7 +822,7 @@ void Verify(const State * state) // NOSONAR - function used for debugging only
 								ensureValueMatch(vf, cstack->ableToRetaliate(), "HEX.STACK_FLAGS1.CAN_RETALIATE");
 								break;
 							case SF1::SLEEPING:
-								cstack->unitType()->getId() == CreatureID::AMMO_CART
+								cstack->isAmmoCart()
 									? ensureValueMatch(vf, false, "HEX.STACK_FLAGS1.SLEEPING")
 									: ensureValueMatch(vf, cstack->hasBonusOfType(BonusType::NOT_ACTIVE), "HEX.STACK_FLAGS1.SLEEPING");
 								break;

@@ -318,7 +318,7 @@ bool CModFilterModel::filterAcceptsRow(int source_row, const QModelIndex & sourc
 	bool isDemo = CModListView::isDemoDataPresent();
 	if (isDemo && !mod.isTranslation())
 		return false;
-	if (mod.isDemo())
+	if (mod.isDemoSupport())
 		return false;
 
 	if(filterMatchesThis(index))

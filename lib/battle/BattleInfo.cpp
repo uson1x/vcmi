@@ -989,7 +989,7 @@ bool CMP_stack::operator()(const battle::Unit * a, const battle::Unit * b) const
 	switch(phase)
 	{
 	case 0: //catapult moves after turrets
-		return a->creatureIndex() > b->creatureIndex(); //catapult is 145 and turrets are 149
+		return a->isTurret() && !b->isTurret(); //turrets move before catapult
 	case 1:
 	case 2:
 	case 3:

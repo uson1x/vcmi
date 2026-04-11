@@ -296,26 +296,10 @@ int main(int argc, char * argv[])
 
 	if(!settings["session"]["headless"].Bool())
 	{
-		GameEngine::GameDataMode mode = GameEngine::GameDataMode::SOD;
-		if(CGeneralTextHandler::isRoEData())
-		{
-			if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
-				mode = GameEngine::GameDataMode::DEMO_ROE;
-			else
-				mode = GameEngine::GameDataMode::ROE;
-		}
-		else if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
-			mode = GameEngine::GameDataMode::DEMO_SOD;
-
-		if(mode == GameEngine::GameDataMode::ROE)
+		if(LIBRARY->getGameDataMode() == GameLibrary::GameDataMode::ROE)
 			handleFatalError("Heroes III: Restoration of Erathia (including HD Edition) data files are not supported!", false);
 
-		if(mode == GameEngine::GameDataMode::DEMO_ROE || mode == GameEngine::GameDataMode::DEMO_SOD)
-			logGlobal->info("Game started with demo data");
-		if(mode == GameEngine::GameDataMode::ROE || mode == GameEngine::GameDataMode::DEMO_ROE)
-			logGlobal->info("Game started with RoE data");
-
-		ENGINE = std::make_unique<GameEngine>(mode);
+		ENGINE = std::make_unique<GameEngine>();
 	}
 
 	GAME = std::make_unique<GameInstance>();

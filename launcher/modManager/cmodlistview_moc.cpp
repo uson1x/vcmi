@@ -168,14 +168,7 @@ bool CModListView::isDemoDataPresent()
 	if (hasFullData)
 		return false;
 
-	// H3DEMO.H3M is a loose file, QDir is fine here
-	QString mapsPath = pathToQString(VCMIDirs::get().userDataPath()) + "/Maps";
-	QDir mapsDir(mapsPath);
-	for (const QString & name : mapsDir.entryList(QDir::Files | QDir::Readable))
-		if (name.compare("h3demo.h3m", Qt::CaseInsensitive) == 0)
-			return true;
-
-	return false;
+	return CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M"));
 }
 
 void CModListView::showEvent(QShowEvent * event)
@@ -188,15 +181,6 @@ void CModListView::reload(const QString & modToSelect)
 {
 	modStateModel->reloadLocalState();
 	modModel->reloadViewModel();
-
-	// Sync roe-demo enabled state with demo data presence
-	if (modStateModel->isModExists("roe-demo") && modStateModel->getMod("roe-demo").isInstalled())
-	{
-		if (isDemoDataPresent() && !modStateModel->isModEnabled("roe-demo"))
-			enableModByName("roe-demo");
-		else if (!isDemoDataPresent() && modStateModel->isModEnabled("roe-demo"))
-			disableModByName("roe-demo");
-	}
 
 	filterModel->reloadFilter();
 

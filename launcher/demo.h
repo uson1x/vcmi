@@ -13,7 +13,7 @@
 
 class CDownloadManager;
 
-class Demo : public QObject
+class DemoInstaller : public QObject
 {
 	Q_OBJECT
 
@@ -31,7 +31,7 @@ private slots:
 	void downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors);
 
 public:
-    Demo(std::function<void ()> onFinish = nullptr, std::function<void ()> onError = nullptr, std::function<void (float percent)> onProgress = nullptr);
+    DemoInstaller(std::function<void ()> onFinish = nullptr, std::function<void ()> onError = nullptr, std::function<void (float percent)> onProgress = nullptr);
 	void download();
 	void install(QString filename);
 };

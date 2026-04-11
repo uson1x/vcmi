@@ -168,6 +168,38 @@ void GameLibrary::initializeFilesystem(bool extractArchives)
 	persistentStorage.init("config/persistentStorage.json", "");
 	keyBindingsConfig.init("config/keyBindingsConfig.json", "");
 	loadModFilesystem();
+
+	// Detect game data mode after filesystem is loaded
+	gameDataMode = GameDataMode::SOD;
+	if(CGeneralTextHandler::isRoEData())
+	{
+		if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
+			gameDataMode = GameDataMode::DEMO_ROE;
+		else
+			gameDataMode = GameDataMode::ROE;
+	}
+	else if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
+		gameDataMode = GameDataMode::DEMO_SOD;
+
+	if(gameDataMode == GameDataMode::DEMO_ROE || gameDataMode == GameDataMode::DEMO_SOD)
+		logGlobal->info("Game started with demo data");
+	if(gameDataMode == GameDataMode::ROE || gameDataMode == GameDataMode::DEMO_ROE)
+		logGlobal->info("Game started with RoE data");
+}
+
+GameLibrary::GameDataMode GameLibrary::getGameDataMode() const
+{
+	return gameDataMode;
+}
+
+bool GameLibrary::isRoeData() const
+{
+	return gameDataMode == GameDataMode::ROE || gameDataMode == GameDataMode::DEMO_ROE;
+}
+
+bool GameLibrary::isDemoData() const
+{
+	return gameDataMode == GameDataMode::DEMO_ROE || gameDataMode == GameDataMode::DEMO_SOD;
 }
 
 void GameLibrary::initializeLibrary()

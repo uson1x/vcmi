@@ -25,17 +25,17 @@
 QString DEMO_URL = "http://updates.lokigames.com/loki_demos/heroes3-demo.run";
 QString DEMO_URL_ALTERNATIVE = "https://web.archive.org/web/20150506062114if_/http://updates.lokigames.com/loki_demos/heroes3-demo.run"; // alternative if fails or HTTPS is required
 
-Demo::Demo(std::function<void ()> onFinish, std::function<void ()> onError, std::function<void (float percent)> onProgress) :
+DemoInstaller::DemoInstaller(std::function<void ()> onFinish, std::function<void ()> onError, std::function<void (float percent)> onProgress) :
     onFinish(onFinish), onError(onError), onProgress(onProgress)
 {}
 
-void Demo::downloadProgress(qint64 current, qint64 max)
+void DemoInstaller::downloadProgress(qint64 current, qint64 max)
 {
     if(onProgress)
         onProgress(static_cast<float>(current) / static_cast<float>(max));
 }
 
-void Demo::downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors)
+void DemoInstaller::downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors)
 {
 	if(failedFiles.empty())
 	{
@@ -63,12 +63,12 @@ void Demo::downloadFinished(QStringList savedFiles, QStringList failedFiles, QSt
 	dlManager = nullptr;
 }
 
-void Demo::download()
+void DemoInstaller::download()
 {
     startDownload(QUrl(DEMO_URL));
 }
 
-void Demo::startDownload(const QUrl & url)
+void DemoInstaller::startDownload(const QUrl & url)
 {
     dlManager = new CDownloadManager();
     
@@ -155,7 +155,7 @@ bool gzipDecompress(QByteArray input, QByteArray &output)
         return true;
 }
 
-void Demo::install(QString filename)
+void DemoInstaller::install(QString filename)
 {
     QString realFilename = Helper::getRealPath(filename);
 
@@ -178,13 +178,13 @@ void Demo::install(QString filename)
     QByteArray uncompressedData;
     gzipDecompress(compressedData, uncompressedData);
 
-    struct TarData
+    struct FileEntry
     {
         qint64 offset;
         qint64 size;
         QString name;
     };
-    std::vector<TarData> filesToExtract = {
+    static const std::vector<FileEntry> filesToExtract = {
         { 3817472,   10034,    "Maps/h3demo.h3m"          },
         { 3829248,   625761,   "Video/pgtrnrgh.mjpg"      },
         { 4455936,   305573,   "Video/lbstart.mjpg"       },
@@ -213,7 +213,7 @@ void Demo::install(QString filename)
         { 100539392, 50942,    "Mp3/retreat battle.mp3"   },
     };
 
-    for(auto & file : filesToExtract)
+    for(const auto & file : filesToExtract)
     {
         QByteArray tmp = uncompressedData.mid(file.offset, file.size);
         QByteArray tmpUncompressed;
@@ -221,7 +221,7 @@ void Demo::install(QString filename)
 
         QDir dir(QString::fromStdString(VCMIDirs::get().userDataPath().string()));
         QString folder = file.name.split("/")[0];
-        if (!dir.exists(folder))
+        if(!dir.exists(folder))
             dir.mkpath(folder);
 
         QFile f(dir.filePath(file.name));

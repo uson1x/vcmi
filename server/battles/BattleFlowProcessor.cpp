@@ -660,7 +660,7 @@ bool BattleFlowProcessor::tryMakeAutomaticActionOfMeleeUnit(const CBattleInfoCal
 bool BattleFlowProcessor::tryMakeAutomaticActionOfCatapult(const CBattleInfoCallback & battle, const CStack * next)
 {
 	const CGHeroInstance * curOwner = battle.battleGetOwnerHero(next);
-	if (next->unitType()->getId() == CreatureID::CATAPULT)
+	if (next->isCatapult())
 	{
 		const auto & attackableBattleHexes = battle.getAttackableWallParts();
 
@@ -687,7 +687,7 @@ bool BattleFlowProcessor::tryMakeAutomaticActionOfCatapult(const CBattleInfoCall
 bool BattleFlowProcessor::tryMakeAutomaticActionOfFirstAidTent(const CBattleInfoCallback & battle, const CStack * next)
 {
 	const CGHeroInstance * curOwner = battle.battleGetOwnerHero(next);
-	if (next->unitType()->getId() == CreatureID::FIRST_AID_TENT)
+	if (next->isFirstAidTent())
 	{
 		TStacks possibleStacks = battle.battleGetStacksIf([&next](const CStack * s)
 		{

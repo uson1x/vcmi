@@ -803,7 +803,7 @@ bool CBattleInfoCallback::battleCanShoot(const battle::Unit * attacker) const
 
 	if (!attacker)
 		return false;
-	if (attacker->creatureIndex() == CreatureID::CATAPULT) //catapult cannot attack creatures
+	if (attacker->isCatapult()) //catapult cannot attack creatures
 		return false;
 
 	if (!attacker->canShoot())

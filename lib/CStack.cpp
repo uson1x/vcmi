@@ -309,7 +309,7 @@ bool CStack::unitHasAmmoCart(const battle::Unit * unit) const
 {
 	for(const auto & st : battle->stacks)
 	{
-		if(battle->battleMatchOwner(st.get(), unit, true) && st->unitType()->getId() == CreatureID::AMMO_CART)
+		if(battle->battleMatchOwner(st.get(), unit, true) && st->isAmmoCart())
 		{
 			return st->alive();
 		}

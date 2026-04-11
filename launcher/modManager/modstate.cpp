@@ -197,9 +197,9 @@ bool ModState::isTranslation() const
 	return impl.isTranslation();
 }
 
-bool ModState::isDemo() const
+bool ModState::isDemoSupport() const
 {
-	return impl.isDemo();
+	return impl.isDemoSupport();
 }
 
 bool ModState::isVisible() const

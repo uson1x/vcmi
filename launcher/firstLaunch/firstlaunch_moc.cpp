@@ -150,7 +150,7 @@ void FirstLaunchView::on_pushButtonDemo_clicked()
 	overlay->setRange(100);
 	overlay->setValue(0);
 
-	demo = std::make_unique<Demo>(
+	demo = std::make_unique<DemoInstaller>(
 		[this, overlay](){
 			overlay->deleteLater();
 			heroesDataUpdate(true);

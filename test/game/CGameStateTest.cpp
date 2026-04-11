@@ -269,7 +269,7 @@ TEST_F(CGameStateTest, issue2765)
 
 	for(const auto & s : gameState->currentBattles.front()->stacks)
 	{
-		if(s->unitType()->getId() == CreatureID::BALLISTA && s->unitSide() == BattleSide::DEFENDER)
+		if(s->isBallista() && s->unitSide() == BattleSide::DEFENDER)
 			def = s.get();
 		else if(s->unitType()->getId() == CreatureID(69) && s->unitSide() == BattleSide::ATTACKER)
 			att = s.get();
