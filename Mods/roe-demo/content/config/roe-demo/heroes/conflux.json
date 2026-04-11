@@ -1,18 +1,130 @@
 {
-	"core:pasis":      { "special" : true },
-	"core:thunar":     { "special" : true },
-	"core:ignissa":    { "special" : true },
-	"core:lacus":      { "special" : true },
-	"core:monere":     { "special" : true },
-	"core:erdamon":    { "special" : true },
-	"core:fiur":       { "special" : true },
-	"core:kalt":       { "special" : true },
-	"core:luna":       { "special" : true },
-	"core:brissa":     { "special" : true },
-	"core:ciele":      { "special" : true },
-	"core:labetha":    { "special" : true },
-	"core:inteus":     { "special" : true },
-	"core:aenain":     { "special" : true },
-	"core:gelare":     { "special" : true },
-	"core:grindan":    { "special" : true }
+	"core:pasis" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:thunar" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:ignissa" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:lacus" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:monere" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:erdamon" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:fiur" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:kalt" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:luna" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:brissa" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:ciele" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:labetha" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:inteus" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:aenain" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:gelare" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	},
+	"core:grindan" :
+	{
+		"special" : true,
+		"army" :
+		[
+			{ "creature" : "pikeman", "min" : 1, "max" : 1 }
+		]
+	}
 }

@@ -56,35 +56,56 @@
 				"special" : true
 			},
 			"altarOfThought": {
-				"creatures": [["stormElemental"]]
+				"creatures": [["stormElemental"]],
+				"name" : "Altar of Thought"
 			},
 			"pyre": {
-				"special" : true
+				"special" : true,
+				"name" : "Pyre"
 			},
 			"frozenCliffs": {
-				"creatures": [["ghostDragon"]]
+				"creatures": [["ghostDragon"]],
+				"name" : "Frozen Cliffs"
 			},
 			"crystalCavern": {
-				"creatures": [["redDragon"]]
+				"creatures": [["redDragon"]],
+				"name" : "Crystal Cavern"
 			},
 			"magicForest": {
-				"creatures": [["redDragon"]]
+				"creatures": [["redDragon"]],
+				"name" : "Magic Forest"
 			},
 			"sulfurousLair": {
-				"creatures": [["blackDragon"]]
+				"creatures": [["blackDragon"]],
+				"name" : "Sulfurous Lair"
 			},
 			"enchantersHollow": {
-				"creatures": [["woodElf"]]
+				"creatures": [["woodElf"]],
+				"name" : "Enchanter's Hollow"
 			},
 			"treetopTower": {
-				"creatures": [["woodElf"]]
+				"creatures": [["woodElf"]],
+				"name" : "Treetop Tower"
 			},
 			"unicornGlade": {
-				"special" : true
+				"special" : true,
+				"name" : "Unicorn Glade"
 			},
 			"trollBridge": {
-				"special" : true
-			}
+				"special" : true,
+				"name" : "Troll Bridge"
+			},
+			"altarOfAir":   { "name" : "Altar of Air" },
+			"altarOfEarth": { "name" : "Altar of Earth" },
+			"altarOfFire":  { "name" : "Altar of Fire" },
+			"altarOfWater": { "name" : "Altar of Water" },
+			"boarGlen":     { "name" : "Boar Glen" },
+			"hovel":        { "name" : "Hovel" },
+			"magicLantern": { "name" : "Magic Lantern" },
+			"nomadTent":    { "name" : "Nomad Tent" },
+			"rogueCavern":  { "name" : "Rogue Cavern" },
+			"thatchedHut":  { "name" : "Thatched Hut" },
+			"tombOfCurses": { "name" : "Tomb of Curses" }
 		}
 	},
 	"core:creatureGeneratorSpecial" : {

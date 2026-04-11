@@ -90,7 +90,15 @@
 	"core:magmaElemental" :
 	{
 		"special" : true,
-		"graphics" : null
+		"graphics" : null,
+		"sound" :
+		{
+			"attack": "null.wav",
+			"defend": "null.wav",
+			"killed": "null.wav",
+			"move": "null.wav",
+			"wince": "null.wav"
+		}
 	},
 	"core:energyElemental" :
 	{

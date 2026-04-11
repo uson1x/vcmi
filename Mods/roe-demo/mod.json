@@ -34,7 +34,9 @@
 		"config/roe-demo/heroes/conflux.json",
 		"config/roe-demo/heroes/fortress.json",
 		"config/roe-demo/heroes/inferno.json",
+		"config/roe-demo/heroes/portraits.json",
 		"config/roe-demo/heroes/rampart.json",
+		"config/roe-demo/heroes/special.json",
 		"config/roe-demo/heroes/stronghold.json",
 		"config/roe-demo/heroes/tower.json"
 	],
@@ -55,6 +57,22 @@
 	[
 		"config/roe-demo/artifacts.json"
 	],
+	"heroClasses" :
+	[
+		"config/roe-demo/heroclasses.json"
+	],
+	"battlefields" :
+	[
+		"config/roe-demo/battlefields.json"
+	],
+	"obstacles" :
+	[
+		"config/roe-demo/obstacles.json"
+	],
+	"biomes" :
+	[
+		"config/roe-demo/biomes.json"
+	],
 	"settings":
 	{
 		"textData" :
@@ -70,7 +88,7 @@
 			"river"      : 5,
 			"road"       : 4
 		},
-		
+
 		"mapFormat" : {
 			"armageddonsBlade" : {
 				"supported" : false
