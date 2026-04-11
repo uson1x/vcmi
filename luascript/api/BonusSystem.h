@@ -23,10 +23,10 @@ namespace scripting
 namespace api
 {
 
-class BonusProxy : public SharedWrapper<const Bonus, BonusProxy>
+class BonusProxy : public SharedPointerWrapper<const Bonus, BonusProxy>
 {
 public:
-	using Wrapper = SharedWrapper<const Bonus, BonusProxy>;
+	using Wrapper = SharedPointerWrapper<const Bonus, BonusProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
@@ -47,10 +47,10 @@ protected:
 	void adjustStaticTable(lua_State * L) const override;
 };
 
-class BonusListProxy : public SharedWrapper<const BonusList, BonusListProxy>
+class BonusListProxy : public SharedPointerWrapper<const BonusList, BonusListProxy>
 {
 public:
-	using Wrapper = SharedWrapper<const BonusList, BonusListProxy>;
+	using Wrapper = SharedPointerWrapper<const BonusList, BonusListProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
@@ -59,10 +59,10 @@ protected:
 	void adjustMetatable(lua_State * L) const override;
 };
 
-class BonusBearerProxy : public OpaqueWrapper<const IBonusBearer, BonusBearerProxy>
+class BonusBearerProxy : public RawPointerWrapper<const IBonusBearer, BonusBearerProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const IBonusBearer, BonusBearerProxy>;
+	using Wrapper = RawPointerWrapper<const IBonusBearer, BonusBearerProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

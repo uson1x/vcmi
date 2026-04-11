@@ -25,10 +25,10 @@ namespace api
 namespace events
 {
 
-class ApplyDamageProxy : public OpaqueWrapper<::events::ApplyDamage, ApplyDamageProxy>
+class ApplyDamageProxy : public RawPointerWrapper<::events::ApplyDamage, ApplyDamageProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<::events::ApplyDamage, ApplyDamageProxy>;
+	using Wrapper = RawPointerWrapper<::events::ApplyDamage, ApplyDamageProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

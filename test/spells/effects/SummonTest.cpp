@@ -98,6 +98,9 @@ TEST_P(SummonTest, Applicable)
 	else
 		EXPECT_CALL(*battleFake, getUnitsIf(_)).Times(0);
 
+	EXPECT_CALL(creatureServiceMock, getByName(_)).WillRepeatedly(Return(&creatureStub));
+	EXPECT_CALL(creatureStub, getId()).WillRepeatedly(Return(toSummon));
+	EXPECT_CALL(creatureStub, isDoubleWide()).WillRepeatedly(Return(false));
 	EXPECT_CALL(mechanicsMock, getCasterColor()).WillRepeatedly(Return(PlayerColor(5)));
 	EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(summonSpellPower));
 	EXPECT_CALL(mechanicsMock, calculateRawEffectValue(0, summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
@@ -114,6 +117,9 @@ TEST_P(SummonTest, Transform)
 	battleFake->setupEmptyBattlefield();
 	EXPECT_CALL(*battleFake, getUnitsIf(_)).Times(AtLeast(1));
 
+	EXPECT_CALL(creatureServiceMock, getByName(_)).WillRepeatedly(Return(&creatureStub));
+	EXPECT_CALL(creatureStub, getId()).WillRepeatedly(Return(toSummon));
+	EXPECT_CALL(creatureStub, isDoubleWide()).WillRepeatedly(Return(false));
 	EXPECT_CALL(mechanicsMock, getCasterColor()).WillRepeatedly(Return(PlayerColor(5)));
 	EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(summonSpellPower));
 	EXPECT_CALL(mechanicsMock, calculateRawEffectValue(0, summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
@@ -176,7 +182,9 @@ public:
 		EXPECT_CALL(mechanicsMock, creatures()).Times(AnyNumber());
 		EXPECT_CALL(creatureServiceMock, getById(Eq(toSummon))).WillRepeatedly(Return(&toSummonType));
 		EXPECT_CALL(creatureServiceMock, getByIndex(Eq(toSummon.getNum()))).WillRepeatedly(Return(&toSummonType));
+		EXPECT_CALL(creatureServiceMock, getByName(_)).WillRepeatedly(Return(&toSummonType));
 		EXPECT_CALL(toSummonType, getMaxHealth()).WillRepeatedly(Return(unitHealth));
+		EXPECT_CALL(toSummonType, getJsonKey()).WillRepeatedly(Return("airElemental"));
 
 		expectAmountCalculation();
 	}

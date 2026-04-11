@@ -15,6 +15,7 @@ set(lib_SRCS
 		LuaStack.cpp
 
 		api/battle/UnitProxy.cpp
+		api/battle/BattleHexProxy.cpp
 
 		api/events/BattleEvents.cpp
 		api/events/EventBusProxy.cpp
@@ -64,6 +65,7 @@ set(lib_HDRS
 		LuaWrapper.h
 
 		api/battle/UnitProxy.h
+		api/battle/BattleHexProxy.h
 
 		api/events/BattleEvents.h
 		api/events/EventBusProxy.h

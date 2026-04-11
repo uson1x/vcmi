@@ -202,7 +202,7 @@ public:
 	ForcedAction getBerserkForcedAction(const battle::Unit * berserker) const;
 	BattleHex getClosestHexToTargetInRange(const ReachabilityInfo& cache, const battle::Unit& unit, const BattleHex& targetHex) const;
 
-	BattleHex getAvailableHex(const CreatureID & creID, BattleSide side, int initialPos = -1) const; //find place for adding new stack
+	BattleHex getAvailableHex(const Creature * creature, BattleSide side, BattleHex initialPos = {}) const; //find place for adding new stack
 protected:
 	ReachabilityInfo getFlyingReachability(const ReachabilityInfo::Parameters & params) const;
 	ReachabilityInfo makeBFS(const AccessibilityInfo & accessibility, const ReachabilityInfo::Parameters & params) const;

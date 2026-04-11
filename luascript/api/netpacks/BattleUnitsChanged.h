@@ -23,10 +23,10 @@ namespace api
 namespace netpacks
 {
 
-class BattleUnitsChangedProxy : public SharedWrapper<BattleUnitsChanged, BattleUnitsChangedProxy>
+class BattleUnitsChangedProxy : public SharedPointerWrapper<BattleUnitsChanged, BattleUnitsChangedProxy>
 {
 public:
-	using Wrapper = SharedWrapper<BattleUnitsChanged, BattleUnitsChangedProxy>;
+	using Wrapper = SharedPointerWrapper<BattleUnitsChanged, BattleUnitsChangedProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

@@ -21,10 +21,10 @@ namespace scripting
 namespace api
 {
 
-class HeroClassProxy : public OpaqueWrapper<const HeroClass, HeroClassProxy>
+class HeroClassProxy : public RawPointerWrapper<const HeroClass, HeroClassProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const HeroClass, HeroClassProxy>;
+	using Wrapper = RawPointerWrapper<const HeroClass, HeroClassProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

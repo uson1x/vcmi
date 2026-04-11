@@ -28,10 +28,10 @@ namespace events
 {
 
 
-class EventSubscriptionProxy : public UniqueOpaqueWrapper<::events::EventSubscription, EventSubscriptionProxy>
+class EventSubscriptionProxy : public UniquePointerWrapper<::events::EventSubscription, EventSubscriptionProxy>
 {
 public:
-	using Wrapper = UniqueOpaqueWrapper<::events::EventSubscription, EventSubscriptionProxy>;
+	using Wrapper = UniquePointerWrapper<::events::EventSubscription, EventSubscriptionProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

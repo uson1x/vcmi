@@ -23,10 +23,10 @@ namespace api
 namespace netpacks
 {
 
-class BattleStackMovedProxy : public SharedWrapper<BattleStackMoved, BattleStackMovedProxy>
+class BattleStackMovedProxy : public SharedPointerWrapper<BattleStackMoved, BattleStackMovedProxy>
 {
 public:
-	using Wrapper = SharedWrapper<BattleStackMoved, BattleStackMovedProxy>;
+	using Wrapper = SharedPointerWrapper<BattleStackMoved, BattleStackMovedProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

@@ -23,10 +23,10 @@ namespace api
 namespace netpacks
 {
 
-class SetResourcesProxy : public SharedWrapper<SetResources, SetResourcesProxy>
+class SetResourcesProxy : public SharedPointerWrapper<SetResources, SetResourcesProxy>
 {
 public:
-	using Wrapper = SharedWrapper<SetResources, SetResourcesProxy>;
+	using Wrapper = SharedPointerWrapper<SetResources, SetResourcesProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

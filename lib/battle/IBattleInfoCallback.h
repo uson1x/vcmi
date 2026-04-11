@@ -75,6 +75,9 @@ public:
 
 	virtual const battle::Unit * battleActiveUnit() const = 0;
 
+	/// find free hex for adding new stack on the battlefield
+	virtual BattleHex getAvailableHex(const Creature * creature, BattleSide side, BattleHex initialPos = {}) const = 0;
+
 	//blocking obstacles makes tile inaccessible, others cause special effects (like Land Mines, Moat, Quicksands)
 	virtual std::vector<std::shared_ptr<const CObstacleInstance>> battleGetAllObstaclesOnPos(const BattleHex & tile, bool onlyBlocking = true) const = 0;
 	virtual std::vector<std::shared_ptr<const CObstacleInstance>> getAllAffectedObstaclesByStack(const battle::Unit * unit, const BattleHexArray & passed) const = 0;

@@ -19,11 +19,11 @@ namespace scripting
 {
 	namespace api
 	{
-		class SpellProblemProxy : public OpaqueWrapper<::spells::Problem, SpellProblemProxy>
+		class SpellProblemProxy : public RawPointerWrapper<::spells::Problem, SpellProblemProxy>
 		{
 			static int add(lua_State * L);
 		public:
-			using Wrapper = OpaqueWrapper<::spells::Problem, SpellProblemProxy>;
+			using Wrapper = RawPointerWrapper<::spells::Problem, SpellProblemProxy>;
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 		};

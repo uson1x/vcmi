@@ -26,11 +26,13 @@ namespace battle
 using ::battle::IUnitInfo;
 using ::battle::Unit;
 
-class UnitProxy : public OpaqueWrapper<const Unit, UnitProxy>
+class UnitProxy : public RawPointerWrapper<const Unit, UnitProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const Unit, UnitProxy>;
+	using Wrapper = RawPointerWrapper<const Unit, UnitProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+
+	static int getCreature(lua_State * L);
 };
 
 }

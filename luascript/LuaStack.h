@@ -270,7 +270,7 @@ public:
 
 		((tryGet(position + i, args) ? ++i : (failed = true, ++i, false)), ...);
 
-		return failed;
+		return !failed;
 	}
 
 	template<typename U>

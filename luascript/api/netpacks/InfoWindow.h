@@ -23,10 +23,10 @@ namespace api
 namespace netpacks
 {
 
-class InfoWindowProxy : public SharedWrapper<InfoWindow, InfoWindowProxy>
+class InfoWindowProxy : public SharedPointerWrapper<InfoWindow, InfoWindowProxy>
 {
 public:
-	using Wrapper = SharedWrapper<InfoWindow, InfoWindowProxy>;
+	using Wrapper = SharedPointerWrapper<InfoWindow, InfoWindowProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
 	static int addReplacement(lua_State * L);

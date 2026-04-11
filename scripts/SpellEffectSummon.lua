@@ -35,6 +35,10 @@ local function summonedCreatureAmount(parameters, mechanics)
 	end
 end
 
+applicableTarget = function(parameters, mechanics, problem, target)
+    return true
+end
+
 applicable = function(parameters, mechanics, problem)
 	local creature = LIBRARY:creatures():getByName(parameters.id)
 	if creature == "nil" then
@@ -108,7 +112,7 @@ apply = function(parameters, mechanics, server, target)
 				mechanics:getBattleID(),
 				{
 					count = summonedCreatureAmount(parameters, mechanics),
-					type = creature,
+					type = creature:getJsonKey(),
 					side = mechanics:getCasterSide(),
 					position = dest.hexValue,
 					summoned = not parameters.permanent
@@ -130,7 +134,7 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 
 	if sameSummoned == nil or not parameters.summonSameUnit then
 		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:getCasterSide())
-		if not hex:isValid() then
+		if hex < 0 then
 			return {} -- no free space. FIXME: should be in isApplicable
 		else
 			return {

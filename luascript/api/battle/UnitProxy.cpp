@@ -12,6 +12,7 @@
 
 #include "UnitProxy.h"
 
+#include "../../../lib/GameLibrary.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
@@ -39,8 +40,23 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 //	{"unitId", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitId), &IUnitInfo::unitId>::invoke, false},
 	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
-	{"getCreature", LuaMethodWrapper<Unit, decltype(&Unit::creatureId), &Unit::creatureId>::invoke, false},
+
+	{"getCreature", &UnitProxy::getCreature, false },
 };
+
+int UnitProxy::getCreature(lua_State * L)
+{
+	LuaStack S(L);
+
+	const Unit * object;
+	if(!S.tryGet(1, object))
+		return S.retVoid();
+
+	S.clear();
+	const Creature * result = object->creatureId().toEntity(LIBRARY);
+	S.push(result);
+	return 1;
+}
 
 }
 }

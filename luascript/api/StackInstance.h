@@ -23,10 +23,10 @@ namespace scripting
 namespace api
 {
 
-class StackInstanceProxy : public OpaqueWrapper<const CStackInstance, StackInstanceProxy>
+class StackInstanceProxy : public RawPointerWrapper<const CStackInstance, StackInstanceProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const CStackInstance, StackInstanceProxy>;
+	using Wrapper = RawPointerWrapper<const CStackInstance, StackInstanceProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

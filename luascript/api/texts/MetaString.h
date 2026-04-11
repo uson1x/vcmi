@@ -19,10 +19,10 @@ VCMI_LIB_NAMESPACE_BEGIN
 {
 	namespace api
 	{
-		class MetaStringProxy : public SharedWrapper<MetaString, MetaStringProxy>
+		class MetaStringProxy : public SharedPointerWrapper<MetaString, MetaStringProxy>
 		{
 		public:
-			using Wrapper = SharedWrapper<MetaString, MetaStringProxy>;
+			using Wrapper = SharedPointerWrapper<MetaString, MetaStringProxy>;
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 		};

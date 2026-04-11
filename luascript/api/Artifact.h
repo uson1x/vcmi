@@ -21,10 +21,10 @@ namespace scripting
 namespace api
 {
 
-class ArtifactProxy : public OpaqueWrapper<const Artifact, ArtifactProxy>
+class ArtifactProxy : public RawPointerWrapper<const Artifact, ArtifactProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const Artifact, ArtifactProxy>;
+	using Wrapper = RawPointerWrapper<const Artifact, ArtifactProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };

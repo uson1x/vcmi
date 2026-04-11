@@ -21,10 +21,10 @@ namespace scripting
 namespace api
 {
 
-class GameCbProxy : public OpaqueWrapper<const GameCb, GameCbProxy>
+class GameCbProxy : public RawPointerWrapper<const GameCb, GameCbProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const GameCb, GameCbProxy>;
+	using Wrapper = RawPointerWrapper<const GameCb, GameCbProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

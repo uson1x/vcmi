@@ -23,10 +23,10 @@ namespace api
 namespace netpacks
 {
 
-class EntitiesChangedProxy : public SharedWrapper<EntitiesChanged, EntitiesChangedProxy>
+class EntitiesChangedProxy : public SharedPointerWrapper<EntitiesChanged, EntitiesChangedProxy>
 {
 public:
-	using Wrapper = SharedWrapper<EntitiesChanged, EntitiesChangedProxy>;
+	using Wrapper = SharedPointerWrapper<EntitiesChanged, EntitiesChangedProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

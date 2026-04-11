@@ -19,10 +19,10 @@ VCMI_LIB_NAMESPACE_BEGIN
 {
 	namespace api
 	{
-		class SpellsMechanicsProxy : public OpaqueWrapper<::spells::Mechanics, SpellsMechanicsProxy>
+		class SpellsMechanicsProxy : public RawPointerWrapper<::spells::Mechanics, SpellsMechanicsProxy>
 		{
 		public:
-			using Wrapper = OpaqueWrapper<::spells::Mechanics, SpellsMechanicsProxy>;
+			using Wrapper = RawPointerWrapper<::spells::Mechanics, SpellsMechanicsProxy>;
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 		};

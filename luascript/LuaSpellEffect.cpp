@@ -23,6 +23,7 @@
 
 static const std::string APPLICABLE_GENERAL = "applicable";
 static const std::string APPLICABLE_TARGET = "applicableTarget";
+static const std::string TRANSFORM_TARGET = "transformTarget";
 static const std::string APPLY = "apply";
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -82,24 +83,10 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const Ef
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	JsonNode targetJson;
-
 	if(target.empty())
 		return false;
 
-	for(const auto & dest : target)
-	{
-		JsonNode targetData;
-		targetData.Vector().emplace_back(dest.hexValue.toInt());
-
-		if(dest.unitValue)
-			targetData.Vector().emplace_back(dest.unitValue->unitId());
-		else
-			targetData.Vector().emplace_back(-1);
-
-		targetJson.Vector().push_back(targetData);
-	}
-
+	JsonNode targetJson = spellTargetToJson(target);
 	JsonNode response = context->callGlobalWithParameters(APPLICABLE_TARGET, parameters, m, targetJson);
 
 	if(response.getType() != JsonNode::JsonType::DATA_BOOL)
@@ -128,7 +115,13 @@ EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarge
 
 EffectTarget LuaSpellEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
-	return EffectTarget(spellTarget);
+	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
+
+	JsonNode aimPointJson = spellTargetToJson(aimPoint);
+	JsonNode spellTargetJson = spellTargetToJson(spellTarget);
+	JsonNode response = context->callGlobalWithParameters(TRANSFORM_TARGET, parameters, m, aimPointJson, spellTargetJson);
+
+	return spellTargetFromJson(m, response);
 }
 
 void LuaSpellEffect::serializeJsonEffect(JsonSerializeFormat & handler)

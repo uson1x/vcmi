@@ -35,6 +35,7 @@ const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
 	{ "getUnitById", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleGetUnitByID), &BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke, false },
 
+	{ "getAvailableHex", &BattleCbProxy::getAvailableHex, false },
 	{ "getBattlefieldType", &BattleCbProxy::getBattlefieldType, false },
 	{ "getTerrainType", &BattleCbProxy::getTerrainType, false },
 	{ "getUnitByPos", &BattleCbProxy::getUnitByPos, false },
@@ -64,6 +65,30 @@ int BattleCbProxy::getTerrainType(lua_State * L)
 
 	return LuaStack::quickRetInt(L, object->battleTerrainType().getNum());
 }
+
+int BattleCbProxy::getAvailableHex(lua_State * L)
+{
+	LuaStack S(L);
+
+	const CBattleInfoCallback * object;
+	if(!S.tryGet(1, object))
+		return S.retVoid();
+
+	const Creature * creature;
+	BattleSide side;
+	si16 hexVal = BattleHex::INVALID;
+
+	if(!S.tryGet(2, creature) || !S.tryGet(3, side))
+		return S.retNil();
+
+	S.tryGet(4, hexVal);
+
+	S.clear();
+	BattleHex result = object->getAvailableHex(creature, side, hexVal);
+	S.push(result.toInt());
+	return 1;
+}
+
 
 int BattleCbProxy::getUnitByPos(lua_State * L)
 {

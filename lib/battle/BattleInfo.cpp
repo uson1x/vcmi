@@ -47,7 +47,7 @@ void BattleInfo::generateNewStack(uint32_t id, const CStackInstance & base, Batt
 	assert(!owner.isValidPlayer() || (base.getArmy() && base.getArmy()->tempOwner == owner));
 
 	auto ret = std::make_unique<CStack>(&base, owner, id, side, slot);
-	ret->initialPosition = getAvailableHex(base.getCreatureID(), side, position.toInt()); //TODO: what if no free tile on battlefield was found?
+	ret->initialPosition = getAvailableHex(base.getCreature(), side, position.toInt()); //TODO: what if no free tile on battlefield was found?
 	stacks.push_back(std::move(ret));
 }
 

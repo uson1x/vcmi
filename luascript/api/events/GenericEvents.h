@@ -25,24 +25,24 @@ namespace api
 namespace events
 {
 
-class GameResumedProxy : public OpaqueWrapper<::events::GameResumed, GameResumedProxy>
+class GameResumedProxy : public RawPointerWrapper<::events::GameResumed, GameResumedProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<::events::GameResumed, GameResumedProxy>;
+	using Wrapper = RawPointerWrapper<::events::GameResumed, GameResumedProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-class PlayerGotTurnProxy : public OpaqueWrapper<::events::PlayerGotTurn, PlayerGotTurnProxy>
+class PlayerGotTurnProxy : public RawPointerWrapper<::events::PlayerGotTurn, PlayerGotTurnProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<::events::PlayerGotTurn, PlayerGotTurnProxy>;
+	using Wrapper = RawPointerWrapper<::events::PlayerGotTurn, PlayerGotTurnProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-class TurnStartedProxy : public OpaqueWrapper<::events::TurnStarted, TurnStartedProxy>
+class TurnStartedProxy : public RawPointerWrapper<::events::TurnStarted, TurnStartedProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<::events::TurnStarted, TurnStartedProxy>;
+	using Wrapper = RawPointerWrapper<::events::TurnStarted, TurnStartedProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

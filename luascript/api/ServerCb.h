@@ -21,10 +21,10 @@ namespace scripting
 namespace api
 {
 
-class ServerCbProxy : public OpaqueWrapper<ServerCallback, ServerCbProxy>
+class ServerCbProxy : public RawPointerWrapper<ServerCallback, ServerCbProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<ServerCallback, ServerCbProxy>;
+	using Wrapper = RawPointerWrapper<ServerCallback, ServerCbProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

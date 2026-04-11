@@ -64,22 +64,7 @@ namespace detail
 
 			lua_newtable(L);
 
-			lua_pushstring(L, "__index");
-			{
-				lua_newtable(L);
-
-				for(auto & reg : ProxyType::REGISTER_CUSTOM)
-				{
-					if(reg.isStatic)
-					{
-						lua_pushstring(L, reg.name);
-						lua_pushcclosure(L, reg.functor, 0);
-						lua_rawset(L, -3);
-					}
-				}
-			}
-
-			lua_rawset(L, -3);
+			setIndexTable(L);
 
 			lua_pushstring(L, "__newindex");
 			lua_pushnil(L);
@@ -121,7 +106,7 @@ protected:
 };
 
 template<class T, class Proxy = T>
-class OpaqueWrapper : public RegistarBase
+class RawPointerWrapper : public RegistarBase
 {
 public:
 	using ObjectType = typename std::remove_cv_t<T>;
@@ -160,7 +145,7 @@ protected:
 };
 
 template<class T, class Proxy = T>
-class SharedWrapper : public RegistarBase
+class SharedPointerWrapper : public RegistarBase
 {
 public:
 	using ObjectType = typename std::remove_cv_t<T>;
@@ -205,7 +190,7 @@ protected:
 };
 
 template<class T, class Proxy = T>
-class UniqueOpaqueWrapper : public api::Registar
+class UniquePointerWrapper : public api::Registar
 {
 public:
 	using ObjectType = typename std::remove_cv_t<T>;

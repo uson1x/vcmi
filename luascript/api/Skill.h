@@ -21,10 +21,10 @@ namespace scripting
 namespace api
 {
 
-class SkillProxy : public OpaqueWrapper<const Skill, SkillProxy>
+class SkillProxy : public RawPointerWrapper<const Skill, SkillProxy>
 {
 public:
-	using Wrapper = OpaqueWrapper<const Skill, SkillProxy>;
+	using Wrapper = RawPointerWrapper<const Skill, SkillProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
