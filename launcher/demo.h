@@ -13,16 +13,22 @@
 
 class CDownloadManager;
 
+class IDemoInstallerCallback
+{
+public:
+	virtual void onInstallFinished() = 0;
+	virtual void onInstallError() = 0;
+	virtual void onInstallProgress(float percent) = 0;
+	virtual ~IDemoInstallerCallback() = default;
+};
+
 class DemoInstaller : public QObject
 {
 	Q_OBJECT
 
+	IDemoInstallerCallback * callback;
     CDownloadManager * dlManager;
     bool usedAlternative = false;
-
-    std::function<void ()> onFinish;
-    std::function<void ()> onError;
-    std::function<void (float percent)> onProgress;
 
 private:
 	void startDownload(const QUrl & url);
@@ -31,7 +37,7 @@ private slots:
 	void downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors);
 
 public:
-    DemoInstaller(std::function<void ()> onFinish = nullptr, std::function<void ()> onError = nullptr, std::function<void (float percent)> onProgress = nullptr);
+    DemoInstaller(IDemoInstallerCallback * callback = nullptr);
 	void download();
 	void install(QString filename);
 };

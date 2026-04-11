@@ -538,8 +538,6 @@ std::vector<JsonNode> CCreatureHandler::loadLegacyData()
 
 	parser.endLine(); // header
 
-	bool isRoe;
-
 	// this file is a bit different in some of Russian localisations:
 	//ENG: Singular	Plural Wood ...
 	//RUS: Singular	Plural	Plural2 Wood ...
@@ -552,13 +550,11 @@ std::vector<JsonNode> CCreatureHandler::loadLegacyData()
 
 		if (parser.readString() == "Plural2")
 			namesCount = 3;
-		
-		for(int i = 0; i < 17; i++)
-			parser.readString();
-		isRoe = parser.readString() != "Spells";
 
 		parser.endLine();
 	}
+
+	const bool isRoe = LIBRARY->isRoeData();
 
 	for (size_t i=0; i<dataSize; i++)
 	{

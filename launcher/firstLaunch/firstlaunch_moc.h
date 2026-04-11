@@ -20,12 +20,18 @@ class FirstLaunchView;
 class CModListView;
 class ProgressOverlay;
 
-class FirstLaunchView : public QWidget
+class FirstLaunchView : public QWidget, public IDemoInstallerCallback
 {
 	Q_OBJECT
 
 	std::unique_ptr<DemoInstaller> demo;
+	ProgressOverlay * demoOverlay = nullptr;
 	bool demoDataActive = false;
+
+	// IDemoInstallerCallback
+	void onInstallFinished() override;
+	void onInstallError() override;
+	void onInstallProgress(float percent) override;
 
 	void changeEvent(QEvent *event) override;
 	CModListView * getModView();

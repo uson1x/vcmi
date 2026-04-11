@@ -146,24 +146,31 @@ void FirstLaunchView::on_pushButtonGogInstall_clicked()
 
 void FirstLaunchView::on_pushButtonDemo_clicked()
 {
-	auto * overlay = createOverlay(tr("Downloading Heroes III Demo..."), false);
-	overlay->setRange(100);
-	overlay->setValue(0);
+	demoOverlay = createOverlay(tr("Downloading Heroes III Demo..."), false);
+	demoOverlay->setRange(100);
+	demoOverlay->setValue(0);
 
-	demo = std::make_unique<DemoInstaller>(
-		[this, overlay](){
-			overlay->deleteLater();
-			heroesDataUpdate(true);
-		},
-		[overlay](){
-			overlay->deleteLater();
-		},
-		[overlay](float percent){
-			overlay->setValue(static_cast<int>(percent * 100));
-			qApp->processEvents();
-		}
-	);
+	demo = std::make_unique<DemoInstaller>(this);
 	demo->download();
+}
+
+void FirstLaunchView::onInstallFinished()
+{
+	demoOverlay->deleteLater();
+	demoOverlay = nullptr;
+	heroesDataUpdate(true);
+}
+
+void FirstLaunchView::onInstallError()
+{
+	demoOverlay->deleteLater();
+	demoOverlay = nullptr;
+}
+
+void FirstLaunchView::onInstallProgress(float percent)
+{
+	demoOverlay->setValue(static_cast<int>(percent * 100));
+	qApp->processEvents();
 }
 
 void FirstLaunchView::enterSetup()

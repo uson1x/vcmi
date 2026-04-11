@@ -13,11 +13,10 @@
 #include <QByteArray>
 #include <QUrl>
 
-#include <zlib.h>
-#define GZIP_WINDOWS_BIT 15 + 16
-#define GZIP_CHUNK_SIZE 32 * 1024
-
 #include "modManager/cdownloadmanager_moc.h"
+
+#include "../lib/filesystem/CCompressedStream.h"
+#include "../lib/filesystem/CMemoryStream.h"
 
 #include "../lib/VCMIDirs.h"
 #include "helper.h"
@@ -25,14 +24,14 @@
 QString DEMO_URL = "http://updates.lokigames.com/loki_demos/heroes3-demo.run";
 QString DEMO_URL_ALTERNATIVE = "https://web.archive.org/web/20150506062114if_/http://updates.lokigames.com/loki_demos/heroes3-demo.run"; // alternative if fails or HTTPS is required
 
-DemoInstaller::DemoInstaller(std::function<void ()> onFinish, std::function<void ()> onError, std::function<void (float percent)> onProgress) :
-    onFinish(onFinish), onError(onError), onProgress(onProgress)
+DemoInstaller::DemoInstaller(IDemoInstallerCallback * callback) :
+    callback(callback)
 {}
 
 void DemoInstaller::downloadProgress(qint64 current, qint64 max)
 {
-    if(onProgress)
-        onProgress(static_cast<float>(current) / static_cast<float>(max));
+    if(callback)
+        callback->onInstallProgress(static_cast<float>(current) / static_cast<float>(max));
 }
 
 void DemoInstaller::downloadFinished(QStringList savedFiles, QStringList failedFiles, QStringList errors)
@@ -47,16 +46,16 @@ void DemoInstaller::downloadFinished(QStringList savedFiles, QStringList failedF
         usedAlternative = true;
         dlManager->deleteLater();
         dlManager = nullptr;
-        if(onProgress)
-            onProgress(0.0f);
+        if(callback)
+            callback->onInstallProgress(0.0f);
         startDownload(QUrl(DEMO_URL_ALTERNATIVE));
         return;
     }
     else
     {
         logGlobal->error("Download failed: %s", errors.first().toStdString());
-        if(onError)
-            onError();
+        if(callback)
+            callback->onInstallError();
     }
 
 	dlManager->deleteLater();
@@ -81,78 +80,20 @@ void DemoInstaller::startDownload(const QUrl & url)
     dlManager->downloadFile(url, "h3demo.run");
 }
 
-bool gzipDecompress(QByteArray input, QByteArray &output)
+static QByteArray readStreamFully(CCompressedStream & stream)
 {
-    output.clear();
-
-    if(input.length() > 0)
+    QByteArray output;
+    std::array<ui8, 32 * 1024> buf;
+    while(true)
     {
-        z_stream strm;
-        strm.zalloc = Z_NULL;
-        strm.zfree = Z_NULL;
-        strm.opaque = Z_NULL;
-        strm.avail_in = 0;
-        strm.next_in = Z_NULL;
-
-        int ret = inflateInit2(&strm, GZIP_WINDOWS_BIT);
-
-        if (ret != Z_OK)
-            return false;
-
-        char *input_data = input.data();
-        int input_data_left = input.length();
-
-        do
-        {
-            int chunk_size = qMin(GZIP_CHUNK_SIZE, input_data_left);
-
-            if(chunk_size <= 0)
-                break;
-
-            strm.next_in = (unsigned char*)input_data;
-            strm.avail_in = chunk_size;
-
-            input_data += chunk_size;
-            input_data_left -= chunk_size;
-
-            do
-            {
-                char out[GZIP_CHUNK_SIZE];
-
-                strm.next_out = (unsigned char*)out;
-                strm.avail_out = GZIP_CHUNK_SIZE;
-
-                ret = inflate(&strm, Z_NO_FLUSH);
-
-                switch (ret) {
-                case Z_NEED_DICT:
-                    ret = Z_DATA_ERROR;
-                    break;
-                case Z_DATA_ERROR:
-                case Z_MEM_ERROR:
-                case Z_STREAM_ERROR:
-                    inflateEnd(&strm);
-
-                    return(false);
-                }
-
-                int have = GZIP_CHUNK_SIZE - strm.avail_out;
-
-                if(have > 0)
-                    output.append((char*)out, have);
-
-            }
-            while(strm.avail_out == 0);
-
-        }
-        while(ret != Z_STREAM_END);
-
-        inflateEnd(&strm);
-
-        return ret == Z_STREAM_END;
+        si64 before = stream.tell();
+        stream.read(buf.data(), static_cast<si64>(buf.size()));
+        si64 actual = stream.tell() - before;
+        if(actual == 0)
+            break;
+        output.append(reinterpret_cast<const char *>(buf.data()), static_cast<int>(actual));
     }
-    else
-        return true;
+    return output;
 }
 
 void DemoInstaller::install(QString filename)
@@ -173,10 +114,6 @@ void DemoInstaller::install(QString filename)
         logGlobal->error("Invalid hash of demo");
         return;
     }
-
-    QByteArray compressedData = data.mid(5892);
-    QByteArray uncompressedData;
-    gzipDecompress(compressedData, uncompressedData);
 
     struct FileEntry
     {
@@ -213,23 +150,37 @@ void DemoInstaller::install(QString filename)
         { 100539392, 50942,    "Mp3/retreat battle.mp3"   },
     };
 
-    for(const auto & file : filesToExtract)
+    // Create a streaming decompressor pointing directly into data (no copy of the raw file).
+    // File offsets are ascending, so we only seek forward - no re-decompression needed.
+    auto memStream = std::make_unique<CMemoryStream>(
+        reinterpret_cast<const ui8 *>(data.constData()) + 5892,
+        static_cast<si64>(data.size() - 5892));
+    CCompressedStream outerStream(std::move(memStream), true);
+
+    for(const auto & fileEntry : filesToExtract)
     {
-        QByteArray tmp = uncompressedData.mid(file.offset, file.size);
-        QByteArray tmpUncompressed;
-        gzipDecompress(tmp, tmpUncompressed);
+        outerStream.seek(fileEntry.offset);
+
+        QByteArray compressed(static_cast<int>(fileEntry.size), Qt::Uninitialized);
+        outerStream.read(reinterpret_cast<ui8 *>(compressed.data()), fileEntry.size);
+
+        auto innerMem = std::make_unique<CMemoryStream>(
+            reinterpret_cast<const ui8 *>(compressed.constData()),
+            static_cast<si64>(compressed.size()));
+        CCompressedStream innerStream(std::move(innerMem), true);
+        QByteArray fileData = readStreamFully(innerStream);
 
         QDir dir(QString::fromStdString(VCMIDirs::get().userDataPath().string()));
-        QString folder = file.name.split("/")[0];
+        QString folder = fileEntry.name.split("/")[0];
         if(!dir.exists(folder))
             dir.mkpath(folder);
 
-        QFile f(dir.filePath(file.name));
+        QFile f(dir.filePath(fileEntry.name));
         f.open(QIODevice::WriteOnly);
-        f.write(tmpUncompressed);
+        f.write(fileData);
         f.close();
     }
 
-    if(onFinish)
-        onFinish();
+    if(callback)
+        callback->onInstallFinished();
 }
