@@ -133,6 +133,8 @@ class CanvasClipRectGuard : boost::noncopyable
 	Rect oldRect;
 
 public:
-	CanvasClipRectGuard(Canvas & canvas, const Rect & rect);
+	/// @param intersect  if true, clips to the intersection of the current clip rect and @p rect
+	///                   instead of replacing it (prevents child widgets from overdrawing a parent clip)
+	CanvasClipRectGuard(Canvas & canvas, const Rect & rect, bool intersect = false);
 	~CanvasClipRectGuard();
 };

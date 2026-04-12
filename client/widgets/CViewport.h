@@ -48,7 +48,6 @@ private:
 	std::shared_ptr<CSlider>    hSlider;       ///< horizontal scrollbar (disabled when unneeded)
 	CSlider::EStyle             sliderStyle;
 
-	Rect clipRect() const;               ///< visible content area (shrunk by active sliders)
 	/// Create/recreate the vertical scrollbar with the given track length.
 	void remakeVSlider(int length);
 	/// Create/recreate the horizontal scrollbar with the given track length.
@@ -64,6 +63,8 @@ protected:
 public:
 	CViewport(const Rect & viewRect, const Point & contentSz,
 	          CSlider::EStyle style = CSlider::BROWN);
+
+	Rect clipRect() const;               ///< visible content area (shrunk by active sliders)
 
 	/// Returns the scrollable content container.
 	CIntObject * content() const;

@@ -309,7 +309,7 @@ void CMultiLineLabel::showAll(Canvas & to)
 	Point lineStart = getTextLocation().topLeft() - visibleSize + Point(0, beginLine * fontPtr->getLineHeight());
 	Point lineSize = Point(getTextLocation().w, fontPtr->getLineHeight());
 
-	CanvasClipRectGuard guard(to, getTextLocation()); // to properly trim text that is too big to fit
+	CanvasClipRectGuard guard(to, getTextLocation(), true); // intersect with outer (viewport) clip
 
 	for(int i = beginLine; i < std::min(totalLines, endLine); i++)
 	{

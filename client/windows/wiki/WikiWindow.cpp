@@ -467,12 +467,14 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		std::bind(&WikiWindow::close, this),
 		EShortcut::GLOBAL_RETURN);
 
-	// ---- Back button (left of close) ----------------------------------------
+	// ---- Back button (left border, same style as key-binding reset) -----------
 	backButton = std::make_shared<CButton>(
-		Point(WIN_W / 2 - 80, CLOSE_Y),
-		AnimationPath::builtin(style == Style::BLUE ? "MuBcanc" : "ICANCEL"),
+		Point(COL1_X, CLOSE_Y),
+		AnimationPath::builtin("settingsWindow/button80"),
 		CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.wiki.button.back")),
 		std::bind(&WikiWindow::navigateBack, this));
+	backButton->setOverlay(std::make_shared<CLabel>(0, 0, FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
+		LIBRARY->generaltexth->translate("vcmi.wiki.button.back")));
 	backButton->block(true); // disabled until there is history
 
 	// Apply scroll-wheel bounds after center() so pos is finalised
@@ -801,6 +803,18 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
 		return;
 
+	// Deselect old highlighting before changing category/element
+	if(categoryList && activeCategoryIndex >= 0)
+	{
+		if(auto old = std::dynamic_pointer_cast<WikiListItem>(categoryList->getItem(activeCategoryIndex)))
+			old->setSelected(false);
+	}
+	if(elementList && activeElementIndex >= 0)
+	{
+		if(auto old = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(activeElementIndex)))
+			old->setSelected(false);
+	}
+
 	// Push current entry onto navigation history (if we have a valid selection)
 	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
 		&& activeElementIndex < (int)currentDisplayedEntries.size())
@@ -857,6 +871,18 @@ void WikiWindow::navigateBack()
 	const int catIdx = static_cast<int>(prev.category);
 	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
 		return;
+
+	// Deselect old highlighting before restoring previous state
+	if(categoryList && activeCategoryIndex >= 0)
+	{
+		if(auto old = std::dynamic_pointer_cast<WikiListItem>(categoryList->getItem(activeCategoryIndex)))
+			old->setSelected(false);
+	}
+	if(elementList && activeElementIndex >= 0)
+	{
+		if(auto old = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(activeElementIndex)))
+			old->setSelected(false);
+	}
 
 	activeCategoryIndex = catIdx;
 	buildElementList(activeCategoryIndex);
