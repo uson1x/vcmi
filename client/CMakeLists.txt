@@ -176,6 +176,7 @@ set(vcmiclientcommon_SRCS
 	windows/CQuestLog.cpp
 	windows/CSpellWindow.cpp
 	windows/CTutorialWindow.cpp
+	windows/WikiWindow.cpp
 	windows/CWindowObject.cpp
 	windows/CreaturePurchaseCard.cpp
 	windows/GUIClasses.cpp
@@ -410,6 +411,7 @@ set(vcmiclientcommon_HEADERS
 	windows/CQuestLog.h
 	windows/CSpellWindow.h
 	windows/CTutorialWindow.h
+	windows/WikiWindow.h
 	windows/CWindowObject.h
 	windows/CreaturePurchaseCard.h
 	windows/GUIClasses.h

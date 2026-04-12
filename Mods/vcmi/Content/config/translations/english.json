@@ -492,6 +492,7 @@
 	"vcmi.keyBindings.keyBinding.adventureSaveGame": "Adventure save game",
 	"vcmi.keyBindings.keyBinding.adventureSearch": "Adventure search",
 	"vcmi.keyBindings.keyBinding.adventureSearchContinue": "Adventure search continue",
+	"vcmi.keyBindings.keyBinding.adventureOpenWiki": "Adventure open glossary",
 	"vcmi.keyBindings.keyBinding.adventureSetHeroAsleep": "Adventure set hero asleep",
 	"vcmi.keyBindings.keyBinding.adventureSetHeroAwake": "Adventure set hero awake",
 	"vcmi.keyBindings.keyBinding.adventureThievesGuild": "Adventure thieves guild",
