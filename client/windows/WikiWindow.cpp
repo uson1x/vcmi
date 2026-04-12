@@ -40,10 +40,12 @@
 
 WikiListItem::WikiListItem(size_t itemIndex, std::string itemText,
 	std::function<void(WikiListItem *)> callback,
-	std::optional<WikiIconInfo> iconInfo)
+	std::optional<WikiIconInfo> iconInfo,
+	bool blueStyle_)
 	: onSelected(std::move(callback))
 	, text(std::move(itemText))
 	, index(itemIndex)
+	, blueStyle(blueStyle_)
 {
 	OBJECT_CONSTRUCTION;
 
@@ -127,7 +129,7 @@ void WikiListItem::showAll(Canvas & to)
 			auto * lb = dynamic_cast<CListBox *>(parent);
 			const int sepW = (lb && lb->getSlider()) ? (pos.w - 16) : pos.w;
 			to.drawColorBlended(Rect(pos.x, pos.y + pos.h - 1, sepW, 1),
-			                    ColorRGBA(100, 80, 55, 255));
+			                    blueStyle ? ColorRGBA(40, 100, 200, 200) : ColorRGBA(100, 80, 55, 255));
 		}
 		CIntObject::showAll(to);
 	}
@@ -196,14 +198,23 @@ static constexpr int CLOSE_Y       = 564;
 // ============================================================================
 
 WikiWindow::WikiWindow(WikiWindow::Style style_)
-	: CWindowObject(BORDERED, ImagePath::builtin("DIBOXBCK"))
+	: CWindowObject(BORDERED)
 	, style(style_)
 {
 	OBJECT_CONSTRUCTION;
 
 	// Resize and centre
 	pos = Rect(pos.x, pos.y, WIN_W, WIN_H);
-	bgTexture = std::make_shared<CFilledTexture>(ImagePath::builtin("DIBOXBCK"), Rect(0, 0, WIN_W, WIN_H));
+	if(style == Style::BLUE)
+	{
+		auto blueBg = std::make_shared<FilledTexturePlayerColored>(Rect(0, 0, WIN_W, WIN_H));
+		blueBg->setPlayerColor(PlayerColor(1));
+		bgTexture = blueBg;
+	}
+	else
+	{
+		bgTexture = std::make_shared<CFilledTexture>(ImagePath::builtin("DIBOXBCK"), Rect(0, 0, WIN_W, WIN_H));
+	}
 	updateShadow();
 	center();
 
@@ -364,11 +375,17 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 	// ---- Element search box (below element list) ----------------------------
 	{
 		const Rect sbRect(COL2_X, SEARCH_BOX_Y, COL2_LIST_W + SLIDER_W, SEARCH_BOX_H);
+		const ColorRGBA sbBorderColor = (style == Style::BLUE)
+		                              ? ColorRGBA(40, 100, 200, 200)
+		                              : ColorRGBA(128, 100,  75, 200);
+		const ColorRGBA sbHintColor   = (style == Style::BLUE)
+		                              ? ColorRGBA(100, 160, 240, 255)
+		                              : ColorRGBA(158, 130, 105, 255);
 		searchBoxRect = std::make_shared<TransparentFilledRectangle>(
-			sbRect, ColorRGBA(0, 0, 0, 75), ColorRGBA(128, 100, 75, 200));
+			sbRect, ColorRGBA(0, 0, 0, 75), sbBorderColor);
 		searchBoxHint = std::make_shared<CLabel>(
 			sbRect.center().x, sbRect.center().y,
-			FONT_SMALL, ETextAlignment::CENTER, ColorRGBA(158, 130, 105, 255), "Search...");
+			FONT_SMALL, ETextAlignment::CENTER, sbHintColor, "Search...");
 		searchBox = std::make_shared<CTextInput>(
 			sbRect, FONT_SMALL, ETextAlignment::CENTER, false);
 		searchBox->setCallback([this](const std::string &) { onSearchInput(); });
@@ -384,7 +401,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 	// ---- Close button -------------------------------------------------------
 	closeButton = std::make_shared<CButton>(
 		Point(WIN_W / 2 - 26, CLOSE_Y),
-		AnimationPath::builtin("IOKAY"),
+		AnimationPath::builtin(style == Style::BLUE ? "MuBchck" : "IOKAY"),
 		CButton::tooltip("", "Close"),
 		std::bind(&WikiWindow::close, this),
 		EShortcut::GLOBAL_RETURN);
@@ -436,7 +453,9 @@ void WikiWindow::buildCategoryList()
 				}
 				clicked->setSelected(true);
 				onCategoryClicked((int)clicked->index);
-			});
+			},
+			std::nullopt,
+			style == Style::BLUE);
 		// No icon in the default stub – icons can be added later per-entry.
 		item->pos.w = COL1_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
@@ -518,7 +537,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 				}
 				clicked->setSelected(true);
 				onElementClicked((int)clicked->index);
-			}, icon);
+			}, icon, style == Style::BLUE);
 		item->pos.w = COL2_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeElementIndex)

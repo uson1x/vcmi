@@ -40,6 +40,7 @@
 #include "../widgets/TextControls.h"
 #include "../widgets/VideoWidget.h"
 #include "../windows/InfoWindows.h"
+#include "../windows/WikiWindow.h"
 #include "../CServerHandler.h"
 
 #include "../CPlayerInterface.h"
@@ -69,6 +70,7 @@ CMenuScreen::CMenuScreen(const JsonNode & configNode)
 	: CWindowObject(BORDERED), config(configNode)
 {
 	OBJECT_CONSTRUCTION;
+	addUsedEvents(KEYBOARD);
 
 	const auto& bgConfig = config["background"];
 	if (bgConfig.isVector())
@@ -139,7 +141,11 @@ size_t CMenuScreen::getActiveTab() const
 {
 	return tabs->getActive();
 }
-
+void CMenuScreen::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::ADVENTURE_OPEN_WIKI)
+		ENGINE->windows().createAndPushWindow<WikiWindow>(WikiWindow::Style::BLUE);
+}
 //function for std::string -> std::function conversion for main menu
 static std::function<void()> genCommand(CMenuScreen * menu, std::vector<std::string> menuType, const std::string & string)
 {

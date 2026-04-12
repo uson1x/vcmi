@@ -55,6 +55,7 @@ class WikiListItem : public CIntObject
 	std::optional<ColorRGBA>     colorFillIcon; ///< used for terrain (solid color square)
 	std::shared_ptr<CLabel>      label;
 	bool selected = false;
+	bool blueStyle = false;
 
 	void updateLook();
 
@@ -67,7 +68,8 @@ public:
 
 	WikiListItem(size_t index, std::string text,
 	             std::function<void(WikiListItem *)> callback,
-	             std::optional<WikiIconInfo> iconInfo = std::nullopt);
+	             std::optional<WikiIconInfo> iconInfo = std::nullopt,
+	             bool blueStyle = false);
 
 	void clickPressed(const Point & cursorPosition) override;
 	void hover(bool on) override;
