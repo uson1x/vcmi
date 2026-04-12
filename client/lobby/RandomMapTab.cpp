@@ -45,37 +45,6 @@
 #include "../../lib/serializer/JsonSerializer.h"
 #include "../../lib/serializer/JsonDeserializer.h"
 
-namespace
-{
-std::optional<int> mapSizeFromStringId(const std::string & id)
-{
-	const std::string upper = boost::to_upper_copy(id);
-
-	if(boost::ends_with(upper, ".C") || boost::ends_with(upper, "C"))
-		return std::nullopt; // custom map size
-	if(boost::ends_with(upper, ".XH") || boost::ends_with(upper, "XH"))
-		return CMapHeader::MAP_SIZE_XHUGE;
-	if(boost::ends_with(upper, ".XL") || boost::ends_with(upper, "XL"))
-		return CMapHeader::MAP_SIZE_XLARGE;
-	if(boost::ends_with(upper, ".HG") || boost::ends_with(upper, "HG"))
-		return CMapHeader::MAP_SIZE_HUGE;
-	if(boost::ends_with(upper, ".G") || boost::ends_with(upper, "G"))
-		return CMapHeader::MAP_SIZE_GIANT;
-	if(boost::ends_with(upper, ".H") || boost::ends_with(upper, "H"))
-		return CMapHeader::MAP_SIZE_HUGE;
-	if(boost::ends_with(upper, ".X") || boost::ends_with(upper, "X"))
-		return CMapHeader::MAP_SIZE_XLARGE;
-	if(boost::ends_with(upper, ".L") || boost::ends_with(upper, "L"))
-		return CMapHeader::MAP_SIZE_LARGE;
-	if(boost::ends_with(upper, ".M") || boost::ends_with(upper, "M"))
-		return CMapHeader::MAP_SIZE_MIDDLE;
-	if(boost::ends_with(upper, ".S") || boost::ends_with(upper, "S"))
-		return CMapHeader::MAP_SIZE_SMALL;
-
-	return std::nullopt;
-}
-}
-
 RandomMapTab::RandomMapTab():
 	InterfaceObjectConfigurable(),
 	templateIndex(0)
@@ -158,7 +127,6 @@ RandomMapTab::RandomMapTab():
 	}
 	
 	const JsonNode config(JsonPath::builtin("config/widgets/randomMapTab.json"));
-	initializeMapSizeButtons(config);
 	build(config);
 	
 	if(auto w = widget<CButton>("buttonShowRandomMaps"))
@@ -237,59 +205,6 @@ RandomMapTab::RandomMapTab():
 	}
 	
 	loadOptions();
-}
-
-void RandomMapTab::initializeMapSizeButtons(const JsonNode & config)
-{
-	mapSizeButtons.clear();
-	customSizeButtons.clear();
-
-	const auto & mapSizeItems = config["items"].Vector();
-	for(const auto & item : mapSizeItems)
-	{
-		if(item["name"].String() != "groupMapSize" || item["items"].isNull())
-			continue;
-
-		int itemIdx = -1;
-		for(const auto & mapSizeButton : item["items"].Vector())
-		{
-			itemIdx = mapSizeButton["index"].isNull() ? itemIdx + 1 : mapSizeButton["index"].Integer();
-
-			if(!mapSizeButton["help"].isNull())
-			{
-				const auto sizeFromHelp = mapSizeFromStringId(mapSizeButton["help"].String());
-				if(sizeFromHelp.has_value())
-				{
-					mapSizeButtons[itemIdx] = *sizeFromHelp;
-					continue;
-				}
-				if(boost::ends_with(boost::to_upper_copy(mapSizeButton["help"].String()), ".C"))
-				{
-					customSizeButtons.insert(itemIdx);
-					continue;
-				}
-			}
-
-			if(!mapSizeButton["image"].isNull())
-			{
-				const auto sizeFromImage = mapSizeFromStringId(mapSizeButton["image"].String());
-				if(sizeFromImage.has_value())
-					mapSizeButtons[itemIdx] = *sizeFromImage;
-				else if(boost::ends_with(boost::to_upper_copy(mapSizeButton["image"].String()), "C"))
-					customSizeButtons.insert(itemIdx);
-			}
-		}
-		break;
-	}
-
-	if(mapSizeButtons.empty())
-	{
-		// Fallback for legacy configs that don't provide recognizable map-size IDs yet.
-		// TODO: remove once all maintained randomMapTab configs declare explicit IDs (including custom size button).
-		const auto defaultMapSizes = getStandardMapSizes();
-		for(size_t i = 0; i < defaultMapSizes.size(); ++i)
-			mapSizeButtons[static_cast<int>(i)] = defaultMapSizes[i];
-	}
 }
 
 void RandomMapTab::onToggleMapSize(int btnId)
@@ -496,6 +411,9 @@ void RandomMapTab::setMapGenOptions(std::shared_ptr<CMapGenOptions> opts)
 	
 	if(auto w = widget<CToggleGroup>("groupMapSize"))
 	{
+		const int customButtonId = static_cast<int>(getStandardMapSizes().size());
+		const bool hasCustomButton = w->buttons.count(customButtonId) > 0;
+
 		for(auto toggle : w->buttons)
 		{
 			if(auto button = std::dynamic_pointer_cast<CToggleButton>(toggle.second))
@@ -514,22 +432,22 @@ void RandomMapTab::setMapGenOptions(std::shared_ptr<CMapGenOptions> opts)
 			}
 		}
 
-		if(customMapSizeMode && customSizeButtons.count(w->getSelected()) > 0)
+		if(customMapSizeMode && hasCustomButton && isCustomSizeButtonId(w->getSelected()))
 		{
 			// Keep current custom button selection. Do not switch to preset button based on dimensions.
 		}
 		else if(opts->getWidth() != opts->getHeight())
 		{
 			customMapSizeMode = true;
-			w->setSelected(customSizeButtons.empty() ? -1 : *customSizeButtons.begin());
+			w->setSelected(hasCustomButton ? customButtonId : -1);
 		}
 		else
 		{
-			bool found = false;
-			auto selectedButton = vstd::findKey(mapSizeButtons, opts->getWidth(), &found);
-			if(!found && !customSizeButtons.empty())
-				customMapSizeMode = true;
-			w->setSelected(found ? selectedButton : -1);
+			auto position = vstd::find_pos(getStandardMapSizes(), opts->getWidth());
+			if(customMapSizeMode && hasCustomButton && position >= 0 && position < static_cast<int>(getStandardMapSizes().size()))
+				w->setSelected(customButtonId);
+			else
+				w->setSelected(position);
 		}
 	}
 	if(auto w = widget<CToggleButton>("buttonTwoLevels"))
@@ -648,12 +566,7 @@ std::vector<int> RandomMapTab::getStandardMapSizes() const
 
 std::optional<int> RandomMapTab::getMapSizeForButtonId(int btnId) const
 {
-	if(auto mapSizeIt = mapSizeButtons.find(btnId); mapSizeIt != mapSizeButtons.end())
-		return mapSizeIt->second;
-
 	const auto defaultMapSizes = getStandardMapSizes();
-	// Fallback for old mods that still rely on historical button ordering.
-	// TODO: remove after legacy randomMapTab layouts are no longer supported.
 	if(btnId >= 0 && btnId < static_cast<int>(defaultMapSizes.size()))
 		return defaultMapSizes[btnId];
 
@@ -662,14 +575,12 @@ std::optional<int> RandomMapTab::getMapSizeForButtonId(int btnId) const
 
 bool RandomMapTab::isCustomSizeButtonId(int btnId) const
 {
-	return customSizeButtons.count(btnId) > 0;
+	return btnId == static_cast<int>(getStandardMapSizes().size());
 }
 
 size_t RandomMapTab::getCustomMapSizeIconFrame() const
 {
-	// SCNRMPSZ convention: standard size icons first, then custom icon.
-	// Number of recognized standard map-size buttons gives custom icon frame index.
-	return mapSizeButtons.size();
+	return getStandardMapSizes().size();
 }
 
 void TeamAlignmentsWidget::checkTeamCount()
