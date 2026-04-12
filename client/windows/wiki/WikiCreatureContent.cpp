@@ -35,11 +35,9 @@
 
 static const ColorRGBA COL_BDR_BROWN {200, 180, 120, 220};
 static const ColorRGBA COL_INN_BROWN  { 90,  80,  50, 160};
-static const ColorRGBA COL_HDR_BROWN  { 60,  50,  30, 140};
 
 static const ColorRGBA COL_BDR_BLUE { 80, 140, 220, 220};
 static const ColorRGBA COL_INN_BLUE  { 30,  60, 120, 160};
-static const ColorRGBA COL_HDR_BLUE  { 20,  40,  80, 140};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Layout constants

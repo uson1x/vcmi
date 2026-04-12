@@ -217,21 +217,14 @@ static constexpr int SLIDER_W      = 16;
 // Column 1 – Categories  (x: 10 … 106)  ~60% of original
 static constexpr int COL1_X        = 10;
 static constexpr int COL1_LIST_W   = 80;   // ~60% of previous 138
-static constexpr int COL1_SLIDER_X = COL1_X + COL1_LIST_W + 1; // 91
 
 // Column 2 – Elements + search  (x: 108 … ~269)  reduced to ~65 % of previous
 static constexpr int COL2_X        = 108;  // = COL1_X + COL1_LIST_W + SLIDER_W + 2
 static constexpr int COL2_LIST_W   = 144;  // ~65 % of previous 222 – gives more room to col3
-static constexpr int COL2_SLIDER_X = COL2_X + COL2_LIST_W + 1; // 253
 
 // Column 3 – Content  (x: 270 … 790)
 static constexpr int COL3_X        = COL2_X + COL2_LIST_W + SLIDER_W + 2; // 270
 static constexpr int COL3_W        = WIN_W - COL3_X - 10; // 520 incl. textbox slider
-
-// Horizontal dividers (drawn as thin filled rects)
-// DIV1 sits between col1-slider and col2; DIV2 between col2-slider and col3
-static constexpr int DIV1_X        = COL1_X + COL1_LIST_W + SLIDER_W + 1; // 107
-static constexpr int DIV2_X        = COL2_X + COL2_LIST_W + SLIDER_W + 1; // 269
 
 // Close button (IOKAY.DEF is ~52 × 28 px)
 static constexpr int CLOSE_Y       = 564;
