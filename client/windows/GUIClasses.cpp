@@ -507,6 +507,8 @@ void CLevelWindow::updateLevelUpData(const CGHeroInstance * hero, PrimarySkill p
 	portrait->addClickCallback(nullptr);
 	portrait->addRClickCallback([hero](){ ENGINE->windows().createAndPushWindow<CRClickPopupInt>(std::make_shared<CHeroWindow>(hero)); });
 	ok = std::make_shared<CButton>(Point(297, 413), AnimationPath::builtin("IOKAY"), CButton::tooltip(), std::bind(&CLevelWindow::close, this), EShortcut::GLOBAL_ACCEPT);
+	ok->setHoverable(true);
+	ok->setImageOrder(0, 1, 2, 0); // keep hover visually neutral, preserve pressed frame
 
 	//%s has gained a level.
 	mainTitle = std::make_shared<CLabel>(192, 33, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, boost::str(boost::format(LIBRARY->generaltexth->allTexts[444]) % hero->getNameTranslated()));

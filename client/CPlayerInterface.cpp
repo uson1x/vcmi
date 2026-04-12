@@ -548,6 +548,18 @@ void CPlayerInterface::heroGotLevel(const CGHeroInstance *hero, PrimarySkill psk
 void CPlayerInterface::commanderGotLevel (const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
+	if(auto stackWindow = ENGINE->windows().topWindow<CStackWindow>(); stackWindow && stackWindow->isCommanderLevelUpDialog())
+	{
+		stackWindow->updateCommanderLevelUpData(commander, skills, [this, queryID](ui32 selection)
+		{
+			if(queryID < 0)
+				return;
+
+			cb->selectionMade(selection, queryID);
+		});
+		return;
+	}
+
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
 	auto callback = [this, queryID](ui32 selection)

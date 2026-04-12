@@ -142,6 +142,12 @@ void CCommanderSkillIcon::deselect()
 	redraw();
 }
 
+void CCommanderSkillIcon::select()
+{
+	isSelected = true;
+	redraw();
+}
+
 bool CCommanderSkillIcon::getIsMasterAbility()
 {
 	return isMasterAbility;
@@ -431,11 +437,15 @@ CStackWindow::ButtonsSection::ButtonsSection(CStackWindow * owner, int yOffset)
 			std::string tooltipText = "vcmi.creatureWindow." + btnIDs[buttonIndex];
 			parent->switchButtons[buttonIndex] = std::make_shared<CButton>(Point(342, 5), AnimationPath::builtin("stackWindow/upgradeButton"), CButton::tooltipLocalized(tooltipText), onSwitch);
 			parent->switchButtons[buttonIndex]->setOverlay(std::make_shared<CAnimImage>(AnimationPath::builtin("stackWindow/switchModeIcons"), buttonIndex));
+			parent->switchButtons[buttonIndex]->setHoverable(true);
+			parent->switchButtons[buttonIndex]->setImageOrder(0, 1, 2, 0); // no hover visual, keep pressed feedback
 		}
 		parent->switchButtons[parent->activeTab]->disable();
 	}
 
 	exit = std::make_shared<CButton>(Point(382, 5), AnimationPath::builtin("hsbtns.def"), LIBRARY->generaltexth->zelp[447], [this](){ parent->close(); }, EShortcut::GLOBAL_RETURN);
+	exit->setHoverable(true);
+	exit->setImageOrder(0, 1, 2, 0); // no hover visual, keep pressed feedback
 }
 
 CStackWindow::CommanderMainSection::CommanderMainSection(CStackWindow * owner, int yOffset)
@@ -541,6 +551,11 @@ CStackWindow::CommanderMainSection::CommanderMainSection(CStackWindow * owner, i
 
 			icon->hoverText = abilityDescription;
 			icon->text = abilityDescription;
+			if(parent->selectedSkill == skillID)
+			{
+				parent->selectedIcon = icon;
+				parent->setSelection(skillID, icon);
+			}
 
 			return icon;
 		};
@@ -836,6 +851,7 @@ CStackWindow::CStackWindow(const CCommanderInstance * commander, std::vector<ui3
 void CStackWindow::updateCommanderLevelUpData(const CCommanderInstance * commander, std::vector<ui32> & skills, std::function<void(ui32)> callback)
 {
 	OBJECT_CONSTRUCTION;
+	waitingForNextUpdate = false;
 
 	info->stackNode = commander;
 	info->creature = commander->getCreature();
@@ -848,23 +864,9 @@ void CStackWindow::updateCommanderLevelUpData(const CCommanderInstance * command
 
 	fakeNode.reset();
 	activeBonuses.clear();
-
-	if(mainSection)
-		removeChild(mainSection.get());
-	if(activeSpellsSection)
-		removeChild(activeSpellsSection.get());
-	if(commanderMainSection)
-		removeChild(commanderMainSection.get());
-	if(commanderBonusesSection)
-		removeChild(commanderBonusesSection.get());
-	if(bonusesSection)
-		removeChild(bonusesSection.get());
-	if(buttonsSection)
-		removeChild(buttonsSection.get());
-	if(commanderTab)
-		removeChild(commanderTab.get());
-
 	switchButtons.clear();
+	while(!children.empty())
+		removeChild(children.back());
 
 	mainSection.reset();
 	activeSpellsSection.reset();
@@ -873,15 +875,12 @@ void CStackWindow::updateCommanderLevelUpData(const CCommanderInstance * command
 	bonusesSection.reset();
 	buttonsSection.reset();
 	commanderTab.reset();
+	stackArtifact.reset();
+	stackArtifactButton.reset();
+	background.reset();
 
-	selectedIcon = nullptr;
-	selectedSkill = skills.empty() ? -1 : skills.front();
-	activeTab = 0;
-
-	pos = Rect();
-	initBonusesList();
-	initSections();
-	background->pos = pos;
+	pos = Rect(pos.x, pos.y, 0, 0);
+	init();
 
 	setRedrawParent(true);
 	redraw();
@@ -897,14 +896,32 @@ CStackWindow::~CStackWindow() = default;
 void CStackWindow::tick(uint32_t msPassed)
 {
 	CWindowObject::tick(msPassed);
+
+	if(waitingForNextUpdate && std::chrono::steady_clock::now() >= closeDeadline)
+	{
+		waitingForNextUpdate = false;
+		CWindowObject::close();
+	}
 }
 
 void CStackWindow::close()
 {
+	if(waitingForNextUpdate)
+		return;
+
 	if(info->levelupInfo && !info->levelupInfo->skills.empty())
 		info->levelupInfo->callback(vstd::find_pos(info->levelupInfo->skills, selectedSkill));
 
-	CWindowObject::close();
+	const bool expectAnotherCommanderLevelUp = info->commander && info->commander->gainsLevel();
+	if(expectAnotherCommanderLevelUp)
+	{
+		waitingForNextUpdate = true;
+		closeDeadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+	}
+	else
+	{
+		CWindowObject::close();
+	}
 }
 
 void CStackWindow::init()
@@ -1194,6 +1211,8 @@ void CStackWindow::setSelection(si32 newSkill, std::shared_ptr<CCommanderSkillIc
 	}
 
 	selectedIcon = newIcon; // update new selection
+	if(selectedIcon)
+		selectedIcon->select();
 	if(newSkill < 100)
 	{
 		newIcon->setObject(std::make_shared<CPicture>(getSkillImage(newSkill)));
