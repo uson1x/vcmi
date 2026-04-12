@@ -50,7 +50,6 @@ public:
 	CFunctionList<void(std::shared_ptr<CMapInfo>, std::shared_ptr<CMapGenOptions>)> mapInfoChanged;
 
 private:
-	void initializeMapSizeButtons(const JsonNode & config);
 	void deactivateButtonsFrom(CToggleGroup & group, const std::set<int> & allowed);
 	std::vector<int> getStandardMapSizes() const;
 	std::optional<int> getMapSizeForButtonId(int btnId) const;
@@ -65,8 +64,6 @@ private:
 	std::set<int> playerTeamsAllowed;
 	std::set<int> compCountAllowed;
 	std::set<int> compTeamsAllowed;
-	std::map<int, int> mapSizeButtons;
-	std::set<int> customSizeButtons;
 	bool customMapSizeMode = false;
 
 	int templateIndex;
