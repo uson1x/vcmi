@@ -178,6 +178,8 @@ set(vcmiclientcommon_SRCS
 	windows/CSpellWindow.cpp
 	windows/CTutorialWindow.cpp
 	windows/wiki/WikiWindow.cpp
+	windows/wiki/WikiCreatureContent.cpp
+	windows/wiki/WikiHeroContent.cpp
 	windows/wiki/WikiTownContent.cpp
 	windows/CWindowObject.cpp
 	windows/CreaturePurchaseCard.cpp
@@ -415,6 +417,8 @@ set(vcmiclientcommon_HEADERS
 	windows/CSpellWindow.h
 	windows/CTutorialWindow.h
 	windows/wiki/WikiWindow.h
+	windows/wiki/WikiCreatureContent.h
+	windows/wiki/WikiHeroContent.h
 	windows/wiki/WikiTownContent.h
 	windows/CWindowObject.h
 	windows/CreaturePurchaseCard.h

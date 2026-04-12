@@ -154,6 +154,14 @@ private:
 	std::vector<std::shared_ptr<CIntObject>> townContentWidgets; ///< ownership for viewport children
 	std::string currentTownName; ///< name of the town currently displayed in the viewport
 
+	std::shared_ptr<CViewport> creatureContentView; ///< scrollable viewport for Creature category
+	std::vector<std::shared_ptr<CIntObject>> creatureContentWidgets;
+	std::string currentCreatureName;
+
+	std::shared_ptr<CViewport> heroContentView; ///< scrollable viewport for Hero category
+	std::vector<std::shared_ptr<CIntObject>> heroContentWidgets;
+	std::string currentHeroName;
+
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
 	std::shared_ptr<CButton> backButton;
@@ -179,6 +187,10 @@ private:
 
 	/// Rebuilds the town viewport content for the given faction name.
 	void rebuildTownViewport(const std::string & factionName);
+	/// Rebuilds the creature viewport content for the given creature name.
+	void rebuildCreatureViewport(const std::string & creatureName);
+	/// Rebuilds the hero viewport content for the given hero name.
+	void rebuildHeroViewport(const std::string & heroName);
 
 public:
 	explicit WikiWindow(Style style = Style::BROWN, std::optional<WikiEntryKey> initialEntry = std::nullopt);

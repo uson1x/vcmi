@@ -10,6 +10,8 @@
 #include "StdInc.h"
 #include "WikiWindow.h"
 #include "WikiTownContent.h"
+#include "WikiCreatureContent.h"
+#include "WikiHeroContent.h"
 
 #include "../../gui/Shortcut.h"
 #include "../../widgets/Buttons.h"
@@ -100,6 +102,17 @@ void WikiListItem::clickPressed(const Point & cursorPosition)
 {
 	if(text.empty())
 		return;
+	// Ignore clicks that land on the scrollbar area
+	if(parent)
+	{
+		auto * lb = dynamic_cast<CListBox *>(parent);
+		if(lb && lb->getSlider() && !lb->getSlider()->isDisabled())
+		{
+			const int sliderW = lb->getSlider()->pos.w;
+			if(cursorPosition.x >= parent->pos.x + parent->pos.w - sliderW)
+				return;
+		}
+	}
 	if(onSelected)
 		onSelected(this);
 }
@@ -107,7 +120,20 @@ void WikiListItem::clickPressed(const Point & cursorPosition)
 void WikiListItem::showPopupWindow(const Point & cursorPosition)
 {
 	if(!text.empty())
+	{
+		// Ignore right-clicks on the scrollbar area
+		if(parent)
+		{
+			auto * lb = dynamic_cast<CListBox *>(parent);
+			if(lb && lb->getSlider() && !lb->getSlider()->isDisabled())
+			{
+				const int sliderW = lb->getSlider()->pos.w;
+				if(cursorPosition.x >= parent->pos.x + parent->pos.w - sliderW)
+					return;
+			}
+		}
 		CRClickPopup::createAndPush(text);
+	}
 }
 
 void WikiListItem::hover(bool on)
@@ -365,7 +391,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		for(const auto & artifact : LIBRARY->arth->objects)
 			if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
 				categoryEntries[iArtifact].push_back({
-					artifact->getNameTranslated(), "",
+					artifact->getNameTranslated(),
+					artifact->getDescriptionTranslated(),
 					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt }
 				});
 		std::sort(categoryEntries[iArtifact].begin(), categoryEntries[iArtifact].end(),
@@ -377,10 +404,23 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		const int iSpell = static_cast<int>(WikiCategory::SPELL);
 		for(const auto & spell : LIBRARY->spellh->objects)
 			if(spell && !spell->isSpecial() && !spell->isCreatureAbility())
+			{
+				// Build multi-level description (Basic / Advanced / Expert)
+				std::string desc;
+				for(int lvl = 1; lvl <= 3; lvl++)
+				{
+					const std::string ld = spell->getDescriptionTranslated(lvl);
+					if(!ld.empty())
+					{
+						if(!desc.empty()) desc += "\n\n";
+						desc += "{" + LIBRARY->generaltexth->levels[lvl - 1] + "}\n\n" + ld;
+					}
+				}
 				categoryEntries[iSpell].push_back({
-					spell->getNameTranslated(), "",
+					spell->getNameTranslated(), desc,
 					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt }
 				});
+			}
 		std::sort(categoryEntries[iSpell].begin(), categoryEntries[iSpell].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
@@ -390,15 +430,28 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		const int iSkill = static_cast<int>(WikiCategory::SKILL);
 		for(const auto & skill : LIBRARY->skillh->objects)
 			if(skill)
+			{
+				// Build multi-level description (Basic / Advanced / Expert)
+				std::string desc;
+				for(int lvl = 1; lvl <= 3; lvl++)
+				{
+					const std::string ld = skill->getDescriptionTranslated(lvl);
+					if(!ld.empty())
+					{
+						if(!desc.empty()) desc += "\n\n";
+						desc += "{" + LIBRARY->generaltexth->levels[lvl - 1] + "}\n\n" + ld;
+					}
+				}
 				categoryEntries[iSkill].push_back({
-					skill->getNameTranslated(), "",
+					skill->getNameTranslated(), desc,
 					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt }
 				});
+			}
 		std::sort(categoryEntries[iSkill].begin(), categoryEntries[iSkill].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
-	// Terrain types – minimap colour as icon
+	// Terrain types – minimap colour as icon, list native towns as description
 	{
 		const int iTerrain = static_cast<int>(WikiCategory::TERRAIN);
 		for(const auto & terrain : LIBRARY->terrainTypeHandler->objects)
@@ -406,7 +459,22 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				WikiIconInfo colorIcon;
 				colorIcon.colorFill = terrain->minimapUnblocked;
-				categoryEntries[iTerrain].push_back({ terrain->getNameTranslated(), "", colorIcon });
+
+				// List towns whose native terrain this is
+				std::string nativeTowns;
+				for(const auto & faction : LIBRARY->townh->objects)
+				{
+					if(faction && faction->hasTown() && !faction->special
+						&& faction->getNativeTerrain() == terrain->getId())
+					{
+						if(!nativeTowns.empty()) nativeTowns += ", ";
+						nativeTowns += faction->getNameTranslated();
+					}
+				}
+				std::string desc;
+				if(!nativeTowns.empty())
+					desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}\n\n" + nativeTowns;
+				categoryEntries[iTerrain].push_back({ terrain->getNameTranslated(), desc, colorIcon });
 			}
 		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -457,6 +525,18 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			Point(VP_W, VP_H),  // initial content = viewport size (no scroll)
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 		townContentView->disable(); // shown only for Town category
+
+		creatureContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		creatureContentView->disable();
+
+		heroContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		heroContentView->disable();
 	}
 
 	// ---- Close button -----------------------------------------------------------
@@ -470,12 +550,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	// ---- Back button (left border, same style as key-binding reset) -----------
 	backButton = std::make_shared<CButton>(
 		Point(COL1_X, CLOSE_Y),
-		AnimationPath::builtin("settingsWindow/button80"),
+		AnimationPath::builtin(style == Style::BLUE ? "buttonBlue80" : "settingsWindow/button80"),
 		CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.wiki.button.back")),
 		std::bind(&WikiWindow::navigateBack, this));
 	backButton->setOverlay(std::make_shared<CLabel>(0, 0, FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 		LIBRARY->generaltexth->translate("vcmi.wiki.button.back")));
-	backButton->block(true); // disabled until there is history
+	backButton->disable(); // hidden until there is history to go back to
 
 	// Apply scroll-wheel bounds after center() so pos is finalised
 	applyScrollBounds();
@@ -668,28 +748,48 @@ void WikiWindow::updateContent()
 	if(!contentBox)
 		return;
 
-	// Show the town viewport only when Town category is active AND an element is selected.
+	// Determine which custom viewport (if any) to show
 	const bool useTownViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::TOWN))
 	                           && (activeElementIndex >= 0)
 	                           && townContentView;
+	const bool useCreatureViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::CREATURE))
+	                               && (activeElementIndex >= 0)
+	                               && creatureContentView;
+	const bool useHeroViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::HERO))
+	                           && (activeElementIndex >= 0)
+	                           && heroContentView;
+	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport;
 
 	// Toggle viewport / textbox visibility
 	if(townContentView)
 		townContentView->setEnabled(useTownViewport);
-	contentBox->setEnabled(!useTownViewport);
+	if(creatureContentView)
+		creatureContentView->setEnabled(useCreatureViewport);
+	if(heroContentView)
+		heroContentView->setEnabled(useHeroViewport);
+	contentBox->setEnabled(!useCustomViewport);
 
-	if(useTownViewport)
+	if(useCustomViewport)
 	{
-		// Rebuild the viewport content if the selected town changed
-		const std::string & townName = currentDisplayedEntries[activeElementIndex].name;
-		if(townName != currentTownName)
-			rebuildTownViewport(townName);
+		if(useTownViewport)
+		{
+			const std::string & townName = currentDisplayedEntries[activeElementIndex].name;
+			if(townName != currentTownName)
+				rebuildTownViewport(townName);
+		}
+		else if(useCreatureViewport)
+		{
+			const std::string & creName = currentDisplayedEntries[activeElementIndex].name;
+			if(creName != currentCreatureName)
+				rebuildCreatureViewport(creName);
+		}
+		else if(useHeroViewport)
+		{
+			const std::string & heroName = currentDisplayedEntries[activeElementIndex].name;
+			if(heroName != currentHeroName)
+				rebuildHeroViewport(heroName);
+		}
 
-		// Full repaint so the background clears old contentBox pixels and
-		// the viewport renders on a clean surface.  Static child widgets
-		// (CLabel, CAnimImage) only paint in showAll(), not show(), so a
-		// single enable()→redraw() on the viewport alone is not enough
-		// once the regular per-frame show() loop takes over.
 		redraw();
 		return;
 	}
@@ -773,6 +873,92 @@ void WikiWindow::rebuildTownViewport(const std::string & factionName)
 	applyScrollBounds();
 }
 
+void WikiWindow::rebuildCreatureViewport(const std::string & creatureName)
+{
+	currentCreatureName = creatureName;
+	creatureContentWidgets.clear();
+
+	// Look up the creature by translated name
+	const CCreature * creature = nullptr;
+	for(const auto & c : LIBRARY->creh->objects)
+	{
+		if(c && c->getNameSingularTranslated() == creatureName)
+		{
+			creature = c.get();
+			break;
+		}
+	}
+
+	if(!creature || !creatureContentView)
+		return;
+
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	creatureContentView.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		creatureContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	const bool isBlue = (style == Style::BLUE);
+	auto navCb = [this](const std::string & name)
+	{
+		navigateTo(WikiEntryKey{WikiCategory::CREATURE, name});
+	};
+	creatureContentWidgets = buildCreatureContent(*creatureContentView, creature,
+		VP_W - CViewport::SLIDER_W, isBlue, navCb);
+	creatureContentView->fitContentSize();
+
+	applyScrollBounds();
+}
+
+void WikiWindow::rebuildHeroViewport(const std::string & heroName)
+{
+	currentHeroName = heroName;
+	heroContentWidgets.clear();
+
+	// Look up the hero by translated name
+	const CHero * hero = nullptr;
+	for(const auto & h : LIBRARY->heroh->objects)
+	{
+		if(h && h->getNameTranslated() == heroName)
+		{
+			hero = h.get();
+			break;
+		}
+	}
+
+	if(!hero || !heroContentView)
+		return;
+
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	heroContentView.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		heroContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	const bool isBlue = (style == Style::BLUE);
+	auto navCb = [this](const std::string & name)
+	{
+		navigateTo(WikiEntryKey{WikiCategory::HERO, name});
+	};
+	heroContentWidgets = buildHeroContent(*heroContentView, hero,
+		VP_W - CViewport::SLIDER_W, isBlue, navCb);
+	heroContentView->fitContentSize();
+
+	applyScrollBounds();
+}
+
 // ============================================================================
 // WikiWindow – event handlers
 // ============================================================================
@@ -823,7 +1009,7 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].name});
 	}
 	if(backButton)
-		backButton->block(navHistory.empty());
+		backButton->setEnabled(!navHistory.empty());
 
 	activeCategoryIndex = catIdx;
 	buildElementList(activeCategoryIndex);
@@ -865,7 +1051,7 @@ void WikiWindow::navigateBack()
 	navHistory.pop_back();
 
 	if(backButton)
-		backButton->block(navHistory.empty());
+		backButton->setEnabled(!navHistory.empty());
 
 	// Navigate without pushing to history (direct implementation to avoid recursive push)
 	const int catIdx = static_cast<int>(prev.category);

@@ -280,6 +280,14 @@ static void addResourceCost(
 	if(entries.empty())
 		return;
 
+	// Gold always first, then others in natural enum order
+	std::stable_sort(entries.begin(), entries.end(), [](const ResInfo & a, const ResInfo & b){
+		const bool aGold = (a.id == GameResID::GOLD);
+		const bool bGold = (b.id == GameResID::GOLD);
+		if(aGold != bGold) return aGold;
+		return a.id < b.id;
+	});
+
 	const int entryW = RES_ICON_W + 26 + RES_GAP;
 	int x = startX;
 
@@ -441,6 +449,7 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 	// ── 3. Buildings table ──────────────────────────────────────────────
 
 	{
+		curY += 8; // extra padding above section title
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
@@ -526,6 +535,7 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 	// ── 4. Creatures table ──────────────────────────────────────────────
 
 	{
+		curY += 8; // extra padding above section title
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
@@ -709,20 +719,21 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 
 		if(!mightHeroes.empty() || !magicHeroes.empty())
 		{
-			widgets.push_back(std::make_shared<CLabel>(
+curY += 8; // extra padding above section title
+		widgets.push_back(std::make_shared<CLabel>(
 				W / 2, curY,
 				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 				LIBRARY->generaltexth->translate("vcmi.wiki.town.heroes")));
 			curY += 20;
 
 			const int tableW2  = W - TABLE_MARGIN * 2;
-			const int colPort  = 36;
+			const int colPort  = 52; // PortraitsSmall frames are 48px wide + 4 padding
 			const int colGend  = 22;
 			const int colSpec2 = 170;
 			const int colName2 = tableW2 - colPort - colGend - colSpec2;
 			const std::vector<int> heroCols = {colPort, colName2, colGend, colSpec2};
 			const int heroHeaderH = 18;
-			const int heroRowH    = 34;
+			const int heroRowH    = 36; // PortraitsSmall frames are 32px tall + 4 padding
 
 			// Collect unique class names from a hero group as "Class1 / Class2"
 			auto classNamesStr = [](const std::vector<HeroData> & rows) -> std::string
