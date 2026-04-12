@@ -10,6 +10,7 @@
 #pragma once
 
 #include "CWindowObject.h"
+#include "../widgets/CViewport.h"
 #include "../../lib/filesystem/ResourcePath.h"
 #include "../../lib/Color.h"
 
@@ -133,7 +134,9 @@ private:
 	std::vector<WikiEntry> currentDisplayedEntries;
 
 	// --- content area -----------------------------------------------------
-	std::shared_ptr<CTextBox> contentBox;
+	std::shared_ptr<CTextBox>  contentBox;
+	std::shared_ptr<CViewport> townContentView; ///< test viewport for Town category
+	std::vector<std::shared_ptr<CIntObject>> townContentWidgets; ///< ownership for viewport children
 
 	// --- controls ---------------------------------------------------------
 	std::shared_ptr<CButton> closeButton;

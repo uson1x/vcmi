@@ -141,6 +141,7 @@ set(vcmiclientcommon_SRCS
 	widgets/GraphicalPrimitiveCanvas.cpp
 	widgets/Images.cpp
 	widgets/MiscWidgets.cpp
+	widgets/CViewport.cpp
 	widgets/ObjectLists.cpp
 	widgets/TextControls.cpp
 	widgets/Scrollable.cpp
@@ -375,6 +376,7 @@ set(vcmiclientcommon_HEADERS
 	widgets/GraphicalPrimitiveCanvas.h
 	widgets/Images.h
 	widgets/MiscWidgets.h
+	widgets/CViewport.h
 	widgets/ObjectLists.h
 	widgets/TextControls.h
 	widgets/Scrollable.h

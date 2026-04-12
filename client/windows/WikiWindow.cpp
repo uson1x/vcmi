@@ -12,6 +12,7 @@
 
 #include "../gui/Shortcut.h"
 #include "../widgets/Buttons.h"
+#include "../widgets/CViewport.h"
 #include "../widgets/GraphicalPrimitiveCanvas.h"
 #include "../widgets/Images.h"
 #include "../widgets/ObjectLists.h"
@@ -399,7 +400,82 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		ETextAlignment::TOPLEFT,
 		Colors::WHITE);
 
-	// ---- Close button -------------------------------------------------------
+	// ---- Town viewport (test stub) -----------------------------------------------
+	// Completely fills the content column.  Only visible when category == Town (1).
+	{
+		static constexpr int VP_W = COL3_W - 6;   // leave 3 px margin each side
+		static constexpr int VP_H = CONTENT_H - 6;
+
+		// Initial content size is a rough overestimate — fitContentSize() below
+		// will shrink it to the tight bounding box of the actual children.
+		townContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W * 2, VP_H * 2),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		townContentView->disable(); // shown only for Town category
+
+		// Populate the scrollable content with test widgets.
+		OBJECT_CONSTRUCTION_TARGETED(townContentView->content());
+
+		// Row 0 – heading label
+		townContentWidgets.push_back(std::make_shared<CLabel>(
+			VP_W / 2, 10,
+			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
+			"[Town Viewport – Scroll Test]"));
+
+		// Buttons in a grid (8 columns × 4 rows), spaced 55 × 35 px
+		static const std::array<std::string, 4> btnSprites = {
+			"IOKAY", "ICANCEL", "ICN6432", "hsbtns",
+		};
+		static constexpr int BTN_COLS = 8;
+		static constexpr int BTN_ROWS = 4;
+		for(int row = 0; row < BTN_ROWS; ++row)
+		{
+			for(int col = 0; col < BTN_COLS; ++col)
+			{
+				const auto & sprite = btnSprites[(row * BTN_COLS + col) % btnSprites.size()];
+				townContentWidgets.push_back(std::make_shared<CButton>(
+					Point(col * 55 + 5, 40 + row * 35),
+					AnimationPath::builtin(sprite),
+					CButton::tooltip(),
+					[](){}));
+			}
+		}
+
+		// Animated creatures right below the button grid
+		static const std::array<std::string, 4> creatureAnims = {
+			"CPKMAN", "CHALBD", "CELFX",  "CLICH",
+		};
+		for(int i = 0; i < (int)creatureAnims.size(); ++i)
+		{
+			townContentWidgets.push_back(std::make_shared<CCreatureAnim>(
+				5 + i * 110, 185,
+				AnimationPath::builtin(creatureAnims[i])));
+		}
+
+		// Static images in a row below the animations
+		for(int i = 0; i < 8; ++i)
+		{
+			townContentWidgets.push_back(std::make_shared<CAnimImage>(
+				AnimationPath::builtin("CPRSMALL"),
+				static_cast<size_t>(i),
+				0, 5 + i * 55, 320));
+		}
+
+		// Labels filling remaining height
+		for(int row = 0; row < 14; ++row)
+		{
+			townContentWidgets.push_back(std::make_shared<CLabel>(
+				10, 360 + row * 22,
+				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
+				"Row " + std::to_string(row + 1) + " – lorem ipsum dolor sit amet, longer text to test clipping"));
+		}
+
+		// Shrink content bounds to the tight bounding box of all children.
+		townContentView->fitContentSize();
+	}
+
+	// ---- Close button -----------------------------------------------------------
 	closeButton = std::make_shared<CButton>(
 		Point(WIN_W / 2 - 26, CLOSE_Y),
 		AnimationPath::builtin(style == Style::BLUE ? "MuBchck" : "IOKAY"),
@@ -597,6 +673,27 @@ void WikiWindow::updateContent()
 {
 	if(!contentBox)
 		return;
+
+	// Show the town viewport only when Town category (1) is active AND an element is selected.
+	const bool useTownViewport = (activeCategoryIndex == 1)
+	                           && (activeElementIndex >= 0)
+	                           && townContentView;
+
+	// Toggle viewport / textbox visibility
+	if(townContentView)
+		townContentView->setEnabled(useTownViewport);
+	contentBox->setEnabled(!useTownViewport);
+
+	if(useTownViewport)
+	{
+		// Full repaint so the background clears old contentBox pixels and
+		// the viewport renders on a clean surface.  Static child widgets
+		// (CLabel, CAnimImage) only paint in showAll(), not show(), so a
+		// single enable()→redraw() on the viewport alone is not enough
+		// once the regular per-frame show() loop takes over.
+		redraw();
+		return;
+	}
 
 	if(activeCategoryIndex < 0 || activeElementIndex < 0)
 	{
