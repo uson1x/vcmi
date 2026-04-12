@@ -87,6 +87,7 @@ public:
 	             bool blueStyle = false);
 
 	void clickPressed(const Point & cursorPosition) override;
+	void showPopupWindow(const Point & cursorPosition) override;
 	void hover(bool on) override;
 	void showAll(Canvas & to) override;
 	void setSelected(bool sel);
@@ -153,6 +154,10 @@ private:
 	std::vector<std::shared_ptr<CIntObject>> townContentWidgets; ///< ownership for viewport children
 	std::string currentTownName; ///< name of the town currently displayed in the viewport
 
+	// --- navigation history -----------------------------------------------
+	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
+	std::shared_ptr<CButton> backButton;
+
 	// --- controls ---------------------------------------------------------
 	std::shared_ptr<CButton> closeButton;
 
@@ -170,6 +175,7 @@ private:
 	void onCategoryClicked(int index);
 	void onElementClicked(int index);
 	void navigateTo(const WikiEntryKey & key);
+	void navigateBack();
 
 	/// Rebuilds the town viewport content for the given faction name.
 	void rebuildTownViewport(const std::string & factionName);

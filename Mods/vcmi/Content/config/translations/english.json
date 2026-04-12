@@ -1096,6 +1096,7 @@
 	"vcmi.tutorialWindow.decription.RadialWheel": "Swiping opens radial wheel for various actions, such as creature/hero management and town ordering.",
 	"vcmi.tutorialWindow.decription.RightClick": "Touch and hold the element on which you want to right-click. Touch the free area to close.",
 	"vcmi.tutorialWindow.title": "Touchscreen Introduction",
+	"vcmi.wiki.button.back": "Back",
 	"vcmi.wiki.button.close": "Close",
 	"vcmi.wiki.content.placeholder": "Select a category and an entry to view its description.",
 	"vcmi.wiki.header.category": "Category",

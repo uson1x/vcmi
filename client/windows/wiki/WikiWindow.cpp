@@ -22,6 +22,7 @@
 #include "../../render/Canvas.h"
 #include "../../render/Colors.h"
 #include "../../widgets/CTextInput.h"
+#include "../InfoWindows.h"
 
 #include "../../../lib/GameLibrary.h"
 #include "../../../lib/entities/faction/CFaction.h"
@@ -52,7 +53,7 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText,
 {
 	OBJECT_CONSTRUCTION;
 
-	addUsedEvents(LCLICK | HOVER);
+	addUsedEvents(LCLICK | HOVER | SHOW_POPUP);
 
 	int labelOffsetX = MARGIN_L;
 
@@ -103,6 +104,12 @@ void WikiListItem::clickPressed(const Point & cursorPosition)
 		onSelected(this);
 }
 
+void WikiListItem::showPopupWindow(const Point & cursorPosition)
+{
+	if(!text.empty())
+		CRClickPopup::createAndPush(text);
+}
+
 void WikiListItem::hover(bool on)
 {
 	if(text.empty())
@@ -116,20 +123,25 @@ void WikiListItem::hover(bool on)
 
 void WikiListItem::showAll(Canvas & to)
 {
-	// Clip to parent (CListBox) bounds so items never spill into adjacent columns
+	// Clip to parent (CListBox) bounds so items never spill into adjacent columns.
+	// Exclude the slider area so text / icons do not overdraw the scrollbar.
 	if(parent)
 	{
-		CanvasClipRectGuard guard(to, parent->pos);
+		Rect clipArea = parent->pos;
+		auto * lb = dynamic_cast<CListBox *>(parent);
+		if(lb && lb->getSlider())
+			clipArea.w -= 16; // slider width
+		CanvasClipRectGuard guard(to, clipArea);
+
 		// Draw solid-colour terrain icon square (before CIntObject children)
 		if(colorFillIcon)
 		{
 			const int iconY = pos.y + (ITEM_H - ICON_SIZE) / 2;
 			to.drawColorBlended(Rect(pos.x + MARGIN_L, iconY, ICON_SIZE, ICON_SIZE), *colorFillIcon);
 		}
-		// Separator line: full width without slider, shortened when slider is visible
+		// Separator line: full width without slider
 		if(pos.y + pos.h < parent->pos.y + parent->pos.h)
 		{
-			auto * lb = dynamic_cast<CListBox *>(parent);
 			const int sepW = (lb && lb->getSlider()) ? (pos.w - 16) : pos.w;
 			to.drawColorBlended(Rect(pos.x, pos.y + pos.h - 1, sepW, 1),
 			                    blueStyle ? ColorRGBA(40, 100, 200, 200) : ColorRGBA(100, 80, 55, 255));
@@ -179,19 +191,19 @@ static constexpr int COL1_X        = 10;
 static constexpr int COL1_LIST_W   = 80;   // ~60% of previous 138
 static constexpr int COL1_SLIDER_X = COL1_X + COL1_LIST_W + 1; // 91
 
-// Column 2 – Elements + search  (x: 108 … 349)  expanded
+// Column 2 – Elements + search  (x: 108 … ~269)  reduced to ~65 % of previous
 static constexpr int COL2_X        = 108;  // = COL1_X + COL1_LIST_W + SLIDER_W + 2
-static constexpr int COL2_LIST_W   = 222;  // expanded from 158
-static constexpr int COL2_SLIDER_X = COL2_X + COL2_LIST_W + 1; // 331
+static constexpr int COL2_LIST_W   = 144;  // ~65 % of previous 222 – gives more room to col3
+static constexpr int COL2_SLIDER_X = COL2_X + COL2_LIST_W + 1; // 253
 
-// Column 3 – Content  (x: 350 … 790)
-static constexpr int COL3_X        = 350;
-static constexpr int COL3_W        = WIN_W - COL3_X - 10; // 440 incl. textbox slider
+// Column 3 – Content  (x: 270 … 790)
+static constexpr int COL3_X        = COL2_X + COL2_LIST_W + SLIDER_W + 2; // 270
+static constexpr int COL3_W        = WIN_W - COL3_X - 10; // 520 incl. textbox slider
 
 // Horizontal dividers (drawn as thin filled rects)
 // DIV1 sits between col1-slider and col2; DIV2 between col2-slider and col3
 static constexpr int DIV1_X        = COL1_X + COL1_LIST_W + SLIDER_W + 1; // 107
-static constexpr int DIV2_X        = COL2_X + COL2_LIST_W + SLIDER_W + 1; // 347
+static constexpr int DIV2_X        = COL2_X + COL2_LIST_W + SLIDER_W + 1; // 269
 
 // Close button (IOKAY.DEF is ~52 × 28 px)
 static constexpr int CLOSE_Y       = 564;
@@ -455,6 +467,14 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		std::bind(&WikiWindow::close, this),
 		EShortcut::GLOBAL_RETURN);
 
+	// ---- Back button (left of close) ----------------------------------------
+	backButton = std::make_shared<CButton>(
+		Point(WIN_W / 2 - 80, CLOSE_Y),
+		AnimationPath::builtin(style == Style::BLUE ? "MuBcanc" : "ICANCEL"),
+		CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.wiki.button.back")),
+		std::bind(&WikiWindow::navigateBack, this));
+	backButton->block(true); // disabled until there is history
+
 	// Apply scroll-wheel bounds after center() so pos is finalised
 	applyScrollBounds();
 
@@ -599,7 +619,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 	};
 
 	// See COL1 comment above for the coordinate rationale.
-	static constexpr int COL2_SLIDER_REL_X = COL2_LIST_W + 1; // = 223
+	static constexpr int COL2_SLIDER_REL_X = COL2_LIST_W + 1; // = 145
 
 	const int sliderBits = (style == Style::BLUE) ? 5 : 1;
 
@@ -737,8 +757,15 @@ void WikiWindow::rebuildTownViewport(const std::string & factionName)
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 	}
 
-	// Populate with real town data
-	townContentWidgets = buildTownContent(*townContentView, faction, VP_W);
+	// Populate with real town data.
+	// Subtract scrollbar width so tables/grids end before the scrollbar.
+	const bool isBlue = (style == Style::BLUE);
+	auto navCb = [this](WikiCategory cat, const std::string & name)
+	{
+		navigateTo(WikiEntryKey{cat, name});
+	};
+	townContentWidgets = buildTownContent(*townContentView, faction,
+		VP_W - CViewport::SLIDER_W, isBlue, navCb);
 	townContentView->fitContentSize();
 
 	applyScrollBounds();
@@ -774,6 +801,16 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
 		return;
 
+	// Push current entry onto navigation history (if we have a valid selection)
+	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
+		&& activeElementIndex < (int)currentDisplayedEntries.size())
+	{
+		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
+		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].name});
+	}
+	if(backButton)
+		backButton->block(navHistory.empty());
+
 	activeCategoryIndex = catIdx;
 	buildElementList(activeCategoryIndex);
 
@@ -790,6 +827,51 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
 	{
 		if(currentDisplayedEntries[i].name == key.entryName)
+		{
+			activeElementIndex = i;
+			if(elementList)
+			{
+				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(i));
+				if(elemItem)
+					elemItem->setSelected(true);
+				elementList->scrollTo(i);
+			}
+			break;
+		}
+	}
+	updateContent();
+}
+
+void WikiWindow::navigateBack()
+{
+	if(navHistory.empty())
+		return;
+
+	WikiEntryKey prev = navHistory.back();
+	navHistory.pop_back();
+
+	if(backButton)
+		backButton->block(navHistory.empty());
+
+	// Navigate without pushing to history (direct implementation to avoid recursive push)
+	const int catIdx = static_cast<int>(prev.category);
+	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
+		return;
+
+	activeCategoryIndex = catIdx;
+	buildElementList(activeCategoryIndex);
+
+	if(categoryList)
+	{
+		auto catItem = std::dynamic_pointer_cast<WikiListItem>(categoryList->getItem(activeCategoryIndex));
+		if(catItem)
+			catItem->setSelected(true);
+		categoryList->scrollTo(activeCategoryIndex);
+	}
+
+	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+	{
+		if(currentDisplayedEntries[i].name == prev.entryName)
 		{
 			activeElementIndex = i;
 			if(elementList)
