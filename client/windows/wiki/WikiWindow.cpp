@@ -14,6 +14,8 @@
 #include "WikiHeroContent.h"
 
 #include "../../gui/Shortcut.h"
+#include "../../gui/WindowHandler.h"
+#include "../../GameEngine.h"
 #include "../../widgets/Buttons.h"
 #include "../../widgets/CViewport.h"
 #include "../../widgets/GraphicalPrimitiveCanvas.h"
@@ -413,7 +415,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					if(!ld.empty())
 					{
 						if(!desc.empty()) desc += "\n\n";
-						desc += "{" + LIBRARY->generaltexth->levels[lvl - 1] + "}\n\n" + ld;
+						desc += ld;
 					}
 				}
 				categoryEntries[iSpell].push_back({
@@ -439,7 +441,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					if(!ld.empty())
 					{
 						if(!desc.empty()) desc += "\n\n";
-						desc += "{" + LIBRARY->generaltexth->levels[lvl - 1] + "}\n\n" + ld;
+						desc += ld;
 					}
 				}
 				categoryEntries[iSkill].push_back({
@@ -800,7 +802,6 @@ void WikiWindow::updateContent()
 		return;
 	}
 
-	const std::string & catName  = categoryNames[activeCategoryIndex];
 	if(activeElementIndex < 0 || activeElementIndex >= (int)currentDisplayedEntries.size())
 	{
 		contentBox->setText(LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"));
@@ -808,20 +809,22 @@ void WikiWindow::updateContent()
 	}
 	const WikiEntry & entry = currentDisplayedEntries[activeElementIndex];
 
-	// Use stored description if available, otherwise show a stub
+	// Spell/Skill descriptions already contain {name} and level headers inline
+	const WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
+	const bool hasInlineTitle = (curCat == WikiCategory::ARTIFACT || curCat == WikiCategory::SPELL || curCat == WikiCategory::SKILL);
+
 	std::string text;
 	if(!entry.description.empty())
 	{
-		text = "{" + entry.name + "}\n\n" + entry.description;
+		if(hasInlineTitle)
+			text = entry.description;
+		else
+			text = "{" + entry.name + "}\n\n" + entry.description;
 	}
 	else
 	{
-		text =
-			"{" + entry.name + "}\n\n"
-			+ boost::str(boost::format(LIBRARY->generaltexth->translate("vcmi.wiki.stub.category")) % catName) + "\n\n"
-			+ LIBRARY->generaltexth->translate("vcmi.wiki.stub.intro") + "\n\n"
-			+ boost::str(boost::format(LIBRARY->generaltexth->translate("vcmi.wiki.stub.body")) % entry.name) + "\n\n"
-			+ LIBRARY->generaltexth->translate("vcmi.wiki.stub.hint");
+		// No description – show just the name (e.g. terrain with no native towns)
+		text = entry.name;
 	}
 
 	contentBox->setText(text);
@@ -914,6 +917,11 @@ void WikiWindow::rebuildCreatureViewport(const std::string & creatureName)
 	creatureContentView->fitContentSize();
 
 	applyScrollBounds();
+
+	// Force a full screen repaint so that leftover pixels from the previous
+	// creature's content (e.g. bonus table rows beyond the new viewport area)
+	// are properly cleared by redrawing the background underneath.
+	ENGINE->windows().totalRedraw();
 }
 
 void WikiWindow::rebuildHeroViewport(const std::string & heroName)
@@ -948,9 +956,9 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroName)
 	}
 
 	const bool isBlue = (style == Style::BLUE);
-	auto navCb = [this](const std::string & name)
+	auto navCb = [this](WikiCategory cat, const std::string & name)
 	{
-		navigateTo(WikiEntryKey{WikiCategory::HERO, name});
+		navigateTo(WikiEntryKey{cat, name});
 	};
 	heroContentWidgets = buildHeroContent(*heroContentView, hero,
 		VP_W - CViewport::SLIDER_W, isBlue, navCb);
@@ -979,6 +987,15 @@ void WikiWindow::onCategoryClicked(int index)
 
 void WikiWindow::onElementClicked(int index)
 {
+	// Push current entry onto navigation history so the back button works
+	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
+		&& activeElementIndex < (int)currentDisplayedEntries.size())
+	{
+		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
+		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].name});
+	}
+	if(backButton)
+		backButton->setEnabled(!navHistory.empty());
 	activeElementIndex = index;
 	updateContent();
 }

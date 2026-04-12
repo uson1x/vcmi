@@ -17,8 +17,11 @@ class CIntObject;
 class CViewport;
 class CHero;
 
+enum class WikiCategory : int;  // forward declaration
+
 /// Callback for wiki internal navigation from the hero page
-using WikiHeroNavigateCallback = std::function<void(const std::string & heroName)>;
+/// cat: CREATURE when clicking an army row, SPELL when clicking a spell row, etc.
+using WikiHeroNavigateCallback = std::function<void(WikiCategory cat, const std::string & name)>;
 
 /**
  * Builds the rich scrollable content for a "Hero" wiki entry.

@@ -16,8 +16,6 @@
 #include "../../widgets/GraphicalPrimitiveCanvas.h"
 #include "../../render/Canvas.h"
 #include "../../render/Colors.h"
-#include "../../render/IRenderHandler.h"
-#include "../../render/IImage.h"
 #include "../../GameEngine.h"
 #include "../../gui/WindowHandler.h"
 #include "../CHeroOverview.h"
@@ -34,6 +32,8 @@
 #include "../../../lib/entities/artifact/CArtifact.h"
 #include "../../../lib/entities/artifact/CArtHandler.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
+#include "WikiWindow.h"
+#include "../InfoWindows.h"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Colour palette (mirrors WikiTownContent)
@@ -101,6 +101,49 @@ static std::shared_ptr<GraphicalPrimitiveCanvas> makeSimpleGrid(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// HeroWikiClickable – row overlay with left/right click callbacks
+// ─────────────────────────────────────────────────────────────────────────────
+
+class HeroWikiClickable : public CIntObject
+{
+	std::function<void()> onLClick;
+	std::function<void()> onRClick;
+	bool hovered = false;
+	bool blueTheme = false;
+
+public:
+	HeroWikiClickable(Point pos_, int w, int h,
+	                  std::function<void()> lclick,
+	                  std::function<void()> rclick,
+	                  bool blue)
+		: CIntObject(LCLICK | SHOW_POPUP | HOVER, pos_)
+		, onLClick(std::move(lclick))
+		, onRClick(std::move(rclick))
+		, blueTheme(blue)
+	{
+		pos.w = w;
+		pos.h = h;
+	}
+
+	void clickPressed(const Point &) override { if(onLClick) onLClick(); }
+	void showPopupWindow(const Point &) override { if(onRClick) onRClick(); }
+	void hover(bool on) override { if(hovered != on) { hovered = on; redraw(); } }
+	void showAll(Canvas & to) override
+	{
+		const Point cur = ENGINE->getCursorPosition();
+		hovered = pos.isInside(cur);
+		if(hovered)
+		{
+			const ColorRGBA hc = blueTheme
+				? ColorRGBA(60, 100, 180, 60)
+				: ColorRGBA(180, 160, 100, 60);
+			to.drawColorBlended(pos, hc);
+		}
+		CIntObject::showAll(to);
+	}
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // buildHeroContent
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -137,15 +180,11 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			hero->imageIndex, 0,
 			MARGIN, curY));
 
-		// Specialty icon (UN44, 44×44)
-		widgets.push_back(std::make_shared<CAnimImage>(
-			AnimationPath::builtin("UN44"),
-			hero->imageIndex, 0,
-			MARGIN + 64, curY));
-
-		// Class + gender text to the right of portraits
-		const int textX = MARGIN + 64 + 48;
-		const std::string genderStr = (hero->gender == EHeroGender::FEMALE) ? "Female" : "Male";
+		// Class + gender text to the right of portrait
+		const int textX = MARGIN + 62 + 6;
+		const std::string genderStr = (hero->gender == EHeroGender::FEMALE)
+			? LIBRARY->generaltexth->translate("vcmi.wiki.hero.gender.female")
+			: LIBRARY->generaltexth->translate("vcmi.wiki.hero.gender.male");
 		widgets.push_back(std::make_shared<CLabel>(
 			textX, curY + 8,
 			FONT_MEDIUM, ETextAlignment::TOPLEFT, Colors::YELLOW,
@@ -157,15 +196,6 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 
 		// Clickable portrait: right-click opens CHeroOverview
 		const HeroTypeID hId = hero->getId();
-		auto rclick = [hId](){
-			ENGINE->windows().createAndPushWindow<CHeroOverview>(hId);
-		};
-		// Transparent click overlay covering both portraits
-		auto portClick = std::make_shared<CIntObject>(CIntObject::SHOW_POPUP, Point(MARGIN, curY));
-		portClick->pos.w = 64 + 48 + 4;
-		portClick->pos.h = 64;
-		// Use lambda capture via addUsedEvents + override approach indirectly:
-		// We add a simple CIntObject that inherits showPopupWindow
 		struct PortraitClickable : public CIntObject {
 			std::function<void()> cb;
 			PortraitClickable(Point p, int w, int h, std::function<void()> c)
@@ -174,16 +204,30 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			void showPopupWindow(const Point &) override { if(cb) cb(); }
 		};
 		widgets.push_back(std::make_shared<PortraitClickable>(
-			Point(MARGIN, curY), 64 + 48 + 4, 64,
-			std::move(rclick)));
+			Point(MARGIN, curY), 62, 68,
+			[hId](){ ENGINE->windows().createAndPushWindow<CHeroOverview>(hId); }));
 
-		curY += 70 + GAP;
+		curY += 74 + GAP;
+	}
+
+	// ── 2.5. Biography ────────────────────────────────────────────────────
+	{
+		const std::string bio = hero->getBiographyTranslated();
+		if(!bio.empty())
+		{
+			auto label = std::make_shared<CMultiLineLabel>(
+				Rect(MARGIN, curY, W - MARGIN * 2, 4000),
+				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, bio);
+			label->pos.h = label->textSize.y;
+			curY += label->textSize.y + GAP;
+			widgets.push_back(std::move(label));
+		}
 	}
 
 	// ── 3. Primary skills table ─────────────────────────────────────────
 	if(hero->heroClass)
 	{
-		curY += 4;
+		curY += 16;
 		const std::vector<std::string> psNames = {
 			LIBRARY->generaltexth->jktexts[1],  // Attack
 			LIBRARY->generaltexth->jktexts[2],  // Defense
@@ -220,12 +264,32 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		const std::string specDesc = hero->getSpecialtyDescriptionTranslated();
 		if(!specName.empty())
 		{
-			curY += 4;
+			curY += 16;
 			widgets.push_back(std::make_shared<CLabel>(
-				MARGIN, curY,
-				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::YELLOW,
-				"Specialty: " + specName));
-			curY += 18;
+				W / 2, curY,
+				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
+				LIBRARY->generaltexth->translate("vcmi.wiki.hero.specialty")));
+			curY += 20;
+
+			// Row: UN44 icon (44×44) | specialty name
+			const int iconCol = 48;  // 44px + 4 padding
+			const int tableW  = W - MARGIN * 2;
+			const ColorRGBA & bdr = blueStyle ? HC_BDR_BLUE : HC_BDR_BROWN;
+			auto rowBorder = std::make_shared<GraphicalPrimitiveCanvas>(
+				Rect(MARGIN, curY, tableW, 50));
+			rowBorder->addRectangle(Point(0, 0), Point(tableW, 50), bdr);
+			widgets.push_back(rowBorder);
+
+			widgets.push_back(std::make_shared<CAnimImage>(
+				AnimationPath::builtin("UN44"),
+				hero->imageIndex, 0,
+				MARGIN + 2, curY + 2));
+			widgets.push_back(std::make_shared<CLabel>(
+				MARGIN + iconCol + CELL_L, curY + CELL_T,
+				FONT_MEDIUM, ETextAlignment::TOPLEFT, Colors::YELLOW,
+				specName));
+			curY += 50;
+
 			if(!specDesc.empty())
 			{
 				auto label = std::make_shared<CMultiLineLabel>(
@@ -235,13 +299,17 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 				curY += label->textSize.y + GAP;
 				widgets.push_back(std::move(label));
 			}
+			else
+			{
+				curY += GAP;
+			}
 		}
 	}
 
 	// ── 5. Starting army table ───────────────────────────────────────────
 	if(!hero->initialArmy.empty())
 	{
-		curY += 4;
+		curY += 16;
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
@@ -262,22 +330,24 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 
 		if(!armyRows.empty())
 		{
-			const int iconW   = 28;
+			const int iconW   = 36;  // CPRSMALL (32px) + 4 padding
 			const int tableW  = W - MARGIN * 2;
 			const int nameW   = tableW - iconW - 60;
 			const std::vector<int> cols = { iconW, nameW, 60 };
 			const int headerH = 16;
-			const int rowH    = 26;
+			const int rowH    = 36;
 
 			widgets.push_back(makeSimpleGrid(MARGIN, curY, tableW, cols,
 				headerH, rowH, static_cast<int>(armyRows.size()), blueStyle));
 
 			widgets.push_back(std::make_shared<CLabel>(
 				MARGIN + iconW + CELL_L, curY + CELL_T,
-				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW, "Creature"));
+				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
+				LIBRARY->generaltexth->translate("vcmi.wiki.hero.column.creature")));
 			widgets.push_back(std::make_shared<CLabel>(
 				MARGIN + iconW + nameW + CELL_L, curY + CELL_T,
-				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW, "Amount"));
+				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
+				LIBRARY->generaltexth->translate("vcmi.wiki.hero.column.amount")));
 			curY += headerH;
 
 			for(const auto & ar : armyRows)
@@ -287,15 +357,32 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 					ar.cr->getIconIndex(), 0,
 					MARGIN + 2, curY + 2));
 				widgets.push_back(std::make_shared<CLabel>(
-					MARGIN + iconW + CELL_L, curY + CELL_T,
+					MARGIN + iconW + CELL_L, curY + rowH / 2 - 5,
 					FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 					ar.cr->getNamePluralTranslated()));
 				const std::string amt = (ar.minAmt == ar.maxAmt)
 					? std::to_string(ar.minAmt)
 					: std::to_string(ar.minAmt) + "-" + std::to_string(ar.maxAmt);
 				widgets.push_back(std::make_shared<CLabel>(
-					MARGIN + iconW + nameW + CELL_L, curY + CELL_T,
+					MARGIN + iconW + nameW + CELL_L, curY + rowH / 2 - 5,
 					FONT_SMALL, ETextAlignment::TOPLEFT, valCol, amt));
+
+				// Click overlay: left-click → navigate to creature, right-click → CStackWindow
+				const CreatureID crId(ar.cr->getIndex());
+				std::function<void()> lclick;
+				if(navigateCallback)
+				{
+					const std::string crName = ar.cr->getNameSingularTranslated();
+					lclick = [navigateCallback, crName](){ navigateCallback(WikiCategory::CREATURE, crName); };
+				}
+				widgets.push_back(std::make_shared<HeroWikiClickable>(
+					Point(MARGIN, curY), tableW, rowH,
+					std::move(lclick),
+					[crId](){
+						ENGINE->windows().createAndPushWindow<CStackWindow>(
+							LIBRARY->creh->objects[crId.getNum()].get(), true);
+					},
+					blueStyle));
 				curY += rowH;
 			}
 			curY += GAP;
@@ -305,29 +392,31 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 	// ── 6. Secondary skills ──────────────────────────────────────────────
 	if(!hero->secSkillsInit.empty())
 	{
-		curY += 4;
+		curY += 16;
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 			LIBRARY->generaltexth->translate("vcmi.heroOverview.secondarySkills")));
 		curY += 20;
 
-		const int iconW  = 28;
+		const int iconW  = 36;  // SECSK32 (32px) + 4 padding
 		const int tableW = W - MARGIN * 2;
 		const int nameW  = tableW - iconW - 80;
 		const std::vector<int> cols = { iconW, nameW, 80 };
 		const int headerH = 16;
-		const int rowH    = 28;
+		const int rowH    = 36;
 		const int n       = static_cast<int>(hero->secSkillsInit.size());
 
 		widgets.push_back(makeSimpleGrid(MARGIN, curY, tableW, cols,
 			headerH, rowH, n, blueStyle));
 		widgets.push_back(std::make_shared<CLabel>(
 			MARGIN + iconW + CELL_L, curY + CELL_T,
-			FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW, "Skill"));
+			FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
+			LIBRARY->generaltexth->translate("vcmi.wiki.hero.column.skill")));
 		widgets.push_back(std::make_shared<CLabel>(
 			MARGIN + iconW + nameW + CELL_L, curY + CELL_T,
-			FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW, "Level"));
+			FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
+			LIBRARY->generaltexth->translate("vcmi.wiki.hero.column.level")));
 		curY += headerH;
 
 		for(const auto & [skillId, level] : hero->secSkillsInit)
@@ -337,21 +426,32 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			const auto & sk = LIBRARY->skillh->objects[skillId.getNum()];
 			if(!sk) { curY += rowH; continue; }
 
-			// Skill icon: SECSK32 frame index = skillIndex * 3 + level (1-3)
-			const size_t frame = static_cast<size_t>(sk->getIndex() * 3 + level);
+			// Skill icon: use getIconIndex(level - 1) where level is 1-based
+			const size_t frame = static_cast<size_t>(sk->getIconIndex(static_cast<uint8_t>(level - 1)));
 			widgets.push_back(std::make_shared<CAnimImage>(
 				AnimationPath::builtin("SECSK32"), frame, 0,
 				MARGIN + 2, curY + 2));
 			widgets.push_back(std::make_shared<CLabel>(
-				MARGIN + iconW + CELL_L, curY + CELL_T,
+				MARGIN + iconW + CELL_L, curY + rowH / 2 - 5,
 				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 				sk->getNameTranslated()));
 			const std::string lvlStr = (level >= 1 && level <= 3)
 				? LIBRARY->generaltexth->levels[level - 1]
 				: std::to_string(level);
 			widgets.push_back(std::make_shared<CLabel>(
-				MARGIN + iconW + nameW + CELL_L, curY + CELL_T,
+				MARGIN + iconW + nameW + CELL_L, curY + rowH / 2 - 5,
 				FONT_SMALL, ETextAlignment::TOPLEFT, valCol, lvlStr));
+
+			// Right-click: show skill description popup
+			const CSkill * skPtr = sk.get();
+			const int skLvl = level;
+			widgets.push_back(std::make_shared<HeroWikiClickable>(
+				Point(MARGIN, curY), tableW, rowH,
+				nullptr,
+				[skPtr, skLvl](){
+					CRClickPopup::createAndPush(skPtr->getDescriptionTranslated(skLvl));
+				},
+				blueStyle));
 			curY += rowH;
 		}
 		curY += GAP;
@@ -360,55 +460,68 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 	// ── 7. Starting spells ───────────────────────────────────────────────
 	if(!hero->spells.empty())
 	{
-		curY += 4;
+		curY += 16;
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 			LIBRARY->generaltexth->translate("vcmi.heroOverview.spells")));
 		curY += 20;
 
-		const int iconW  = 32;
-		const int rowH    = 32;
-		int px = MARGIN;
-		int rowTop = curY;
-		int colsInRow = 0;
-		const int maxCols = (W - MARGIN * 2) / (iconW + 4);
-
+		// Collect valid spells
+		std::vector<const CSpell *> validSpells;
 		for(const SpellID & sid : hero->spells)
 		{
-			if(sid.getNum() < 0 || sid.getNum() >= (int)LIBRARY->spellh->objects.size())
-				continue;
+			if(sid.getNum() < 0 || sid.getNum() >= (int)LIBRARY->spellh->objects.size()) continue;
 			const auto & sp = LIBRARY->spellh->objects[sid.getNum()];
-			if(!sp) continue;
-
-			widgets.push_back(std::make_shared<CAnimImage>(
-				AnimationPath::builtin("SPELLBON"), static_cast<size_t>(sp->getIconIndex()),
-				Rect(px, rowTop, iconW, iconW), 0));
-			colsInRow++;
-			px += iconW + 4;
-
-			if(colsInRow >= maxCols)
-			{
-				px = MARGIN;
-				rowTop += iconW + 4;
-				colsInRow = 0;
-			}
+			if(sp) validSpells.push_back(sp.get());
 		}
-		curY = rowTop + rowH + GAP;
-	}
 
-	// ── 8. Biography ─────────────────────────────────────────────────────
-	{
-		const std::string bio = hero->getBiographyTranslated();
-		if(!bio.empty())
+		if(!validSpells.empty())
 		{
-			curY += 4;
-			auto label = std::make_shared<CMultiLineLabel>(
-				Rect(MARGIN, curY, W - MARGIN * 2, 4000),
-				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, bio);
-			label->pos.h = label->textSize.y;
-			curY += label->textSize.y + GAP;
-			widgets.push_back(std::move(label));
+			const int iconW   = 36;  // SPELLBON (32px) + 4 padding
+			const int tableW  = W - MARGIN * 2;
+			const int nameW   = tableW - iconW;
+			const std::vector<int> cols = { iconW, nameW };
+			const int headerH = 16;
+			const int rowH    = 36;
+
+			widgets.push_back(makeSimpleGrid(MARGIN, curY, tableW, cols,
+				headerH, rowH, static_cast<int>(validSpells.size()), blueStyle));
+			widgets.push_back(std::make_shared<CLabel>(
+				MARGIN + iconW + CELL_L, curY + CELL_T,
+				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
+				LIBRARY->generaltexth->translate("vcmi.wiki.hero.column.spell")));
+			curY += headerH;
+
+			for(const CSpell * sp : validSpells)
+			{
+				widgets.push_back(std::make_shared<CAnimImage>(
+					AnimationPath::builtin("SPELLBON"),
+					static_cast<size_t>(sp->getIconIndex()),
+					Rect(MARGIN + 2, curY + 2, 32, 32), 0));
+				widgets.push_back(std::make_shared<CLabel>(
+					MARGIN + iconW + CELL_L, curY + rowH / 2 - 5,
+					FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
+					sp->getNameTranslated()));
+
+				// Left-click → navigate to spell; right-click → description popup
+				std::function<void()> lclick;
+				if(navigateCallback)
+				{
+					const std::string spName = sp->getNameTranslated();
+					lclick = [navigateCallback, spName](){ navigateCallback(WikiCategory::SPELL, spName); };
+				}
+				const CSpell * spPtr = sp;
+				widgets.push_back(std::make_shared<HeroWikiClickable>(
+					Point(MARGIN, curY), tableW, rowH,
+					std::move(lclick),
+					[spPtr](){
+						CRClickPopup::createAndPush(spPtr->getDescriptionTranslated(0));
+					},
+					blueStyle));
+				curY += rowH;
+			}
+			curY += GAP;
 		}
 	}
 
