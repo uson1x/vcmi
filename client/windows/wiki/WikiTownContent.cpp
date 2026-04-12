@@ -596,14 +596,14 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 			hx += costW;
 
 			const std::vector<std::string> statHeaderKeys = {
-				"vcmi.wiki.creature.stat.level",
-				"vcmi.wiki.creature.stat.attack",
-				"vcmi.wiki.creature.stat.defense",
-				"vcmi.wiki.creature.stat.damage",
-				"vcmi.wiki.creature.stat.speed",
-				"vcmi.wiki.creature.stat.hitpoints",
-				"vcmi.wiki.creature.stat.growth",
-				"vcmi.wiki.creature.stat.aivalue",
+				"vcmi.wiki.creature.stat.level.short",
+				"vcmi.wiki.creature.stat.attack.short",
+				"vcmi.wiki.creature.stat.defense.short",
+				"vcmi.wiki.creature.stat.damage.short",
+				"vcmi.wiki.creature.stat.speed.short",
+				"vcmi.wiki.creature.stat.hitpoints.short",
+				"vcmi.wiki.creature.stat.growth.short",
+				"vcmi.wiki.creature.stat.aivalue.short",
 			};
 			for(const auto & key : statHeaderKeys)
 			{
