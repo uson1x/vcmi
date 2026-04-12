@@ -1095,5 +1095,9 @@
 	"vcmi.tutorialWindow.decription.MapZooming": "Pinch with two fingers to change the map zoom.",
 	"vcmi.tutorialWindow.decription.RadialWheel": "Swiping opens radial wheel for various actions, such as creature/hero management and town ordering.",
 	"vcmi.tutorialWindow.decription.RightClick": "Touch and hold the element on which you want to right-click. Touch the free area to close.",
-	"vcmi.tutorialWindow.title": "Touchscreen Introduction"
+	"vcmi.tutorialWindow.title": "Touchscreen Introduction",
+	"vcmi.wiki.glossary.mod.name": "Mod",
+	"vcmi.wiki.glossary.mod.description": "A mod is a package of additional or replacement content for VCMI. Mods can add new towns, creatures, heroes, artifacts, spells, terrain types, and even entirely new game mechanics.\n\nMods are written in JSON and are loaded by VCMI at startup. They can interact with each other: a mod can depend on another mod, extend its content, or override specific values. The VCMI mod system is designed to be highly flexible, allowing mods to change nearly every aspect of the game without modifying the engine itself.\n\nMods are managed via the VCMI Launcher.",
+	"vcmi.wiki.glossary.vcmi.name": "VCMI",
+	"vcmi.wiki.glossary.vcmi.description": "VCMI is a complete open-source remake of Heroes of Might and Magic III, built from the ground up using modern C++. It uses the original game's graphics, sounds, and text assets, achieving near-perfect compatibility with classic Heroes 3 gameplay while offering the technical advantages of a modern engine.\n\nEverything in VCMI has been rewritten from scratch: game file loading, graphics rendering, pathfinding, AI, battle mechanics, and the modding framework. The project aims to overcome the limitations of the original Heroes 3 engine, support popular community mods such as HotA, WoG, and HD Mod, and open up entirely new modding possibilities.\n\nVCMI is cross-platform and runs on Windows, Linux, macOS, iOS, and Android.\n\n{VCMI} is an acronym of the Quenya phrase {Vinyar Callor Meletyo ar Ingoleo}, meaning {New Heroes of Might and Magic}."
 }

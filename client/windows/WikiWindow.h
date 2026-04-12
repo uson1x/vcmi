@@ -11,6 +11,7 @@
 
 #include "CWindowObject.h"
 #include "../../lib/filesystem/ResourcePath.h"
+#include "../../lib/Color.h"
 
 #include <optional>
 
@@ -27,9 +28,18 @@ class Canvas;
 /// Optional icon descriptor for a WikiListItem row
 struct WikiIconInfo
 {
-	AnimationPath path;
+	AnimationPath path;    ///< empty when colorFill is used
 	size_t frame = 0;
 	size_t group = 0;
+	std::optional<ColorRGBA> colorFill; ///< drawn as solid square when set (no CAnimImage)
+};
+
+/// A single wiki entry – name (translated), optional description and optional icon
+struct WikiEntry
+{
+	std::string name;         ///< translated display name (shown in list)
+	std::string description;  ///< full description; empty = show auto-stub text
+	std::optional<WikiIconInfo> icon;
 };
 
 /// A single clickable row inside the category or element columns
@@ -41,8 +51,9 @@ class WikiListItem : public CIntObject
 	static constexpr int MARGIN_TOP = 2;   ///< top padding for text
 
 	// Private members
-	std::shared_ptr<CAnimImage> icon;
-	std::shared_ptr<CLabel>     label;
+	std::shared_ptr<CAnimImage>  icon;
+	std::optional<ColorRGBA>     colorFillIcon; ///< used for terrain (solid color square)
+	std::shared_ptr<CLabel>      label;
 	bool selected = false;
 
 	void updateLook();
@@ -101,16 +112,16 @@ private:
 
 	// stub data
 	std::vector<std::string> categoryNames;
-	/// Maps category index -> list of element names
-	std::vector<std::vector<std::string>> categoryElements;
+	/// Maps category index -> list of entries
+	std::vector<std::vector<WikiEntry>> categoryEntries;
 
 	// --- element search box (below element list) -------------------------
 	std::shared_ptr<TransparentFilledRectangle> searchBoxRect;
 	std::shared_ptr<CLabel>                     searchBoxHint;
 	std::shared_ptr<CTextInput>                 searchBox;
 
-	/// Currently displayed (possibly filtered) element names; activeElementIndex indexes into this
-	std::vector<std::string> currentDisplayedElements;
+	/// Currently displayed (possibly filtered) entries; activeElementIndex indexes into this
+	std::vector<WikiEntry> currentDisplayedEntries;
 
 	// --- content area -----------------------------------------------------
 	std::shared_ptr<CTextBox> contentBox;

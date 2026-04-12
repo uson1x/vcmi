@@ -1,0 +1,21 @@
+{
+	// Wiki Glossary – moddable list of concept/lore entries shown in the Glossary
+	// category of the in-game Wiki window.
+	//
+	// Each entry has:
+	//   "name"        – translation key (or literal string if no key exists)
+	//   "description" – translation key (or literal description text)
+
+	// Entries are sorted alphabetically at runtime; order here is for readability.
+
+	"entries" : [
+		{
+			"name"        : "vcmi.wiki.glossary.mod.name",
+			"description" : "vcmi.wiki.glossary.mod.description"
+		},
+		{
+			"name"        : "vcmi.wiki.glossary.vcmi.name",
+			"description" : "vcmi.wiki.glossary.vcmi.description"
+		}
+	]
+}

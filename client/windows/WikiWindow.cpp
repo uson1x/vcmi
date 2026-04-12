@@ -23,6 +23,7 @@
 
 #include "../../lib/GameLibrary.h"
 #include "../../lib/entities/faction/CTownHandler.h"
+#include "../../lib/entities/faction/CTown.h"
 #include "../../lib/CCreatureHandler.h"
 #include "../../lib/entities/hero/CHeroHandler.h"
 #include "../../lib/entities/artifact/CArtHandler.h"
@@ -30,6 +31,8 @@
 #include "../../lib/CSkillHandler.h"
 #include "../../lib/TerrainHandler.h"
 #include "../../lib/texts/TextOperations.h"
+#include "../../lib/texts/CGeneralTextHandler.h"
+#include "../../lib/json/JsonNode.h"
 
 // ============================================================================
 // WikiListItem
@@ -50,14 +53,23 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText,
 
 	if(iconInfo)
 	{
-		const int iconY = (ITEM_H - ICON_SIZE) / 2;
-		icon = std::make_shared<CAnimImage>(
-			iconInfo->path,
-			iconInfo->frame,
-			Rect(MARGIN_L, iconY, ICON_SIZE, ICON_SIZE),
-			iconInfo->group);
-		labelOffsetX = MARGIN_L + ICON_SIZE + 3;
-	}
+		if(iconInfo->colorFill)
+		{
+			// Solid colour square (used for terrain)
+			colorFillIcon = iconInfo->colorFill;
+			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
+		}
+		else
+		{
+			const int iconY = (ITEM_H - ICON_SIZE) / 2;
+			icon = std::make_shared<CAnimImage>(
+				iconInfo->path,
+				iconInfo->frame,
+				Rect(MARGIN_L, iconY, ICON_SIZE, ICON_SIZE),
+				iconInfo->group);
+			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
+		}
+	}  // end if(iconInfo)
 
 	const int labelY = MARGIN_TOP + 1;
 	label = std::make_shared<CLabel>(labelOffsetX, labelY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, text);
@@ -80,12 +92,16 @@ void WikiListItem::setSelected(bool sel)
 
 void WikiListItem::clickPressed(const Point & cursorPosition)
 {
+	if(text.empty())
+		return;
 	if(onSelected)
 		onSelected(this);
 }
 
 void WikiListItem::hover(bool on)
 {
+	if(text.empty())
+		return;
 	if(!selected)
 	{
 		label->setColor(on ? ColorRGBA(255, 220, 120, 255) : Colors::WHITE);
@@ -99,10 +115,20 @@ void WikiListItem::showAll(Canvas & to)
 	if(parent)
 	{
 		CanvasClipRectGuard guard(to, parent->pos);
-		// Separator: skip for the last visible row to avoid doubling with the box border
+		// Draw solid-colour terrain icon square (before CIntObject children)
+		if(colorFillIcon)
+		{
+			const int iconY = pos.y + (ITEM_H - ICON_SIZE) / 2;
+			to.drawColorBlended(Rect(pos.x + MARGIN_L, iconY, ICON_SIZE, ICON_SIZE), *colorFillIcon);
+		}
+		// Separator line: full width without slider, shortened when slider is visible
 		if(pos.y + pos.h < parent->pos.y + parent->pos.h)
-			to.drawColorBlended(Rect(pos.x, pos.y + pos.h - 1, pos.w, 1),
-			                    ColorRGBA(80, 80, 80, 100));
+		{
+			auto * lb = dynamic_cast<CListBox *>(parent);
+			const int sepW = (lb && lb->getSlider()) ? (pos.w - 16) : pos.w;
+			to.drawColorBlended(Rect(pos.x, pos.y + pos.h - 1, sepW, 1),
+			                    ColorRGBA(100, 80, 55, 255));
+		}
 		CIntObject::showAll(to);
 	}
 	else
@@ -143,23 +169,24 @@ static constexpr int SEARCH_BOX_H = 16;
 // Slider width
 static constexpr int SLIDER_W      = 16;
 
-// Column 1 – Categories  (x: 10 … 164)
+// Column 1 – Categories  (x: 10 … 106)  ~60% of original
 static constexpr int COL1_X        = 10;
-static constexpr int COL1_LIST_W   = 138; // list items width
-static constexpr int COL1_SLIDER_X = COL1_X + COL1_LIST_W + 1; // 149
+static constexpr int COL1_LIST_W   = 80;   // ~60% of previous 138
+static constexpr int COL1_SLIDER_X = COL1_X + COL1_LIST_W + 1; // 91
 
-// Column 2 – Elements  (x: 170 … 344)
-static constexpr int COL2_X        = 170;
-static constexpr int COL2_LIST_W   = 158;
-static constexpr int COL2_SLIDER_X = COL2_X + COL2_LIST_W + 1; // 329
+// Column 2 – Elements + search  (x: 108 … 349)  expanded
+static constexpr int COL2_X        = 108;  // = COL1_X + COL1_LIST_W + SLIDER_W + 2
+static constexpr int COL2_LIST_W   = 222;  // expanded from 158
+static constexpr int COL2_SLIDER_X = COL2_X + COL2_LIST_W + 1; // 331
 
 // Column 3 – Content  (x: 350 … 790)
 static constexpr int COL3_X        = 350;
 static constexpr int COL3_W        = WIN_W - COL3_X - 10; // 440 incl. textbox slider
 
 // Horizontal dividers (drawn as thin filled rects)
-static constexpr int DIV1_X        = 165;
-static constexpr int DIV2_X        = 345;
+// DIV1 sits between col1-slider and col2; DIV2 between col2-slider and col3
+static constexpr int DIV1_X        = COL1_X + COL1_LIST_W + SLIDER_W + 1; // 107
+static constexpr int DIV2_X        = COL2_X + COL2_LIST_W + SLIDER_W + 1; // 347
 
 // Close button (IOKAY.DEF is ~52 × 28 px)
 static constexpr int CLOSE_Y       = 564;
@@ -226,50 +253,107 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 		Colors::YELLOW, "Information");
 
 	// ---- Game data from VCMI library ----------------------------------------
-	categoryNames = { "Town", "Hero", "Creature", "Artifact", "Spell", "Skill", "Terrain" };
-	categoryElements.resize(7);
+	categoryNames = { "Glossary", "Town", "Hero", "Creature", "Artifact", "Spell", "Skill", "Terrain" };
+	categoryEntries.resize(8);
 
-	// [0] Towns – playable factions that have a town (skip "neutral" and special factions)
+	// [0] Glossary – loaded from a moddable JSON file
+	{
+		try
+		{
+			const JsonNode glossaryJson(JsonPath::builtin("config/wikiGlossary.json"));
+			for(const auto & e : glossaryJson["entries"].Vector())
+			{
+				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
+				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
+				categoryEntries[0].push_back({ name, desc, std::nullopt });
+			}
+		}
+		catch(const std::exception &) {} // file absent → empty glossary
+	}
+	// Sort glossary alphabetically
+	std::sort(categoryEntries[0].begin(), categoryEntries[0].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+
+	// [1] Towns – playable factions that have a town (skip neutral / special)
 	for(const auto & faction : LIBRARY->townh->objects)
 		if(faction && faction->hasTown() && !faction->special)
-			categoryElements[0].push_back(faction->getNameTranslated());
-	std::sort(categoryElements[0].begin(), categoryElements[0].end());
+			categoryEntries[1].push_back({
+				faction->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt }
+			});
+	std::sort(categoryEntries[1].begin(), categoryEntries[1].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [1] Hero types – skip special (campaign-only) heroes
+	// [2] Hero types – skip special (campaign-only) heroes
 	for(const auto & hero : LIBRARY->heroh->objects)
 		if(hero && !hero->special)
-			categoryElements[1].push_back(hero->getNameTranslated());
-	std::sort(categoryElements[1].begin(), categoryElements[1].end());
+			categoryEntries[2].push_back({
+				hero->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt }
+			});
+	std::sort(categoryEntries[2].begin(), categoryEntries[2].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [2] Creatures – skip special entries (war machines, unused creatures, etc.)
+	// Build war-machine creature set so we can include them under Creatures
+	std::set<CreatureID> warMachineCreatures;
+	for(const auto & art : LIBRARY->arth->objects)
+		if(art && art->getWarMachine() != CreatureID::NONE)
+			warMachineCreatures.insert(art->getWarMachine());
+
+	// [3] Creatures – normal creatures plus war machines (always show war machines)
 	for(const auto & creature : LIBRARY->creh->objects)
-		if(creature && !creature->special)
-			categoryElements[2].push_back(creature->getNameSingularTranslated());
-	std::sort(categoryElements[2].begin(), categoryElements[2].end());
+	{
+		if(!creature) continue;
+		const bool isWM = warMachineCreatures.count(CreatureID(creature->getIndex())) > 0;
+		if(!creature->special || isWM)
+			categoryEntries[3].push_back({
+				creature->getNameSingularTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt }
+			});
+	}
+	std::sort(categoryEntries[3].begin(), categoryEntries[3].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [3] Artifacts – exclude "special" class (war machines, Spellbook, etc.)
+	// [4] Artifacts – exclude "special" class
 	for(const auto & artifact : LIBRARY->arth->objects)
 		if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
-			categoryElements[3].push_back(artifact->getNameTranslated());
-	std::sort(categoryElements[3].begin(), categoryElements[3].end());
+			categoryEntries[4].push_back({
+				artifact->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt }
+			});
+	std::sort(categoryEntries[4].begin(), categoryEntries[4].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [4] Spells – exclude hero specials and creature abilities
+	// [5] Spells – exclude hero specials and creature abilities
 	for(const auto & spell : LIBRARY->spellh->objects)
 		if(spell && !spell->isSpecial() && !spell->isCreatureAbility())
-			categoryElements[4].push_back(spell->getNameTranslated());
-	std::sort(categoryElements[4].begin(), categoryElements[4].end());
+			categoryEntries[5].push_back({
+				spell->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt }
+			});
+	std::sort(categoryEntries[5].begin(), categoryEntries[5].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [5] Secondary skills
+	// [6] Secondary skills
 	for(const auto & skill : LIBRARY->skillh->objects)
 		if(skill)
-			categoryElements[5].push_back(skill->getNameTranslated());
-	std::sort(categoryElements[5].begin(), categoryElements[5].end());
+			categoryEntries[6].push_back({
+				skill->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt }
+			});
+	std::sort(categoryEntries[6].begin(), categoryEntries[6].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [6] Terrain types
+	// [7] Terrain types – minimap colour as icon
 	for(const auto & terrain : LIBRARY->terrainTypeHandler->objects)
 		if(terrain)
-			categoryElements[6].push_back(terrain->getNameTranslated());
-	std::sort(categoryElements[6].begin(), categoryElements[6].end());
+		{
+			WikiIconInfo colorIcon;
+			colorIcon.colorFill = terrain->minimapUnblocked;
+			categoryEntries[7].push_back({ terrain->getNameTranslated(), "", colorIcon });
+		}
+	std::sort(categoryEntries[7].begin(), categoryEntries[7].end(),
+	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
 	// ---- Category list ------------------------------------------------------
 	buildCategoryList();
@@ -291,7 +375,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 	}
 	contentBox = std::make_shared<CTextBox>(
 		"Select a category and an entry to view its description.",
-		Rect(COL3_X, CONTENT_TOP, COL3_W, CONTENT_H),
+		Rect(COL3_X + 6, CONTENT_TOP + 3, COL3_W - 12, CONTENT_H - 3),
 		(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN,
 		FONT_SMALL,
 		ETextAlignment::TOPLEFT,
@@ -315,20 +399,20 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 
 void WikiWindow::applyScrollBounds()
 {
-	// Use the listbox's own pos which after center() holds the absolute screen coords.
+	// scrollBounds is stored relative to the slider's own pos.
+	// When the wheel event fires, the engine calculates: testArea = scrollBounds + slider->pos.
+	// So we compute: scrollBounds = desired_column_rect - slider->pos.topLeft().
 	if(categoryList)
 	{
 		auto slider = categoryList->getSlider();
 		if(slider)
-			slider->setScrollBounds(Rect(categoryList->pos.x, categoryList->pos.y,
-			                             COL1_LIST_W + SLIDER_W + 1, CONTENT_H));
+			slider->setScrollBounds(categoryList->pos - slider->pos.topLeft());
 	}
 	if(elementList)
 	{
 		auto slider = elementList->getSlider();
 		if(slider)
-			slider->setScrollBounds(Rect(elementList->pos.x, elementList->pos.y,
-			                             COL2_LIST_W + SLIDER_W + 1, ELEM_LIST_H));
+			slider->setScrollBounds(elementList->pos - slider->pos.topLeft());
 	}
 }
 
@@ -354,7 +438,7 @@ void WikiWindow::buildCategoryList()
 				onCategoryClicked((int)clicked->index);
 			});
 		// No icon in the default stub – icons can be added later per-entry.
-		item->pos.w = COL1_LIST_W;
+		item->pos.w = COL1_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeCategoryIndex)
 			item->setSelected(true);
@@ -370,7 +454,7 @@ void WikiWindow::buildCategoryList()
 	// a child with adjustPosition=true, adding listbox.pos again.
 	// Therefore pass slider position RELATIVE to the listbox origin (0,0).
 	// SliderPos.w is used as slider length, SliderPos.h as visual width.
-	static constexpr int COL1_SLIDER_REL_X = COL1_LIST_W + 1; // = 139
+	static constexpr int COL1_SLIDER_REL_X = COL1_LIST_W + 1; // = 81
 
 	categoryList = std::make_shared<CListBox>(
 		createCatItem,
@@ -379,12 +463,12 @@ void WikiWindow::buildCategoryList()
 		VISIBLE_ITEMS,
 		categoryNames.size(),
 		0,
-		sliderBits,
+		(categoryNames.size() > VISIBLE_ITEMS) ? sliderBits : 0,
 		Rect(COL1_SLIDER_REL_X, 0, CONTENT_H, SLIDER_W));
 
 	// FIX: CListBox never sets pos.w/h – without these the CanvasClipRectGuard
 	// in WikiListItem::showAll clips to a 0×0 rect, making all text invisible.
-	categoryList->pos.w = COL1_LIST_W;
+	categoryList->pos.w = COL1_LIST_W + SLIDER_W;
 	categoryList->pos.h = CONTENT_H;
 
 	// Ensure full window repaint on scroll so the semi-transparent background
@@ -401,25 +485,26 @@ void WikiWindow::buildElementList(int categoryIndex)
 
 	const std::string filter = searchBox ? searchBox->getText() : "";
 
-	std::vector<std::string> elems;
-	const auto & allElems =
-		(categoryIndex >= 0 && categoryIndex < (int)categoryElements.size())
-		? categoryElements[categoryIndex]
-		: std::vector<std::string>{};
+	const auto & allEntries =
+		(categoryIndex >= 0 && categoryIndex < (int)categoryEntries.size())
+		? categoryEntries[categoryIndex]
+		: std::vector<WikiEntry>{};
 
+	std::vector<WikiEntry> entries;
 	if(filter.empty())
-		elems = allElems;
+		entries = allEntries;
 	else
-		for(const auto & name : allElems)
-			if(TextOperations::textSearchSimilarityScore(filter, name))
-				elems.push_back(name);
+		for(const auto & entry : allEntries)
+			if(TextOperations::textSearchSimilarityScore(filter, entry.name))
+				entries.push_back(entry);
 
-	currentDisplayedElements = elems;
-	size_t total = elems.size();
+	currentDisplayedEntries = entries;
+	size_t total = entries.size();
 
-	auto createElemItem = [this, elems](size_t idx) -> std::shared_ptr<CIntObject>
+	auto createElemItem = [this, entries](size_t idx) -> std::shared_ptr<CIntObject>
 	{
-		std::string name = (idx < elems.size()) ? elems[idx] : "";
+		const std::string name = (idx < entries.size()) ? entries[idx].name : "";
+		const std::optional<WikiIconInfo> icon = (idx < entries.size()) ? entries[idx].icon : std::nullopt;
 		auto item = std::make_shared<WikiListItem>(
 			idx, name,
 			[this](WikiListItem * clicked) {
@@ -433,9 +518,8 @@ void WikiWindow::buildElementList(int categoryIndex)
 				}
 				clicked->setSelected(true);
 				onElementClicked((int)clicked->index);
-			});
-		// No icon in the default stub – icons can be added later per-entry.
-		item->pos.w = COL2_LIST_W;
+			}, icon);
+		item->pos.w = COL2_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeElementIndex)
 			item->setSelected(true);
@@ -443,7 +527,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 	};
 
 	// See COL1 comment above for the coordinate rationale.
-	static constexpr int COL2_SLIDER_REL_X = COL2_LIST_W + 1; // = 159
+	static constexpr int COL2_SLIDER_REL_X = COL2_LIST_W + 1; // = 223
 
 	const int sliderBits = (style == Style::BLUE) ? 5 : 1;
 
@@ -454,11 +538,11 @@ void WikiWindow::buildElementList(int categoryIndex)
 		ELEM_VISIBLE_ITEMS,
 		total,
 		0,
-		(total > 0) ? sliderBits : 0,
+		(total > ELEM_VISIBLE_ITEMS) ? sliderBits : 0,
 		Rect(COL2_SLIDER_REL_X, 0, ELEM_LIST_H, SLIDER_W));
 
 	// FIX: set pos.w/h so WikiListItem::showAll's clip rect is non-zero
-	elementList->pos.w = COL2_LIST_W;
+	elementList->pos.w = COL2_LIST_W + SLIDER_W;
 	elementList->pos.h = ELEM_LIST_H;
 
 	elementList->setRedrawParent(true);
@@ -497,21 +581,29 @@ void WikiWindow::updateContent()
 	}
 
 	const std::string & catName  = categoryNames[activeCategoryIndex];
-	if(activeElementIndex < 0 || activeElementIndex >= (int)currentDisplayedElements.size())
+	if(activeElementIndex < 0 || activeElementIndex >= (int)currentDisplayedEntries.size())
 	{
 		contentBox->setText("Select a category and an entry to view its description.");
 		return;
 	}
-	const std::string & elemName = currentDisplayedElements[activeElementIndex];
+	const WikiEntry & entry = currentDisplayedEntries[activeElementIndex];
 
-	// Stub – real content will be filled in later
-	std::string text =
-		"{" + elemName + "}\n\n"
-		"[Category: " + catName + "]\n\n"
-		"This entry is a stub.\n\n"
-		"Detailed information about \"" + elemName + "\" will be added here in a future update.\n\n"
-		"You can describe stats, background lore, tactical notes, and other "
-		"relevant information for this entry.";
+	// Use stored description if available, otherwise show a stub
+	std::string text;
+	if(!entry.description.empty())
+	{
+		text = "{" + entry.name + "}\n\n" + entry.description;
+	}
+	else
+	{
+		text =
+			"{" + entry.name + "}\n\n"
+			"[Category: " + catName + "]\n\n"
+			"This entry is a stub.\n\n"
+			"Detailed information about \"" + entry.name + "\" will be added here in a future update.\n\n"
+			"You can describe stats, background lore, tactical notes, and other "
+			"relevant information for this entry.";
+	}
 
 	contentBox->setText(text);
 }
