@@ -40,7 +40,7 @@
 #include "../widgets/TextControls.h"
 #include "../widgets/VideoWidget.h"
 #include "../windows/InfoWindows.h"
-#include "../windows/WikiWindow.h"
+#include "../windows/wiki/WikiWindow.h"
 #include "../CServerHandler.h"
 
 #include "../CPlayerInterface.h"

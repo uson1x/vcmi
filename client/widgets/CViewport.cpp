@@ -196,8 +196,8 @@ void CViewport::setContentSize(const Point & sz)
 	scrollY = 0;
 	contentHolder->moveTo(pos.topLeft(), true);
 
-	vSlider->scrollTo(0, false);
-	hSlider->scrollTo(0, false);
+	if(vSlider) vSlider->scrollTo(0, false);
+	if(hSlider) hSlider->scrollTo(0, false);
 
 	updateSliders();
 	redraw();

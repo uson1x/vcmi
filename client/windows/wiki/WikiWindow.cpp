@@ -9,31 +9,33 @@
  */
 #include "StdInc.h"
 #include "WikiWindow.h"
+#include "WikiTownContent.h"
 
-#include "../gui/Shortcut.h"
-#include "../widgets/Buttons.h"
-#include "../widgets/CViewport.h"
-#include "../widgets/GraphicalPrimitiveCanvas.h"
-#include "../widgets/Images.h"
-#include "../widgets/ObjectLists.h"
-#include "../widgets/Slider.h"
-#include "../widgets/TextControls.h"
-#include "../render/Canvas.h"
-#include "../render/Colors.h"
-#include "../widgets/CTextInput.h"
+#include "../../gui/Shortcut.h"
+#include "../../widgets/Buttons.h"
+#include "../../widgets/CViewport.h"
+#include "../../widgets/GraphicalPrimitiveCanvas.h"
+#include "../../widgets/Images.h"
+#include "../../widgets/ObjectLists.h"
+#include "../../widgets/Slider.h"
+#include "../../widgets/TextControls.h"
+#include "../../render/Canvas.h"
+#include "../../render/Colors.h"
+#include "../../widgets/CTextInput.h"
 
-#include "../../lib/GameLibrary.h"
-#include "../../lib/entities/faction/CTownHandler.h"
-#include "../../lib/entities/faction/CTown.h"
-#include "../../lib/CCreatureHandler.h"
-#include "../../lib/entities/hero/CHeroHandler.h"
-#include "../../lib/entities/artifact/CArtHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
-#include "../../lib/CSkillHandler.h"
-#include "../../lib/TerrainHandler.h"
-#include "../../lib/texts/TextOperations.h"
-#include "../../lib/texts/CGeneralTextHandler.h"
-#include "../../lib/json/JsonNode.h"
+#include "../../../lib/GameLibrary.h"
+#include "../../../lib/entities/faction/CFaction.h"
+#include "../../../lib/entities/faction/CTownHandler.h"
+#include "../../../lib/entities/faction/CTown.h"
+#include "../../../lib/CCreatureHandler.h"
+#include "../../../lib/entities/hero/CHeroHandler.h"
+#include "../../../lib/entities/artifact/CArtHandler.h"
+#include "../../../lib/spells/CSpellHandler.h"
+#include "../../../lib/CSkillHandler.h"
+#include "../../../lib/TerrainHandler.h"
+#include "../../../lib/texts/TextOperations.h"
+#include "../../../lib/texts/CGeneralTextHandler.h"
+#include "../../../lib/json/JsonNode.h"
 
 // ============================================================================
 // WikiListItem
@@ -265,11 +267,20 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.header.information"));
 
 	// ---- Game data from VCMI library ----------------------------------------
-	categoryNames = { "Glossary", "Town", "Hero", "Creature", "Artifact", "Spell", "Skill", "Terrain" };
-	categoryEntries.resize(8);
+	categoryNames.resize(static_cast<int>(WikiCategory::COUNT));
+	categoryNames[static_cast<int>(WikiCategory::GLOSSARY)]  = LIBRARY->generaltexth->translate("vcmi.wiki.category.glossary");
+	categoryNames[static_cast<int>(WikiCategory::TOWN)]      = LIBRARY->generaltexth->translate("vcmi.wiki.category.town");
+	categoryNames[static_cast<int>(WikiCategory::HERO)]      = LIBRARY->generaltexth->translate("vcmi.wiki.category.hero");
+	categoryNames[static_cast<int>(WikiCategory::CREATURE)]  = LIBRARY->generaltexth->translate("vcmi.wiki.category.creature");
+	categoryNames[static_cast<int>(WikiCategory::ARTIFACT)]  = LIBRARY->generaltexth->translate("vcmi.wiki.category.artifact");
+	categoryNames[static_cast<int>(WikiCategory::SPELL)]     = LIBRARY->generaltexth->translate("vcmi.wiki.category.spell");
+	categoryNames[static_cast<int>(WikiCategory::SKILL)]     = LIBRARY->generaltexth->translate("vcmi.wiki.category.skill");
+	categoryNames[static_cast<int>(WikiCategory::TERRAIN)]   = LIBRARY->generaltexth->translate("vcmi.wiki.category.terrain");
+	categoryEntries.resize(static_cast<int>(WikiCategory::COUNT));
 
-	// [0] Glossary – loaded from a moddable JSON file
+	// Glossary – loaded from a moddable JSON file
 	{
+		const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
 		try
 		{
 			const JsonNode glossaryJson(JsonPath::builtin("config/wikiGlossary.json"));
@@ -277,34 +288,41 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
 				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				categoryEntries[0].push_back({ name, desc, std::nullopt });
+				categoryEntries[iGlossary].push_back({ name, desc, std::nullopt });
 			}
 		}
 		catch(const std::exception &) {} // file absent → empty glossary
 	}
 	// Sort glossary alphabetically
-	std::sort(categoryEntries[0].begin(), categoryEntries[0].end(),
+	std::sort(categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].begin(),
+	          categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].end(),
 	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 
-	// [1] Towns – playable factions that have a town (skip neutral / special)
-	for(const auto & faction : LIBRARY->townh->objects)
-		if(faction && faction->hasTown() && !faction->special)
-			categoryEntries[1].push_back({
-				faction->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt }
-			});
-	std::sort(categoryEntries[1].begin(), categoryEntries[1].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	// Towns – playable factions that have a town (skip neutral / special)
+	{
+		const int iTown = static_cast<int>(WikiCategory::TOWN);
+		for(const auto & faction : LIBRARY->townh->objects)
+			if(faction && faction->hasTown() && !faction->special)
+				categoryEntries[iTown].push_back({
+					faction->getNameTranslated(), "",
+					WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt }
+				});
+		std::sort(categoryEntries[iTown].begin(), categoryEntries[iTown].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
 
-	// [2] Hero types – skip special (campaign-only) heroes
-	for(const auto & hero : LIBRARY->heroh->objects)
-		if(hero && !hero->special)
-			categoryEntries[2].push_back({
-				hero->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt }
-			});
-	std::sort(categoryEntries[2].begin(), categoryEntries[2].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	// Hero types – skip special (campaign-only) heroes
+	{
+		const int iHero = static_cast<int>(WikiCategory::HERO);
+		for(const auto & hero : LIBRARY->heroh->objects)
+			if(hero && !hero->special)
+				categoryEntries[iHero].push_back({
+					hero->getNameTranslated(), "",
+					WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt }
+				});
+		std::sort(categoryEntries[iHero].begin(), categoryEntries[iHero].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
 
 	// Build war-machine creature set so we can include them under Creatures
 	std::set<CreatureID> warMachineCreatures;
@@ -312,60 +330,75 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		if(art && art->getWarMachine() != CreatureID::NONE)
 			warMachineCreatures.insert(art->getWarMachine());
 
-	// [3] Creatures – normal creatures plus war machines (always show war machines)
-	for(const auto & creature : LIBRARY->creh->objects)
+	// Creatures – normal creatures plus war machines (always show war machines)
 	{
-		if(!creature) continue;
-		const bool isWM = warMachineCreatures.count(CreatureID(creature->getIndex())) > 0;
-		if(!creature->special || isWM)
-			categoryEntries[3].push_back({
-				creature->getNameSingularTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt }
-			});
-	}
-	std::sort(categoryEntries[3].begin(), categoryEntries[3].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
-
-	// [4] Artifacts – exclude "special" class
-	for(const auto & artifact : LIBRARY->arth->objects)
-		if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
-			categoryEntries[4].push_back({
-				artifact->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt }
-			});
-	std::sort(categoryEntries[4].begin(), categoryEntries[4].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
-
-	// [5] Spells – exclude hero specials and creature abilities
-	for(const auto & spell : LIBRARY->spellh->objects)
-		if(spell && !spell->isSpecial() && !spell->isCreatureAbility())
-			categoryEntries[5].push_back({
-				spell->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt }
-			});
-	std::sort(categoryEntries[5].begin(), categoryEntries[5].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
-
-	// [6] Secondary skills
-	for(const auto & skill : LIBRARY->skillh->objects)
-		if(skill)
-			categoryEntries[6].push_back({
-				skill->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt }
-			});
-	std::sort(categoryEntries[6].begin(), categoryEntries[6].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
-
-	// [7] Terrain types – minimap colour as icon
-	for(const auto & terrain : LIBRARY->terrainTypeHandler->objects)
-		if(terrain)
+		const int iCreature = static_cast<int>(WikiCategory::CREATURE);
+		for(const auto & creature : LIBRARY->creh->objects)
 		{
-			WikiIconInfo colorIcon;
-			colorIcon.colorFill = terrain->minimapUnblocked;
-			categoryEntries[7].push_back({ terrain->getNameTranslated(), "", colorIcon });
+			if(!creature) continue;
+			const bool isWM = warMachineCreatures.count(CreatureID(creature->getIndex())) > 0;
+			if(!creature->special || isWM)
+				categoryEntries[iCreature].push_back({
+					creature->getNameSingularTranslated(), "",
+					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt }
+				});
 		}
-	std::sort(categoryEntries[7].begin(), categoryEntries[7].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+		std::sort(categoryEntries[iCreature].begin(), categoryEntries[iCreature].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
+
+	// Artifacts – exclude "special" class
+	{
+		const int iArtifact = static_cast<int>(WikiCategory::ARTIFACT);
+		for(const auto & artifact : LIBRARY->arth->objects)
+			if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
+				categoryEntries[iArtifact].push_back({
+					artifact->getNameTranslated(), "",
+					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt }
+				});
+		std::sort(categoryEntries[iArtifact].begin(), categoryEntries[iArtifact].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
+
+	// Spells – exclude hero specials and creature abilities
+	{
+		const int iSpell = static_cast<int>(WikiCategory::SPELL);
+		for(const auto & spell : LIBRARY->spellh->objects)
+			if(spell && !spell->isSpecial() && !spell->isCreatureAbility())
+				categoryEntries[iSpell].push_back({
+					spell->getNameTranslated(), "",
+					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt }
+				});
+		std::sort(categoryEntries[iSpell].begin(), categoryEntries[iSpell].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
+
+	// Secondary skills
+	{
+		const int iSkill = static_cast<int>(WikiCategory::SKILL);
+		for(const auto & skill : LIBRARY->skillh->objects)
+			if(skill)
+				categoryEntries[iSkill].push_back({
+					skill->getNameTranslated(), "",
+					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt }
+				});
+		std::sort(categoryEntries[iSkill].begin(), categoryEntries[iSkill].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
+
+	// Terrain types – minimap colour as icon
+	{
+		const int iTerrain = static_cast<int>(WikiCategory::TERRAIN);
+		for(const auto & terrain : LIBRARY->terrainTypeHandler->objects)
+			if(terrain)
+			{
+				WikiIconInfo colorIcon;
+				colorIcon.colorFill = terrain->minimapUnblocked;
+				categoryEntries[iTerrain].push_back({ terrain->getNameTranslated(), "", colorIcon });
+			}
+		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
 
 	// ---- Category list ------------------------------------------------------
 	buildCategoryList();
@@ -400,79 +433,18 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		ETextAlignment::TOPLEFT,
 		Colors::WHITE);
 
-	// ---- Town viewport (test stub) -----------------------------------------------
+	// ---- Town viewport -----------------------------------------------
 	// Completely fills the content column.  Only visible when category == Town (1).
+	// Content is populated dynamically in rebuildTownViewport() when a town is selected.
 	{
 		static constexpr int VP_W = COL3_W - 6;   // leave 3 px margin each side
 		static constexpr int VP_H = CONTENT_H - 6;
 
-		// Initial content size is a rough overestimate — fitContentSize() below
-		// will shrink it to the tight bounding box of the actual children.
 		townContentView = std::make_shared<CViewport>(
 			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
-			Point(VP_W * 2, VP_H * 2),
+			Point(VP_W, VP_H),  // initial content = viewport size (no scroll)
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 		townContentView->disable(); // shown only for Town category
-
-		// Populate the scrollable content with test widgets.
-		OBJECT_CONSTRUCTION_TARGETED(townContentView->content());
-
-		// Row 0 – heading label
-		townContentWidgets.push_back(std::make_shared<CLabel>(
-			VP_W / 2, 10,
-			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
-			"[Town Viewport – Scroll Test]"));
-
-		// Buttons in a grid (8 columns × 4 rows), spaced 55 × 35 px
-		static const std::array<std::string, 4> btnSprites = {
-			"IOKAY", "ICANCEL", "ICN6432", "hsbtns",
-		};
-		static constexpr int BTN_COLS = 8;
-		static constexpr int BTN_ROWS = 4;
-		for(int row = 0; row < BTN_ROWS; ++row)
-		{
-			for(int col = 0; col < BTN_COLS; ++col)
-			{
-				const auto & sprite = btnSprites[(row * BTN_COLS + col) % btnSprites.size()];
-				townContentWidgets.push_back(std::make_shared<CButton>(
-					Point(col * 55 + 5, 40 + row * 35),
-					AnimationPath::builtin(sprite),
-					CButton::tooltip(),
-					[](){}));
-			}
-		}
-
-		// Animated creatures right below the button grid
-		static const std::array<std::string, 4> creatureAnims = {
-			"CPKMAN", "CHALBD", "CELFX",  "CLICH",
-		};
-		for(int i = 0; i < (int)creatureAnims.size(); ++i)
-		{
-			townContentWidgets.push_back(std::make_shared<CCreatureAnim>(
-				5 + i * 110, 185,
-				AnimationPath::builtin(creatureAnims[i])));
-		}
-
-		// Static images in a row below the animations
-		for(int i = 0; i < 8; ++i)
-		{
-			townContentWidgets.push_back(std::make_shared<CAnimImage>(
-				AnimationPath::builtin("CPRSMALL"),
-				static_cast<size_t>(i),
-				0, 5 + i * 55, 320));
-		}
-
-		// Labels filling remaining height
-		for(int row = 0; row < 14; ++row)
-		{
-			townContentWidgets.push_back(std::make_shared<CLabel>(
-				10, 360 + row * 22,
-				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
-				"Row " + std::to_string(row + 1) + " – lorem ipsum dolor sit amet, longer text to test clipping"));
-		}
-
-		// Shrink content bounds to the tight bounding box of all children.
-		townContentView->fitContentSize();
 	}
 
 	// ---- Close button -----------------------------------------------------------
@@ -674,8 +646,8 @@ void WikiWindow::updateContent()
 	if(!contentBox)
 		return;
 
-	// Show the town viewport only when Town category (1) is active AND an element is selected.
-	const bool useTownViewport = (activeCategoryIndex == 1)
+	// Show the town viewport only when Town category is active AND an element is selected.
+	const bool useTownViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::TOWN))
 	                           && (activeElementIndex >= 0)
 	                           && townContentView;
 
@@ -686,6 +658,11 @@ void WikiWindow::updateContent()
 
 	if(useTownViewport)
 	{
+		// Rebuild the viewport content if the selected town changed
+		const std::string & townName = currentDisplayedEntries[activeElementIndex].name;
+		if(townName != currentTownName)
+			rebuildTownViewport(townName);
+
 		// Full repaint so the background clears old contentBox pixels and
 		// the viewport renders on a clean surface.  Static child widgets
 		// (CLabel, CAnimImage) only paint in showAll(), not show(), so a
@@ -728,6 +705,45 @@ void WikiWindow::updateContent()
 	contentBox->setText(text);
 }
 
+void WikiWindow::rebuildTownViewport(const std::string & factionName)
+{
+	currentTownName = factionName;
+	townContentWidgets.clear();
+
+	// Look up the faction by translated name
+	const CFaction * faction = nullptr;
+	for(const auto & f : LIBRARY->townh->objects)
+	{
+		if(f && f->hasTown() && !f->special && f->getNameTranslated() == factionName)
+		{
+			faction = f.get();
+			break;
+		}
+	}
+
+	if(!faction || !townContentView)
+		return;
+
+	// Destroy and recreate the viewport so old children are properly removed.
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	townContentView.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		townContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	// Populate with real town data
+	townContentWidgets = buildTownContent(*townContentView, faction, VP_W);
+	townContentView->fitContentSize();
+
+	applyScrollBounds();
+}
+
 // ============================================================================
 // WikiWindow – event handlers
 // ============================================================================
@@ -754,10 +770,11 @@ void WikiWindow::onElementClicked(int index)
 
 void WikiWindow::navigateTo(const WikiEntryKey & key)
 {
-	if(key.categoryIndex < 0 || key.categoryIndex >= (int)categoryNames.size())
+	const int catIdx = static_cast<int>(key.category);
+	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
 		return;
 
-	activeCategoryIndex = key.categoryIndex;
+	activeCategoryIndex = catIdx;
 	buildElementList(activeCategoryIndex);
 
 	// Select the category item visually

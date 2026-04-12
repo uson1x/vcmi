@@ -34,7 +34,7 @@
 #include "../widgets/ObjectLists.h"
 #include "../widgets/Slider.h"
 #include "../widgets/TextControls.h"
-#include "../windows/WikiWindow.h"
+#include "../windows/wiki/WikiWindow.h"
 #include "../windows/GUIClasses.h"
 #include "../windows/InfoWindows.h"
 #include "../render/CAnimation.h"

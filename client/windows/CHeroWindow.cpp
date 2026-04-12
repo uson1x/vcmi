@@ -9,7 +9,7 @@
  */
 #include "StdInc.h"
 #include "CHeroWindow.h"
-#include "WikiWindow.h"
+#include "wiki/WikiWindow.h"
 
 #include "CCreatureWindow.h"
 #include "CHeroBackpackWindow.h"
@@ -192,7 +192,7 @@ void CHeroWindow::keyPressed(EShortcut key)
 	if(key == EShortcut::ADVENTURE_OPEN_WIKI)
 		ENGINE->windows().createAndPushWindow<WikiWindow>(
 			WikiWindow::Style::BROWN,
-			WikiEntryKey{2, curHero->getNameTranslated()});
+			WikiEntryKey{WikiCategory::HERO, curHero->getNameTranslated()});
 }
 
 void CHeroWindow::updateArtifacts()

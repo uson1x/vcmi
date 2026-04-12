@@ -63,7 +63,7 @@
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/mapObjects/TownBuildingInstance.h"
-#include "WikiWindow.h"
+#include "wiki/WikiWindow.h"
 
 
 static bool useCompactCreatureBox()
@@ -1686,7 +1686,7 @@ void CCastleInterface::keyPressed(EShortcut key)
 	case EShortcut::ADVENTURE_OPEN_WIKI:
 		ENGINE->windows().createAndPushWindow<WikiWindow>(
 			WikiWindow::Style::BROWN,
-			WikiEntryKey{1, town->getTown()->faction->getNameTranslated()});
+			WikiEntryKey{WikiCategory::TOWN, town->getTown()->faction->getNameTranslated()});
 		break;
 	default:
 		break;

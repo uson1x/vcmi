@@ -26,7 +26,7 @@
 #include "../windows/CMarketWindow.h"
 #include "../windows/GUIClasses.h"
 #include "../windows/InfoWindows.h"
-#include "../windows/WikiWindow.h"
+#include "../windows/wiki/WikiWindow.h"
 #include "../windows/settings/SettingsMainWindow.h"
 #include "AdventureMapInterface.h"
 #include "AdventureOptions.h"

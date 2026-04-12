@@ -9,7 +9,7 @@
  */
 #include "StdInc.h"
 #include "CCreatureWindow.h"
-#include "WikiWindow.h"
+#include "wiki/WikiWindow.h"
 
 #include <vcmi/spells/Spell.h>
 #include <vcmi/spells/Service.h>
@@ -874,7 +874,7 @@ void CStackWindow::keyPressed(EShortcut key)
 	if(key == EShortcut::ADVENTURE_OPEN_WIKI && info->creature)
 		ENGINE->windows().createAndPushWindow<WikiWindow>(
 			WikiWindow::Style::BROWN,
-			WikiEntryKey{3, info->creature->getNameSingularTranslated()});
+			WikiEntryKey{WikiCategory::CREATURE, info->creature->getNameSingularTranslated()});
 }
 
 void CStackWindow::initBonusesList()

@@ -9,10 +9,10 @@
  */
 #pragma once
 
-#include "CWindowObject.h"
-#include "../widgets/CViewport.h"
-#include "../../lib/filesystem/ResourcePath.h"
-#include "../../lib/Color.h"
+#include "../CWindowObject.h"
+#include "../../widgets/CViewport.h"
+#include "../../../lib/filesystem/ResourcePath.h"
+#include "../../../lib/Color.h"
 
 #include <optional>
 
@@ -25,6 +25,20 @@ class CFilledTexture;
 class TransparentFilledRectangle;
 class CAnimImage;
 class Canvas;
+
+/// Wiki category identifiers
+enum class WikiCategory : int
+{
+	GLOSSARY  = 0,
+	TOWN      = 1,
+	HERO      = 2,
+	CREATURE  = 3,
+	ARTIFACT  = 4,
+	SPELL     = 5,
+	SKILL     = 6,
+	TERRAIN   = 7,
+	COUNT     = 8
+};
 
 /// Optional icon descriptor for a WikiListItem row
 struct WikiIconInfo
@@ -82,7 +96,7 @@ public:
 /// Identifies a specific entry to directly open the Wiki at.
 struct WikiEntryKey
 {
-	int categoryIndex;     ///< 0=Glossary, 1=Town, 2=Hero, 3=Creature, 4=Artifact, 5=Spell, 6=Skill, 7=Terrain
+	WikiCategory category; ///< Which category tab to open
 	std::string entryName; ///< Translated display name of the entry (used for lookup)
 };
 
@@ -135,8 +149,9 @@ private:
 
 	// --- content area -----------------------------------------------------
 	std::shared_ptr<CTextBox>  contentBox;
-	std::shared_ptr<CViewport> townContentView; ///< test viewport for Town category
+	std::shared_ptr<CViewport> townContentView; ///< scrollable viewport for Town category
 	std::vector<std::shared_ptr<CIntObject>> townContentWidgets; ///< ownership for viewport children
+	std::string currentTownName; ///< name of the town currently displayed in the viewport
 
 	// --- controls ---------------------------------------------------------
 	std::shared_ptr<CButton> closeButton;
@@ -155,6 +170,9 @@ private:
 	void onCategoryClicked(int index);
 	void onElementClicked(int index);
 	void navigateTo(const WikiEntryKey & key);
+
+	/// Rebuilds the town viewport content for the given faction name.
+	void rebuildTownViewport(const std::string & factionName);
 
 public:
 	explicit WikiWindow(Style style = Style::BROWN, std::optional<WikiEntryKey> initialEntry = std::nullopt);
