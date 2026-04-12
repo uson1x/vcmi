@@ -63,6 +63,7 @@
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/mapObjects/TownBuildingInstance.h"
+#include "WikiWindow.h"
 
 
 static bool useCompactCreatureBox()
@@ -1681,6 +1682,11 @@ void CCastleInterface::keyPressed(EShortcut key)
 	case EShortcut::TOWN_OPEN_TAVERN:
 		if(town->hasBuilt(BuildingID::TAVERN))
 			GAME->interface()->showTavernWindow(town, nullptr, QueryID::NONE);
+		break;
+	case EShortcut::ADVENTURE_OPEN_WIKI:
+		ENGINE->windows().createAndPushWindow<WikiWindow>(
+			WikiWindow::Style::BROWN,
+			WikiEntryKey{1, town->getTown()->faction->getNameTranslated()});
 		break;
 	default:
 		break;

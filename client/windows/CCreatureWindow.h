@@ -213,5 +213,6 @@ public:
 	CStackWindow(const CCommanderInstance * commander, bool popup);
 	CStackWindow(const CCommanderInstance * commander, std::vector<ui32> &skills, std::function<void(ui32)> callback);
 
+	void keyPressed(EShortcut key) override;
 	~CStackWindow();
 };

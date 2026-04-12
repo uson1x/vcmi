@@ -197,7 +197,7 @@ static constexpr int CLOSE_Y       = 564;
 // WikiWindow – constructor
 // ============================================================================
 
-WikiWindow::WikiWindow(WikiWindow::Style style_)
+WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> initialEntry)
 	: CWindowObject(BORDERED)
 	, style(style_)
 {
@@ -245,23 +245,23 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 	titleLabel = std::make_shared<CLabel>(
 		WIN_W / 2, TITLE_Y,
 		FONT_BIG, ETextAlignment::CENTER,
-		Colors::YELLOW, "Wiki");
+		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.title"));
 
 	// ---- Column headers -----------------------------------------------------
 	col1Header = std::make_shared<CLabel>(
 		COL1_X + (COL1_LIST_W + SLIDER_W) / 2, HEADER_Y,
 		FONT_MEDIUM, ETextAlignment::CENTER,
-		Colors::YELLOW, "Category");
+		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.header.category"));
 
 	col2Header = std::make_shared<CLabel>(
 		COL2_X + (COL2_LIST_W + SLIDER_W) / 2, HEADER_Y,
 		FONT_MEDIUM, ETextAlignment::CENTER,
-		Colors::YELLOW, "Entry");
+		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.header.entry"));
 
 	col3Header = std::make_shared<CLabel>(
 		COL3_X + COL3_W / 2, HEADER_Y,
 		FONT_MEDIUM, ETextAlignment::CENTER,
-		Colors::YELLOW, "Information");
+		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.header.information"));
 
 	// ---- Game data from VCMI library ----------------------------------------
 	categoryNames = { "Glossary", "Town", "Hero", "Creature", "Artifact", "Spell", "Skill", "Terrain" };
@@ -385,14 +385,15 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 			sbRect, ColorRGBA(0, 0, 0, 75), sbBorderColor);
 		searchBoxHint = std::make_shared<CLabel>(
 			sbRect.center().x, sbRect.center().y,
-			FONT_SMALL, ETextAlignment::CENTER, sbHintColor, "Search...");
+			FONT_SMALL, ETextAlignment::CENTER, sbHintColor,
+			LIBRARY->generaltexth->translate("vcmi.wiki.search.hint"));
 		searchBox = std::make_shared<CTextInput>(
 			sbRect, FONT_SMALL, ETextAlignment::CENTER, false);
 		searchBox->setCallback([this](const std::string &) { onSearchInput(); });
 	}
 	contentBox = std::make_shared<CTextBox>(
-		"Select a category and an entry to view its description.",
-		Rect(COL3_X + 6, CONTENT_TOP + 3, COL3_W - 12, CONTENT_H - 3),
+		LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"),
+		Rect(COL3_X + 6, CONTENT_TOP + 3, COL3_W - 12, CONTENT_H - 6),
 		(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN,
 		FONT_SMALL,
 		ETextAlignment::TOPLEFT,
@@ -402,12 +403,16 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 	closeButton = std::make_shared<CButton>(
 		Point(WIN_W / 2 - 26, CLOSE_Y),
 		AnimationPath::builtin(style == Style::BLUE ? "MuBchck" : "IOKAY"),
-		CButton::tooltip("", "Close"),
+		CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.wiki.button.close")),
 		std::bind(&WikiWindow::close, this),
 		EShortcut::GLOBAL_RETURN);
 
 	// Apply scroll-wheel bounds after center() so pos is finalised
 	applyScrollBounds();
+
+	// Navigate to a specific entry if requested
+	if(initialEntry)
+		navigateTo(*initialEntry);
 }
 
 // ============================================================================
@@ -595,14 +600,14 @@ void WikiWindow::updateContent()
 
 	if(activeCategoryIndex < 0 || activeElementIndex < 0)
 	{
-		contentBox->setText("Select a category and an entry to view its description.");
+		contentBox->setText(LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"));
 		return;
 	}
 
 	const std::string & catName  = categoryNames[activeCategoryIndex];
 	if(activeElementIndex < 0 || activeElementIndex >= (int)currentDisplayedEntries.size())
 	{
-		contentBox->setText("Select a category and an entry to view its description.");
+		contentBox->setText(LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"));
 		return;
 	}
 	const WikiEntry & entry = currentDisplayedEntries[activeElementIndex];
@@ -617,11 +622,10 @@ void WikiWindow::updateContent()
 	{
 		text =
 			"{" + entry.name + "}\n\n"
-			"[Category: " + catName + "]\n\n"
-			"This entry is a stub.\n\n"
-			"Detailed information about \"" + entry.name + "\" will be added here in a future update.\n\n"
-			"You can describe stats, background lore, tactical notes, and other "
-			"relevant information for this entry.";
+			+ boost::str(boost::format(LIBRARY->generaltexth->translate("vcmi.wiki.stub.category")) % catName) + "\n\n"
+			+ LIBRARY->generaltexth->translate("vcmi.wiki.stub.intro") + "\n\n"
+			+ boost::str(boost::format(LIBRARY->generaltexth->translate("vcmi.wiki.stub.body")) % entry.name) + "\n\n"
+			+ LIBRARY->generaltexth->translate("vcmi.wiki.stub.hint");
 	}
 
 	contentBox->setText(text);
@@ -648,5 +652,41 @@ void WikiWindow::onCategoryClicked(int index)
 void WikiWindow::onElementClicked(int index)
 {
 	activeElementIndex = index;
+	updateContent();
+}
+
+void WikiWindow::navigateTo(const WikiEntryKey & key)
+{
+	if(key.categoryIndex < 0 || key.categoryIndex >= (int)categoryNames.size())
+		return;
+
+	activeCategoryIndex = key.categoryIndex;
+	buildElementList(activeCategoryIndex);
+
+	// Select the category item visually
+	if(categoryList)
+	{
+		auto catItem = std::dynamic_pointer_cast<WikiListItem>(categoryList->getItem(activeCategoryIndex));
+		if(catItem)
+			catItem->setSelected(true);
+		categoryList->scrollTo(activeCategoryIndex);
+	}
+
+	// Find the entry by name and select it
+	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+	{
+		if(currentDisplayedEntries[i].name == key.entryName)
+		{
+			activeElementIndex = i;
+			if(elementList)
+			{
+				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(i));
+				if(elemItem)
+					elemItem->setSelected(true);
+				elementList->scrollTo(i);
+			}
+			break;
+		}
+	}
 	updateContent();
 }

@@ -78,6 +78,13 @@ public:
 	bool isSelected() const { return selected; }
 };
 
+/// Identifies a specific entry to directly open the Wiki at.
+struct WikiEntryKey
+{
+	int categoryIndex;     ///< 0=Glossary, 1=Town, 2=Hero, 3=Creature, 4=Artifact, 5=Spell, 6=Skill, 7=Terrain
+	std::string entryName; ///< Translated display name of the entry (used for lookup)
+};
+
 /// In-game Glossary / Wiki - 800x600 stub window
 /// Layout has three vertically-scrollable columns:
 ///   [Categories] | [Elements] | [Content (largest)]
@@ -144,7 +151,8 @@ private:
 
 	void onCategoryClicked(int index);
 	void onElementClicked(int index);
+	void navigateTo(const WikiEntryKey & key);
 
 public:
-	explicit WikiWindow(Style style = Style::BROWN);
+	explicit WikiWindow(Style style = Style::BROWN, std::optional<WikiEntryKey> initialEntry = std::nullopt);
 };

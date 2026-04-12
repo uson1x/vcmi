@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 #include "CCreatureWindow.h"
+#include "WikiWindow.h"
 
 #include <vcmi/spells/Spell.h>
 #include <vcmi/spells/Service.h>
@@ -25,6 +26,7 @@
 #include "../widgets/GraphicalPrimitiveCanvas.h"
 #include "../windows/InfoWindows.h"
 #include "../GameEngine.h"
+#include "../gui/WindowHandler.h"
 #include "../GameInstance.h"
 #include "../gui/Shortcut.h"
 #include "../battle/BattleInterface.h"
@@ -864,6 +866,15 @@ void CStackWindow::init()
 	initSections();
 
 	background->pos = pos;
+	addUsedEvents(KEYBOARD);
+}
+
+void CStackWindow::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::ADVENTURE_OPEN_WIKI && info->creature)
+		ENGINE->windows().createAndPushWindow<WikiWindow>(
+			WikiWindow::Style::BROWN,
+			WikiEntryKey{3, info->creature->getNameSingularTranslated()});
 }
 
 void CStackWindow::initBonusesList()
