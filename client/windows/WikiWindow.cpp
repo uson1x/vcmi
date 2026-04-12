@@ -19,6 +19,17 @@
 #include "../widgets/TextControls.h"
 #include "../render/Canvas.h"
 #include "../render/Colors.h"
+#include "../widgets/CTextInput.h"
+
+#include "../../lib/GameLibrary.h"
+#include "../../lib/entities/faction/CTownHandler.h"
+#include "../../lib/CCreatureHandler.h"
+#include "../../lib/entities/hero/CHeroHandler.h"
+#include "../../lib/entities/artifact/CArtHandler.h"
+#include "../../lib/spells/CSpellHandler.h"
+#include "../../lib/CSkillHandler.h"
+#include "../../lib/TerrainHandler.h"
+#include "../../lib/texts/TextOperations.h"
 
 // ============================================================================
 // WikiListItem
@@ -88,9 +99,10 @@ void WikiListItem::showAll(Canvas & to)
 	if(parent)
 	{
 		CanvasClipRectGuard guard(to, parent->pos);
-		// Separator line at bottom of row
-		to.drawColorBlended(Rect(pos.x, pos.y + pos.h - 1, pos.w, 1),
-		                    ColorRGBA(120, 90, 40, 160));
+		// Separator: skip for the last visible row to avoid doubling with the box border
+		if(pos.y + pos.h < parent->pos.y + parent->pos.h)
+			to.drawColorBlended(Rect(pos.x, pos.y + pos.h - 1, pos.w, 1),
+			                    ColorRGBA(80, 80, 80, 100));
 		CIntObject::showAll(to);
 	}
 	else
@@ -111,13 +123,22 @@ static constexpr int WIN_H = 600;
 static constexpr int TITLE_Y       = 14;
 static constexpr int HEADER_Y      = 40;
 static constexpr int CONTENT_TOP   = 58;
-static constexpr int CONTENT_BOT   = 552;
-static constexpr int CONTENT_H     = CONTENT_BOT - CONTENT_TOP; // 494
+// CONTENT_BOT chosen so CONTENT_H is an exact multiple of ITEM_H (no half-rows)
+static constexpr int CONTENT_BOT   = 538;                          // 58 + 480
+static constexpr int CONTENT_H     = CONTENT_BOT - CONTENT_TOP;    // 480 = 24 * 20
 
 // Row height – must match WikiListItem::ITEM_H
 static_assert(WikiListItem::ITEM_H == 20, "ITEM_H mismatch");
 static constexpr int ITEM_H        = WikiListItem::ITEM_H;
 static constexpr int VISIBLE_ITEMS = CONTENT_H / ITEM_H; // 24
+
+// Element column uses one row less to make room for the search box
+static constexpr int ELEM_VISIBLE_ITEMS = VISIBLE_ITEMS - 1;        // 23
+static constexpr int ELEM_LIST_H        = ELEM_VISIBLE_ITEMS * ITEM_H; // 460
+
+// Search box placed directly below the element list
+static constexpr int SEARCH_BOX_Y = CONTENT_TOP + ELEM_LIST_H + 2;  // 520
+static constexpr int SEARCH_BOX_H = 16;
 
 // Slider width
 static constexpr int SLIDER_W      = 16;
@@ -204,46 +225,51 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 		FONT_MEDIUM, ETextAlignment::CENTER,
 		Colors::YELLOW, "Information");
 
-	// ---- Stub data ----------------------------------------------------------
+	// ---- Game data from VCMI library ----------------------------------------
 	categoryNames = { "Town", "Hero", "Creature", "Artifact", "Spell", "Skill", "Terrain" };
+	categoryElements.resize(7);
 
-	categoryElements = {
-		// Town
-		{ "Castle", "Rampart", "Tower", "Inferno", "Necropolis",
-		  "Dungeon", "Stronghold", "Fortress", "Conflux" },
-		// Hero
-		{ "Knight", "Cleric", "Ranger", "Druid", "Alchemist",
-		  "Wizard", "Death Knight", "Necromancer", "Overlord",
-		  "Warlock", "Battle Mage", "Barbarian", "Witch", "Planeswalker",
-		  "Elementalist" },
-		// Creature
-		{ "Pikeman", "Halberdier", "Archer", "Marksman", "Griffin",
-		  "Royal Griffin", "Swordsman", "Crusader", "Monk", "Zealot",
-		  "Cavalier", "Champion", "Angel", "Archangel" },
-		// Artifact
-		{ "Centaur's Axe", "Blackshard of the Dead Knight",
-		  "Greater Gnoll's Flail", "Ogre's Club of Havoc",
-		  "Sword of Hellfire", "Titan's Gladius",
-		  "Shield of the Dwarven Lords", "Armor of Wonder",
-		  "Dragon Scale Shield", "Sandals of the Saint" },
-		// Spell
-		{ "Bless", "Curse", "Haste", "Slow", "Bloodlust",
-		  "Precision", "Weakness", "Stone Skin", "Disrupting Ray",
-		  "Prayer", "Mirth", "Sorrow", "Fortune", "Misfortune",
-		  "Armageddon", "Inferno", "Meteor Shower", "Fireball",
-		  "Magic Arrow", "Ice Bolt", "Lightning Bolt", "Chain Lightning",
-		  "Frost Ring", "Implosion", "Resurrection", "Animate Dead" },
-		// Skill
-		{ "Archery", "Armorer", "Artillery", "Ballistics",
-		  "Diplomacy", "Eagle Eye", "Estates", "First Aid",
-		  "Intelligence", "Leadership", "Learning", "Logistics",
-		  "Luck", "Mysticism", "Navigation", "Necromancy",
-		  "Offense", "Pathfinding", "Resistance", "Scholar",
-		  "Scouting", "Sorcery", "Tactics", "Wisdom" },
-		// Terrain
-		{ "Grass", "Snow", "Swamp", "Rough", "Subterranean",
-		  "Lava", "Water", "Rock", "Desert", "Highlands", "Wasteland" }
-	};
+	// [0] Towns – playable factions that have a town (skip "neutral" and special factions)
+	for(const auto & faction : LIBRARY->townh->objects)
+		if(faction && faction->hasTown() && !faction->special)
+			categoryElements[0].push_back(faction->getNameTranslated());
+	std::sort(categoryElements[0].begin(), categoryElements[0].end());
+
+	// [1] Hero types – skip special (campaign-only) heroes
+	for(const auto & hero : LIBRARY->heroh->objects)
+		if(hero && !hero->special)
+			categoryElements[1].push_back(hero->getNameTranslated());
+	std::sort(categoryElements[1].begin(), categoryElements[1].end());
+
+	// [2] Creatures – skip special entries (war machines, unused creatures, etc.)
+	for(const auto & creature : LIBRARY->creh->objects)
+		if(creature && !creature->special)
+			categoryElements[2].push_back(creature->getNameSingularTranslated());
+	std::sort(categoryElements[2].begin(), categoryElements[2].end());
+
+	// [3] Artifacts – exclude "special" class (war machines, Spellbook, etc.)
+	for(const auto & artifact : LIBRARY->arth->objects)
+		if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
+			categoryElements[3].push_back(artifact->getNameTranslated());
+	std::sort(categoryElements[3].begin(), categoryElements[3].end());
+
+	// [4] Spells – exclude hero specials and creature abilities
+	for(const auto & spell : LIBRARY->spellh->objects)
+		if(spell && !spell->isSpecial() && !spell->isCreatureAbility())
+			categoryElements[4].push_back(spell->getNameTranslated());
+	std::sort(categoryElements[4].begin(), categoryElements[4].end());
+
+	// [5] Secondary skills
+	for(const auto & skill : LIBRARY->skillh->objects)
+		if(skill)
+			categoryElements[5].push_back(skill->getNameTranslated());
+	std::sort(categoryElements[5].begin(), categoryElements[5].end());
+
+	// [6] Terrain types
+	for(const auto & terrain : LIBRARY->terrainTypeHandler->objects)
+		if(terrain)
+			categoryElements[6].push_back(terrain->getNameTranslated());
+	std::sort(categoryElements[6].begin(), categoryElements[6].end());
 
 	// ---- Category list ------------------------------------------------------
 	buildCategoryList();
@@ -251,7 +277,18 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 	// ---- Element list (initially empty) ------------------------------------
 	buildElementList(-1);
 
-	// ---- Content text box ---------------------------------------------------
+	// ---- Element search box (below element list) ----------------------------
+	{
+		const Rect sbRect(COL2_X, SEARCH_BOX_Y, COL2_LIST_W + SLIDER_W, SEARCH_BOX_H);
+		searchBoxRect = std::make_shared<TransparentFilledRectangle>(
+			sbRect, ColorRGBA(0, 0, 0, 75), ColorRGBA(128, 100, 75, 200));
+		searchBoxHint = std::make_shared<CLabel>(
+			sbRect.center().x, sbRect.center().y,
+			FONT_SMALL, ETextAlignment::CENTER, ColorRGBA(158, 130, 105, 255), "Search...");
+		searchBox = std::make_shared<CTextInput>(
+			sbRect, FONT_SMALL, ETextAlignment::CENTER, false);
+		searchBox->setCallback([this](const std::string &) { onSearchInput(); });
+	}
 	contentBox = std::make_shared<CTextBox>(
 		"Select a category and an entry to view its description.",
 		Rect(COL3_X, CONTENT_TOP, COL3_W, CONTENT_H),
@@ -278,18 +315,20 @@ WikiWindow::WikiWindow(WikiWindow::Style style_)
 
 void WikiWindow::applyScrollBounds()
 {
-	// Allow mouse-wheel scrolling whenever the cursor is anywhere inside the window.
+	// Use the listbox's own pos which after center() holds the absolute screen coords.
 	if(categoryList)
 	{
 		auto slider = categoryList->getSlider();
 		if(slider)
-			slider->setScrollBounds(pos);
+			slider->setScrollBounds(Rect(categoryList->pos.x, categoryList->pos.y,
+			                             COL1_LIST_W + SLIDER_W + 1, CONTENT_H));
 	}
 	if(elementList)
 	{
 		auto slider = elementList->getSlider();
 		if(slider)
-			slider->setScrollBounds(pos);
+			slider->setScrollBounds(Rect(elementList->pos.x, elementList->pos.y,
+			                             COL2_LIST_W + SLIDER_W + 1, ELEM_LIST_H));
 	}
 }
 
@@ -302,7 +341,18 @@ void WikiWindow::buildCategoryList()
 		std::string name = (idx < categoryNames.size()) ? categoryNames[idx] : "";
 		auto item = std::make_shared<WikiListItem>(
 			idx, name,
-			[this](WikiListItem * clicked) { onCategoryClicked((int)clicked->index); });
+			[this](WikiListItem * clicked) {
+				// Deselect previously visible category item before updating the index
+				if(activeCategoryIndex >= 0 && categoryList)
+				{
+					auto old = std::dynamic_pointer_cast<WikiListItem>(
+						categoryList->getItem(activeCategoryIndex));
+					if(old && old.get() != clicked)
+						old->setSelected(false);
+				}
+				clicked->setSelected(true);
+				onCategoryClicked((int)clicked->index);
+			});
 		// No icon in the default stub – icons can be added later per-entry.
 		item->pos.w = COL1_LIST_W;
 		item->pos.h = ITEM_H;
@@ -349,11 +399,22 @@ void WikiWindow::buildElementList(int categoryIndex)
 
 	OBJECT_CONSTRUCTION;
 
-	const std::vector<std::string> & elems =
+	const std::string filter = searchBox ? searchBox->getText() : "";
+
+	std::vector<std::string> elems;
+	const auto & allElems =
 		(categoryIndex >= 0 && categoryIndex < (int)categoryElements.size())
 		? categoryElements[categoryIndex]
 		: std::vector<std::string>{};
 
+	if(filter.empty())
+		elems = allElems;
+	else
+		for(const auto & name : allElems)
+			if(TextOperations::textSearchSimilarityScore(filter, name))
+				elems.push_back(name);
+
+	currentDisplayedElements = elems;
 	size_t total = elems.size();
 
 	auto createElemItem = [this, elems](size_t idx) -> std::shared_ptr<CIntObject>
@@ -361,7 +422,18 @@ void WikiWindow::buildElementList(int categoryIndex)
 		std::string name = (idx < elems.size()) ? elems[idx] : "";
 		auto item = std::make_shared<WikiListItem>(
 			idx, name,
-			[this](WikiListItem * clicked) { onElementClicked((int)clicked->index); });
+			[this](WikiListItem * clicked) {
+				// Deselect previously visible element item before updating the index
+				if(activeElementIndex >= 0 && elementList)
+				{
+					auto old = std::dynamic_pointer_cast<WikiListItem>(
+						elementList->getItem(activeElementIndex));
+					if(old && old.get() != clicked)
+						old->setSelected(false);
+				}
+				clicked->setSelected(true);
+				onElementClicked((int)clicked->index);
+			});
 		// No icon in the default stub – icons can be added later per-entry.
 		item->pos.w = COL2_LIST_W;
 		item->pos.h = ITEM_H;
@@ -379,20 +451,31 @@ void WikiWindow::buildElementList(int categoryIndex)
 		createElemItem,
 		Point(COL2_X, CONTENT_TOP),
 		Point(0, ITEM_H),
-		VISIBLE_ITEMS,
+		ELEM_VISIBLE_ITEMS,
 		total,
 		0,
 		(total > 0) ? sliderBits : 0,
-		Rect(COL2_SLIDER_REL_X, 0, CONTENT_H, SLIDER_W));
+		Rect(COL2_SLIDER_REL_X, 0, ELEM_LIST_H, SLIDER_W));
 
 	// FIX: set pos.w/h so WikiListItem::showAll's clip rect is non-zero
 	elementList->pos.w = COL2_LIST_W;
-	elementList->pos.h = CONTENT_H;
+	elementList->pos.h = ELEM_LIST_H;
 
 	elementList->setRedrawParent(true);
 
 	// Update scroll bounds for the freshly created slider
 	applyScrollBounds();
+}
+
+void WikiWindow::onSearchInput()
+{
+	// Toggle placeholder hint visibility
+	if(searchBoxHint)
+		searchBoxHint->setEnabled(searchBox && searchBox->getText().empty());
+
+	activeElementIndex = -1;
+	buildElementList(activeCategoryIndex);
+	updateContent();
 }
 
 void WikiWindow::clearElementList()
@@ -414,13 +497,12 @@ void WikiWindow::updateContent()
 	}
 
 	const std::string & catName  = categoryNames[activeCategoryIndex];
-	const auto & elems           = categoryElements[activeCategoryIndex];
-	if(activeElementIndex >= (int)elems.size())
+	if(activeElementIndex < 0 || activeElementIndex >= (int)currentDisplayedElements.size())
 	{
 		contentBox->setText("Select a category and an entry to view its description.");
 		return;
 	}
-	const std::string & elemName = elems[activeElementIndex];
+	const std::string & elemName = currentDisplayedElements[activeElementIndex];
 
 	// Stub – real content will be filled in later
 	std::string text =
@@ -442,6 +524,10 @@ void WikiWindow::onCategoryClicked(int index)
 {
 	activeCategoryIndex = index;
 	activeElementIndex  = -1;
+
+	// Clear the search filter when switching categories
+	if(searchBox) { searchBox->setText(""); }
+	if(searchBoxHint) { searchBoxHint->setEnabled(true); }
 
 	// Rebuild the element list for the new category
 	buildElementList(activeCategoryIndex);

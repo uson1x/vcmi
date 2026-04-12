@@ -18,6 +18,7 @@ class CButton;
 class CLabel;
 class CListBox;
 class CTextBox;
+class CTextInput;
 class CFilledTexture;
 class TransparentFilledRectangle;
 class CAnimImage;
@@ -103,6 +104,14 @@ private:
 	/// Maps category index -> list of element names
 	std::vector<std::vector<std::string>> categoryElements;
 
+	// --- element search box (below element list) -------------------------
+	std::shared_ptr<TransparentFilledRectangle> searchBoxRect;
+	std::shared_ptr<CLabel>                     searchBoxHint;
+	std::shared_ptr<CTextInput>                 searchBox;
+
+	/// Currently displayed (possibly filtered) element names; activeElementIndex indexes into this
+	std::vector<std::string> currentDisplayedElements;
+
 	// --- content area -----------------------------------------------------
 	std::shared_ptr<CTextBox> contentBox;
 
@@ -117,6 +126,8 @@ private:
 	/// Applies correct scroll bounds to both slider widgets so that
 	/// mouse-wheel scrolling works when the cursor is anywhere in the window.
 	void applyScrollBounds();
+	/// Called when the search text in the element search box changes.
+	void onSearchInput();
 
 	void onCategoryClicked(int index);
 	void onElementClicked(int index);
