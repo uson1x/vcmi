@@ -833,7 +833,71 @@ CStackWindow::CStackWindow(const CCommanderInstance * commander, std::vector<ui3
 	init();
 }
 
+void CStackWindow::updateCommanderLevelUpData(const CCommanderInstance * commander, std::vector<ui32> & skills, std::function<void(ui32)> callback)
+{
+	OBJECT_CONSTRUCTION;
+
+	info->stackNode = commander;
+	info->creature = commander->getCreature();
+	info->commander = commander;
+	info->creatureCount = 1;
+	info->owner = dynamic_cast<const CGHeroInstance *> (commander->getArmy());
+	info->levelupInfo = std::make_optional(UnitView::CommanderLevelInfo());
+	info->levelupInfo->skills = skills;
+	info->levelupInfo->callback = callback;
+
+	fakeNode.reset();
+	activeBonuses.clear();
+
+	if(mainSection)
+		removeChild(mainSection.get());
+	if(activeSpellsSection)
+		removeChild(activeSpellsSection.get());
+	if(commanderMainSection)
+		removeChild(commanderMainSection.get());
+	if(commanderBonusesSection)
+		removeChild(commanderBonusesSection.get());
+	if(bonusesSection)
+		removeChild(bonusesSection.get());
+	if(buttonsSection)
+		removeChild(buttonsSection.get());
+	if(commanderTab)
+		removeChild(commanderTab.get());
+
+	switchButtons.clear();
+
+	mainSection.reset();
+	activeSpellsSection.reset();
+	commanderMainSection.reset();
+	commanderBonusesSection.reset();
+	bonusesSection.reset();
+	buttonsSection.reset();
+	commanderTab.reset();
+
+	selectedIcon = nullptr;
+	selectedSkill = skills.empty() ? -1 : skills.front();
+	activeTab = 0;
+
+	pos = Rect();
+	initBonusesList();
+	initSections();
+	background->pos = pos;
+
+	setRedrawParent(true);
+	redraw();
+}
+
+bool CStackWindow::isCommanderLevelUpDialog() const
+{
+	return info && info->levelupInfo.has_value();
+}
+
 CStackWindow::~CStackWindow() = default;
+
+void CStackWindow::tick(uint32_t msPassed)
+{
+	CWindowObject::tick(msPassed);
+}
 
 void CStackWindow::close()
 {

@@ -193,6 +193,7 @@ class CStackWindow : public CWindowObject
 	void initBonusesList();
 
 	void init();
+	void tick(uint32_t msPassed) override;
 	void close() override;
 
 	std::string generateStackExpDescription();
@@ -212,6 +213,8 @@ public:
 	// for commanders & commander level-up dialog
 	CStackWindow(const CCommanderInstance * commander, bool popup);
 	CStackWindow(const CCommanderInstance * commander, std::vector<ui32> &skills, std::function<void(ui32)> callback);
+	void updateCommanderLevelUpData(const CCommanderInstance * commander, std::vector<ui32> & skills, std::function<void(ui32)> callback);
+	bool isCommanderLevelUpDialog() const;
 
 	~CStackWindow();
 };

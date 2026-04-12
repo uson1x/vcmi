@@ -520,15 +520,29 @@ void CPlayerInterface::receivedResource()
 void CPlayerInterface::heroGotLevel(const CGHeroInstance *hero, PrimarySkill pskill, std::vector<SecondarySkill>& skills, QueryID queryID)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
+	if(auto levelWindow = ENGINE->windows().topWindow<CLevelWindow>())
+	{
+		levelWindow->updateLevelUpData(hero, pskill, skills, [this, queryID](ui32 selection)
+		{
+			if(queryID < 0)
+				return;
+
+			cb->selectionMade(selection, queryID);
+		});
+		return;
+	}
+
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
-	ENGINE->windows().createAndPushWindow<CLevelWindow>(hero, pskill, skills, [this, queryID](ui32 selection)
+	auto callback = [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
 			return;
 
 		cb->selectionMade(selection, queryID);
-	});
+	};
+
+	ENGINE->windows().createAndPushWindow<CLevelWindow>(hero, pskill, skills, callback);
 }
 
 void CPlayerInterface::commanderGotLevel (const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
@@ -536,13 +550,15 @@ void CPlayerInterface::commanderGotLevel (const CCommanderInstance * commander, 
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
-	ENGINE->windows().createAndPushWindow<CStackWindow>(commander, skills, [this, queryID](ui32 selection)
+	auto callback = [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
 			return;
 
 		cb->selectionMade(selection, queryID);
-	});
+	};
+
+	ENGINE->windows().createAndPushWindow<CStackWindow>(commander, skills, callback);
 }
 
 void CPlayerInterface::heroInGarrisonChange(const CGTownInstance *town)
