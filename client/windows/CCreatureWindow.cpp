@@ -437,15 +437,11 @@ CStackWindow::ButtonsSection::ButtonsSection(CStackWindow * owner, int yOffset)
 			std::string tooltipText = "vcmi.creatureWindow." + btnIDs[buttonIndex];
 			parent->switchButtons[buttonIndex] = std::make_shared<CButton>(Point(342, 5), AnimationPath::builtin("stackWindow/upgradeButton"), CButton::tooltipLocalized(tooltipText), onSwitch);
 			parent->switchButtons[buttonIndex]->setOverlay(std::make_shared<CAnimImage>(AnimationPath::builtin("stackWindow/switchModeIcons"), buttonIndex));
-			parent->switchButtons[buttonIndex]->setHoverable(true);
-			parent->switchButtons[buttonIndex]->setImageOrder(0, 1, 2, 0); // no hover visual, keep pressed feedback
 		}
 		parent->switchButtons[parent->activeTab]->disable();
 	}
 
 	exit = std::make_shared<CButton>(Point(382, 5), AnimationPath::builtin("hsbtns.def"), LIBRARY->generaltexth->zelp[447], [this](){ parent->close(); }, EShortcut::GLOBAL_RETURN);
-	exit->setHoverable(true);
-	exit->setImageOrder(0, 1, 2, 0); // no hover visual, keep pressed feedback
 }
 
 CStackWindow::CommanderMainSection::CommanderMainSection(CStackWindow * owner, int yOffset)
