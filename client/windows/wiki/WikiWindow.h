@@ -14,8 +14,6 @@
 #include "../../../lib/filesystem/ResourcePath.h"
 #include "../../../lib/Color.h"
 
-#include <optional>
-
 class CButton;
 class CLabel;
 class CListBox;

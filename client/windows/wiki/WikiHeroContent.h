@@ -9,13 +9,14 @@
  */
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <vector>
+#include "../../../Global.h"
+
+VCMI_LIB_NAMESPACE_BEGIN
+class CHero;
+VCMI_LIB_NAMESPACE_END
 
 class CIntObject;
 class CViewport;
-class CHero;
 
 enum class WikiCategory : int;  // forward declaration
 

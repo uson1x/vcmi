@@ -11,11 +11,6 @@
 
 #include "../../gui/CIntObject.h"
 
-#include <memory>
-#include <string>
-#include <vector>
-#include <functional>
-
 enum class WikiCategory : int;
 
 VCMI_LIB_NAMESPACE_BEGIN

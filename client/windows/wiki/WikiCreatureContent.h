@@ -9,13 +9,14 @@
  */
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <vector>
+#include "../../../Global.h"
+
+VCMI_LIB_NAMESPACE_BEGIN
+class CCreature;
+VCMI_LIB_NAMESPACE_END
 
 class CIntObject;
 class CViewport;
-class CCreature;
 
 /// Callback type for wiki internal navigation (same as in WikiTownContent)
 using WikiCreatureNavigateCallback = std::function<void(const std::string & creatureName)>;
