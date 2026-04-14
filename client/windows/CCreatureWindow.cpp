@@ -132,6 +132,11 @@ void CCommanderSkillIcon::setObject(std::shared_ptr<CIntObject> newObject)
 void CCommanderSkillIcon::clickPressed(const Point & cursorPosition)
 {
 	callback();
+	select();
+}
+
+void CCommanderSkillIcon::select()
+{
 	isSelected = true;
 	redraw();
 }
@@ -139,12 +144,6 @@ void CCommanderSkillIcon::clickPressed(const Point & cursorPosition)
 void CCommanderSkillIcon::deselect()
 {
 	isSelected = false;
-	redraw();
-}
-
-void CCommanderSkillIcon::select()
-{
-	isSelected = true;
 	redraw();
 }
 
@@ -547,11 +546,9 @@ CStackWindow::CommanderMainSection::CommanderMainSection(CStackWindow * owner, i
 
 			icon->hoverText = abilityDescription;
 			icon->text = abilityDescription;
-			if(parent->selectedSkill == skillID)
-			{
-				parent->selectedIcon = icon;
+
+			if(parent->selectedSkill == static_cast<si32>(skillID))
 				parent->setSelection(skillID, icon);
-			}
 
 			return icon;
 		};
@@ -844,80 +841,30 @@ CStackWindow::CStackWindow(const CCommanderInstance * commander, std::vector<ui3
 	init();
 }
 
-void CStackWindow::updateCommanderLevelUpData(const CCommanderInstance * commander, std::vector<ui32> & skills, std::function<void(ui32)> callback)
-{
-	OBJECT_CONSTRUCTION;
-	waitingForNextUpdate = false;
-
-	info->stackNode = commander;
-	info->creature = commander->getCreature();
-	info->commander = commander;
-	info->creatureCount = 1;
-	info->owner = dynamic_cast<const CGHeroInstance *> (commander->getArmy());
-	info->levelupInfo = std::make_optional(UnitView::CommanderLevelInfo());
-	info->levelupInfo->skills = skills;
-	info->levelupInfo->callback = callback;
-
-	fakeNode.reset();
-	activeBonuses.clear();
-	switchButtons.clear();
-	while(!children.empty())
-		removeChild(children.back());
-
-	mainSection.reset();
-	activeSpellsSection.reset();
-	commanderMainSection.reset();
-	commanderBonusesSection.reset();
-	bonusesSection.reset();
-	buttonsSection.reset();
-	commanderTab.reset();
-	stackArtifact.reset();
-	stackArtifactButton.reset();
-	background.reset();
-
-	pos = Rect(pos.x, pos.y, 0, 0);
-	init();
-
-	setRedrawParent(true);
-	redraw();
-}
-
-bool CStackWindow::isCommanderLevelUpDialog() const
-{
-	return info && info->levelupInfo.has_value();
-}
-
 CStackWindow::~CStackWindow() = default;
 
-void CStackWindow::tick(uint32_t msPassed)
+void CStackWindow::setCloseOnSelection(bool value)
 {
-	CWindowObject::tick(msPassed);
-
-	if(waitingForNextUpdate && std::chrono::steady_clock::now() >= closeDeadline)
-	{
-		waitingForNextUpdate = false;
-		CWindowObject::close();
-	}
+	closeOnSelection = value;
 }
 
 void CStackWindow::close()
 {
-	if(waitingForNextUpdate)
-		return;
-
-	if(info->levelupInfo && !info->levelupInfo->skills.empty())
-		info->levelupInfo->callback(vstd::find_pos(info->levelupInfo->skills, selectedSkill));
-
-	const bool expectAnotherCommanderLevelUp = info->commander && info->commander->gainsLevel();
-	if(expectAnotherCommanderLevelUp)
+	if(!selectionSubmitted)
 	{
-		waitingForNextUpdate = true;
-		closeDeadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+		if(info->levelupInfo && !info->levelupInfo->skills.empty())
+			info->levelupInfo->callback(vstd::find_pos(info->levelupInfo->skills, selectedSkill));
+
+		selectionSubmitted = true;
+
+		if(!closeOnSelection)
+		{
+			deactivate();
+			return;
+		}
 	}
-	else
-	{
-		CWindowObject::close();
-	}
+
+	CWindowObject::close();
 }
 
 void CStackWindow::init()
@@ -1207,8 +1154,6 @@ void CStackWindow::setSelection(si32 newSkill, std::shared_ptr<CCommanderSkillIc
 	}
 
 	selectedIcon = newIcon; // update new selection
-	if(selectedIcon)
-		selectedIcon->select();
 	if(newSkill < 100)
 	{
 		newIcon->setObject(std::make_shared<CPicture>(getSkillImage(newSkill)));
@@ -1217,6 +1162,7 @@ void CStackWindow::setSelection(si32 newSkill, std::shared_ptr<CCommanderSkillIc
 			newIcon->text = getSkillDescription(newSkill, true); //update currently selected icon's message to show upgrade description
 		}
 	}
+	newIcon->select();
 }
 
 std::shared_ptr<CIntObject> CStackWindow::switchTab(size_t index)

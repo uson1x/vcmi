@@ -13,7 +13,6 @@
 #include "../lib/ResourceSet.h"
 #include "../widgets/Images.h"
 #include "../widgets/IVideoHolder.h"
-#include <chrono>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -160,18 +159,19 @@ class CLevelWindow : public CWindowObject
 	std::vector<SecondarySkill> skills;
 	std::vector<SecondarySkill> sortedSkills;
 	const CGHeroInstance * hero;
-	bool waitingForNextUpdate = false;
-	std::chrono::steady_clock::time_point closeDeadline;
 
 	void selectionChanged(unsigned to);
 	void createSkillBox();
 
 public:
 	CLevelWindow(const CGHeroInstance *hero, PrimarySkill pskill, std::vector<SecondarySkill> &skills, std::function<void(ui32)> callback);
-	void updateLevelUpData(const CGHeroInstance * hero, PrimarySkill pskill, std::vector<SecondarySkill> & skills, std::function<void(ui32)> callback);
-	void tick(uint32_t msPassed) override;
+	void setCloseOnSelection(bool value);
 
 	void close() override;
+
+private:
+	bool closeOnSelection = true;
+	bool selectionSubmitted = false;
 };
 
 /// Town portal, castle gate window

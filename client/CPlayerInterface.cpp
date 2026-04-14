@@ -126,6 +126,13 @@
 
 #define BATTLE_EVENT_POSSIBLE_RETURN	if (GAME->interface() != this) return; if (isAutoFightOn && !battleInt) return
 
+namespace
+{
+	constexpr int LEVEL_UP_REQUEST_NONE = -1;
+	constexpr int LEVEL_UP_REQUEST_WAITING_FOR_REPLY = -2;
+	constexpr int LEVEL_UP_REQUEST_AUTO_RESOLVED = -3;
+}
+
 std::shared_ptr<BattleInterface> CPlayerInterface::battleInt;
 
 CPlayerInterface::CPlayerInterface(PlayerColor Player):
@@ -520,57 +527,45 @@ void CPlayerInterface::receivedResource()
 void CPlayerInterface::heroGotLevel(const CGHeroInstance *hero, PrimarySkill pskill, std::vector<SecondarySkill>& skills, QueryID queryID)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
-	if(auto levelWindow = ENGINE->windows().topWindow<CLevelWindow>())
-	{
-		levelWindow->updateLevelUpData(hero, pskill, skills, [this, queryID](ui32 selection)
-		{
-			if(queryID < 0)
-				return;
-
-			cb->selectionMade(selection, queryID);
-		});
-		return;
-	}
-
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
-	auto callback = [this, queryID](ui32 selection)
+
+	closePendingLevelUpDialog();
+
+	pendingLevelUpRequestID = queryID < 0 ? LEVEL_UP_REQUEST_AUTO_RESOLVED : LEVEL_UP_REQUEST_WAITING_FOR_REPLY;
+	auto levelWindow = std::make_shared<CLevelWindow>(hero, pskill, skills, [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
 			return;
 
-		cb->selectionMade(selection, queryID);
-	};
-
-	ENGINE->windows().createAndPushWindow<CLevelWindow>(hero, pskill, skills, callback);
+		pendingLevelUpRequestID = cb->selectionMade(selection, queryID);
+	});
+	levelWindow->setCloseOnSelection(false);
+	pendingLevelUpDialog = levelWindow;
+	ENGINE->windows().pushWindow(levelWindow);
 }
 
-void CPlayerInterface::commanderGotLevel (const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
+void CPlayerInterface::commanderGotLevel(const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
-	if(auto stackWindow = ENGINE->windows().topWindow<CStackWindow>(); stackWindow && stackWindow->isCommanderLevelUpDialog())
-	{
-		stackWindow->updateCommanderLevelUpData(commander, skills, [this, queryID](ui32 selection)
-		{
-			if(queryID < 0)
-				return;
-
-			cb->selectionMade(selection, queryID);
-		});
-		return;
-	}
-
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
-	auto callback = [this, queryID](ui32 selection)
+
+	closePendingLevelUpDialog();
+
+	const bool closeImmediately = queryID < 0;
+	pendingLevelUpRequestID = closeImmediately ? LEVEL_UP_REQUEST_NONE : LEVEL_UP_REQUEST_WAITING_FOR_REPLY;
+	auto levelWindow = std::make_shared<CStackWindow>(commander, skills, [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
 			return;
 
-		cb->selectionMade(selection, queryID);
-	};
-
-	ENGINE->windows().createAndPushWindow<CStackWindow>(commander, skills, callback);
+		pendingLevelUpRequestID = cb->selectionMade(selection, queryID);
+	});
+	levelWindow->setCloseOnSelection(closeImmediately);
+	if(!closeImmediately)
+		pendingLevelUpDialog = levelWindow;
+	ENGINE->windows().pushWindow(levelWindow);
 }
 
 void CPlayerInterface::heroInGarrisonChange(const CGTownInstance *town)
@@ -1320,7 +1315,30 @@ void CPlayerInterface::requestRealized( PackageApplied *pa )
 		movementController->onMoveHeroApplied();
 
 	if(pa->packType == CTypeList::getInstance().getTypeID<QueryReply>(nullptr))
+	{
+		if(pendingLevelUpRequestID == static_cast<int>(pa->requestID))
+			closePendingLevelUpDialog();
 		movementController->onQueryReplyApplied();
+	}
+	else if(pendingLevelUpDialog && pendingLevelUpRequestID == LEVEL_UP_REQUEST_AUTO_RESOLVED)
+	{
+		// Auto-resolved levelups (queryID < 0) have no QueryReply from client,
+		// so close pending window once current server request is fully applied.
+		closePendingLevelUpDialog();
+	}
+}
+
+void CPlayerInterface::closePendingLevelUpDialog()
+{
+	if(!pendingLevelUpDialog)
+	{
+		pendingLevelUpRequestID = LEVEL_UP_REQUEST_NONE;
+		return;
+	}
+
+	pendingLevelUpDialog->close();
+	pendingLevelUpDialog.reset();
+	pendingLevelUpRequestID = LEVEL_UP_REQUEST_NONE;
 }
 
 void CPlayerInterface::showHeroExchange(ObjectInstanceID hero1, ObjectInstanceID hero2)

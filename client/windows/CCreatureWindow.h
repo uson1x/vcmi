@@ -13,7 +13,6 @@
 #include "../../lib/filesystem/ResourcePath.h"
 #include "../widgets/MiscWidgets.h"
 #include "CWindowObject.h"
-#include <chrono>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -185,8 +184,6 @@ class CStackWindow : public CWindowObject
 
 	std::shared_ptr<CCommanderSkillIcon> selectedIcon;
 	si32 selectedSkill;
-	bool waitingForNextUpdate = false;
-	std::chrono::steady_clock::time_point closeDeadline;
 
 	void setSelection(si32 newSkill, std::shared_ptr<CCommanderSkillIcon> newIcon);
 	std::shared_ptr<CIntObject> switchTab(size_t index);
@@ -197,7 +194,6 @@ class CStackWindow : public CWindowObject
 	void initBonusesList();
 
 	void init();
-	void tick(uint32_t msPassed) override;
 	void close() override;
 
 	std::string generateStackExpDescription();
@@ -217,8 +213,11 @@ public:
 	// for commanders & commander level-up dialog
 	CStackWindow(const CCommanderInstance * commander, bool popup);
 	CStackWindow(const CCommanderInstance * commander, std::vector<ui32> &skills, std::function<void(ui32)> callback);
-	void updateCommanderLevelUpData(const CCommanderInstance * commander, std::vector<ui32> & skills, std::function<void(ui32)> callback);
-	bool isCommanderLevelUpDialog() const;
+	void setCloseOnSelection(bool value);
 
 	~CStackWindow();
+
+private:
+	bool closeOnSelection = true;
+	bool selectionSubmitted = false;
 };

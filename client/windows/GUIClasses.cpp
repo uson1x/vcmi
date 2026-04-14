@@ -410,63 +410,14 @@ void CSplitWindow::sliderMoved(int to)
 
 CLevelWindow::CLevelWindow(const CGHeroInstance * hero, PrimarySkill pskill, std::vector<SecondarySkill> & skills, std::function<void(ui32)> callback)
 	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("LVLUPBKG")),
+	cb(callback),
+	skills(skills),
+	hero(hero),
 	skillViewOffset(0)
 {
 	OBJECT_CONSTRUCTION;
 
 	GAME->interface()->showingDialog->setBusy();
-	updateLevelUpData(hero, pskill, skills, callback);
-}
-
-std::vector<SecondarySkill> getSkillsToShow(const std::vector<SecondarySkill>& skills, int offset, int count)
-{
-	std::vector<SecondarySkill> result;
-
-	int size = skills.size();
-	if (size == 0 || count <= 0) return result;
-
-	offset = offset % size; // ensure offset is within bounds
-	for (int i = 0; i < std::min(count, size); ++i)
-	{
-		int index = (offset + i) % size; // ring buffer like
-		result.push_back(skills[index]);
-	}
-
-	return result;
-}
-
-void CLevelWindow::createSkillBox()
-{
-	OBJECT_CONSTRUCTION;
-	box.reset();
-
-	std::vector<SecondarySkill> skillsToShow = skills.size() > 3 ? getSkillsToShow(sortedSkills, skillViewOffset, 3) : sortedSkills;
-	if(!skillsToShow.empty())
-	{
-		std::vector<std::shared_ptr<CSelectableComponent>> comps;
-		for(auto & skill : skillsToShow)
-		{
-			auto comp = std::make_shared<CSelectableComponent>(ComponentType::SEC_SKILL, skill, hero->getSecSkillLevel(SecondarySkill(skill))+1, CComponent::medium);
-			comp->onChoose = std::bind(&CLevelWindow::close, this);
-			comps.push_back(comp);
-		}
-
-		box = std::make_shared<CComponentBox>(comps, Rect(75, 300, pos.w - 150, 100));
-	}
-
-	setRedrawParent(true);
-	redraw();
-}
-
-void CLevelWindow::updateLevelUpData(const CGHeroInstance * hero, PrimarySkill pskill, std::vector<SecondarySkill> & skills, std::function<void(ui32)> callback)
-{
-	OBJECT_CONSTRUCTION;
-	waitingForNextUpdate = false;
-
-	this->hero = hero;
-	cb = callback;
-	this->skills = skills;
-	skillViewOffset = 0;
 
 	sortedSkills = skills;
 	std::sort(sortedSkills.begin(), sortedSkills.end(), [hero](auto a, auto b) {
@@ -476,26 +427,17 @@ void CLevelWindow::updateLevelUpData(const CGHeroInstance * hero, PrimarySkill p
 	});
 
 	createSkillBox();
-	buttonLeft.reset();
-	buttonRight.reset();
-	portrait.reset();
-	ok.reset();
-	mainTitle.reset();
-	levelTitle.reset();
-	skillIcon.reset();
-	skillValue.reset();
-
 	if(skills.size() > 3)
 	{
-		buttonLeft = std::make_shared<CButton>(Point(23, 309), AnimationPath::builtin("HSBTNS3"), CButton::tooltip(), [this](){
+		buttonLeft = std::make_shared<CButton>(Point(23, 309), AnimationPath::builtin("HSBTNS3"), CButton::tooltip(), [this, skills](){
 			if(skillViewOffset > 0)
 				skillViewOffset--;
 			else
-				skillViewOffset = this->skills.size() - 1;
+				skillViewOffset = skills.size() - 1;
 			createSkillBox();
 		}, EShortcut::MOVE_LEFT);
-		buttonRight = std::make_shared<CButton>(Point(pos.w - 45, 309), AnimationPath::builtin("HSBTNS5"), CButton::tooltip(), [this](){
-			if(skillViewOffset < this->skills.size() - 1)
+		buttonRight = std::make_shared<CButton>(Point(pos.w - 45, 309), AnimationPath::builtin("HSBTNS5"), CButton::tooltip(), [this, skills](){
+			if(skillViewOffset < skills.size() - 1)
 				skillViewOffset++;
 			else
 				skillViewOffset = 0;
@@ -520,63 +462,92 @@ void CLevelWindow::updateLevelUpData(const CGHeroInstance * hero, PrimarySkill p
 	levelTitle = std::make_shared<CLabel>(192, 162, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, levelTitleText);
 
 	skillIcon = std::make_shared<CAnimImage>(AnimationPath::builtin("PSKIL42"), pskill.getNum(), 0, 174, 190);
+
 	skillValue = std::make_shared<CLabel>(192, 253, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->primarySkillNames[pskill.getNum()] + " +1");
+}
+
+std::vector<SecondarySkill> getSkillsToShow(const std::vector<SecondarySkill>& skills, int offset, int count)
+{
+	std::vector<SecondarySkill> result;
+
+	int size = skills.size();
+	if (size == 0 || count <= 0) return result;
+
+	offset = offset % size; // ensure offset is within bounds
+	for (int i = 0; i < std::min(count, size); ++i)
+	{
+		int index = (offset + i) % size; // ring buffer like
+		result.push_back(skills[index]);
+	}
+
+	return result;
+}
+
+void CLevelWindow::createSkillBox()
+{
+	OBJECT_CONSTRUCTION;
+
+	std::vector<SecondarySkill> skillsToShow = skills.size() > 3 ? getSkillsToShow(sortedSkills, skillViewOffset, 3) : sortedSkills;
+	if(!skillsToShow.empty())
+	{
+		std::vector<std::shared_ptr<CSelectableComponent>> comps;
+		for(auto & skill : skillsToShow)
+		{
+			auto comp = std::make_shared<CSelectableComponent>(ComponentType::SEC_SKILL, skill, hero->getSecSkillLevel(SecondarySkill(skill))+1, CComponent::medium);
+			comp->onChoose = std::bind(&CLevelWindow::close, this);
+			comps.push_back(comp);
+		}
+
+		box = std::make_shared<CComponentBox>(comps, Rect(75, 300, pos.w - 150, 100));
+	}
 
 	setRedrawParent(true);
 	redraw();
 }
 
-void CLevelWindow::tick(uint32_t msPassed)
+void CLevelWindow::setCloseOnSelection(bool value)
 {
-	CWindowObject::tick(msPassed);
-
-	if(waitingForNextUpdate && std::chrono::steady_clock::now() >= closeDeadline)
-	{
-		waitingForNextUpdate = false;
-		GAME->interface()->showingDialog->setFree();
-		CWindowObject::close();
-	}
+	closeOnSelection = value;
 }
 
 void CLevelWindow::close()
 {
-	if(waitingForNextUpdate)
-		return;
-
-	int idx = -1;
-
-	if(box)
-		idx = box->selectedIndex();
-
-	// If there are skills available, we must not close without producing a valid choice
-	// For a single available option, auto-pick it
-	if(!skills.empty())
+	if(!selectionSubmitted)
 	{
-		if(idx == -1)
+		int idx = -1;
+
+		if(box)
+			idx = box->selectedIndex();
+
+		// If there are skills available, we must not close without producing a valid choice
+		// For a single available option, auto-pick it
+		if(!skills.empty())
 		{
-			if(skills.size() == 1)
-				idx = 0;
-			else
-				return; // require explicit selection
+			if(idx == -1)
+			{
+				if(skills.size() == 1)
+					idx = 0;
+				else
+					return; // require explicit selection
+			}
+
+			const auto & chosen = sortedSkills[(idx + skillViewOffset) % skills.size()];
+			auto it = std::find(skills.begin(), skills.end(), chosen);
+
+			cb(std::distance(skills.begin(), it));
 		}
 
-		const auto & chosen = sortedSkills[(idx + skillViewOffset) % skills.size()];
-		auto it = std::find(skills.begin(), skills.end(), chosen);
-
-				cb(std::distance(skills.begin(), it));
-	}
-
-	const bool expectAnotherHeroLevelUp = hero && hero->gainsLevel();
-	if(expectAnotherHeroLevelUp)
-	{
-		waitingForNextUpdate = true;
-		closeDeadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
-	}
-	else
-	{
+		selectionSubmitted = true;
 		GAME->interface()->showingDialog->setFree();
-		CWindowObject::close();
+
+		if(!closeOnSelection)
+		{
+			deactivate();
+			return;
+		}
 	}
+
+	CWindowObject::close();
 }
 
 CTavernWindow::CTavernWindow(const CGObjectInstance * TavernObj, const std::function<void()> & onWindowClosed)
