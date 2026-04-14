@@ -337,7 +337,7 @@ CSplitWindow::CSplitWindow(const CCreature * creature, std::function<void(int, i
 	int rightMax = total - leftMin;
 	int defaultRightAmount = rightAmount;
 	if(settings["general"]["enableUiEnhancements"].Bool())
-		defaultRightAmount = std::clamp(total / 2, rightMin, rightMax);
+		defaultRightAmount = std::clamp(total -1, rightMin, rightMax);
 	leftAmount = total - defaultRightAmount;
 	rightAmount = defaultRightAmount;
 
