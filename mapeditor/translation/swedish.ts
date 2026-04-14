@@ -105,13 +105,13 @@
         <location filename="../campaigneditor/campaigneditor.ui" line="145"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="148"/>
         <source>Campaign Properties</source>
-        <translation>Kampanj-egenskaper</translation>
+        <translation>Kampanjegenskaper</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="159"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="162"/>
         <source>Scenario Properties</source>
-        <translation>Scenario-egenskaper</translation>
+        <translation>Scenarioegenskaper</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="173"/>
@@ -122,7 +122,7 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="124"/>
         <source>Scenario editor</source>
-        <translation>Scenario-redigerare</translation>
+        <translation>Scenarioredigerare</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="147"/>
@@ -216,7 +216,7 @@
         <location filename="../campaigneditor/campaignproperties.ui" line="14"/>
         <location filename="../campaigneditor/campaignproperties.cpp" line="28"/>
         <source>Campaign Properties</source>
-        <translation>Kampanj-egenskaper</translation>
+        <translation>Kampanjegenskaper</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="30"/>
@@ -2542,7 +2542,7 @@ Lägg till den i kartans obligatoriska moddar i Karta-&gt;Allmänna inställning
     <message>
         <location filename="../inspector/questwidget.ui" line="221"/>
         <source>Attack</source>
-        <translation>Anfall</translation>
+        <translation>Attack</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="231"/>
@@ -2759,7 +2759,7 @@ Lägg till den i kartans obligatoriska moddar i Karta-&gt;Allmänna inställning
         <location filename="../inspector/rewardswidget.ui" line="432"/>
         <location filename="../inspector/rewardswidget.ui" line="1152"/>
         <source>Attack</source>
-        <translation>Anfall</translation>
+        <translation>Attack</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="446"/>
@@ -3314,7 +3314,7 @@ Lägg till den i kartans obligatoriska moddar i Karta-&gt;Allmänna inställning
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="310"/>
         <source>Attack skill</source>
-        <translation>Anfallsförmåga</translation>
+        <translation>Attackförmåga</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="320"/>
@@ -3419,7 +3419,7 @@ Lägg till den i kartans obligatoriska moddar i Karta-&gt;Allmänna inställning
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="378"/>
         <source>Primary skill (Attack: %1, Defense: %2, Spell: %3, Knowledge: %4) for %5</source>
-        <translation>Primärförmåga (Anfall: %1, Försvar: %2, Trolleri: %3, Kunskap: %4) för %5</translation>
+        <translation>Primärförmåga (Attack: %1, Försvar: %2, Trolleri: %3, Kunskap: %4) för %5</translation>
     </message>
 </context>
 <context>
@@ -4632,12 +4632,12 @@ Vakt: %3</translation>
     <message>
         <location filename="../validator.cpp" line="108"/>
         <source>Prison %1 must be a NEUTRAL</source>
-        <translation>Fängelse %1 måste vara NEUTRALT</translation>
+        <translation>Fängelse %1 måste vara en NEUTRAL</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="89"/>
         <source>Ownable object %1 is UNFLAGGABLE but must have NEUTRAL or player owner</source>
-        <translation>Ägbart objekt %1 kan inte flaggas men måste ha NEUTRAL eller en spelare som ägare</translation>
+        <translation>Ägbart objekt %1 kan ej flaggas men måste antingen ägas av NEUTRAL eller av en spelare</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="113"/>

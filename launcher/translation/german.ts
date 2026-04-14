@@ -377,7 +377,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="870"/>
         <source>Extracting content.zip (%1/%2) for %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Entpacke content.zip (%1/%2) für %3</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="877"/>
@@ -724,7 +724,7 @@ Exklusiver Vollbildmodus - das Spiel nimmt den gesamten Bildschirm ein und verwe
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="437"/>
         <source>Full mod extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Mods vollständig entpacken</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="593"/>
@@ -1183,7 +1183,7 @@ Exklusiver Vollbildmodus - das Spiel nimmt den gesamten Bildschirm ein und verwe
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="847"/>
         <source>Heroes III Demo files detected. This mod is required to use demo assets in VCMI, or the game will crash</source>
-        <translation>Heroes III Demo-Dateien erkannt. Dieser Mod ist erforderlich, um Demo-Assets in VCMI zu verwenden, da das Spiel sonst abstürzt</translation>
+        <translation>Heroes III Demo-Dateien erkannt. Diese Mod ist erforderlich um Demo-Assets in VCMI zu verwenden, da das Spiel sonst abstürzt.</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="863"/>
@@ -1213,7 +1213,7 @@ Exklusiver Vollbildmodus - das Spiel nimmt den gesamten Bildschirm ein und verwe
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="158"/>
         <source>VCMI on Github</source>
-        <translation>VCMI auf Github</translation>
+        <translation>VCMI auf GitHub</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="165"/>
@@ -1831,12 +1831,12 @@ Bin (%n Bytes):
     <message>
         <location filename="../modManager/modstatecontroller.cpp" line="252"/>
         <source>Can not enable translation mod for a different language!</source>
-        <translation>Der Übersetzungsmod kann nicht für eine andere Sprache aktiviert werden!</translation>
+        <translation>Die Übersetzungsmod kann nicht für eine andere Sprache aktiviert werden!</translation>
     </message>
     <message>
         <location filename="../modManager/modstatecontroller.cpp" line="257"/>
         <source>Required mod %1 is missing</source>
-        <translation>Der erforderliche Mod %1 fehlt</translation>
+        <translation>Die erforderliche Mod %1 fehlt</translation>
     </message>
     <message>
         <location filename="../modManager/modstatecontroller.cpp" line="268"/>
@@ -1917,7 +1917,7 @@ Bin (%n Bytes):
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="44"/>
         <source>Skills</source>
-        <translation>Fertigkeiten</translation>
+        <translation>Fähigkeiten</translation>
     </message>
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="45"/>
@@ -1938,7 +1938,7 @@ Bin (%n Bytes):
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="48"/>
         <source>Interface</source>
-        <translation>Schnittstelle</translation>
+        <translation>Interface</translation>
     </message>
     <message>
         <location filename="../modManager/modstateitemmodel_moc.cpp" line="49"/>
@@ -2233,35 +2233,44 @@ WARNUNG: In einigen Fällen sind die aktualisierten Versionen der Mods nicht mit
         <location filename="../startGame/StartGameTab.cpp" line="346"/>
         <source>If you own Heroes Chronicles on gog.com, you can use offline backup installers provided by gog to import Heroes Chronicles data into VCMI as custom campaigns.
 To import Heroes Chronicles, download offline backup installer of each chronicle that you wish to install, select &apos;Import files&apos; option and select downloaded file. This will generate and install mod for VCMI that contains imported chronicles.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn Sie Heroes Chronicles in Ihrer Sammlung auf gog.com haben, können Sie die von GOG bereitgestellten Offline-Versionen der Spiel-Installationsdateien nutzen, um die Heroes-Chronicles-Daten als benutzerdefinierte Kampagne in VCMI zu importieren.
+Um Heroes Chronicles zu importieren, laden Sie die Offline-Version der Spiel-Installationsdateien jeder Chronicle, die Sie installieren möchten, herunter. Klicken Sie dann auf &apos;Dateien importieren&apos; und wählen Sie die heruntergeladene Datei aus. Die importierten Chronicles werden dann automatisch als Modifikation für VCMI generiert und installiert.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="359"/>
         <source>VCMI has detected that Heroes III music files are missing from your installation. VCMI will run, but in-game music will not be available.
 
 To resolve this problem, please copy missing mp3 files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI hat erkannt, dass die Heroes III Musikdateien in Ihrer Installation fehlen. VCMI kann ausgeführt werden, aber die Musik wird nicht verfügbar sein.
+
+Um dieses Problem zu beheben, kopieren Sie bitte die fehlenden mp3-Dateien von Hand aus Heroes III in den VCMI Datenordner oder installieren Sie VCMI erneut und re-importieren Sie die Heroes-III-Daten.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="370"/>
         <source>VCMI has detected that Heroes III video files are missing from your installation. VCMI will run, but in-game cutscenes will not be available.
 
 To resolve this problem, please copy VIDEO.VID file from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI hat erkannt, dass die Heroes III Videodateien in Ihrer Installation fehlen. VCMI kann ausgeführt werden, aber keine Videosequenzen im Spiel abspielen.
+
+Um dieses Problem zu beheben, kopieren Sie bitte die VIDEO.VID-Datei von Hand aus Heroes III in den VCMI Datenordner oder installieren Sie VCMI erneut und re-importieren Sie die Heroes-III-Daten.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="381"/>
         <source>VCMI has detected that some of Heroes III data files are missing from your installation. You may attempt to run VCMI, but game may not work as expected or crash.
 
 To resolve this problem, please reinstall game and reimport data files using supported version of Heroes III. VCMI requires Heroes III: Shadow of Death or Complete Edition to run, which you can get (for example) from gog.com.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI hat erkannt, dass die einige Heroes-III-Dateien in Ihrer Installation fehlen. Sie können versuchen VCMI zu starten, aber es könnte sein dass das Spiel sich nicht wie gewünscht verhält oder instabil ist.
+
+Um dieses Problem zu beheben, installieren Sie VCMI bitte und re-importieren Sie die Daten aus einer unterstützten Version von Heroes III. VCMI benötigt Heroes III: Shadow of Death oder Complete Edition um ausgeführt zu werden, welche Sie beispielsweise auf gog.com erwerben können.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="392"/>
         <source>VCMI has detected that some of Heroes III: Armageddon&apos;s Blade data files are missing from your installation. VCMI will work, but Armageddon&apos;s Blade campaigns will not be available.
 
 To resolve this problem, please copy missing data files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI hat erkannt, dass die einige Datendateien von Heroes III: Armageddon&apos;s Blade in Ihrer Installation fehlen. Sie können VCMI spielen, aber die Armageddon&apos;s Blade Kampagnen werden nicht verfügbar sein.
+
+Um dieses Problem zu beheben, kopieren Sie bitte die fehlenden Dateien von Hand aus Heroes III in den VCMI Datenordner oder installieren Sie VCMI neu und re-importieren Sie die Heroes-III-Daten.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="403"/>
