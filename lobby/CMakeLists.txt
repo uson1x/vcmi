@@ -19,6 +19,7 @@ set(lobby_HEADERS
 		LobbyHttpApi.h
 		LobbyServer.h
 		SQLiteConnection.h
+		TimeTracker.h
 )
 
 # Generate header file from web assets

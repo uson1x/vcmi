@@ -18,7 +18,7 @@ VCMI_LIB_NAMESPACE_END
 
 class LobbyDatabase;
 
-class LobbyServer final : public INetworkServerListener
+class LobbyServer final : public INetworkServerListener, INetworkTimerListener
 {
 	struct AwaitingProxyState
 	{
@@ -51,6 +51,8 @@ class LobbyServer final : public INetworkServerListener
 
 	NetworkConnectionPtr findAccount(const std::string & accountID) const;
 	NetworkConnectionPtr findGameRoom(const std::string & gameRoomID) const;
+
+	void onTimer() override;
 
 	void onNewConnection(const NetworkConnectionPtr & connection) override;
 	void onDisconnected(const NetworkConnectionPtr & connection, const std::string & errorMessage) override;

@@ -5,6 +5,7 @@
 - SSD requirements: up to 4 Gb (depending on log and database size over time)
 
 Exposed to public as:
+
 - `lobby.vcmi.eu:3031` - user login
 - `beholder.vcmi.eu:3031` - old domain name for logins
 - `api.vcmi.eu` - public API access (behind Cloudflare)  
@@ -17,6 +18,7 @@ Exposed to public as:
 ## Setup
 
 Preparation:
+
 - Generate .deb package with lobby binaries. Currently we have "Build VCMI Lobby" job in CI that does this. Produced .deb file needs to be uploaded to server
 - Create dump of existing SQL database: `sqlite3 /home/lobby/local/share/vcmi/vcmiLobby.db ".backup 'vcmiLobbyBak.db'"`. Optionally it can be compressed via `gzip vcmiLobbyBak.db`
 - Copy database dump on new server, and decompress it if needed via `gunzip vcmiLobbyBak.db`
@@ -58,4 +60,3 @@ cd /home/lobby && nohup sudo -u lobby /usr/games/vcmilobby &
 
 - Lobby crashes on start due to `boost::filesystem::status: Permission denied [system:13]: "config"`. Solution: `cd /home/lobby` (or any other directory writeable by `lobby` user)
 - Lobby shut downs after logout from server: ensure that `vcmilobby` was started via `nohup`
-

@@ -10,77 +10,13 @@
 #pragma once
 
 #include "LobbyDefines.h"
+#include "TimeTracker.h"
 
 class SQLiteInstance;
 class SQLiteStatement;
 
 using SQLiteInstancePtr = std::unique_ptr<SQLiteInstance>;
 using SQLiteStatementPtr = std::unique_ptr<SQLiteStatement>;
-
-class TimeTracker : boost::noncopyable
-{
-	static constexpr int dumpLimitCounter = 100'000;
-	int statsCounter = 0;
-public:
-	void store(const std::string & key, std::chrono::steady_clock::duration timeSpent)
-	{
-		auto & target = statistics[key];
-		target.count += 1;
-		target.total += timeSpent;
-		target.worst = std::max(target.worst, timeSpent);
-
-		statsCounter += 1;
-		if (statsCounter > dumpLimitCounter)
-			dumpToLog();
-	}
-	void dumpToLog()
-	{
-		logGlobal->info("Performance statistics report");
-		logGlobal->info("Operation\tCount\tTotal,s\tAverage,mks\tWorst,mks");
-
-		for (const auto & entry : statistics)
-		{
-			logGlobal->info("%s\t%d\t%f\t%d\t%d",
-				entry.first,
-				entry.second.count,
-				std::chrono::duration<float>(entry.second.total).count(),
-				static_cast<int>(std::chrono::duration<float>(entry.second.total).count() * 1000 * 1000 / entry.second.count),
-				static_cast<int>(std::chrono::duration<float>(entry.second.worst).count() * 1000 * 1000)
-			);
-		}
-		statistics.clear();
-		statsCounter = 0;
-	}
-
-	~TimeTracker()
-	{
-		dumpToLog();
-	}
-private:
-	struct TimeStats
-	{
-		std::chrono::steady_clock::duration worst = {};
-		std::chrono::steady_clock::duration total = {};
-		uint32_t count = {};
-	};
-	std::map<std::string, TimeStats> statistics;
-};
-
-class TimeGuard : boost::noncopyable
-{
-	TimeTracker & owner;
-	std::chrono::steady_clock::time_point startTime;
-	std::string name;
-public:
-	explicit TimeGuard(TimeTracker & owner, const std::string & name)
-		:owner(owner), startTime(std::chrono::steady_clock::now()), name(name)
-	{}
-	~TimeGuard()
-	{
-		auto endTime = std::chrono::steady_clock::now();
-		owner.store(name, endTime - startTime);
-	}
-};
 
 class LobbyDatabase
 {
@@ -194,4 +130,6 @@ public:
 	bool isPlayerInGameRoom(const std::string & accountID, const std::string & roomID);
 	bool isAccountNameExists(const std::string & displayName);
 	bool isAccountIDExists(const std::string & accountID);
+
+	void printPerformanceStatistics();
 };

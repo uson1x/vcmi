@@ -861,5 +861,13 @@ void LobbyServer::start(uint16_t port)
 
 void LobbyServer::run()
 {
+	onTimer();
 	networkHandler->run();
+}
+
+void LobbyServer::onTimer()
+{
+	static constexpr auto statisticsDumpInterval = std::chrono::milliseconds(24*60*60*1000);
+	database->printPerformanceStatistics();
+	networkHandler->createTimer(*this, statisticsDumpInterval);
 }

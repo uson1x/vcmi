@@ -777,3 +777,9 @@ std::string LobbyDatabase::getAccountGameRoom(const std::string & accountID)
 	getAccountGameRoomStatement->reset();
 	return result;
 }
+
+void LobbyDatabase::printPerformanceStatistics()
+{
+	timeTracker.dumpToLog();
+	database->printMemoryStats();
+}
