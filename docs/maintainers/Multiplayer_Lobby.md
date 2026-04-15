@@ -1,6 +1,6 @@
 # Multiplayer lobby
 
-- RAM requirements: ~1 GB (can be potentially reduced if we were to track down all un-indexed sqlite queries)
+- RAM requirements: 512 MB (may increase over time if lobby gets more active players)
 - CPU requirements: 1 core (preferrably dedicated to ensure low latency)
 - SSD requirements: up to 4 Gb (depending on log and database size over time)
 
@@ -13,7 +13,7 @@ Exposed to public as:
 - Start: `cd /home/lobby && nohup sudo -u lobby /usr/games/vcmilobby &`
 - Stop: `killall -9 vcmilobby`
 - Examine database (can be done live): `sqlite3 /home/lobby/.local/share/vcmi/vcmiLobby.db`
-- Examine log file: `tail -n 100 home/lobby/cache/vcmi/VCMI_Lobby_log.txt`
+- Examine log file: `tail -n 100 /home/lobby/cache/vcmi/VCMI_Lobby_log.txt`
 
 ## Setup
 
@@ -21,7 +21,7 @@ Preparation:
 
 - Generate .deb package with lobby binaries. Currently we have "Build VCMI Lobby" job in CI that does this. Produced .deb file needs to be uploaded to server
 - Create dump of existing SQL database: `sqlite3 /home/lobby/local/share/vcmi/vcmiLobby.db ".backup 'vcmiLobbyBak.db'"`. Optionally it can be compressed via `gzip vcmiLobbyBak.db`
-- Copy database dump on new server, and decompress it if needed via `gunzip vcmiLobbyBak.db`
+- Copy database dump on new server, and decompress it if needed via `gunzip vcmiLobbyBak.db.gz`
 
 Once preparation is done, run the following commands:
 
@@ -46,7 +46,7 @@ cd /home/lobby && nohup sudo -u lobby /usr/games/vcmilobby &
 ### Upgrade
 
 - Generate and upload new .deb package
-- Shut down old version of lobby
+- Shut down old version of lobby: `killall -9 vcmilobby`
 - Install new .deb package via `apt install ./vcmi-lobby.deb`
 - Generate empty database with new schema: `sqlite3 "schema.db" < "/usr/share/vcmi/config/lobby.sql"`
 - Compare old and new databases `sqldiff --schema vcmiLobby.db schema.db > upgrade.sql`
