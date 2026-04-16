@@ -1026,12 +1026,21 @@ void CCastleBuildings::enterBlacksmith(BuildingID building, ArtifactID artifactI
 
 	int price = art->getPrice();
 	bool possible = GAME->interface()->cb->getResourceAmount(EGameResID::GOLD) >= price;
+	ArtifactID existingArtifact;
 	if(possible)
 	{
 		for(auto slot : art->getPossibleSlots().at(ArtBearer::HERO))
 		{
-			if(hero->getArt(slot) == nullptr || hero->getArt(slot)->getTypeId() != artifactID)
+			const auto * currentArtifact = hero->getArt(slot);
+
+			if(currentArtifact == nullptr)
 			{
+				possible = true;
+				break;
+			}
+			else if (currentArtifact->getTypeId() != artifactID)
+			{
+				existingArtifact = currentArtifact->getTypeId();
 				possible = true;
 				break;
 			}
@@ -1042,8 +1051,7 @@ void CCastleBuildings::enterBlacksmith(BuildingID building, ArtifactID artifactI
 		}
 	}
 
-	CreatureID creatureID = artifactID.toArtifact()->getWarMachine();
-	ENGINE->windows().createAndPushWindow<CBlacksmithDialog>(possible, creatureID, artifactID, hero->id);
+	ENGINE->windows().createAndPushWindow<CBlacksmithDialog>(possible, artifactID, existingArtifact, hero->id);
 }
 
 void CCastleBuildings::enterBuilding(BuildingID building)
@@ -2346,7 +2354,7 @@ void CMageGuildScreen::Scroll::hover(bool on)
 
 }
 
-CBlacksmithDialog::CBlacksmithDialog(bool possible, CreatureID creMachineID, ArtifactID aid, ObjectInstanceID hid):
+CBlacksmithDialog::CBlacksmithDialog(bool possible, ArtifactID aid, ArtifactID existingArtifact, ObjectInstanceID hid):
 	CWindowObject(PLAYER_COLORED, ImagePath::builtin("TPSMITH"))
 {
 	OBJECT_CONSTRUCTION;
@@ -2359,7 +2367,7 @@ CBlacksmithDialog::CBlacksmithDialog(bool possible, CreatureID creMachineID, Art
 	animBG = std::make_shared<CPicture>(ImagePath::builtin("TPSMITBK"), 64, 50);
 	animBG->needRefresh = true;
 
-	const CCreature * creature = creMachineID.toCreature();
+	const CCreature * creature = aid.toArtifact()->getWarMachine().toCreature();
 	anim = std::make_shared<CCreatureAnim>(64, 50, creature->animDefName);
 	anim->clipRect(113,125,200,150);
 
@@ -2384,7 +2392,25 @@ CBlacksmithDialog::CBlacksmithDialog(bool possible, CreatureID creMachineID, Art
 	cancel = std::make_shared<CButton>(Point(224, 312), AnimationPath::builtin("ICANCEL.DEF"), CButton::tooltip(cancelText.toString()), [&](){ close(); }, EShortcut::GLOBAL_CANCEL);
 
 	if(possible)
-		buy->addCallback([=](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); });
+	{
+		if (existingArtifact.hasValue())
+		{
+			MetaString message;
+			message.appendTextID("vcmi.townWindow.blacksmith.replaceWarMachine");
+			message.replaceName(existingArtifact);
+			message.replaceName(aid);
+
+			buy->addCallback([=](){
+				GAME->interface()->showYesNoDialog(
+					message.toString(),
+					[&](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); },
+					nullptr);
+			});
+
+		}
+		else
+			buy->addCallback([=](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); });
+	}
 	else
 		buy->block(true);
 
