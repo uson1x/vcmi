@@ -37,7 +37,16 @@ QString ModState::getType() const
 
 QString ModState::getDescription() const
 {
-	return QString::fromStdString(impl.getLocalizedValue("description").String());
+	QString description = QString::fromStdString(impl.getLocalizedDescription().String());
+
+	if (Qt::mightBeRichText(description))
+	{
+		QTextDocument document;
+		document.setHtml(description);
+		description = document.toMarkdown();
+	}
+
+	return description;
 }
 
 QString ModState::getID() const
