@@ -1131,7 +1131,7 @@ void CCastleBuildings::enterFountain(const BuildingID & building, BuildingSubID:
 		|| (upgrades != BuildingID::NONE
 			&& town->getTown()->buildings.find(BuildingID(upgrades))->second->subId == BuildingSubID::MYSTIC_POND);
 
-	if(upgrades != BuildingID::NONE)
+	if(upgrades != BuildingID::NONE && upgrades != building)
 		descr += "\n\n"+town->getTown()->buildings.find(BuildingID(upgrades))->second->getDescriptionTranslated();
 
 	if(isMysticPondOrItsUpgrade) //for vanila Rampart like towns
