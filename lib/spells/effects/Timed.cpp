@@ -31,7 +31,7 @@ namespace spells
 namespace effects
 {
 
-static void describeEffect(std::vector<MetaString> & log, const Mechanics * m, const std::vector<Bonus> & bonuses, const battle::Unit * target, const std::string & battleLogMessage)
+static void describeEffect(std::vector<MetaString> & log, const Mechanics * m, const std::vector<Bonus> & bonuses, const battle::Unit * target, const std::string & battleLogMessageSingular, const std::string & battleLogMessagePlural)
 {
 	for(const auto & bonus : bonuses)
 	{
@@ -54,10 +54,13 @@ static void describeEffect(std::vector<MetaString> & log, const Mechanics * m, c
 		}
 	}
 
-	if(!battleLogMessage.empty())
+	if(!battleLogMessagePlural.empty())
 	{
 		MetaString line;
-		line.appendTextID(battleLogMessage);
+		if(!battleLogMessageSingular.empty() && target->getCount() == 1)
+			line.appendTextID(battleLogMessageSingular);
+		else
+			line.appendTextID(battleLogMessagePlural);
 		target->addNameReplacement(line, boost::logic::indeterminate);
 		log.push_back(std::move(line));
 	}
@@ -105,7 +108,7 @@ void Timed::apply(ServerCallback * server, const Mechanics * m, const EffectTarg
 			continue;
 
 		if(describe)
-			describeEffect(blm.lines, m, converted, affected, battleLogMessage);
+			describeEffect(blm.lines, m, converted, affected, battleLogMessageSingular, battleLogMessagePlural);
 
 
 		//Apply hero specials - peculiar enchants
@@ -213,11 +216,19 @@ void Timed::serializeJsonUnitEffect(JsonSerializeFormat & handler)
 	handler.serializeBool("cumulative", cumulative, false);
 	{
 		const JsonNode & messageNode = handler.getCurrent()["battleLogMessage"];
-		if(!messageNode.String().empty())
+		if(messageNode.isStruct())
 		{
-			TextIdentifier textID("spell", spellScope, spellIdentifier, name, "battleLogMessage");
-			LIBRARY->generaltexth->registerString(spellScope, textID, messageNode);
-			battleLogMessage = textID.get();
+			auto resolveField = [&](const std::string & field) -> std::string
+			{
+				const std::string & value = messageNode[field].String();
+				if(value.empty())
+					return {};
+				if(value.at(0) == '@')
+					return value.substr(1);
+				return TextIdentifier("spell", spellScope, spellIdentifier, name, "battleLogMessage", field).get();
+			};
+			battleLogMessageSingular = resolveField("singular");
+			battleLogMessagePlural = resolveField("plural");
 		}
 	}
 	{
