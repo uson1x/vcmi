@@ -227,24 +227,24 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 		std::vector<StatRow> stats;
 
 		stats.push_back({tr("vcmi.wiki.creature.stat.level"),   std::to_string(creature->getLevel())});
-		stats.push_back({tr("vcmi.wiki.creature.stat.attack"),  std::to_string(creature->getBaseAttack())});
-		stats.push_back({tr("vcmi.wiki.creature.stat.defense"), std::to_string(creature->getBaseDefense())});
+		stats.push_back({tr("core.genrltxt.190"),  std::to_string(creature->getBaseAttack())});
+		stats.push_back({tr("core.genrltxt.191"), std::to_string(creature->getBaseDefense())});
 
 		const int dmgMin = creature->getBaseDamageMin();
 		const int dmgMax = creature->getBaseDamageMax();
 		if(dmgMin == dmgMax)
-			stats.push_back({tr("vcmi.wiki.creature.stat.damage"), std::to_string(dmgMin)});
+			stats.push_back({tr("core.genrltxt.199"), std::to_string(dmgMin)});
 		else
-			stats.push_back({tr("vcmi.wiki.creature.stat.damage"), std::to_string(dmgMin) + " \xe2\x80\x93 " + std::to_string(dmgMax)});
+			stats.push_back({tr("core.genrltxt.199"), std::to_string(dmgMin) + " - " + std::to_string(dmgMax)});
 
-		stats.push_back({tr("vcmi.wiki.creature.stat.speed"),     std::to_string(creature->getBaseSpeed())});
-		stats.push_back({tr("vcmi.wiki.creature.stat.hitpoints"), std::to_string(creature->getBaseHitPoints())});
-		stats.push_back({tr("vcmi.wiki.creature.stat.growth"),    std::to_string(creature->getGrowth())});
+		stats.push_back({tr("core.genrltxt.193"),     std::to_string(creature->getBaseSpeed())});
+		stats.push_back({tr("core.help.439.help"), std::to_string(creature->getBaseHitPoints())});
+		stats.push_back({tr("core.genrltxt.194"),    std::to_string(creature->getGrowth())});
 
 		if(creature->getBaseShots() > 0)
 			stats.push_back({tr("vcmi.wiki.creature.stat.shots"),      std::to_string(creature->getBaseShots())});
 		if(creature->getBaseSpellPoints() > 0)
-			stats.push_back({tr("vcmi.wiki.creature.stat.spellpoints"), std::to_string(creature->getBaseSpellPoints())});
+			stats.push_back({tr("core.genrltxt.387"), std::to_string(creature->getBaseSpellPoints())});
 		if(creature->getHorde() > 0)
 			stats.push_back({tr("vcmi.wiki.creature.stat.hordegrowth"), std::to_string(creature->getHorde())});
 		if(creature->isDoubleWide())
@@ -367,10 +367,10 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 					rel->getNameSingularTranslated()));
 
 				// Clickable overlay: left-click → navigate, right-click → CStackWindow
-				const std::string relName = rel->getNameSingularTranslated();
+				const std::string relJsonKey = rel->getJsonKey();
 				std::function<void()> lclick;
 				if(navigateCallback)
-					lclick = [navigateCallback, relName](){ navigateCallback(relName); };
+					lclick = [navigateCallback, relJsonKey](){ navigateCallback(relJsonKey); };
 				const CreatureID relId(rel->getIndex());
 				widgets.push_back(std::make_shared<ClickablePortrait>(
 					Point(MARGIN, curY), tableW, rowH,

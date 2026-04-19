@@ -874,7 +874,7 @@ void CStackWindow::keyPressed(EShortcut key)
 	if(key == EShortcut::ADVENTURE_OPEN_WIKI && info->creature)
 		ENGINE->windows().createAndPushWindow<WikiWindow>(
 			WikiWindow::Style::BROWN,
-			WikiEntryKey{WikiCategory::CREATURE, info->creature->getNameSingularTranslated()});
+			WikiEntryKey{WikiCategory::CREATURE, info->creature->getJsonKey()});
 }
 
 void CStackWindow::initBonusesList()

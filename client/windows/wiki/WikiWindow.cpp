@@ -321,7 +321,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
 				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				categoryEntries[iGlossary].push_back({ name, desc, std::nullopt });
+				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt });
 			}
 		}
 		catch(const std::exception &) {} // file absent → empty glossary
@@ -337,7 +337,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		for(const auto & faction : LIBRARY->townh->objects)
 			if(faction && faction->hasTown() && !faction->special)
 				categoryEntries[iTown].push_back({
-					faction->getNameTranslated(), "",
+					faction->getJsonKey(), faction->getNameTranslated(), "",
 					WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt }
 				});
 		std::sort(categoryEntries[iTown].begin(), categoryEntries[iTown].end(),
@@ -350,7 +350,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		for(const auto & hero : LIBRARY->heroh->objects)
 			if(hero && !hero->special)
 				categoryEntries[iHero].push_back({
-					hero->getNameTranslated(), "",
+					hero->getJsonKey(), hero->getNameTranslated(), "",
 					WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt }
 				});
 		std::sort(categoryEntries[iHero].begin(), categoryEntries[iHero].end(),
@@ -372,7 +372,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			const bool isWM = warMachineCreatures.count(CreatureID(creature->getIndex())) > 0;
 			if(!creature->special || isWM)
 				categoryEntries[iCreature].push_back({
-					creature->getNameSingularTranslated(), "",
+					creature->getJsonKey(), creature->getNameSingularTranslated(), "",
 					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt }
 				});
 		}
@@ -386,6 +386,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		for(const auto & artifact : LIBRARY->arth->objects)
 			if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
 				categoryEntries[iArtifact].push_back({
+					artifact->getJsonKey(),
 					artifact->getNameTranslated(),
 					artifact->getDescriptionTranslated(),
 					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt }
@@ -412,6 +413,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					}
 				}
 				categoryEntries[iSpell].push_back({
+					spell->getJsonKey(),
 					spell->getNameTranslated(), desc,
 					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt }
 				});
@@ -438,6 +440,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					}
 				}
 				categoryEntries[iSkill].push_back({
+					skill->getJsonKey(),
 					skill->getNameTranslated(), desc,
 					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt }
 				});
@@ -469,7 +472,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				std::string desc;
 				if(!nativeTowns.empty())
 					desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}\n\n" + nativeTowns;
-				categoryEntries[iTerrain].push_back({ terrain->getNameTranslated(), desc, colorIcon });
+				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon });
 			}
 		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -495,7 +498,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		searchBoxHint = std::make_shared<CLabel>(
 			sbRect.center().x, sbRect.center().y,
 			FONT_SMALL, ETextAlignment::CENTER, sbHintColor,
-			LIBRARY->generaltexth->translate("vcmi.wiki.search.hint"));
+			LIBRARY->generaltexth->translate("vcmi.spellBook.search"));
 		searchBox = std::make_shared<CTextInput>(
 			sbRect, FONT_SMALL, ETextAlignment::CENTER, false);
 		searchBox->setCallback([this](const std::string &) { onSearchInput(); });
@@ -546,10 +549,10 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	backButton = std::make_shared<CButton>(
 		Point(COL1_X, CLOSE_Y),
 		AnimationPath::builtin(style == Style::BLUE ? "buttonBlue80" : "settingsWindow/button80"),
-		CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.wiki.button.back")),
+		CButton::tooltip("", LIBRARY->generaltexth->translate("core.help.561.hover")),
 		std::bind(&WikiWindow::navigateBack, this));
 	backButton->setOverlay(std::make_shared<CLabel>(0, 0, FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
-		LIBRARY->generaltexth->translate("vcmi.wiki.button.back")));
+		LIBRARY->generaltexth->translate("core.help.561.hover")));
 	backButton->disable(); // hidden until there is history to go back to
 
 	// Apply scroll-wheel bounds after center() so pos is finalised
@@ -768,21 +771,21 @@ void WikiWindow::updateContent()
 	{
 		if(useTownViewport)
 		{
-			const std::string & townName = currentDisplayedEntries[activeElementIndex].name;
-			if(townName != currentTownName)
-				rebuildTownViewport(townName);
+			const std::string & townIdentifier = currentDisplayedEntries[activeElementIndex].identifier;
+			if(townIdentifier != currentTownName)
+				rebuildTownViewport(townIdentifier);
 		}
 		else if(useCreatureViewport)
 		{
-			const std::string & creName = currentDisplayedEntries[activeElementIndex].name;
-			if(creName != currentCreatureName)
-				rebuildCreatureViewport(creName);
+			const std::string & creatureIdentifier = currentDisplayedEntries[activeElementIndex].identifier;
+			if(creatureIdentifier != currentCreatureName)
+				rebuildCreatureViewport(creatureIdentifier);
 		}
 		else if(useHeroViewport)
 		{
-			const std::string & heroName = currentDisplayedEntries[activeElementIndex].name;
-			if(heroName != currentHeroName)
-				rebuildHeroViewport(heroName);
+			const std::string & heroIdentifier = currentDisplayedEntries[activeElementIndex].identifier;
+			if(heroIdentifier != currentHeroName)
+				rebuildHeroViewport(heroIdentifier);
 		}
 
 		redraw();
@@ -823,16 +826,16 @@ void WikiWindow::updateContent()
 	contentBox->setText(text);
 }
 
-void WikiWindow::rebuildTownViewport(const std::string & factionName)
+void WikiWindow::rebuildTownViewport(const std::string & factionIdentifier)
 {
-	currentTownName = factionName;
+	currentTownName = factionIdentifier;
 	townContentWidgets.clear();
 
-	// Look up the faction by translated name
+	// Look up the faction by JSON key
 	const CFaction * faction = nullptr;
 	for(const auto & f : LIBRARY->townh->objects)
 	{
-		if(f && f->hasTown() && !f->special && f->getNameTranslated() == factionName)
+		if(f && f->hasTown() && !f->special && f->getJsonKey() == factionIdentifier)
 		{
 			faction = f.get();
 			break;
@@ -869,16 +872,16 @@ void WikiWindow::rebuildTownViewport(const std::string & factionName)
 	applyScrollBounds();
 }
 
-void WikiWindow::rebuildCreatureViewport(const std::string & creatureName)
+void WikiWindow::rebuildCreatureViewport(const std::string & creatureIdentifier)
 {
-	currentCreatureName = creatureName;
+	currentCreatureName = creatureIdentifier;
 	creatureContentWidgets.clear();
 
-	// Look up the creature by translated name
+	// Look up the creature by JSON key
 	const CCreature * creature = nullptr;
 	for(const auto & c : LIBRARY->creh->objects)
 	{
-		if(c && c->getNameSingularTranslated() == creatureName)
+		if(c && c->getJsonKey() == creatureIdentifier)
 		{
 			creature = c.get();
 			break;
@@ -917,16 +920,16 @@ void WikiWindow::rebuildCreatureViewport(const std::string & creatureName)
 	ENGINE->windows().totalRedraw();
 }
 
-void WikiWindow::rebuildHeroViewport(const std::string & heroName)
+void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 {
-	currentHeroName = heroName;
+	currentHeroName = heroIdentifier;
 	heroContentWidgets.clear();
 
-	// Look up the hero by translated name
+	// Look up the hero by JSON key
 	const CHero * hero = nullptr;
 	for(const auto & h : LIBRARY->heroh->objects)
 	{
-		if(h && h->getNameTranslated() == heroName)
+		if(h && h->getJsonKey() == heroIdentifier)
 		{
 			hero = h.get();
 			break;
@@ -985,7 +988,7 @@ void WikiWindow::onElementClicked(int index)
 		&& activeElementIndex < (int)currentDisplayedEntries.size())
 	{
 		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
-		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].name});
+		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].identifier});
 	}
 	if(backButton)
 		backButton->setEnabled(!navHistory.empty());
@@ -1016,7 +1019,7 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		&& activeElementIndex < (int)currentDisplayedEntries.size())
 	{
 		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
-		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].name});
+		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].identifier});
 	}
 	if(backButton)
 		backButton->setEnabled(!navHistory.empty());
@@ -1033,10 +1036,10 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		categoryList->scrollTo(activeCategoryIndex);
 	}
 
-	// Find the entry by name and select it
+	// Find the entry by identifier and select it
 	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
 	{
-		if(currentDisplayedEntries[i].name == key.entryName)
+		if(currentDisplayedEntries[i].identifier == key.entryName)
 		{
 			activeElementIndex = i;
 			if(elementList)
@@ -1093,7 +1096,7 @@ void WikiWindow::navigateBack()
 
 	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
 	{
-		if(currentDisplayedEntries[i].name == prev.entryName)
+		if(currentDisplayedEntries[i].identifier == prev.entryName)
 		{
 			activeElementIndex = i;
 			if(elementList)

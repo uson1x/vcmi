@@ -1686,7 +1686,7 @@ void CCastleInterface::keyPressed(EShortcut key)
 	case EShortcut::ADVENTURE_OPEN_WIKI:
 		ENGINE->windows().createAndPushWindow<WikiWindow>(
 			WikiWindow::Style::BROWN,
-			WikiEntryKey{WikiCategory::TOWN, town->getTown()->faction->getNameTranslated()});
+			WikiEntryKey{WikiCategory::TOWN, town->getTown()->faction->getJsonKey()});
 		break;
 	default:
 		break;

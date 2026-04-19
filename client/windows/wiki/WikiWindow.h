@@ -47,9 +47,10 @@ struct WikiIconInfo
 	std::optional<ColorRGBA> colorFill; ///< drawn as solid square when set (no CAnimImage)
 };
 
-/// A single wiki entry – name (translated), optional description and optional icon
+/// A single wiki entry – identifier (JSON key), name (translated), optional description and optional icon
 struct WikiEntry
 {
+	std::string identifier;   ///< unique entity identifier / JSON key (used for lookup)
 	std::string name;         ///< translated display name (shown in list)
 	std::string description;  ///< full description; empty = show auto-stub text
 	std::optional<WikiIconInfo> icon;
@@ -96,7 +97,7 @@ public:
 struct WikiEntryKey
 {
 	WikiCategory category; ///< Which category tab to open
-	std::string entryName; ///< Translated display name of the entry (used for lookup)
+	std::string entryName; ///< Entity identifier / JSON key (used for lookup, not a translated string)
 };
 
 /// In-game Glossary / Wiki - 800x600 stub window

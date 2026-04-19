@@ -192,7 +192,7 @@ void CHeroWindow::keyPressed(EShortcut key)
 	if(key == EShortcut::ADVENTURE_OPEN_WIKI)
 		ENGINE->windows().createAndPushWindow<WikiWindow>(
 			WikiWindow::Style::BROWN,
-			WikiEntryKey{WikiCategory::HERO, curHero->getNameTranslated()});
+			WikiEntryKey{WikiCategory::HERO, curHero->getHeroType()->getJsonKey()});
 }
 
 void CHeroWindow::updateArtifacts()

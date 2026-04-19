@@ -343,7 +343,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			widgets.push_back(std::make_shared<CLabel>(
 				MARGIN + iconW + CELL_L, curY + CELL_T,
 				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
-				LIBRARY->generaltexth->translate("vcmi.wiki.hero.column.creature")));
+				LIBRARY->generaltexth->translate("core.genrltxt.42")));
 			widgets.push_back(std::make_shared<CLabel>(
 				MARGIN + iconW + nameW + CELL_L, curY + CELL_T,
 				FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
@@ -508,8 +508,8 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 				std::function<void()> lclick;
 				if(navigateCallback)
 				{
-					const std::string spName = sp->getNameTranslated();
-					lclick = [navigateCallback, spName](){ navigateCallback(WikiCategory::SPELL, spName); };
+					const std::string spId = sp->getJsonKey();
+					lclick = [navigateCallback, spId](){ navigateCallback(WikiCategory::SPELL, spId); };
 				}
 				const CSpell * spPtr = sp;
 				widgets.push_back(std::make_shared<HeroWikiClickable>(

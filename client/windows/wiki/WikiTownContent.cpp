@@ -677,10 +677,10 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				std::function<void()> lclick;
 				if(navigateCallback)
 				{
-					const std::string crName = row.creature->getNameSingularTranslated();
-					lclick = [navigateCallback, crName]()
+					const std::string crId = row.creature->getJsonKey();
+					lclick = [navigateCallback, crId]()
 					{
-						navigateCallback(WikiCategory::CREATURE, crName);
+						navigateCallback(WikiCategory::CREATURE, crId);
 					};
 				}
 				const CCreature * crPtr = row.creature;
@@ -798,10 +798,10 @@ curY += 8; // extra padding above section title
 					std::function<void()> lclick;
 					if(navigateCallback)
 					{
-						const std::string hname = h->getNameTranslated();
-						lclick = [navigateCallback, hname]()
+						const std::string heroJsonKey = h->getJsonKey();
+						lclick = [navigateCallback, heroJsonKey]()
 						{
-							navigateCallback(WikiCategory::HERO, hname);
+							navigateCallback(WikiCategory::HERO, heroJsonKey);
 						};
 					}
 					const HeroTypeID hId = h->getId();
