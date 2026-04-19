@@ -2,6 +2,6 @@
 	"basepath" : "",
 	"images" :
 	[
-		{ "frame" : 0, "file" : "null.png" }
+		{ "frame" : 0, "file" : "default.pcx" }
 	]
 }

@@ -56,7 +56,7 @@ namespace scripting
 class DLL_LINKAGE GameLibrary final : public Services
 {
 public:
-	enum GameDataMode
+	enum class GameDataMode
 	{
 		SOD,
 		ROE,

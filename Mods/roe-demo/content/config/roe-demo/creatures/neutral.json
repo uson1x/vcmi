@@ -15,12 +15,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:crystalDragon" :
@@ -29,12 +29,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:fairieDragon" :
@@ -43,12 +43,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:rustDragon" :
@@ -57,12 +57,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:enchanter" :
@@ -71,12 +71,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:sharpshooter" :
@@ -90,12 +90,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:boar" :
@@ -104,12 +104,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:halfling" :
@@ -118,12 +118,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:mummy" :
@@ -132,12 +132,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:nomad" :
@@ -146,12 +146,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:peasant" :
@@ -160,12 +160,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:rogue" :
@@ -174,12 +174,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:catapult" :

@@ -6,12 +6,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:sprite" :
@@ -21,12 +21,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:stormElemental" :
@@ -35,12 +35,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:psychicElemental" :
@@ -50,12 +50,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:magicElemental" :
@@ -65,12 +65,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:iceElemental" :
@@ -79,12 +79,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:magmaElemental" :
@@ -93,11 +93,11 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:energyElemental" :
@@ -106,12 +106,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:firebird" :
@@ -120,12 +120,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	},
 	"core:phoenix" :
@@ -134,12 +134,12 @@
 		"graphics" : null,
 		"sound" :
 		{
-			"attack": "null.wav",
-			"defend": "null.wav",
-			"killed": "null.wav",
-			"move": "null.wav",
-			"shoot": "null.wav",
-			"wince": "null.wav"
+			"attack": "default.wav",
+			"defend": "default.wav",
+			"killed": "default.wav",
+			"move": "default.wav",
+			"shoot": "default.wav",
+			"wince": "default.wav"
 		}
 	}
 }
