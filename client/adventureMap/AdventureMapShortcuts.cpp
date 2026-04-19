@@ -102,6 +102,7 @@ std::vector<AdventureMapShortcutState> AdventureMapShortcuts::getShortcuts()
 		{ EShortcut::ADVENTURE_QUICK_LOAD,       optionQuickSaveLoad(),  [this]() { this->quickLoadGame(); } },
 		{ EShortcut::ADVENTURE_RESTART_GAME,     optionInMapView(),      [this]() { this->restartGame(); } },
 		{ EShortcut::ADVENTURE_DIG_GRAIL,        optionHeroDig(),        [this]() { this->digGrail(); } },
+		{ EShortcut::ADVENTURE_REPLAY_TURN,      optionInMapView(),      [this]() { this->replayTurn(); } },
 		{ EShortcut::ADVENTURE_VIEW_PUZZLE,      optionSidePanelActive(),[this]() { this->viewPuzzleMap(); } },
 		{ EShortcut::ADVENTURE_VISIT_OBJECT,     optionCanVisitObject(), [this]() { this->visitObject(); } },
 		{ EShortcut::ADVENTURE_VIEW_SELECTED,    optionInMapView(),      [this]() { this->openObject(); } },
@@ -393,6 +394,11 @@ void AdventureMapShortcuts::digGrail()
 
 	if(h && GAME->interface()->makingTurn)
 		GAME->interface()->tryDigging(h);
+}
+
+void AdventureMapShortcuts::replayTurn()
+{
+	GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.adventureMap.replayOpponentTurnNotImplemented"));
 }
 
 void AdventureMapShortcuts::viewPuzzleMap()

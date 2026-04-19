@@ -1145,7 +1145,7 @@ AssetGenerator::AnimationLayoutMap AssetGenerator::createAdventureOptionsButton(
     AnimationLayoutMap layout;
     for(int i = 0; i < 4; i++)
     {
-        ImagePath spriteName = ImagePath::builtin("adventureOptionsCleanButton" + std::to_string(i) + ".png");
+        ImagePath spriteName = ImagePath::builtin("adventureOptionsButton_" + overlay.getName() + "_" + std::to_string(i) + ".png");
 
         imageFiles[spriteName] = [baseImg, overlay, i](){
             auto sourceFrame = baseImg->getImage(i);
