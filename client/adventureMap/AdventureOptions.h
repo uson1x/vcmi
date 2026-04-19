@@ -9,7 +9,6 @@
  */
 #pragma once
 
-#include <functional>
 #include "../windows/CWindowObject.h"
 #include "../gui/Shortcut.h"
 #include "../../lib/filesystem/ResourcePath.h"

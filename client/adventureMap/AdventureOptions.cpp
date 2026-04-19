@@ -97,12 +97,12 @@ AdventureOptions::AdventureOptions()
 
 	// Restore persisted scroll position
 	const int savedScroll = settings["adventure"]["optionsScrollPos"].Integer();
-	const int initScroll  = std::clamp(savedScroll, 0, std::max(0, (int)allEntries.size() - MAX_VISIBLE));
+	const int initScroll  = std::clamp(savedScroll, 0, std::max(0, static_cast<int>(allEntries.size()) - MAX_VISIBLE));
 
 	rebuildVisibleButtons(initScroll, enhanced);
 
 	// Scrollbar – only when there are more buttons than fit
-	if((int)allEntries.size() > MAX_VISIBLE)
+	if(static_cast<int>(allEntries.size()) > MAX_VISIBLE)
 	{
 		const int sliderY      = 24;
 		const int sliderLength = 282;
@@ -117,7 +117,7 @@ AdventureOptions::AdventureOptions()
 				rebuildVisibleButtons(val, enhanced);
 			},
 			MAX_VISIBLE,
-			(int)allEntries.size(),
+			static_cast<int>(allEntries.size()),
 			initScroll,
 			Orientation::VERTICAL,
 			CSlider::BROWN);
@@ -137,7 +137,7 @@ void AdventureOptions::rebuildVisibleButtons(int scrollPos, bool enhanced)
 	OBJECT_CONSTRUCTION;
 
 	const int from = scrollPos;
-	const int to   = std::min(from + MAX_VISIBLE, (int)allEntries.size());
+	const int to   = std::min(from + MAX_VISIBLE, static_cast<int>(allEntries.size()));
 
 	for(int i = from; i < to; ++i)
 	{
