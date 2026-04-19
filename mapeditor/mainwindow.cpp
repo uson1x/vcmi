@@ -1623,6 +1623,7 @@ void EditorMainWindow::on_actionPaste_triggered()
 
 void EditorMainWindow::on_actionExport_triggered()
 {
+	QString selectedFilter;
 #ifdef VCMI_ANDROID
 	// On Android, ask for image format before opening the SAF file picker so
 	// we can pass the correct MIME type and file extension.
@@ -1648,7 +1649,6 @@ void EditorMainWindow::on_actionExport_triggered()
 		AndroidFilePicker::Mode::ExternalOnly, contentUri);
 #else
 	QString imgFormat;
-	QString selectedFilter;
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir, "BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)", &selectedFilter);
 #endif
  
@@ -1937,4 +1937,3 @@ void EditorMainWindow::on_toolSelect_toggled(bool checked)
 		ui->tabWidget->setCurrentIndex(0);
 	}
 }
-
