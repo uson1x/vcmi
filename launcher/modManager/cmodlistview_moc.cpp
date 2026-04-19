@@ -161,10 +161,28 @@ CModListView::CModListView(QWidget * parent)
 #endif
 }
 
+bool CModListView::isDemoDataPresent()
+{
+	// Use CResourceHandler so LOD archives are also checked (same as firstlaunch_moc.cpp and EntryPoint.cpp)
+	bool hasFullData = CResourceHandler::get()->existsResource(ResourcePath("DATA/TENTCOLR.TXT"));
+	if (hasFullData)
+		return false;
+
+	return CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M"));
+}
+
+void CModListView::showEvent(QShowEvent * event)
+{
+	QWidget::showEvent(event);
+	filterModel->reloadFilter();
+}
+
 void CModListView::reload(const QString & modToSelect)
 {
 	modStateModel->reloadLocalState();
 	modModel->reloadViewModel();
+
+	filterModel->reloadFilter();
 
 	if (!modToSelect.isEmpty())
 	{

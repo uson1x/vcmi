@@ -692,7 +692,7 @@ BattlePhases::Type CUnitState::battleQueuePhase(int turn) const
 		else
 			return BattlePhases::WAIT;
 	}
-	else if(creatureIndex() == CreatureID::CATAPULT || isTurret()) //catapult and turrets are first
+	else if(isCatapult() || isTurret()) //catapult and turrets are first
 	{
 		return BattlePhases::SIEGE;
 	}

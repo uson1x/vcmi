@@ -102,6 +102,7 @@ class CModFilterModel final : public QSortFilterProxyModel
 
 public:
 	void setTypeFilter(ModFilterMask filterMask);
+	void reloadFilter() { invalidateFilter(); }
 
 	CModFilterModel(ModStateItemModel * model, QObject * parent = nullptr);
 };

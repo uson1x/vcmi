@@ -58,7 +58,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		buttonOptions = std::make_shared<CButton>(Point(411, 510), AnimationPath::builtin("GSPBUTT.DEF"), LIBRARY->generaltexth->zelp[46], std::bind(&CLobbyScreen::toggleTab, this, tabOpt), EShortcut::LOBBY_ADDITIONAL_OPTIONS);
 		if(settings["general"]["enableUiEnhancements"].Bool())
 		{
-			if(screenType == ESelectionScreen::newGame)
+			if(screenType == ESelectionScreen::newGame && !ENGINE->isDemoData())
 				buttonBattleMode = std::make_shared<CButton>(Point(619, 105), AnimationPath::builtin("GSPButton2Arrow"), CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyMode.help")), [this](){
 					updateAfterStateChange(); // creates tabBattleOnlyMode -> cannot created by init of object because GAME->server().isGuest() isn't valid at that point
 					toggleTab(tabBattleOnlyMode);
@@ -69,8 +69,11 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 
 	if(screenType != ESelectionScreen::campaignList)
 	{
-		buttonChat = std::make_shared<CButton>(Point(619, 80), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[48], std::bind(&CLobbyScreen::toggleChat, this), EShortcut::LOBBY_TOGGLE_CHAT);
-		buttonChat->setTextOverlay(LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
+		if(!ENGINE->isRoeData())
+		{
+			buttonChat = std::make_shared<CButton>(Point(619, 80), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[48], std::bind(&CLobbyScreen::toggleChat, this), EShortcut::LOBBY_TOGGLE_CHAT);
+			buttonChat->setTextOverlay(LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
+		}
 	}
 
 	switch(screenType)
@@ -78,17 +81,21 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 	case ESelectionScreen::newGame:
 	{
 		tabOpt = std::make_shared<OptionsTab>();
-		tabTurnOptions = std::make_shared<TurnOptionsTab>();
+		if(!ENGINE->isRoeData())
+			tabTurnOptions = std::make_shared<TurnOptionsTab>();
 		tabExtraOptions = std::make_shared<ExtraOptionsTab>();
 		tabRand = std::make_shared<RandomMapTab>();
 		tabRand->mapInfoChanged += std::bind(&IServerAPI::setMapInfo, &GAME->server(), _1, _2);
-		buttonRMG = std::make_shared<CButton>(Point(411, 105), AnimationPath::builtin("GSPBUTT.DEF"), LIBRARY->generaltexth->zelp[47], 0, EShortcut::LOBBY_RANDOM_MAP);
-		buttonRMG->addCallback([this]()
+		if(!ENGINE->isRoeData())
 		{
-			toggleTab(tabRand);
-			if (getMapInfo() && !getMapInfo()->isRandomMap)
-				tabRand->updateMapInfoByHost();
-		});
+			buttonRMG = std::make_shared<CButton>(Point(411, 105), AnimationPath::builtin("GSPBUTT.DEF"), LIBRARY->generaltexth->zelp[47], 0, EShortcut::LOBBY_RANDOM_MAP);
+			buttonRMG->addCallback([this]()
+			{
+				toggleTab(tabRand);
+				if (getMapInfo() && !getMapInfo()->isRandomMap)
+					tabRand->updateMapInfoByHost();
+			});
+		}
 
 		card->iconDifficulty->addCallback(std::bind(&IServerAPI::setDifficulty, &GAME->server(), _1));
 
@@ -99,7 +106,8 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 	case ESelectionScreen::loadGame:
 	{
 		tabOpt = std::make_shared<OptionsTab>();
-		tabTurnOptions = std::make_shared<TurnOptionsTab>();
+		if(!ENGINE->isRoeData())
+			tabTurnOptions = std::make_shared<TurnOptionsTab>();
 		tabExtraOptions = std::make_shared<ExtraOptionsTab>();
 		buttonStart = std::make_shared<CButton>(Point(411, 535), AnimationPath::builtin("SCNRLOD.DEF"), LIBRARY->generaltexth->zelp[103], std::bind(&CLobbyScreen::start, this, false), EShortcut::LOBBY_LOAD_GAME);
 		initLobby();

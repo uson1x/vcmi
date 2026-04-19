@@ -97,7 +97,8 @@ public:
 
 	void loadObject(std::string scope, std::string name, const JsonNode & data, size_t index) override
 	{
-		assert(objects[index] == nullptr); // ensure that this id was not loaded before
+		if(objects[index] != nullptr)
+			logMod->debug("Replacing existing object at index %d with '%s'", index, name); // required for war machines in demo (uses ids from conflux creatures)
 		objects[index] = loadFromJson(scope, data, name, index);
 		registerObject(scope, getTypeNames(), name, data, index);
 	}

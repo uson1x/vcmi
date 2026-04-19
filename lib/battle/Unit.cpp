@@ -11,6 +11,7 @@
 
 #include "Unit.h"
 
+#include "../CCreatureHandler.h"
 #include "../GameLibrary.h"
 #include "../texts/CGeneralTextHandler.h"
 
@@ -36,6 +37,26 @@ bool Unit::isDead() const
 bool Unit::isTurret() const
 {
 	return creatureIndex() == CreatureID::ARROW_TOWERS;
+}
+
+bool Unit::isCatapult() const
+{
+	return unitType()->warMachine == ArtifactID::CATAPULT;
+}
+
+bool Unit::isBallista() const
+{
+	return unitType()->warMachine == ArtifactID::BALLISTA;
+}
+
+bool Unit::isFirstAidTent() const
+{
+	return unitType()->warMachine == ArtifactID::FIRST_AID_TENT;
+}
+
+bool Unit::isAmmoCart() const
+{
+	return unitType()->warMachine == ArtifactID::AMMO_CART;
 }
 
 bool Unit::isMeleeAttacker() const

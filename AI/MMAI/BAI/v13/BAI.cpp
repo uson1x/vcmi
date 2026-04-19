@@ -169,7 +169,7 @@ bool BAI::maybeCastSpell(const CStack * astack, const BattleID & bid)
 
 std::shared_ptr<BattleAction> BAI::maybeBuildAutoAction(const CStack * astack, const BattleID & bid) const
 {
-	if(astack->creatureId() == CreatureID::FIRST_AID_TENT)
+	if(astack->isFirstAidTent())
 	{
 		const CStack * target = nullptr;
 		auto maxdmg = 0;
@@ -187,7 +187,7 @@ std::shared_ptr<BattleAction> BAI::maybeBuildAutoAction(const CStack * astack, c
 			return std::make_shared<BattleAction>(BattleAction::makeHeal(astack, target));
 		}
 	}
-	else if(astack->creatureId() == CreatureID::CATAPULT)
+	else if(astack->isCatapult())
 	{
 		if(!astack->canShoot())
 			// out of ammo
@@ -221,7 +221,7 @@ std::shared_ptr<BattleAction> BAI::maybeBuildAutoAction(const CStack * astack, c
 		// no walls left
 		return std::make_shared<BattleAction>(BattleAction::makeDefend(astack)); // out of ammo (arrow towers have 99 shots)
 	}
-	else if(astack->creatureId() == CreatureID::ARROW_TOWERS)
+	else if(astack->isTurret())
 	{
 		if(!astack->canShoot())
 			// out of ammo (arrow towers have 99 shots)

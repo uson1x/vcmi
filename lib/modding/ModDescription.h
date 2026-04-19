@@ -63,6 +63,7 @@ public:
 	bool affectsGameplay() const;
 	bool isCompatibility() const;
 	bool isTranslation() const;
+	bool isDemoSupport() const;
 	bool keepDisabled() const;
 	bool isInstalled() const;
 

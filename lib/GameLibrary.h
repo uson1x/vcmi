@@ -56,6 +56,14 @@ namespace scripting
 class DLL_LINKAGE GameLibrary final : public Services
 {
 public:
+	enum class GameDataMode
+	{
+		SOD,
+		ROE,
+		DEMO_SOD,
+		DEMO_ROE
+	};
+
 	const ArtifactService * artifacts() const override;
 	const CreatureService * creatures() const override;
 	const FactionService * factions() const override;
@@ -117,7 +125,17 @@ public:
 	/// Loads all game entities
 	void initializeLibrary();
 
+	/// Returns current game data mode
+	GameDataMode getGameDataMode() const;
+
+	/// Returns true if game is running with RoE data files (either full or demo)
+	bool isRoeData() const;
+
+	/// Returns true if game is running with demo data files
+	bool isDemoData() const;
+
 private:
+	GameDataMode gameDataMode = GameDataMode::SOD;
 	// basic initialization. should be called before init(). Can also extract original H3 archives
 	void loadFilesystem(bool extractArchives);
 	void loadModFilesystem();
