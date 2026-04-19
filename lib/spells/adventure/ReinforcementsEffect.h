@@ -1,5 +1,5 @@
 /*
- * TownPortalEffect.h, part of VCMI engine
+ * ReinforcementsEffect.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -16,23 +16,20 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 class CGTownInstance;
 
-class DLL_LINKAGE TownPortalEffect final : public spells::adventure::TownRelatedAdventureSpellEffect
+class DLL_LINKAGE ReinforcementsEffect final : public spells::adventure::TownRelatedAdventureSpellEffect
 {
-	int movementPointsRequired;
-	int movementPointsTaken;
+	std::string casterInTownTextID;
+	std::string selectTownTitleTextID;
+	std::string selectTownDescriptionTextID;
+	std::string garrisonTitleTextID;
 
 public:
-	TownPortalEffect(const CSpell * s, const JsonNode & config);
-
-	int getMovementPointsRequired() const { return movementPointsRequired; }
-	bool townSelectionAllowed() const { return allowTownSelection; }
+	ReinforcementsEffect(const CSpell * s, const JsonNode & config);
 
 private:
-	bool shouldOfferTownInDialog(const CGTownInstance * town) const override;
 	void configureDialogTitleAndDescription(MetaString & title, MetaString & description) const override;
 	ESpellCastResult beginCastExtraChecks(SpellCastEnvironment * env, const AdventureSpellCastParameters & parameters, const std::vector<const CGTownInstance *> & towns) const override;
 	ESpellCastResult applyAdventureEffects(SpellCastEnvironment * env, const AdventureSpellCastParameters & parameters) const override;
-	void endCast(SpellCastEnvironment * env, const AdventureSpellCastParameters & parameters) const override;
 };
 
 VCMI_LIB_NAMESPACE_END
