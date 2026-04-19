@@ -3,7 +3,7 @@
 	{
 		"town" :
 		{
-			"musicTheme" : [ "music/null" ],
+			"musicTheme" : [ "music/default" ],
 			"structures" :
 			{
 				"mageGuild1":     { "campaignBonus" : "null" },

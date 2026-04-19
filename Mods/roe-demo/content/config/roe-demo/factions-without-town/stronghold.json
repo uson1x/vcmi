@@ -48,7 +48,7 @@
 				"dwellingUpLvl6": { "animation" : "null", "x" : 616, "y" : 93, "z" : -2, "border" : "null", "area" : "null", "campaignBonus" : "null" },
 				"dwellingUpLvl7": { "animation" : "null", "x" : 604, "y" : 0, "border" : "null", "area" : "null", "campaignBonus" : "null" }
 			},
-			"musicTheme" : [ "music/null" ],
+			"musicTheme" : [ "music/default" ],
 			"guildBackground" : "null",
 			"townBackground": "null",
 			"guildWindow": "null",
