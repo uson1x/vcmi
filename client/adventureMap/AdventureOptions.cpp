@@ -21,13 +21,15 @@
 #include "../gui/Shortcut.h"
 #include "../widgets/Buttons.h"
 
+#include "../../lib/CConfigHandler.h"
 #include "../../lib/GameLibrary.h"
 #include "../../lib/StartInfo.h"
 #include "../../lib/callback/CCallback.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
+#include "../widgets/TextControls.h"
 
 AdventureOptions::AdventureOptions()
-	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("ADVOPTS"))
+	: CWindowObject(PLAYER_COLORED, settings["general"]["enableUiEnhancements"].Bool() ? ImagePath::builtin("AdventureOptionsBackground") : ImagePath::builtin("ADVOPTS"))
 {
 	OBJECT_CONSTRUCTION;
 
@@ -50,6 +52,21 @@ AdventureOptions::AdventureOptions()
 	replay->addCallback([]{ GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.adventureMap.replayOpponentTurnNotImplemented")); });
 
 	exit = std::make_shared<CButton>(Point(203, 313), AnimationPath::builtin("IOK6432.DEF"), CButton::tooltip(), std::bind(&AdventureOptions::close, this), EShortcut::GLOBAL_RETURN);
+
+	if(settings["general"]["enableUiEnhancements"].Bool())
+	{
+		const std::array<std::string, 5> keys = {
+			"vcmi.adventureOptions.viewWorld",
+			"vcmi.adventureOptions.puzzle",
+			"vcmi.adventureOptions.dig",
+			"vcmi.adventureOptions.scenarioInfo",
+			"vcmi.adventureOptions.replayTurn"
+		};
+		const int margin = 5;
+		const int bgX = 78, bgY = 25, bgW = 189, bgH = 48, bgStep = 58;
+		for(int i = 0; i < 5; ++i)
+			buttonLabels.push_back(std::make_shared<CMultiLineLabel>(Rect(bgX + margin, bgY + i * bgStep + margin, bgW - 2 * margin, bgH - 2 * margin), FONT_MEDIUM, ETextAlignment::CENTERLEFT, Colors::YELLOW, LIBRARY->generaltexth->translate(keys[i])));
+	}
 }
 
 void AdventureOptions::showScenarioInfo()

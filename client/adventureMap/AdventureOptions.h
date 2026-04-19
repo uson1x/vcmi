@@ -12,6 +12,8 @@
 #include "../windows/CWindowObject.h"
 
 class CButton;
+class CLabel;
+class CMultiLineLabel;
 
 /// Adventure options dialog where you can view the world, dig, play the replay of the last turn,...
 class AdventureOptions : public CWindowObject
@@ -22,6 +24,8 @@ class AdventureOptions : public CWindowObject
 	std::shared_ptr<CButton> dig;
 	std::shared_ptr<CButton> scenInfo;
 	std::shared_ptr<CButton> replay;
+
+	std::vector<std::shared_ptr<CMultiLineLabel>> buttonLabels;
 
 public:
 	AdventureOptions();

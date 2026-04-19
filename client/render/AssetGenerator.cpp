@@ -102,6 +102,12 @@ void AssetGenerator::initialize()
 
 	imageFiles[ImagePath::builtin("heroSlotsBlue.png")] = [this](){ return createHeroSlotsColored(PlayerColor(1));};
 
+	for (PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		std::string name = "AdventureOptionsBackground" + (color == -1 ? "" : "-" + color.toString());
+		imageFiles[ImagePath::builtin(name)] = [this, color](){ return createAdventureOptionsBackground(std::max(PlayerColor(0), color));};
+	}
+
 	createPaletteShiftedSprites();
 }
 
@@ -1107,6 +1113,27 @@ AssetGenerator::CanvasPtr AssetGenerator::createHeroSlotsColored(PlayerColor bac
 	for(int x = 0; x<7; x++)
 		for(int y = 0; y<2; y++)
 			canvas.draw(img, Point(x * 36, 130 + y * 36), Rect(3, 75, 36, 36));
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createAdventureOptionsBackground(PlayerColor color) const
+{
+	auto locator = ImageLocator(ImagePath::builtin("ADVOPTS"), EImageBlitMode::COLORKEY);
+	std::shared_ptr<IImage> img = ENGINE->renderHandler().loadImage(locator);
+	img->playerColored(color);
+
+	std::shared_ptr<IImage> backgroundImg = ENGINE->renderHandler().loadImage(ImageLocator(ImagePath::builtin("DiBoxBck"), EImageBlitMode::OPAQUE));
+	backgroundImg->adjustPalette(ColorFilter::genRangeShifter(0.f, 0.f, 0.f, 0.75f, 0.75f, 0.75f), 0); //darken
+
+	auto image = ENGINE->renderHandler().createImage(img->dimensions(), CanvasScalingPolicy::IGNORE);
+	Canvas canvas = image->getCanvas();
+	canvas.draw(img, Point(0, 0));
+
+	Point backgroundSize(189, 48);
+	for(int i = 0; i<5; i++)
+		for(int x = 0; x < backgroundSize.x; x += backgroundImg->width())
+			canvas.draw(backgroundImg, Point(78 + x, 25 + i * 58), Rect(0, 0, std::min(backgroundImg->width(), backgroundSize.x - x), std::min(backgroundImg->height(), backgroundSize.y)));
 
 	return image;
 }
