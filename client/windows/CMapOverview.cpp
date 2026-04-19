@@ -19,8 +19,8 @@
 #include "../widgets/MiscWidgets.h"
 #include "../widgets/TextControls.h"
 #include "../widgets/Slider.h"
-#include "../windows/GUIClasses.h"
-#include "../windows/InfoWindows.h"
+#include "GUIClasses.h"
+#include "InfoWindows.h"
 #include "../render/CanvasImage.h"
 #include "../render/IImage.h"
 #include "../render/IRenderHandler.h"
@@ -221,7 +221,8 @@ CMapOverviewWidget::CMapOverviewWidget(CMapOverview& parent):
 	{
 		if(p.date.empty())
 		{
-			std::time_t time = boost::filesystem::last_write_time(*CResourceHandler::get()->getResourceName(ResourcePath(p.resource.getName(), p.tabType == ESelectionScreen::campaignList ? EResType::CAMPAIGN : EResType::MAP)));
+			ResourcePath path(p.resource.getName(), p.tabType == ESelectionScreen::campaignList ? EResType::CAMPAIGN : EResType::MAP);
+			std::time_t time = CResourceHandler::get()->getLastWriteTime(path);
 			w->setText(TextOperations::getFormattedDateTimeLocal(time));
 		}
 		else

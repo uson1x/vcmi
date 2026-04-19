@@ -141,6 +141,9 @@ void TemplateEditor::autoPositionZones()
 {
 	auto & zones = templates[selectedTemplate]->getZones();
 
+	if (zones.empty())
+		return;
+
 	std::vector<GeometryAlgorithm::Node> nodes;
 	std::default_random_engine rng(0);
 	std::uniform_real_distribution<double> distX(0.0, 500);
@@ -155,10 +158,13 @@ void TemplateEditor::autoPositionZones()
 	}
 	std::vector<GeometryAlgorithm::Edge> edges;
 	for(auto & item : templates[selectedTemplate]->getConnectedZoneIds())
-		edges.push_back({
-			vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneA(); }),
-			vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneB(); })
-		});
+	{
+		const auto from = vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneA(); });
+		const auto to = vstd::find_pos_if(nodes, [item](auto & elem){ return elem.id == item.getZoneB(); });
+		if (from >= nodes.size() || to >= nodes.size())
+			continue;
+		edges.push_back({from, to});
+	}
 		
 	GeometryAlgorithm::forceDirectedLayout(nodes, edges, 1000, 500, 500);
 
@@ -179,7 +185,7 @@ void TemplateEditor::loadContent(bool autoPosition)
 		return;
 
 	auto & zones = templates[selectedTemplate]->getZones();
-	if(autoPosition || std::all_of(zones.begin(), zones.end(), [](auto & item){ return item.second->getVisiblePosition().x == 0 && item.second->getVisiblePosition().y == 0; }))
+	if(!zones.empty() && (autoPosition || std::all_of(zones.begin(), zones.end(), [](auto & item){ return item.second->getVisiblePosition().x == 0 && item.second->getVisiblePosition().y == 0; })))
 		autoPositionZones();
 
 	for(auto & zone : zones)
@@ -435,6 +441,8 @@ void TemplateEditor::loadZoneMenuContent(bool onlyPosition)
 
 void TemplateEditor::loadZoneConnectionMenuContent()
 {
+	updateConnectionAddButton();
+
 	auto widget = ui->tableWidgetConnections;
 	auto & connections = templates[selectedTemplate]->connections;
 
@@ -514,6 +522,12 @@ void TemplateEditor::loadZoneConnectionMenuContent()
 		widget->setCellWidget(i, 5, delButton);
 	};
 	widget->resizeColumnsToContents();
+}
+
+void TemplateEditor::updateConnectionAddButton()
+{
+	const bool canAddConnection = templates.count(selectedTemplate) && templates[selectedTemplate]->getZones().size() >= 2;
+	ui->pushButtonConnectionAdd->setEnabled(canAddConnection);
 }
 
 void TemplateEditor::saveZoneMenuContent()
@@ -1208,8 +1222,20 @@ void TemplateEditor::on_checkBoxAllowedWaterContentIslands_stateChanged(int stat
 
 void TemplateEditor::on_pushButtonConnectionAdd_clicked()
 {
+	const auto & zones = templates[selectedTemplate]->getZones();
+	if (zones.size() < 2)
+	{
+		QMessageBox::warning(this, tr("Too few zones"), tr("Create at least two zones before adding a connection."));
+		return;
+	}
+
 	auto & connections = templates[selectedTemplate]->connections;
-	connections.push_back(rmg::ZoneConnection());
+	rmg::ZoneConnection connection;
+	auto zoneIt = zones.begin();
+	connection.zoneA = zoneIt->first;
+	++zoneIt;
+	connection.zoneB = zoneIt->first;
+	connections.push_back(connection);
 	loadZoneConnectionMenuContent();
 }
 

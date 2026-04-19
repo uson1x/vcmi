@@ -787,7 +787,7 @@ bool BattleActionsController::actionIsLegal(PossiblePlayerBattleAction action, c
 				if(!owner.getBattle()->battleCanShoot(currentStack, targetHex))
 					return false;
 
-				if(owner.getBattle()->battleCanTargetEmptyHex(currentStack))
+				if((targetStack == nullptr || targetStack->isInvincible()) && owner.getBattle()->battleCanTargetEmptyHex(currentStack))
 				{
 					auto spellLikeAttackBonus = currentStack->getBonus(Selector::type()(BonusType::SPELL_LIKE_ATTACK));
 					const CSpell * spellDataToCheck = spellLikeAttackBonus->subtype.as<SpellID>().toSpell();

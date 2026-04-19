@@ -99,6 +99,7 @@ public:
 public:
 	MapView(QWidget * parent);
 	void setController(MapController *);
+	void resetInteractionState();
 
 	SelectionTool selectionTool;
 

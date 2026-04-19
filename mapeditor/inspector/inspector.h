@@ -14,16 +14,16 @@
 #include <QTableWidgetItem>
 #include <QStyledItemDelegate>
 #include "baseinspectoritemdelegate.h"
-#include "../lib/int3.h"
-#include "../lib/GameConstants.h"
-#include "../lib/mapObjects/CGCreature.h"
-#include "../lib/mapObjects/CGResource.h"
-#include "../lib/mapObjects/CQuest.h"
-#include "../lib/mapObjects/MapObjects.h"
-#include "../lib/mapObjects/FlaggableMapObject.h"
-#include "../lib/mapObjects/CRewardableObject.h"
-#include "../lib/texts/CGeneralTextHandler.h"
-#include "../lib/ResourceSet.h"
+#include "../../lib/int3.h"
+#include "../../lib/GameConstants.h"
+#include "../../lib/mapObjects/CGCreature.h"
+#include "../../lib/mapObjects/CGResource.h"
+#include "../../lib/mapObjects/CQuest.h"
+#include "../../lib/mapObjects/MapObjects.h"
+#include "../../lib/mapObjects/FlaggableMapObject.h"
+#include "../../lib/mapObjects/CRewardableObject.h"
+#include "../../lib/texts/CGeneralTextHandler.h"
+#include "../../lib/ResourceSet.h"
 
 VCMI_LIB_USING_NAMESPACE
 

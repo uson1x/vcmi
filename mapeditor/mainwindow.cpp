@@ -420,6 +420,7 @@ EditorMainWindow::EditorMainWindow(QWidget* parent) :
 			
 			mapLevel = combo->currentIndex();
 			ui->mapView->setScene(controller.scene(mapLevel));
+			ui->mapView->resetInteractionState();
 			ui->mapView->setViewports();
 			ui->minimapView->setScene(controller.miniScene(mapLevel));
 		});
@@ -461,6 +462,7 @@ EditorMainWindow::EditorMainWindow(QWidget* parent) :
 	
 	ui->mapView->setScene(controller.scene(0));
 	ui->mapView->setController(&controller);
+	ui->mapView->resetInteractionState();
 	ui->mapView->setOptimizationFlags(QGraphicsView::DontSavePainterState | QGraphicsView::DontAdjustForAntialiasing);
 	connect(ui->mapView, &MapView::openObjectProperties, this, &EditorMainWindow::loadInspector);
 	connect(ui->mapView, &MapView::currentCoordinates, this, &EditorMainWindow::currentCoordinatesChanged);
@@ -562,6 +564,7 @@ void EditorMainWindow::initializeMap(bool isNew)
 
 	mapLevel = 0;
 	ui->mapView->setScene(controller.scene(mapLevel));
+	ui->mapView->resetInteractionState();
 	ui->minimapView->setScene(controller.miniScene(mapLevel));
 	ui->minimapView->dimensions();
 	if(initialScale.isValid())
@@ -752,12 +755,12 @@ void EditorMainWindow::on_menuOpenRecent_aboutToShow()
 	}
 }
 
-void EditorMainWindow::saveMap()
+void MainWindow::saveMap(bool force)
 {
 	if(!controller.map())
 		return;
 
-	if(!unsaved)
+	if(!force && !unsaved)
 		return;
 	
 	//validate map
@@ -836,7 +839,7 @@ void EditorMainWindow::on_actionSave_as_triggered()
 
 	filename = filenameSelect;
 
-	saveMap();
+	saveMap(true);
 
 #ifdef VCMI_ANDROID
 	if(!contentUri.isEmpty())
@@ -1645,20 +1648,38 @@ void EditorMainWindow::on_actionExport_triggered()
 		AndroidFilePicker::Mode::ExternalOnly, contentUri);
 #else
 	QString imgFormat;
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir, "BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)");
+	QString selectedFilter;
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir, "BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)", &selectedFilter);
 #endif
+ 
 	if(!fileName.isNull())
 	{
+		QFileInfo fileInfo(fileName);
+		if(fileInfo.suffix().isEmpty())
+		{
+			QString extension;
+			if(selectedFilter.contains("*.bmp", Qt::CaseInsensitive))
+				extension = "bmp";
+			else if(selectedFilter.contains("*.jpeg", Qt::CaseInsensitive))
+				extension = "jpeg";
+			else if(selectedFilter.contains("*.png", Qt::CaseInsensitive))
+				extension = "png";
+
+			if(!extension.isEmpty())
+				fileName += "." + extension;
+		}
+		lastSavingDir = QFileInfo(fileName).dir().path();
+
 		auto * sc = static_cast<MapScene*>(ui->mapView->scene());
 		if(!sc)
 			return;
-		
+
 		QRectF sceneRect = sc->sceneRect();
-		
+
 		// Temporarily set viewport to full map for export
 		for (auto * layer : sc->getDynamicLayers())
 			layer->setViewport(sceneRect);
-		
+
 		QImage image(sceneRect.size().toSize(), QImage::Format_RGB888);
 		QPainter painter(&image);
 		sc->render(&painter, QRectF(), sceneRect);
@@ -1668,7 +1689,16 @@ void EditorMainWindow::on_actionExport_triggered()
 #else
 			imgFormat.toLatin1();
 #endif
-		image.save(fileName, imgFormatBytes.isEmpty() ? nullptr : imgFormatBytes.constData());
+    const bool saved = image.save(fileName, imgFormatBytes.isEmpty() ? nullptr : imgFormatBytes.constData());
+
+		// Restore viewport to visible area
+		ui->mapView->setViewports();
+
+		if(!saved)
+		{
+			QMessageBox::critical(this, tr("Failed to save image"), tr("Cannot save image to %1.").arg(fileName));
+			return;
+		}
 		
 		// Restore viewport to visible area
 		ui->mapView->setViewports();
