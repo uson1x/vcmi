@@ -71,6 +71,7 @@ private:
 	AnimationLayoutMap createGSPButton2Arrow();
 	CanvasPtr createGateListColored(PlayerColor color, PlayerColor backColor) const;
 	CanvasPtr createHeroSlotsColored(PlayerColor backColor) const;
+	CanvasPtr createStackArtifactIndicator(const Point & size) const;
 
 	CanvasPtr createAdventureOptionsBackground(PlayerColor color) const;
 

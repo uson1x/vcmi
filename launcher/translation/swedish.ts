@@ -377,7 +377,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="870"/>
         <source>Extracting content.zip (%1/%2) for %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Extraherar innehåll.zip (%1/%2) för %3</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="877"/>
@@ -719,7 +719,7 @@ Exklusivt helskärmsläge - spelet täcker hela skärmen och använder den valda
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="437"/>
         <source>Full mod extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Fullständig extrahering av modd</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="593"/>
@@ -2233,35 +2233,44 @@ VARNING: I vissa fall kanske uppdaterade versioner av moddar inte är kompatibla
         <location filename="../startGame/StartGameTab.cpp" line="346"/>
         <source>If you own Heroes Chronicles on gog.com, you can use offline backup installers provided by gog to import Heroes Chronicles data into VCMI as custom campaigns.
 To import Heroes Chronicles, download offline backup installer of each chronicle that you wish to install, select &apos;Import files&apos; option and select downloaded file. This will generate and install mod for VCMI that contains imported chronicles.</source>
-        <translation type="unfinished"></translation>
+        <translation>Om du äger Heroes Chronicles på gog.com kan du använda de offline-installationsprogram som tillhandahålls av gog för att importera data från Heroes Chronicles till VCMI så som anpassade kampanjer.
+För att importera Heroes Chronicles laddar du ner offline-installationsprogrammet för varje krönika som du vill installera, väljer alternativet &apos;Importera filer&apos; och väljer den nedladdade filen. Detta genererar och installerar en modd för VCMI som innehåller de importerade krönikorna.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="359"/>
         <source>VCMI has detected that Heroes III music files are missing from your installation. VCMI will run, but in-game music will not be available.
 
 To resolve this problem, please copy missing mp3 files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI har upptäckt att musikfiler från Heroes III saknas i din installation. VCMI kommer att starta, men musiken i spelet kommer inte att fungera.
+
+För att lösa problemet behöver du kopiera de saknade mp3-filerna från Heroes III till VCMI:s datafils-mapp manuellt eller installera om VCMI och importera datafilerna från Heroes III på nytt.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="370"/>
         <source>VCMI has detected that Heroes III video files are missing from your installation. VCMI will run, but in-game cutscenes will not be available.
 
 To resolve this problem, please copy VIDEO.VID file from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI har upptäckt att videofiler från Heroes III saknas i din installation. VCMI kommer att starta, men mellansekvenserna i spelet kommer inte att fungera.
+
+För att lösa problemet behöver du kopiera filen VIDEO.VID från Heroes III till VCMI:s datakatalog manuellt eller installera om VCMI och importera Heroes III-datafilerna på nytt.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="381"/>
         <source>VCMI has detected that some of Heroes III data files are missing from your installation. You may attempt to run VCMI, but game may not work as expected or crash.
 
 To resolve this problem, please reinstall game and reimport data files using supported version of Heroes III. VCMI requires Heroes III: Shadow of Death or Complete Edition to run, which you can get (for example) from gog.com.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI har upptäckt att vissa datafiler för Heroes III saknas i din installation. Du kan försöka köra VCMI, men spelet kanske inte fungerar som förväntat eller så kan det krascha.
+
+För att lösa detta problem bör du installera om spelet och importera datafilerna på nytt med hjälp av en kompatibel version av Heroes III. VCMI kräver Heroes III: Shadow of Death eller Complete Edition för att fungera, vilket du kan hämta (till exempel) från gog.com.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="392"/>
         <source>VCMI has detected that some of Heroes III: Armageddon&apos;s Blade data files are missing from your installation. VCMI will work, but Armageddon&apos;s Blade campaigns will not be available.
 
 To resolve this problem, please copy missing data files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>VCMI har upptäckt att vissa datafiler för Heroes III: Armageddon&apos;s Blade saknas i din installation. VCMI fungerar, men kampanjerna i Armageddon&apos;s Blade kommer inte att vara tillgängliga.
+
+För att lösa detta problem behöver du kopiera de saknade datafilerna från Heroes III till VCMI:s datakatalog manuellt eller installera om VCMI och importera datafilerna från Heroes III på nytt.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="403"/>

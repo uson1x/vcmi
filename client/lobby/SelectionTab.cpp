@@ -19,6 +19,7 @@
 #include "../GameEngine.h"
 #include "../GameInstance.h"
 #include "../gui/Shortcut.h"
+#include "../gui/InterfaceObjectConfigurable.h"
 #include "../gui/WindowHandler.h"
 #include "../widgets/CComponent.h"
 #include "../widgets/Buttons.h"
@@ -49,6 +50,38 @@
 #include "../../lib/UnlockGuard.h"
 #include "../../lib/GameLibrary.h"
 #include "../../lib/json/JsonUtils.h"
+#include "../../lib/json/JsonNode.h"
+
+class ScenarioTabConfigurable : public InterfaceObjectConfigurable
+{
+public:
+	explicit ScenarioTabConfigurable(SelectionTab & owner)
+		: InterfaceObjectConfigurable()
+	{
+		addCallback("filterMapSize", [&owner](int filterIndex)
+		{
+			owner.filter(filterIndex, true);
+		});
+
+		build(JsonNode(JsonPath::builtin("config/widgets/scenarioTab.json")));
+	}
+
+	std::shared_ptr<CLabel> mapSizeFilterLabel() const
+	{
+		return widget<CLabel>("labelMapSizes");
+	}
+
+	void setMapSizeLabelVisible(bool visible) const
+	{
+		if(auto label = mapSizeFilterLabel())
+		{
+			if(visible)
+				label->enable();
+			else
+				label->disable();
+		}
+	}
+};
 
 bool mapSorter::operator()(const std::shared_ptr<ElementInfo> aaa, const std::shared_ptr<ElementInfo> bbb)
 {
@@ -182,15 +215,10 @@ SelectionTab::SelectionTab(ESelectionScreen Type)
 		pos = background->pos;
 		inputName = std::make_shared<CTextInput>(inputNameRect, Point(-32, -25), ImagePath::builtin("GSSTRIP.bmp"));
 		inputName->setFilterFilename();
-		labelMapSizes = std::make_shared<CLabel>(87, 62, FONT_SMALL, ETextAlignment::CENTER, Colors::YELLOW, LIBRARY->generaltexth->allTexts[510]);
 
-		// TODO: Global constants?
-		constexpr std::array sizes = {CMapHeader::MAP_SIZE_SMALL, CMapHeader::MAP_SIZE_MIDDLE, CMapHeader::MAP_SIZE_LARGE, CMapHeader::MAP_SIZE_XLARGE, 0};
-		constexpr std::array filterIconNmes = {"SCSMBUT.DEF", "SCMDBUT.DEF", "SCLGBUT.DEF", "SCXLBUT.DEF", "SCALBUT.DEF"};
-		constexpr std::array filterShortcuts = { EShortcut::MAPS_SIZE_S, EShortcut::MAPS_SIZE_M, EShortcut::MAPS_SIZE_L, EShortcut::MAPS_SIZE_XL, EShortcut::MAPS_SIZE_ALL };
-
-		for(int i = 0; i < 5; i++)
-			buttonsSortBy.push_back(std::make_shared<CButton>(Point(158 + 47 * i, 46), AnimationPath::builtin(filterIconNmes[i]), LIBRARY->generaltexth->zelp[54 + i], std::bind(&SelectionTab::filter, this, sizes[i], true), filterShortcuts[i]));
+		scenarioTabConfigurable = std::make_shared<ScenarioTabConfigurable>(*this);
+		addChild(scenarioTabConfigurable.get(), false);
+		scenarioTabConfigurable->setMapSizeLabelVisible(!CResourceHandler::get()->existsResource(AnimationPath::builtin("SCGTBUT.DEF")));
 
 		constexpr std::array xpos = {23, 55, 88, 121, 306, 339};
 		constexpr std::array sortIconNames = {"SCBUTT1.DEF", "SCBUTT2.DEF", "SCBUTCP.DEF", "SCBUTT3.DEF", "SCBUTT4.DEF", "SCBUTT5.DEF"};

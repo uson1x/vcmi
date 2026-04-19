@@ -281,7 +281,9 @@ set(lib_MAIN_SRCS
 	spells/adventure/AdventureSpellMechanics.cpp
 	spells/adventure/DimensionDoorEffect.cpp
 	spells/adventure/RemoveObjectEffect.cpp
+	spells/adventure/ReinforcementsEffect.cpp
 	spells/adventure/SummonBoatEffect.cpp
+	spells/adventure/TownRelatedAdventureSpellEffect.cpp
 	spells/adventure/TownPortalEffect.cpp
 	spells/adventure/ViewWorldEffect.cpp
 
@@ -757,6 +759,7 @@ set(lib_MAIN_HEADERS
 	spells/adventure/AdventureSpellEffect.h
 	spells/adventure/DimensionDoorEffect.h
 	spells/adventure/RemoveObjectEffect.h
+	spells/adventure/ReinforcementsEffect.h
 	spells/adventure/SummonBoatEffect.h
 	spells/adventure/TownPortalEffect.h
 	spells/adventure/ViewWorldEffect.h

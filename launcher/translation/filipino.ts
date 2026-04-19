@@ -463,6 +463,7 @@ Please report this issue to developers</source>
         <translation type="unfinished">
             <numerusform>Matagumpay na na-import ang %n mapa.</numerusform>
             <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message>
@@ -1213,7 +1214,13 @@ Before you can start playing, there are a few more steps to complete.
 Please remember that to use VCMI, you must own the original data files for Heroes® of Might and Magic® III: Complete or The Shadow of Death.
 
 Heroes® of Might and Magic® III HD is currently not supported!</source>
-        <translation type="unfinished">Salamat sa pag-install ng VCMI!\n\nBago ka magsimulang maglaro, may ilang hakbang pa na dapat gawin.\n\nPakitandaan na para magamit ang VCMI, dapat ay mayroon ka ng orihinal na data files para sa Heroes® of Might and Magic® III: Complete o The Shadow of Death.\n\nAng Heroes® of Might and Magic® III HD ay kasalukuyang hindi sinusuportahan!</translation>
+        <translation>Salamat sa pag-install ng VCMI!
+
+Bago ka magsimulang maglaro, may ilang hakbang pa na dapat gawin.
+
+Pakitandaan na para magamit ang VCMI, dapat ay mayroon ka ng orihinal na data files para sa Heroes® of Might and Magic® III: Complete o The Shadow of Death.
+
+Ang Heroes® of Might and Magic® III HD ay kasalukuyang hindi sinusuportahan!</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="215"/>
@@ -1495,6 +1502,7 @@ Exe (%n byte):
             <numerusform>SHA1 hash ng mga ibinigay na file:
 Exe (%n bytes):
 %1</numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -1507,6 +1515,7 @@ Bin (%n bytes):
             <numerusform>
 Lalagyan ng basurahan (%n byte):
 %1</numerusform>
+            <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
     </message>
@@ -2091,6 +2100,7 @@ Reason: %2</source>
         <translation type="unfinished">
             <numerusform>I-update ang %n mod</numerusform>
             <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -2100,6 +2110,7 @@ Reason: %2</source>
         <translation type="unfinished">
             <numerusform>Mga Kronika ng mga Bayani:
 Naka-install ang %n/%1</numerusform>
+            <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
     </message>

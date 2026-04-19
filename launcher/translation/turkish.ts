@@ -377,7 +377,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="870"/>
         <source>Extracting content.zip (%1/%2) for %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%3 için content.zip dosyası çıkarılıyor (%1/%2)</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="877"/>
@@ -718,7 +718,7 @@ Pencereli - oyun, ekranınızın bir kısmını kaplayan bir pencerede çalış�
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="437"/>
         <source>Full mod extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Modların tamamen çıkarılması</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="593"/>
@@ -2224,16 +2224,16 @@ UYARI: Bazı durumlarda güncellenen modlar mevcut kayıtlarla uyumlu olmayabili
         <source>If you own Heroes Chronicles on gog.com, you can use offline backup installers provided by gog to import Heroes Chronicles data into VCMI as custom campaigns.
 To import Heroes Chronicles, download offline backup installer of each chronicle that you wish to install, select &apos;Import files&apos; option and select downloaded file. This will generate and install mod for VCMI that contains imported chronicles.</source>
         <translation>Heroes Chronicles&apos;a gog.com üzerinden sahipseniz, gog&apos;un sağladığı çevrimdışı yedek yükleyicileri kullanarak Heroes Chronicles verilerini VCMI&apos;ye özel seferler olarak içe aktarabilirsiniz.
-Heroes Chronicles'ı içe aktarmak için yüklemek istediğiniz her chronicle görev serisi için çevrimdışı yükleyicisini indirin, 'Dosyaları içe aktar' seçeneğini seçin ve indirdiğiniz dosyayı gösterin. Bu, içe aktarılan chronicle görevlerini içeren bir VCMI modu oluşturup yükleyecektir</translation>
+Heroes Chronicles&apos;ı içe aktarmak için yüklemek istediğiniz her chronicle görev serisi için çevrimdışı yükleyicisini indirin, &apos;Dosyaları içe aktar&apos; seçeneğini seçin ve indirdiğiniz dosyayı gösterin. Bu, içe aktarılan chronicle görevlerini içeren bir VCMI modu oluşturup yükleyecektir.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="359"/>
         <source>VCMI has detected that Heroes III music files are missing from your installation. VCMI will run, but in-game music will not be available.
 
 To resolve this problem, please copy missing mp3 files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation>VCMI, kurulumunuzda Heroes III müzik dosyalarının eksik olduğunu tespit etti. VCMI çalışacak, ancak oyun içi müzik kullanılmayacak.
+        <translation>VCMI, kurulumunuzda Heroes III müzik dosyalarının eksik olduğunu tespit etti. VCMI çalışacak, ancak oyun içi müzikler duyulmayacaktır.
 
-Bu sorunu çözmek için oyunu yeniden yükleyin ve desteklenen bir Heroes III sürümü kullanarak veri dosyalarını yeniden içe aktarın. VCMI, çalışmak için Heroes III: Shadow of Death veya Complete Edition gerektirir (örneğin gog.com üzerinden edinebilirsiniz)</translation>
+Bu sorunu gidermek için lütfen eksik mp3 dosyalarını Heroes III&apos;ten VCMI veri dosyaları dizinine manuel olarak kopyalayın ya da VCMI&apos;ı yeniden yükleyip Heroes III veri dosyalarını yeniden içe aktarın.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="370"/>
@@ -2242,25 +2242,25 @@ Bu sorunu çözmek için oyunu yeniden yükleyin ve desteklenen bir Heroes III s
 To resolve this problem, please copy VIDEO.VID file from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
         <translation>VCMI, kurulumunuzda Heroes III video dosyalarının eksik olduğunu tespit etti. VCMI çalışacak, ancak ara sahneler oynatılamayacak.
 
-Bu sorunu çözmek için VIDEO.VID dosyasını Heroes III'ten VCMI veri dizinine elle kopyalayın veya VCMI'yi yeniden yükleyip Heroes III verilerini yeniden içe aktarın</translation>
+Bu sorunu çözmek için VIDEO.VID dosyasını Heroes III&apos;ten VCMI veri dizinine elle kopyalayın veya VCMI&apos;yi yeniden yükleyip Heroes III verilerini yeniden içe aktarın.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="381"/>
         <source>VCMI has detected that some of Heroes III data files are missing from your installation. You may attempt to run VCMI, but game may not work as expected or crash.
 
 To resolve this problem, please reinstall game and reimport data files using supported version of Heroes III. VCMI requires Heroes III: Shadow of Death or Complete Edition to run, which you can get (for example) from gog.com.</source>
-        <translation>VCMI, kurulumunuzda bazı Heroes III veri dosyalarının eksik olduğunu tespit etti. VCMI&apos;yi çalıştırmayı deneyebilirsiniz, ancak oyun beklenmedik şekilde çalışabilir veya çökebilir.
+        <translation>VCMI, kurulumunuzda bazı Heroes III veri dosyalarının eksik olduğunu tespit etti. VCMI&apos;yi çalıştırmayı deneyebilirsiniz, ancak oyun beklendiği gibi çalışmayabilir veya çökebilir.
 
-Bu sorunu çözmek için oyunu yeniden yükleyin ve desteklenen bir Heroes III sürümü kullanarak veri dosyalarını yeniden içe aktarın. VCMI, çalışmak için Heroes III: Shadow of Death veya Complete Edition gerektirir (örneğin gog.com üzerinden edinebilirsiniz)</translation>
+Bu sorunu gidermek için lütfen oyunu yeniden yükleyin ve Heroes III&apos;ün desteklenen bir sürümünü kullanarak veri dosyalarını yeniden içe aktarın. VCMI&apos;ın çalışması için Heroes III: Shadow of Death veya Complete Edition gereklidir; bu sürümleri (örneğin) gog.com adresinden edinebilirsiniz.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="392"/>
         <source>VCMI has detected that some of Heroes III: Armageddon&apos;s Blade data files are missing from your installation. VCMI will work, but Armageddon&apos;s Blade campaigns will not be available.
 
 To resolve this problem, please copy missing data files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation>VCMI, kurulumunuzda bazı Heroes III: Armageddon&apos;s Blade veri dosyalarının eksik olduğunu tespit etti. VCMI çalışacak, ancak Armageddon&apos;s Blade seferleri mevcut olmayacak.
+        <translation>VCMI, kurulumunuzda Heroes III: Armageddon&apos;s Blade&apos;e ait bazı veri dosyalarının eksik olduğunu tespit etti. VCMI çalışacaktır, ancak Armageddon&apos;s Blade senaryolarına erişilemeyecektir.
 
-Bu sorunu çözmek için eksik veri dosyalarını Heroes III'ten VCMI veri dizinine elle kopyalayın veya VCMI'yi yeniden yükleyip Heroes III verilerini yeniden içe aktarın</translation>
+Bu sorunu gidermek için lütfen eksik veri dosyalarını Heroes III&apos;ten VCMI veri dosyaları dizinine manuel olarak kopyalayın veya VCMI&apos;yi yeniden yükleyip Heroes III veri dosyalarını yeniden içe aktarın.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="403"/>
