@@ -755,7 +755,7 @@ void EditorMainWindow::on_menuOpenRecent_aboutToShow()
 	}
 }
 
-void MainWindow::saveMap(bool force)
+void EditorMainWindow::saveMap(bool force)
 {
 	if(!controller.map())
 		return;
