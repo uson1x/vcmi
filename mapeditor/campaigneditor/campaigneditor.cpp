@@ -18,13 +18,13 @@
 
 #include "../BitmapHandler.h"
 #include "../helper.h"
+#include "../editorfiledialog.h"
 
 #ifdef ENABLE_SINGLE_APP_BUILD
 using namespace MapEditor;
 #endif
 
 #ifdef VCMI_ANDROID
-#include "../androidfilepicker.h"
 #include <QAndroidJniObject>
 #include <QtAndroid>
 #endif
@@ -268,12 +268,7 @@ void CampaignEditor::on_actionOpen_triggered()
 	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
 	auto filter = tr("All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)");
 
-#ifdef VCMI_ANDROID
-	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, title, dir, filter,
-		AndroidFilePicker::Mode::InternalOrExternal);
-#else
-	auto filenameSelect = QFileDialog::getOpenFileName(this, title, dir, filter);
-#endif
+	auto filenameSelect = EditorFileDialog::getOpenFileName(this, title, dir, filter);
 	if(filenameSelect.isEmpty())
 		return;
 	
@@ -332,13 +327,8 @@ void CampaignEditor::on_actionSave_as_triggered()
 	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
 	auto filter = tr("VCMI campaigns (*.vcmp)");
 
-#ifdef VCMI_ANDROID
 	QString contentUri;
-	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, title, dir, filter,
-		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
-#else
-	auto filenameSelect = QFileDialog::getSaveFileName(this, title, dir, filter);
-#endif
+	auto filenameSelect = EditorFileDialog::getSaveFileName(this, title, dir, filter, contentUri);
 
 	if(filenameSelect.isNull())
 		return;
@@ -352,10 +342,7 @@ void CampaignEditor::on_actionSave_as_triggered()
 	saveCampaign();
 	setTitle();
 
-#ifdef VCMI_ANDROID
-	if(!contentUri.isEmpty())
-		AndroidFilePicker::writeFileToUri(filename, contentUri);
-#endif
+	EditorFileDialog::writeFileToUri(filename, contentUri);
 }
 
 void CampaignEditor::on_actionNew_triggered()

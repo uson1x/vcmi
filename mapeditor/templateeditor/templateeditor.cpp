@@ -21,9 +21,9 @@
 #include "GeometryAlgorithm.h"
 
 #include "../helper.h"
+#include "../editorfiledialog.h"
 
 #ifdef VCMI_ANDROID
-#include "../androidfilepicker.h"
 #include <QAndroidJniObject>
 #include <QtAndroid>
 #endif
@@ -783,12 +783,7 @@ void TemplateEditor::on_actionOpen_triggered()
 	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
 	auto filter = tr("VCMI templates(*.json)");
 
-#ifdef VCMI_ANDROID
-	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, title, dir, filter,
-		AndroidFilePicker::Mode::ExternalOnly);
-#else
-	auto filenameSelect = QFileDialog::getOpenFileName(this, title, dir, filter);
-#endif
+	auto filenameSelect = EditorFileDialog::getOpenFileName(this, title, dir, filter, /*externalOnly=*/true);
 	if(filenameSelect.isEmpty())
 		return;
 
@@ -807,15 +802,9 @@ void TemplateEditor::on_actionSave_as_triggered()
 	auto title = tr("Save template");
 	auto filter = tr("VCMI templates (*.json)");
 
-#ifdef VCMI_ANDROID
 	QString contentUri;
-	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, title,
-		QString(),
-		filter,
-		AndroidFilePicker::Mode::ExternalOnly, contentUri);
-#else
-	auto filenameSelect = QFileDialog::getSaveFileName(this, title, "", filter);
-#endif
+	auto filenameSelect = EditorFileDialog::getSaveFileName(this, title, QString(), filter,
+		contentUri, /*externalOnly=*/true);
 
 	if(filenameSelect.isNull())
 		return;
@@ -829,10 +818,7 @@ void TemplateEditor::on_actionSave_as_triggered()
 	saveTemplate();
 	setTitle();
 
-#ifdef VCMI_ANDROID
-	if(!contentUri.isEmpty())
-		AndroidFilePicker::writeFileToUri(filename, contentUri);
-#endif
+	EditorFileDialog::writeFileToUri(filename, contentUri);
 }
 
 void TemplateEditor::on_actionNew_triggered()

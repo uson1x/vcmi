@@ -58,10 +58,9 @@
 #ifdef ENABLE_TEMPLATE_EDITOR
 #include "templateeditor/templateeditor.h"
 #endif
+#include "editorfiledialog.h"
 
 #ifdef VCMI_ANDROID
-#include "androidfilepicker.h"
-
 #include <QAndroidJniObject>
 #include <QtAndroid>
 #include <QWindow>
@@ -659,13 +658,7 @@ void EditorMainWindow::on_actionOpen_triggered()
 	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
 	auto filter = tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)");
 
-#ifdef VCMI_ANDROID
-	auto filenameSelect = AndroidFilePicker::getOpenFileName(this, title,
-		dir + "/Maps", filter,
-		AndroidFilePicker::Mode::InternalOrExternal);
-#else
-	auto filenameSelect = QFileDialog::getOpenFileName(this, title, dir, filter);
-#endif
+	auto filenameSelect = EditorFileDialog::getOpenFileName(this, title, dir, filter);
 	if(filenameSelect.isEmpty())
 		return;
 	
@@ -818,15 +811,8 @@ void EditorMainWindow::on_actionSave_as_triggered()
 	auto title = tr("Save map");
 	auto filter = tr("VCMI maps (*.vmap)");
 
-#ifdef VCMI_ANDROID
 	QString contentUri;
-	auto filenameSelect = AndroidFilePicker::getSaveFileName(this, title,
-		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()) + "/Maps",
-		filter,
-		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
-#else
-	auto filenameSelect = QFileDialog::getSaveFileName(this, title, lastSavingDir, filter);
-#endif
+	auto filenameSelect = EditorFileDialog::getSaveFileName(this, title, lastSavingDir, filter, contentUri);
 
 	if(filenameSelect.isNull())
 		return;
@@ -841,10 +827,7 @@ void EditorMainWindow::on_actionSave_as_triggered()
 
 	saveMap(true);
 
-#ifdef VCMI_ANDROID
-	if(!contentUri.isEmpty())
-		AndroidFilePicker::writeFileToUri(filename, contentUri);
-#endif
+	EditorFileDialog::writeFileToUri(filename, contentUri);
 }
 
 void EditorMainWindow::on_actionCampaignEditor_triggered()
@@ -1624,6 +1607,7 @@ void EditorMainWindow::on_actionPaste_triggered()
 void EditorMainWindow::on_actionExport_triggered()
 {
 	QString selectedFilter;
+	QString contentUri;
 #ifdef VCMI_ANDROID
 	// On Android, ask for image format before opening the SAF file picker so
 	// we can pass the correct MIME type and file extension.
@@ -1637,16 +1621,14 @@ void EditorMainWindow::on_actionExport_triggered()
 	fmtBox.exec();
 
 	QString imgFilter;
-	QByteArray imgFormat;
+	QString imgFormat;
 	if     (fmtBox.clickedButton() == btnPng)  { imgFilter = "PNG (*.png)";   imgFormat = "PNG";  }
 	else if(fmtBox.clickedButton() == btnJpeg) { imgFilter = "JPEG (*.jpeg)"; imgFormat = "JPEG"; }
 	else if(fmtBox.clickedButton() == btnBmp)  { imgFilter = "BMP (*.bmp)";   imgFormat = "BMP";  }
 	else return;
 
-	QString contentUri;
-	QString fileName = AndroidFilePicker::getSaveFileName(this, tr("Save to image"), lastSavingDir,
-		imgFilter,
-		AndroidFilePicker::Mode::ExternalOnly, contentUri);
+	QString fileName = EditorFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir,
+		imgFilter, contentUri, /*externalOnly=*/true);
 #else
 	QString imgFormat;
 	QString fileName = QFileDialog::getSaveFileName(this, tr("Save to image"), lastSavingDir, "BMP (*.bmp);;JPEG (*.jpeg);;PNG (*.png)", &selectedFilter);
@@ -1683,13 +1665,8 @@ void EditorMainWindow::on_actionExport_triggered()
 		QImage image(sceneRect.size().toSize(), QImage::Format_RGB888);
 		QPainter painter(&image);
 		sc->render(&painter, QRectF(), sceneRect);
-		QByteArray imgFormatBytes = imgFormat.isEmpty() ? QByteArray{} :
-#ifdef VCMI_ANDROID
-			imgFormat;
-#else
-			imgFormat.toLatin1();
-#endif
-    const bool saved = image.save(fileName, imgFormatBytes.isEmpty() ? nullptr : imgFormatBytes.constData());
+		QByteArray imgFormatBytes = imgFormat.isEmpty() ? QByteArray{} : imgFormat.toLatin1();
+		const bool saved = image.save(fileName, imgFormatBytes.isEmpty() ? nullptr : imgFormatBytes.constData());
 
 		// Restore viewport to visible area
 		ui->mapView->setViewports();
@@ -1703,10 +1680,7 @@ void EditorMainWindow::on_actionExport_triggered()
 		// Restore viewport to visible area
 		ui->mapView->setViewports();
 
-#ifdef VCMI_ANDROID
-		if(!contentUri.isEmpty())
-			AndroidFilePicker::writeFileToUri(fileName, contentUri);
-#endif
+		EditorFileDialog::writeFileToUri(fileName, contentUri);
 	}
 }
 
@@ -1727,10 +1701,9 @@ void EditorMainWindow::on_actionh3m_converter_triggered()
 
 #ifdef VCMI_ANDROID
 	QString contentUri;
-	QString saveDirectory = AndroidFilePicker::getSaveFileName(this, tr("Choose directory to save converted maps"),
+	QString saveDirectory = EditorFileDialog::getSaveFileName(this, tr("Choose directory to save converted maps"),
 		QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string()) + "/Maps",
-		tr("Directory"),
-		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
+		tr("Directory"), contentUri);
 	if(saveDirectory.isEmpty())
 		return;
 	saveDirectory = QFileInfo(saveDirectory).absolutePath();
@@ -1766,25 +1739,15 @@ void EditorMainWindow::on_actionh3c_converter_triggered()
 	auto openTitle = tr("Select campaign to convert");
 	auto openFilter = tr("HoMM3 campaigns (*.h3c)");
 
-#ifdef VCMI_ANDROID
-	auto campaignFile = AndroidFilePicker::getOpenFileName(this, openTitle, dir, openFilter,
-		AndroidFilePicker::Mode::InternalOrExternal);
-#else
-	auto campaignFile = QFileDialog::getOpenFileName(this, openTitle, dir, openFilter);
-#endif
+	auto campaignFile = EditorFileDialog::getOpenFileName(this, openTitle, dir, openFilter);
 	if(campaignFile.isEmpty())
 		return;
 
 	auto saveTitle = tr("Select destination file");
 	auto saveFilter = tr("VCMI campaigns (*.vcmp)");
 
-#ifdef VCMI_ANDROID
 	QString contentUri;
-	auto campaignFileDest = AndroidFilePicker::getSaveFileName(this, saveTitle, dir, saveFilter,
-		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
-#else
-	auto campaignFileDest = QFileDialog::getSaveFileName(this, saveTitle, dir, saveFilter);
-#endif
+	auto campaignFileDest = EditorFileDialog::getSaveFileName(this, saveTitle, dir, saveFilter, contentUri);
 	if(campaignFileDest.isEmpty())
 		return;
 
@@ -1794,10 +1757,7 @@ void EditorMainWindow::on_actionh3c_converter_triggered()
 	auto campaign = Helper::openCampaignInternal(campaignFile);
 	Helper::saveCampaign(campaign, campaignFileDest);
 
-#ifdef VCMI_ANDROID
-	if(!contentUri.isEmpty())
-		AndroidFilePicker::writeFileToUri(campaignFileDest, contentUri);
-#endif
+	EditorFileDialog::writeFileToUri(campaignFileDest, contentUri);
 }
 
 void EditorMainWindow::on_actionLock_triggered()

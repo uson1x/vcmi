@@ -50,6 +50,7 @@ set(editor_SRCS
 		campaigneditor/startingbonus.cpp
 		campaigneditor/campaignview.cpp
 		androidfilepicker.cpp
+		editorfiledialog.cpp
 )
 if(ENABLE_TEMPLATE_EDITOR)
 	set(editor_SRCS
@@ -120,6 +121,7 @@ set(editor_HEADERS
 		campaigneditor/startingbonus.h
 		campaigneditor/campaignview.h
 		androidfilepicker.h
+		editorfiledialog.h
 )
 if(ENABLE_TEMPLATE_EDITOR)
 	set(editor_HEADERS

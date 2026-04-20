@@ -14,10 +14,7 @@
 #include "campaigneditor.h"
 
 #include "callback/EditorCallback.h"
-
-#ifdef VCMI_ANDROID
-#include "../androidfilepicker.h"
-#endif
+#include "../editorfiledialog.h"
 
 #include "../../lib/VCMIDirs.h"
 #include "../../lib/GameLibrary.h"
@@ -397,12 +394,7 @@ void ScenarioProperties::on_pushButtonImport_clicked()
 	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
 	auto filter = tr("All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)");
 
-#ifdef VCMI_ANDROID
-	auto filename = AndroidFilePicker::getOpenFileName(this, title, dir, filter,
-		AndroidFilePicker::Mode::InternalOrExternal);
-#else
-	auto filename = QFileDialog::getOpenFileName(this, title, dir, filter);
-#endif
+	auto filename = EditorFileDialog::getOpenFileName(this, title, dir, filter);
 	if(filename.isEmpty())
 		return;
 
@@ -440,13 +432,8 @@ void ScenarioProperties::on_pushButtonExport_clicked()
 	auto dir = QString::fromStdString(VCMIDirs::get().userDataPath().make_preferred().string());
 	auto filter = isVmap ? tr("VCMI maps (*.vmap);") : tr("HoMM3 maps (*.h3m);");
 
-#ifdef VCMI_ANDROID
 	QString contentUri;
-	QString fileName = AndroidFilePicker::getSaveFileName(this, title, dir, filter,
-		AndroidFilePicker::Mode::InternalOrExternal, contentUri);
-#else
-	QString fileName = QFileDialog::getSaveFileName(nullptr, title, mapName, filter);
-#endif
+	QString fileName = EditorFileDialog::getSaveFileName(this, title, dir, filter, contentUri);
 	if (fileName.isEmpty())
 		return;
 
@@ -462,10 +449,7 @@ void ScenarioProperties::on_pushButtonExport_clicked()
 
 	file.write(fileData);
 
-#ifdef VCMI_ANDROID
-	if(!contentUri.isEmpty())
-		AndroidFilePicker::writeFileToUri(fileName, contentUri);
-#endif
+	EditorFileDialog::writeFileToUri(fileName, contentUri);
 }
 
 void ScenarioProperties::on_pushButtonRemove_clicked()
