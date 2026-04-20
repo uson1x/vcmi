@@ -54,6 +54,7 @@ struct WikiEntry
 	std::string name;         ///< translated display name (shown in list)
 	std::string description;  ///< full description; empty = show auto-stub text
 	std::optional<WikiIconInfo> icon;
+	std::string modScope;     ///< mod scope the entity belongs to (empty for glossary)
 };
 
 /// A single clickable row inside the category or element columns
@@ -167,6 +168,9 @@ private:
 
 	// --- controls ---------------------------------------------------------
 	std::shared_ptr<CButton> closeButton;
+
+	/// Mod-scope label shown in the content header area (hidden for Glossary)
+	std::shared_ptr<CLabel> modScopeLabel;
 
 	// Helpers
 	void buildCategoryList();

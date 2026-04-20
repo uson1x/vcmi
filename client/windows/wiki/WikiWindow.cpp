@@ -299,6 +299,13 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		FONT_MEDIUM, ETextAlignment::CENTER,
 		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.header.information"));
 
+	// Mod-scope tag shown inside the content area, top-right corner (hidden for Glossary / no selection)
+	modScopeLabel = std::make_shared<CLabel>(
+		COL3_X + COL3_W - 8, CONTENT_TOP + 4,
+		FONT_SMALL, ETextAlignment::TOPRIGHT,
+		ColorRGBA(0, 200, 0, 255), "");
+	modScopeLabel->setEnabled(false);
+
 	// ---- Game data from VCMI library ----------------------------------------
 	categoryNames.resize(static_cast<int>(WikiCategory::COUNT));
 	categoryNames[static_cast<int>(WikiCategory::GLOSSARY)]  = LIBRARY->generaltexth->translate("vcmi.wiki.category.glossary");
@@ -321,7 +328,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
 				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt });
+				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt, "" });
 			}
 		}
 		catch(const std::exception &) {} // file absent → empty glossary
@@ -338,7 +345,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			if(faction && faction->hasTown() && !faction->special)
 				categoryEntries[iTown].push_back({
 					faction->getJsonKey(), faction->getNameTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt }
+					WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt },
+					faction->getModScope()
 				});
 		std::sort(categoryEntries[iTown].begin(), categoryEntries[iTown].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -351,7 +359,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			if(hero && !hero->special)
 				categoryEntries[iHero].push_back({
 					hero->getJsonKey(), hero->getNameTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt }
+					WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt },
+					hero->getModScope()
 				});
 		std::sort(categoryEntries[iHero].begin(), categoryEntries[iHero].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -373,7 +382,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			if(!creature->special || isWM)
 				categoryEntries[iCreature].push_back({
 					creature->getJsonKey(), creature->getNameSingularTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt }
+					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt },
+					creature->getModScope()
 				});
 		}
 		std::sort(categoryEntries[iCreature].begin(), categoryEntries[iCreature].end(),
@@ -389,7 +399,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					artifact->getJsonKey(),
 					artifact->getNameTranslated(),
 					artifact->getDescriptionTranslated(),
-					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt }
+					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt },
+					artifact->getModScope()
 				});
 		std::sort(categoryEntries[iArtifact].begin(), categoryEntries[iArtifact].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -415,7 +426,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				categoryEntries[iSpell].push_back({
 					spell->getJsonKey(),
 					spell->getNameTranslated(), desc,
-					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt }
+					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt },
+					spell->getModScope()
 				});
 			}
 		std::sort(categoryEntries[iSpell].begin(), categoryEntries[iSpell].end(),
@@ -442,7 +454,8 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				categoryEntries[iSkill].push_back({
 					skill->getJsonKey(),
 					skill->getNameTranslated(), desc,
-					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt }
+					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt },
+					skill->getModScope()
 				});
 			}
 		std::sort(categoryEntries[iSkill].begin(), categoryEntries[iSkill].end(),
@@ -472,7 +485,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				std::string desc;
 				if(!nativeTowns.empty())
 					desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}\n\n" + nativeTowns;
-				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon });
+				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon, terrain->getModScope() });
 			}
 		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -766,6 +779,30 @@ void WikiWindow::updateContent()
 	if(heroContentView)
 		heroContentView->setEnabled(useHeroViewport);
 	contentBox->setEnabled(!useCustomViewport);
+
+	// Update the mod-scope label (shown for every category except Glossary when an entry is selected)
+	{
+		const bool isGlossary = (activeCategoryIndex == static_cast<int>(WikiCategory::GLOSSARY));
+		const bool hasEntry = (activeElementIndex >= 0)
+		                   && (activeElementIndex < static_cast<int>(currentDisplayedEntries.size()));
+		const bool showScope = !isGlossary && hasEntry
+		                    && !currentDisplayedEntries[activeElementIndex].modScope.empty()
+							&& currentDisplayedEntries[activeElementIndex].modScope != "core";
+		if(modScopeLabel)
+		{
+			modScopeLabel->setEnabled(showScope);
+			if(showScope)
+			{
+				const std::string & fullScope = currentDisplayedEntries[activeElementIndex].modScope;
+				const auto dotPos = fullScope.find('.');
+				modScopeLabel->setText(dotPos != std::string::npos ? fullScope.substr(0, dotPos) : fullScope);
+
+				// Shift left when a scrollbar is present (viewport always has one; textbox only when overflowing)
+				const bool hasScrollbar = useCustomViewport || (contentBox && contentBox->slider);
+				modScopeLabel->moveTo(Point(pos.x + COL3_X + COL3_W - 8 - (hasScrollbar ? SLIDER_W : 0), pos.y + CONTENT_TOP + 4), modScopeLabel->pos.y);
+			}
+		}
+	}
 
 	if(useCustomViewport)
 	{
