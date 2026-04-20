@@ -195,6 +195,10 @@ private:
 	/// Rebuilds the hero viewport content for the given hero name.
 	void rebuildHeroViewport(const std::string & heroName);
 
+	/// Inserts a mod-scope label as the first widget in a viewport when the
+	/// current entry belongs to a non-core mod.
+	void injectModScopeLabel(CViewport & vp, std::vector<std::shared_ptr<CIntObject>> & widgets, int vpW);
+
 public:
 	explicit WikiWindow(Style style = Style::BROWN, std::optional<WikiEntryKey> initialEntry = std::nullopt);
 };

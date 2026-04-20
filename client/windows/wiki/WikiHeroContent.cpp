@@ -372,8 +372,8 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 				std::function<void()> lclick;
 				if(navigateCallback)
 				{
-					const std::string crName = ar.cr->getNameSingularTranslated();
-					lclick = [navigateCallback, crName](){ navigateCallback(WikiCategory::CREATURE, crName); };
+					const std::string crKey = ar.cr->getJsonKey();
+					lclick = [navigateCallback, crKey](){ navigateCallback(WikiCategory::CREATURE, crKey); };
 				}
 				widgets.push_back(std::make_shared<HeroWikiClickable>(
 					Point(MARGIN, curY), tableW, rowH,

@@ -299,13 +299,6 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		FONT_MEDIUM, ETextAlignment::CENTER,
 		Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.wiki.header.information"));
 
-	// Mod-scope tag shown inside the content area, top-right corner (hidden for Glossary / no selection)
-	modScopeLabel = std::make_shared<CLabel>(
-		COL3_X + COL3_W - 8, CONTENT_TOP + 4,
-		FONT_SMALL, ETextAlignment::TOPRIGHT,
-		ColorRGBA(0, 200, 0, 255), "");
-	modScopeLabel->setEnabled(false);
-
 	// ---- Game data from VCMI library ----------------------------------------
 	categoryNames.resize(static_cast<int>(WikiCategory::COUNT));
 	categoryNames[static_cast<int>(WikiCategory::GLOSSARY)]  = LIBRARY->generaltexth->translate("vcmi.wiki.category.glossary");
@@ -550,6 +543,14 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		heroContentView->disable();
 	}
 
+	// Mod-scope tag for non-viewport categories (artifact/spell/skill/terrain).
+	// x is adjusted dynamically in updateContent() based on scrollbar presence.
+	modScopeLabel = std::make_shared<CLabel>(
+		COL3_X + COL3_W - 8, CONTENT_TOP + 4,
+		FONT_SMALL, ETextAlignment::TOPRIGHT,
+		ColorRGBA(0, 200, 0, 255), "");
+	modScopeLabel->setEnabled(false);
+
 	// ---- Close button -----------------------------------------------------------
 	closeButton = std::make_shared<CButton>(
 		Point(WIN_W / 2 - 26, CLOSE_Y),
@@ -780,26 +781,24 @@ void WikiWindow::updateContent()
 		heroContentView->setEnabled(useHeroViewport);
 	contentBox->setEnabled(!useCustomViewport);
 
-	// Update the mod-scope label (shown for every category except Glossary when an entry is selected)
+	// Standalone mod-scope label – only for non-viewport categories (textbox path).
+	// Viewports inject their own label directly into the content.
 	{
 		const bool isGlossary = (activeCategoryIndex == static_cast<int>(WikiCategory::GLOSSARY));
 		const bool hasEntry = (activeElementIndex >= 0)
 		                   && (activeElementIndex < static_cast<int>(currentDisplayedEntries.size()));
-		const bool showScope = !isGlossary && hasEntry
-		                    && !currentDisplayedEntries[activeElementIndex].modScope.empty()
-							&& currentDisplayedEntries[activeElementIndex].modScope != "core";
+		const std::string & ms = hasEntry ? currentDisplayedEntries[activeElementIndex].modScope : "";
+		const bool showScope = !isGlossary && !useCustomViewport && !ms.empty() && ms != "core";
 		if(modScopeLabel)
 		{
 			modScopeLabel->setEnabled(showScope);
 			if(showScope)
 			{
-				const std::string & fullScope = currentDisplayedEntries[activeElementIndex].modScope;
-				const auto dotPos = fullScope.find('.');
-				modScopeLabel->setText(dotPos != std::string::npos ? fullScope.substr(0, dotPos) : fullScope);
-
-				// Shift left when a scrollbar is present (viewport always has one; textbox only when overflowing)
-				const bool hasScrollbar = useCustomViewport || (contentBox && contentBox->slider);
-				modScopeLabel->moveTo(Point(pos.x + COL3_X + COL3_W - 8 - (hasScrollbar ? SLIDER_W : 0), pos.y + CONTENT_TOP + 4), modScopeLabel->pos.y);
+				const auto dot = ms.find('.');
+				modScopeLabel->setText(dot != std::string::npos ? ms.substr(0, dot) : ms);
+				// Shift left only when the textbox already has an active scrollbar
+				const bool hasSlider = contentBox && contentBox->slider;
+				modScopeLabel->pos.x = pos.x + COL3_X + COL3_W - 8 - (hasSlider ? SLIDER_W : 0);
 			}
 		}
 	}
@@ -902,8 +901,12 @@ void WikiWindow::rebuildTownViewport(const std::string & factionIdentifier)
 	{
 		navigateTo(WikiEntryKey{cat, name});
 	};
-	townContentWidgets = buildTownContent(*townContentView, faction,
-		VP_W - CViewport::SLIDER_W, isBlue, navCb);
+	injectModScopeLabel(*townContentView, townContentWidgets, VP_W);
+	{
+		auto moreWidgets = buildTownContent(*townContentView, faction,
+			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+		townContentWidgets.insert(townContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
+	}
 	townContentView->fitContentSize();
 
 	applyScrollBounds();
@@ -945,8 +948,12 @@ void WikiWindow::rebuildCreatureViewport(const std::string & creatureIdentifier)
 	{
 		navigateTo(WikiEntryKey{WikiCategory::CREATURE, name});
 	};
-	creatureContentWidgets = buildCreatureContent(*creatureContentView, creature,
-		VP_W - CViewport::SLIDER_W, isBlue, navCb);
+	injectModScopeLabel(*creatureContentView, creatureContentWidgets, VP_W);
+	{
+		auto moreWidgets = buildCreatureContent(*creatureContentView, creature,
+			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+		creatureContentWidgets.insert(creatureContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
+	}
 	creatureContentView->fitContentSize();
 
 	applyScrollBounds();
@@ -993,11 +1000,34 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 	{
 		navigateTo(WikiEntryKey{cat, name});
 	};
-	heroContentWidgets = buildHeroContent(*heroContentView, hero,
-		VP_W - CViewport::SLIDER_W, isBlue, navCb);
+	injectModScopeLabel(*heroContentView, heroContentWidgets, VP_W);
+	{
+		auto moreWidgets = buildHeroContent(*heroContentView, hero,
+			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+		heroContentWidgets.insert(heroContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
+	}
 	heroContentView->fitContentSize();
 
 	applyScrollBounds();
+}
+
+// ============================================================================
+// WikiWindow – mod-scope helper
+// ============================================================================
+
+void WikiWindow::injectModScopeLabel(CViewport & vp, std::vector<std::shared_ptr<CIntObject>> & widgets, int vpW)
+{
+	const std::string & ms = (activeElementIndex >= 0 && activeElementIndex < (int)currentDisplayedEntries.size())
+	                        ? currentDisplayedEntries[activeElementIndex].modScope : "";
+	if(ms.empty() || ms == "core")
+		return;
+	const auto dot = ms.find('.');
+	const std::string text = dot != std::string::npos ? ms.substr(0, dot) : ms;
+	OBJECT_CONSTRUCTION_TARGETED(vp.content());
+	widgets.push_back(std::make_shared<CLabel>(
+		vpW - CViewport::SLIDER_W - 4, 4,
+		FONT_SMALL, ETextAlignment::TOPRIGHT,
+		ColorRGBA(0, 200, 0, 255), text));
 }
 
 // ============================================================================
