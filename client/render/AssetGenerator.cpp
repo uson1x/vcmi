@@ -57,7 +57,7 @@ void AssetGenerator::initialize()
 		imageFiles[ImagePath::builtin(name)] = [this, color](){ return createResBarElement(std::max(PlayerColor(0), color));};
 	}
 
-	for (PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
 	{
 		for(int amount : { 8, 9 })
 		{
@@ -81,6 +81,17 @@ void AssetGenerator::initialize()
 	imageFiles[ImagePath::builtin("stackWindow/button-panel.png")] = [this](){ return createCreatureInfoPanelElement(BUTTON_PANEL);};
 	imageFiles[ImagePath::builtin("stackWindow/commander-bg.png")] = [this](){ return createCreatureInfoPanelElement(COMMANDER_BACKGROUND);};
 	imageFiles[ImagePath::builtin("stackWindow/commander-abilities.png")] = [this](){ return createCreatureInfoPanelElement(COMMANDER_ABILITIES);};
+	addRecruitmentBackground("TPRCRT4", Point(484, 394));
+	addRecruitmentBackground("TPRCRT5", Point(594, 394));
+	addRecruitmentBackground("TPRCRT6", Point(704, 394));
+
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		const std::string name = "heroBackpackDialog" + (color == -1 ? "" : "-" + color.toString());
+		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
+		addDialogBackgroundWithStatusBar(name, Point(426, 465), playerColor);
+	}
+
 	imageFiles[ImagePath::builtin("questDialog.png")] = [this](){ return createQuestWindow();};
 	imageFiles[ImagePath::builtin("stackArtifactIndicatorSmall.png")] = [this](){ return createStackArtifactIndicator(Point(14, 14));};
 	imageFiles[ImagePath::builtin("stackArtifactIndicatorLarge.png")] = [this](){ return createStackArtifactIndicator(Point(22, 22));};
@@ -138,6 +149,21 @@ void AssetGenerator::addImageFile(const ImagePath & path, ImageGenerationFunctor
 void AssetGenerator::addAnimationFile(const AnimationPath & path, AnimationLayoutMap & anim)
 {
 	animationFiles[path] = anim;
+}
+
+void AssetGenerator::addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size, const PlayerColor & playerColor)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size, playerColor](){ return createDialogBackgroundWithStatusBar(size, playerColor);};
+}
+
+void AssetGenerator::addRecruitmentBackground(const std::string & fileName, const Point & size)
+{
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
+		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
+		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor](){ return createRecruitmentDialogBackground(size, playerColor);};
+	}
 }
 
 auto getColorFilters()
@@ -1139,6 +1165,111 @@ AssetGenerator::CanvasPtr AssetGenerator::createStackArtifactIndicator(const Poi
 			canvas.drawPoint(Point(x, y), ColorRGBA(0, 0, 0, alpha));
 		}
 	}
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(const Point & size, const PlayerColor & playerColor) const
+{
+	// Generic compositing helper:
+	// 1) tile DiBoxBck over full target size
+	// 2) build border and status-bar frame from DIALGBOX pieces
+	auto image = ENGINE->renderHandler().createImage(size, CanvasScalingPolicy::IGNORE);
+	Canvas canvas = image->getCanvas();
+
+	auto background = ENGINE->renderHandler().loadImage(ImageLocator(ImagePath::builtin("DiBoxBck"), EImageBlitMode::OPAQUE));
+	auto dialogBox = ENGINE->renderHandler().loadAnimation(AnimationPath::builtin("DIALGBOX"), EImageBlitMode::COLORKEY);
+	if (playerColor.isValidPlayer() && playerColor != PlayerColor(1))
+		dialogBox->playerColored(playerColor);
+
+	// Fill whole area with DiBoxBck texture first.
+	for (int y = 0; y < size.y; y += background->height())
+	{
+		for (int x = 0; x < size.x; x += background->width())
+		{
+			canvas.draw(background, Point(x, y), Rect(0, 0, std::min(background->width(), size.x - x), std::min(background->height(), size.y - y)));
+		}
+	}
+
+	auto drawHorizontal = [&canvas](const std::shared_ptr<IImage> & source, int y, int xBegin, int xEnd)
+	{
+		for(int x = xBegin; x < xEnd; x += source->width())
+		{
+			int width = std::min(source->width(), xEnd - x);
+			canvas.draw(source, Point(x, y), Rect(0, 0, width, source->height()));
+		}
+	};
+
+	auto drawVertical = [&canvas](const std::shared_ptr<IImage> & source, int x, int yBegin, int yEnd)
+	{
+		for(int y = yBegin; y < yEnd; y += source->height())
+		{
+			int height = std::min(source->height(), yEnd - y);
+			canvas.draw(source, Point(x, y), Rect(0, 0, source->width(), height));
+		}
+	};
+
+	auto topLeft = dialogBox->getImage(0, 0);
+	auto topRight = dialogBox->getImage(1, 0);
+	auto leftEdge = dialogBox->getImage(4, 0);
+	auto rightEdge = dialogBox->getImage(5, 0);
+	auto topEdge = dialogBox->getImage(6, 0);
+	auto bottomLeft = dialogBox->getImage(8, 0);
+	auto bottomRight = dialogBox->getImage(9, 0);
+	auto bottomEdge = dialogBox->getImage(10, 0);
+
+	drawHorizontal(topEdge, 0, topLeft->width(), size.x - topRight->width());
+	drawHorizontal(bottomEdge, size.y - bottomEdge->height(), bottomLeft->width(), size.x - bottomRight->width());
+	drawVertical(leftEdge, 0, topLeft->height(), size.y - bottomLeft->height());
+	drawVertical(rightEdge, size.x - rightEdge->width(), topRight->height(), size.y - bottomRight->height());
+
+	canvas.draw(topLeft, Point(0, 0));
+	canvas.draw(topRight, Point(size.x - topRight->width(), 0));
+	canvas.draw(bottomLeft, Point(0, size.y - bottomLeft->height()));
+	canvas.draw(bottomRight, Point(size.x - bottomRight->width(), size.y - bottomRight->height()));
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(const Point & size, const PlayerColor & playerColor) const
+{
+	auto image = createDialogBackgroundWithStatusBar(size, playerColor);
+	Canvas canvas = image->getCanvas();
+
+	// Additional overlays used by original TPRCRT (semi-transparent plates and central black input area).
+	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
+	const ColorRGBA borderColor = ColorRGBA(128, 100, 75);
+	const Point originalSize(484, 362);
+	const int offsetX = (image->width() - originalSize.x) / 2;
+
+	auto drawPlate = [&canvas, rectangleColor, borderColor](const Rect & rect, bool blackFill = false)
+	{
+		if(blackFill)
+			canvas.drawColor(rect, Colors::BLACK);
+		else
+			canvas.drawColorBlended(rect, rectangleColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	auto centered = [offsetX](const Rect & rect)
+	{
+		return Rect(rect.x + offsetX, rect.y, rect.w, rect.h);
+	};
+
+	// Top row side plates (left / right) - 97x19
+	drawPlate(centered(Rect(64, 223, 97, 19)));
+	drawPlate(centered(Rect(323, 223, 97, 19)));
+
+	// Bottom row side plates (left / right) - 97x19
+	drawPlate(centered(Rect(64, 278, 97, 19)));
+	drawPlate(centered(Rect(323, 278, 97, 19)));
+
+	// Small middle plates above central bar (left / right) - 65x19
+	drawPlate(centered(Rect(172, 244, 65, 19)));
+	drawPlate(centered(Rect(247, 244, 65, 19)));
+
+	// Central black input bar - 142x20
+	drawPlate(centered(Rect(171, 278, 142, 20)), true);
 
 	return image;
 }

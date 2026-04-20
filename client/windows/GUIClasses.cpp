@@ -72,6 +72,25 @@
 
 #include <boost/lexical_cast.hpp>
 
+static ImagePath getRecruitmentBackground(const CGDwelling * dwelling, int level)
+{
+	int cardsCount = 0;
+	for(int i = 0; i < dwelling->creatures.size(); i++)
+	{
+		if(level >= 0 && i != level)
+			continue;
+
+		cardsCount += static_cast<int>(dwelling->creatures[i].second.size());
+	}
+
+	std::string fileName = cardsCount >= 6 ? "TPRCRT6" : cardsCount == 5 ? "TPRCRT5" : "TPRCRT4";
+
+	if (dwelling->tempOwner.isValidPlayer())
+		fileName += "-" + dwelling->tempOwner.toString();
+
+	return ImagePath::builtin(fileName);
+}
+
 CRecruitmentWindow::CCreatureCard::CCreatureCard(CRecruitmentWindow * window, const CCreature * crea, int totalAmount)
 	: CIntObject(LCLICK | SHOW_POPUP),
 	parent(window),
@@ -201,25 +220,26 @@ void CRecruitmentWindow::buy()
 void CRecruitmentWindow::showAll(Canvas & to)
 {
 	CWindowObject::showAll(to);
+	const int layoutOffsetX = (pos.w - 484) / 2;
 
-	Rect(172, 222, 67, 42) + pos.topLeft();
+	Rect(172 + layoutOffsetX, 222, 67, 42) + pos.topLeft();
 
 	// recruit\total values
-	to.drawBorder(Rect(172, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
-	to.drawBorder(Rect(246, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(171 + layoutOffsetX, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(246 + layoutOffsetX, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
 
 	//cost boxes
-	to.drawBorder(Rect( 64, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
-	to.drawBorder(Rect(322, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(63 + layoutOffsetX, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(322 + layoutOffsetX, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
 
 	//buttons borders
-	to.drawBorder(Rect(133, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
-	to.drawBorder(Rect(211, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
-	to.drawBorder(Rect(289, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
+	to.drawBorder(Rect(133 + layoutOffsetX, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
+	to.drawBorder(Rect(211 + layoutOffsetX, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
+	to.drawBorder(Rect(289 + layoutOffsetX, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
 }
 
 CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, const CArmedInstance * Dst, const std::function<void(CreatureID,int)> & Recruit, const std::function<void()> & onClose, int y_offset):
-	CWindowObject(PLAYER_COLORED, ImagePath::builtin("TPRCRT")),
+	CWindowObject(PLAYER_COLORED, getRecruitmentBackground(Dwelling, Level)),
 	onRecruit(Recruit),
 	onClose(onClose),
 	level(Level),
@@ -228,26 +248,27 @@ CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, c
 	dwelling(Dwelling)
 {
 	moveBy(Point(0, y_offset));
+	const int layoutOffsetX = (pos.w - 484) / 2;
 
 	OBJECT_CONSTRUCTION;
 
 	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
 
-	slider = std::make_shared<CSlider>(Point(176, 279), 135, std::bind(&CRecruitmentWindow::sliderMoved, this, _1), 0, 0, 0, Orientation::HORIZONTAL);
+	slider = std::make_shared<CSlider>(Point(173 + layoutOffsetX, 280), 138, std::bind(&CRecruitmentWindow::sliderMoved, this, _1), 0, 0, 0, Orientation::HORIZONTAL);
 
-	maxButton = std::make_shared<CButton>(Point(134, 313), AnimationPath::builtin("IRCBTNS.DEF"), LIBRARY->generaltexth->zelp[553], std::bind(&CSlider::scrollToMax, slider), EShortcut::RECRUITMENT_MAX);
-	buyButton = std::make_shared<CButton>(Point(212, 313), AnimationPath::builtin("IBY6432.DEF"), LIBRARY->generaltexth->zelp[554], std::bind(&CRecruitmentWindow::buy, this), EShortcut::GLOBAL_ACCEPT);
-	cancelButton = std::make_shared<CButton>(Point(290, 313), AnimationPath::builtin("ICN6432.DEF"), LIBRARY->generaltexth->zelp[555], std::bind(&CRecruitmentWindow::close, this), EShortcut::GLOBAL_CANCEL);
+	maxButton = std::make_shared<CButton>(Point(134 + layoutOffsetX, 313), AnimationPath::builtin("IRCBTNS.DEF"), LIBRARY->generaltexth->zelp[553], std::bind(&CSlider::scrollToMax, slider), EShortcut::RECRUITMENT_MAX);
+	buyButton = std::make_shared<CButton>(Point(212 + layoutOffsetX, 313), AnimationPath::builtin("IBY6432.DEF"), LIBRARY->generaltexth->zelp[554], std::bind(&CRecruitmentWindow::buy, this), EShortcut::GLOBAL_ACCEPT);
+	cancelButton = std::make_shared<CButton>(Point(290 + layoutOffsetX, 313), AnimationPath::builtin("ICN6432.DEF"), LIBRARY->generaltexth->zelp[555], std::bind(&CRecruitmentWindow::close, this), EShortcut::GLOBAL_CANCEL);
 
-	title = std::make_shared<CLabel>(243, 32, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW);
-	availableValue = std::make_shared<CLabel>(205, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
-	toRecruitValue = std::make_shared<CLabel>(279, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+	title = std::make_shared<CLabel>(243 + layoutOffsetX, 32, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW);
+	availableValue = std::make_shared<CLabel>(204 + layoutOffsetX, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+	toRecruitValue = std::make_shared<CLabel>(279 + layoutOffsetX, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
 
-	costPerTroopValue = std::make_shared<CreatureCostBox>(Rect(65, 222, 97, 74), LIBRARY->generaltexth->allTexts[346]);
-	totalCostValue = std::make_shared<CreatureCostBox>(Rect(323, 222, 97, 74), LIBRARY->generaltexth->allTexts[466]);
+	costPerTroopValue = std::make_shared<CreatureCostBox>(Rect(64 + layoutOffsetX, 222, 97, 74), LIBRARY->generaltexth->allTexts[346]);
+	totalCostValue = std::make_shared<CreatureCostBox>(Rect(323 + layoutOffsetX, 222, 97, 74), LIBRARY->generaltexth->allTexts[466]);
 
-	availableTitle = std::make_shared<CLabel>(205, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[465]);
-	toRecruitTitle = std::make_shared<CLabel>(279, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[16]);
+	availableTitle = std::make_shared<CLabel>(204 + layoutOffsetX, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[465]);
+	toRecruitTitle = std::make_shared<CLabel>(279 + layoutOffsetX, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[16]);
 
 	availableCreaturesChanged();
 }
