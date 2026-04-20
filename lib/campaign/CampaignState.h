@@ -41,10 +41,6 @@ class DLL_LINKAGE CampaignHeader : public boost::noncopyable
 	friend class CampaignHandler;
 	friend class Campaign;
 
-	// Campaign editor
-	friend class CampaignEditor;
-	friend class CampaignProperties;
-	friend class ScenarioProperties;
 #ifdef ENABLE_EDITOR
 	friend class ::CampaignEditor;
 	friend class ::CampaignProperties;
@@ -231,10 +227,6 @@ class DLL_LINKAGE Campaign : public CampaignHeader, public Serializeable
 {
 	friend class CampaignHandler;
 
-	// Campaign editor
-	friend class CampaignEditor;
-	friend class CampaignProperties;
-	friend class ScenarioProperties;
 #ifdef ENABLE_EDITOR
 	friend class ::CampaignEditor;
 	friend class ::CampaignProperties;
@@ -264,10 +256,6 @@ class DLL_LINKAGE CampaignState : public Campaign
 {
 	friend class CampaignHandler;
 
-	// Campaign editor
-	friend class CampaignEditor;
-	friend class CampaignProperties;
-	friend class ScenarioProperties;
 #ifdef ENABLE_EDITOR
 	friend class ::CampaignEditor;
 	friend class ::CampaignProperties;

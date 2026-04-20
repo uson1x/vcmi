@@ -42,7 +42,7 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 		// the QtThread that calls native main()
 		try
 		{
-			Os.setenv("VCMI_MAP_EDITOR", "1", true);
+			Os.setenv("VCMI_LAUNCH_MAP_EDITOR", "1", true);
 
 			// Qt logical height = physical_px / (density * QT_SCALE_FACTOR)
 			// We need logical height >= MIN_UI_HEIGHT_PX, so:

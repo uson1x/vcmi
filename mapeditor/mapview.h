@@ -83,6 +83,9 @@ protected:
 
 };
 
+// In single-app builds (Android/iOS), editor symbols like MapView, Animation,
+// Graphics and BitmapHandler clash with identically-named client classes.
+// Wrapping them in a namespace avoids renaming every affected symbol.
 #ifdef ENABLE_SINGLE_APP_BUILD
 namespace MapEditor {
 #endif

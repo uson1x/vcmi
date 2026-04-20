@@ -119,7 +119,7 @@
 			<meta-data android:name="android.app.background_running" android:value="false"/>
 			<meta-data android:name="android.app.auto_screen_scale_factor" android:value="false"/>
 			<meta-data android:name="android.app.extract_android_style" android:value="none"/>
-			<meta-data android:name="android.app.environment" android:value="VCMI_MAP_EDITOR=1"/>
+			<meta-data android:name="android.app.environment" android:value="VCMI_LAUNCH_MAP_EDITOR=1"/>
 		</activity>
 
 		<activity

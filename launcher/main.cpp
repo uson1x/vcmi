@@ -73,7 +73,7 @@ int MAIN_EXPORT main(int argc, char * argv[])
 	}
 
 #ifdef VCMI_ANDROID
-	if (qgetenv("VCMI_MAP_EDITOR") == "1")
+	if (qgetenv("VCMI_LAUNCH_MAP_EDITOR") == "1")
 	{
 		launcher::prepare();
 		openMapEditor();

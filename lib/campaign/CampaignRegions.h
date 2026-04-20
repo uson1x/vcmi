@@ -23,10 +23,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 class DLL_LINKAGE CampaignRegions
 {
-	// Campaign editor
-	friend class CampaignEditor;
-	friend class CampaignProperties;
-	friend class ScenarioProperties;
 #ifdef ENABLE_EDITOR
 	friend class ::CampaignEditor;
 	friend class ::CampaignProperties;

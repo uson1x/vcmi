@@ -49,13 +49,8 @@ set(editor_SRCS
 		campaigneditor/scenarioproperties.cpp
 		campaigneditor/startingbonus.cpp
 		campaigneditor/campaignview.cpp
-)
-if(ANDROID)
-	set(editor_SRCS
-		${editor_SRCS}
 		androidfilepicker.cpp
-	)
-endif()
+)
 if(ENABLE_TEMPLATE_EDITOR)
 	set(editor_SRCS
 		${editor_SRCS}
@@ -124,13 +119,8 @@ set(editor_HEADERS
 		campaigneditor/scenarioproperties.h
 		campaigneditor/startingbonus.h
 		campaigneditor/campaignview.h
-)
-if(ANDROID)
-	set(editor_HEADERS
-		${editor_HEADERS}
 		androidfilepicker.h
-	)
-endif()
+)
 if(ENABLE_TEMPLATE_EDITOR)
 	set(editor_HEADERS
 		${editor_HEADERS}
