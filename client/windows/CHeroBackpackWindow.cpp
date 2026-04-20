@@ -76,9 +76,8 @@ CHeroBackpackWindow::CHeroBackpackWindow(const CGHeroInstance * hero, const std:
 		buttonPos += Point(button->pos.w + 10, 0);
 	}
 
-	statusbar = CGStatusBar::create(8, pos.h - 26);
-	statusbar->pos.w = pos.w - 16;
-	statusbar->pos.h = 19;
+	statusbar = CGStatusBar::create(std::make_shared<CPicture>(ImagePath::builtin(backgroundName), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
+
 	addUsedEvents(LCLICK);
 	center();
 }
