@@ -31,57 +31,15 @@ namespace api
 
 class ServicesProxy : public RawPointerWrapper<const Services, ServicesProxy>
 {
+	static const Artifact * getArtifactByName(const Services * services, const std::string & name);
+	static const Creature * getCreatureByName(const Services * services, const std::string & name);
+	static const HeroClass * getHeroClassByName(const Services * services, const std::string & name);
+	static const HeroType * getHeroTypeByName(const Services * services, const std::string & name);
+	static const spells::Spell * getSpellByName(const Services * services, const std::string & name);
+	static const Skill * getSecondarySkillByName(const Services * services, const std::string & name);
+
 public:
 	using Wrapper = RawPointerWrapper<const Services, ServicesProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class ArtifactServiceProxy : public RawPointerWrapper<const ArtifactService, ArtifactServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const ArtifactService, ArtifactServiceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class CreatureServiceProxy : public RawPointerWrapper<const CreatureService, CreatureServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const CreatureService, CreatureServiceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class FactionServiceProxy : public RawPointerWrapper<const FactionService, FactionServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const FactionService, FactionServiceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class HeroClassServiceProxy : public RawPointerWrapper<const HeroClassService, HeroClassServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const HeroClassService, HeroClassServiceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class HeroTypeServiceProxy : public RawPointerWrapper<const HeroTypeService, HeroTypeServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const HeroTypeService, HeroTypeServiceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class SkillServiceProxy : public RawPointerWrapper<const SkillService, SkillServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const SkillService, SkillServiceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-};
-
-class SpellServiceProxy : public RawPointerWrapper<const spells::Service, SpellServiceProxy>
-{
-public:
-	using Wrapper = RawPointerWrapper<const spells::Service, SpellServiceProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

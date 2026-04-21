@@ -19,325 +19,177 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting
 {
 
-namespace detail
+// trait to decompose a member function pointer (non-const and const)
+template<typename M> struct LuaClassMemberTraits;
+
+// non-const member function
+template<typename R, typename C, typename... Args>
+struct LuaClassMemberTraits<R(C::*)(Args...)>
 {
-
-template<int ...>
-struct Seq {};
-
-template<int N, int ...S>
-struct Gens : Gens<N-1, N-1, S...> {};
-
-template<int ...S>
-struct Gens<0, S...>
-{
-	using type = Seq<S...>;
+	using ReturnType = R;
+	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
+	static constexpr bool isConst = false;
 };
 
-template <typename R, typename ... Args>
-class LuaArgumentsTuple
+// const member function
+template<typename R, typename C, typename... Args>
+struct LuaClassMemberTraits<R(C::*)(Args...) const>
 {
-public:
-	using TupleData = std::tuple<Args ...>;
-	using Functor = R(*)(Args ...);
+	using ReturnType = R;
+	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
+	static constexpr bool isConst = true;
+};
 
-	TupleData args;
-	Functor f;
+template <typename ObjectType, typename MethodType, MethodType method, bool isSharedPtr>
+class LuaMethodWrapperImpl
+{
+	using TraitsInfo = LuaClassMemberTraits<MethodType>;
+	using ReturnType = typename TraitsInfo::ReturnType;
+	using TupleType = typename TraitsInfo::TupleType;
 
-	LuaArgumentsTuple(Functor _f)
-		:f(_f),
-		args()
+	using ObjectRawPtr = std::conditional_t<TraitsInfo::isConst, const ObjectType*, ObjectType*>;
+	using ObjectSharedPtr = std::conditional_t<TraitsInfo::isConst, std::shared_ptr<const ObjectType>, std::shared_ptr<ObjectType>>;
+	using ObjectPtr = std::conditional_t<isSharedPtr, ObjectSharedPtr, ObjectRawPtr>;
+
+	template <std::size_t... I>
+	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...> i)
 	{
+		( (stack.getOrThrow(static_cast<int>(I + 2), std::get<I>(t))), ... );
 	}
 
-
-	STRONG_INLINE int invoke(lua_State * L)
+	template <typename... Ts>
+	static void tryGetAll(LuaStack &stack, std::tuple<Ts...> &t)
 	{
-		return callFunc(L, typename Gens<sizeof...(Args)>::type());
+		tryGetAllImpl(stack, t, std::index_sequence_for<Ts...>{});
 	}
-private:
-	template<int ...N>
-	int callFunc(lua_State * L, Seq<N...>)
+
+	static int invokeImpl(lua_State * L)
 	{
 		LuaStack S(L);
+		ObjectPtr obj = nullptr;
+		TupleType args;
 
-		bool ok[sizeof...(Args)] = {(S.tryGet(N+1, std::get<N>(args)))...};
-
-		if(std::count(std::begin(ok), std::end(ok), false) > 0)
-			return S.retVoid();
-
-
-		R ret = f(std::get<N>(args) ...);
+		S.getOrThrow(1,obj);
+		tryGetAll(S, args);
 		S.clear();
-		S.push(ret);
-		return 1;
+
+		ObjectRawPtr objPtr = nullptr;
+
+		if constexpr (isSharedPtr)
+			objPtr = obj.get();
+		else
+			objPtr = obj;
+
+		if constexpr (std::is_void_v<ReturnType>)
+		{
+			std::apply([&](auto &&... a){ std::invoke(method, objPtr, std::forward<decltype(a)>(a)...); }, args);
+			return 0;
+		}
+		else
+		{
+			ReturnType result = std::apply([&](auto &&... a){ return std::invoke(method, objPtr, std::forward<decltype(a)>(a)...); }, args);
+			S.push(std::move(result));
+			return S.retPushed();
+		}
 	}
-};
 
-
-class LuaFunctionInvoker
-{
 public:
-	template<typename R, typename ... Args>
-	static STRONG_INLINE int invoke(lua_State * L, R(*f)(Args ...))
+	static int invoke(lua_State * L)
 	{
-		LuaArgumentsTuple<R, Args ...> args(f);
-		return args.invoke(L);
+		try {
+			return invokeImpl(L);
+		}
+		catch (const std::exception & e)
+		{
+			lua_pushstring(L, e.what());
+		}
+		// WARNING: lua_error never returns and performs long jump
+		// this method must not have any local variables with non-trivial destructor to avoid leaks
+		return lua_error(L);
 	}
 };
 
-}
+template <typename ObjectType, typename MethodType, MethodType method>
+using LuaMethodWrapper = LuaMethodWrapperImpl<ObjectType, MethodType, method, false>;
 
-template <typename F, F f>
+template <typename ObjectType, typename MethodType, MethodType method>
+using LuaSharedMethodWrapper = LuaMethodWrapperImpl<ObjectType, MethodType, method, true>;
+
+// trait to decompose a free function pointer
+template<typename F> struct LuaFunctionTraits;
+
+template<typename R, typename... Args>
+struct LuaFunctionTraits<R(*)(Args...)>
+{
+	using ReturnType = R;
+	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
+};
+
+// function reference (e.g., R(&)(Args...))
+template<typename R, typename... Args>
+struct LuaFunctionTraits<R(&)(Args...)> : LuaFunctionTraits<R(*)(Args...)> {};
+
+// function type (R(Args...))
+template<typename R, typename... Args>
+struct LuaFunctionTraits<R(Args...)> : LuaFunctionTraits<R(*)(Args...)> {};
+
+// helper to decay callables to function pointer when possible (for function pointers only)
+template <auto func>
 class LuaFunctionWrapper
 {
-public:
-	static int invoke(lua_State * L)
+	using FuncType = decltype(func);
+	using TraitsInfo = LuaFunctionTraits<std::remove_pointer_t<std::decay_t<FuncType>>>;
+	using ReturnType = typename TraitsInfo::ReturnType;
+	using TupleType = typename TraitsInfo::TupleType;
+
+	template <std::size_t... I>
+	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...>)
 	{
-		return detail::LuaFunctionInvoker::invoke(L, f);
+		( (stack.getOrThrow(static_cast<int>(I + 1), std::get<I>(t))), ... ); // args start at index 1 for free functions
 	}
-};
 
+	template <typename... Ts>
+	static void tryGetAll(LuaStack &stack, std::tuple<Ts...> &t)
+	{
+		tryGetAllImpl(stack, t, std::index_sequence_for<Ts...>{});
+	}
 
-//TODO: this should be the only one wrapper type
-//
-template <typename U, typename M, M m>
-class LuaMethodWrapper
-{
-
-};
-
-template <typename U, typename T, typename R, R(T:: * method)()const>
-class LuaMethodWrapper <U, R(T:: *)()const, method>
-{
-public:
-	static int invoke(lua_State * L)
+	static int invokeImpl(lua_State * L)
 	{
 		LuaStack S(L);
-		const U * obj = nullptr;
+		TupleType args;
 
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-
+		tryGetAll(S, args);
 		S.clear();
-		S.push(functor(obj));
-		return S.retPushed();
-	}
-};
 
-template <typename U, typename T, typename R, R(T:: * method)()>
-class LuaMethodWrapper <U, R(T:: *)(), method>
-{
+		if constexpr (std::is_void_v<ReturnType>)
+		{
+			std::apply([&](auto &&... a){ std::invoke(func, std::forward<decltype(a)>(a)...); }, args);
+			return 0;
+		}
+		else
+		{
+			ReturnType result = std::apply([&](auto &&... a){ return std::invoke(func, std::forward<decltype(a)>(a)...); }, args);
+			S.push(std::move(result));
+			return S.retPushed();
+		}
+	}
+
 public:
 	static int invoke(lua_State * L)
 	{
-		LuaStack S(L);
-		U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-
-		S.clear();
-		S.push(functor(obj));
-		return S.retPushed();
+		try {
+			return invokeImpl(L);
+		}
+		catch (const std::exception & e)
+		{
+			lua_pushstring(L, e.what());
+		}
+		// lua_error does a longjmp; avoid local destructors in this function
+		return lua_error(L);
 	}
 };
 
-template <typename U, typename T, void(T:: * method)()const>
-class LuaMethodWrapper <U, void(T:: *)()const, method>
-{
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		const U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		functor(obj);
-		return 0;
-	}
-};
-
-template <typename U, typename T, void(T:: * method)()>
-class LuaMethodWrapper <U, void(T:: *)(), method>
-{
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		functor(obj);
-		return 0;
-	}
-};
-
-template <typename U, typename T, typename R, typename P1, R(T:: * method)(P1)const>
-class LuaMethodWrapper <U, R(T:: *)(P1)const, method>
-{
-	using PM1 = std::remove_cv_t<std::remove_reference_t<P1>>;
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		const U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		PM1 p1;
-		if(!S.tryGet(2, p1))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		S.push(functor(obj, p1));
-		return S.retPushed();
-	}
-};
-
-template <typename U, typename T, typename R, typename P1, R(T:: * method)(P1)>
-class LuaMethodWrapper <U, R(T:: *)(P1), method>
-{
-	using PM1 = std::remove_cv_t<std::remove_reference_t<P1>>;
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		PM1 p1;
-		if(!S.tryGet(2, p1))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		S.push(functor(obj, p1));
-		return S.retPushed();
-	}
-};
-
-template <typename U, typename T, typename P1, void(T:: * method)(P1)const>
-class LuaMethodWrapper <U, void(T:: *)(P1)const, method>
-{
-	using PM1 = std::remove_cv_t<std::remove_reference_t<P1>>;
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		const U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		PM1 p1;
-		if(!S.tryGet(2, p1))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		functor(obj, p1);
-		return 0;
-	}
-};
-
-template <typename U, typename T, typename P1, void(T:: * method)(P1)>
-class LuaMethodWrapper <U, void(T:: *)(P1), method>
-{
-	using PM1 = std::remove_cv_t<std::remove_reference_t<P1>>;
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		U * obj = nullptr;
-
-		if(!S.tryGet(1,obj))
-			return S.retVoid();
-
-		PM1 p1;
-		if(!S.tryGet(2, p1))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		functor(obj, p1);
-		return 0;
-	}
-};
-
-template <typename U, typename T, typename R, typename P1, typename P2, R(T:: * method)(P1, P2)const>
-class LuaMethodWrapper <U, R(T:: *)(P1, P2)const, method>
-{
-	using PM1 = std::remove_cv_t<std::remove_reference_t<P1>>;
-	using PM2 = std::remove_cv_t<std::remove_reference_t<P2>>;
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		const U * obj = nullptr;
-
-		if(!S.tryGet(1, obj))
-			return S.retVoid();
-
-		PM1 p1;
-		if(!S.tryGet(2, p1))
-			return S.retVoid();
-
-		PM2 p2;
-		if(!S.tryGet(3, p2))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		S.push(functor(obj, p1, p2));
-		return S.retPushed();
-	}
-};
-
-template <typename U, typename T, typename P1, typename P2, void(T:: * method)(P1, P2)const>
-class LuaMethodWrapper <U, void(T:: *)(P1, P2)const, method>
-{
-	using PM1 = std::remove_cv_t<std::remove_reference_t<P1>>;
-	using PM2 = std::remove_cv_t<std::remove_reference_t<P2>>;
-public:
-	static int invoke(lua_State * L)
-	{
-		LuaStack S(L);
-		const U * obj = nullptr;
-
-		if(!S.tryGet(1, obj))
-			return S.retVoid();
-
-		PM1 p1;
-		if(!S.tryGet(2, p1))
-			return S.retVoid();
-
-		PM2 p2;
-		if(!S.tryGet(3, p2))
-			return S.retVoid();
-
-		static auto functor = std::mem_fn(method);
-		S.clear();
-		functor(obj, p1, p2);
-		return 0;
-	}
-};
 
 }
 

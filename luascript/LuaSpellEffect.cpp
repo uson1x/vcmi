@@ -68,15 +68,9 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 
-	JsonNode response = context->callGlobalWithParameters(APPLICABLE_GENERAL, parameters, m, &problem);
+	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_GENERAL, parameters, m, &problem);
 
-	if(response.getType() != JsonNode::JsonType::DATA_BOOL)
-	{
-		logMod->error("Invalid API response from script %s.", script->getJsonKey());
-		logMod->debug(response.toCompactString());
-		return false;
-	}
-	return response.Bool();
+	return result;
 }
 
 bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
@@ -87,15 +81,9 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const Ef
 		return false;
 
 	JsonNode targetJson = spellTargetToJson(target);
-	JsonNode response = context->callGlobalWithParameters(APPLICABLE_TARGET, parameters, m, targetJson);
+	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_TARGET, parameters, m, targetJson);
 
-	if(response.getType() != JsonNode::JsonType::DATA_BOOL)
-	{
-		logMod->error("Invalid API response from script %s.", script->getJsonKey());
-		logMod->debug(response.toCompactString());
-		return false;
-	}
-	return response.Bool();
+	return result;
 }
 
 void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
@@ -105,7 +93,7 @@ void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const E
 
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	context->callGlobalWithParameters(APPLY, parameters, m, server, spellTargetToJson(target));
+	context->callGlobalWithParameters<void>(APPLY, parameters, m, server, spellTargetToJson(target));
 }
 
 EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
@@ -119,7 +107,7 @@ EffectTarget LuaSpellEffect::transformTarget(const Mechanics * m, const Target &
 
 	JsonNode aimPointJson = spellTargetToJson(aimPoint);
 	JsonNode spellTargetJson = spellTargetToJson(spellTarget);
-	JsonNode response = context->callGlobalWithParameters(TRANSFORM_TARGET, parameters, m, aimPointJson, spellTargetJson);
+	JsonNode response = context->callGlobalWithParameters<JsonNode>(TRANSFORM_TARGET, parameters, m, aimPointJson, spellTargetJson);
 
 	return spellTargetFromJson(m, response);
 }

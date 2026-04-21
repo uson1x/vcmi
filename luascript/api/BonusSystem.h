@@ -23,6 +23,7 @@ namespace scripting
 namespace api
 {
 
+#if 0
 class BonusProxy : public SharedPointerWrapper<const Bonus, BonusProxy>
 {
 public:
@@ -53,10 +54,6 @@ public:
 	using Wrapper = SharedPointerWrapper<const BonusList, BonusListProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-
-	static std::shared_ptr<const Bonus> index(std::shared_ptr<const BonusList> self, int key);
-protected:
-	void adjustMetatable(lua_State * L) const override;
 };
 
 class BonusBearerProxy : public RawPointerWrapper<const IBonusBearer, BonusBearerProxy>
@@ -69,6 +66,7 @@ public:
 	static int getBonuses(lua_State * L);
 };
 
+#endif
 
 }
 }

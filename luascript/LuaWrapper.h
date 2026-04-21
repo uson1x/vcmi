@@ -115,6 +115,9 @@ public:
 
 	using CustomRegType = detail::CustomRegType;
 
+	static_assert(std::is_base_of_v<TagRawPointer, ObjectType>, "Class must inherit from ApiRawPointer to be used with this class!");
+	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
+
 	void pushMetatable(lua_State * L) const override final
 	{
 		static auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
@@ -152,6 +155,9 @@ public:
 	using UDataType = std::shared_ptr<T>;
 	using CustomRegType = detail::CustomRegType;
 
+	static_assert(std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must inherit from ApiSharedPointer to be used with this class!");
+	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
+
 	static int constructor(lua_State * L)
 	{
 		LuaStack S(L);
@@ -186,34 +192,6 @@ protected:
 	void adjustMetatable(lua_State * L) const override
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
-	}
-};
-
-template<class T, class Proxy = T>
-class UniquePointerWrapper : public api::Registar
-{
-public:
-	using ObjectType = typename std::remove_cv_t<T>;
-	using UDataType = std::unique_ptr<T>;
-	using CustomRegType = detail::CustomRegType;
-
-	void pushMetatable(lua_State * L) const override final
-	{
-		static auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
-
-		LuaStack S(L);
-
-		if(luaL_newmetatable(L, KEY) != 0)
-		{
-//			detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
-
-			S.push("__gc");
-			lua_pushcfunction(L, &(detail::Dispatcher<Proxy, UDataType>::destructor));
-			lua_rawset(L, -3);
-		}
-
-		S.balance();
-		detail::Dispatcher<Proxy, UDataType>::pushStaticTable(L);
 	}
 };
 

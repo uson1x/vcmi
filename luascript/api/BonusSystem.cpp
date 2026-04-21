@@ -28,6 +28,8 @@ namespace scripting
 namespace api
 {
 
+#if 0
+
 VCMI_REGISTER_SCRIPT_API(BonusProxy, "Bonus");
 
 const std::vector<BonusProxy::CustomRegType> BonusProxy::REGISTER_CUSTOM =
@@ -198,24 +200,6 @@ const std::vector<BonusListProxy::CustomRegType> BonusListProxy::REGISTER_CUSTOM
 
 };
 
-std::shared_ptr<const Bonus> BonusListProxy::index(std::shared_ptr<const BonusList> self, int key)
-{
-	//field = __index(self, key)
-
-	std::shared_ptr<const Bonus> ret;
-
-	if((key >= 1) && (key <= self->size()))
-		ret = (*self)[key-1];
-	return ret;
-}
-
-void BonusListProxy::adjustMetatable(lua_State * L) const
-{
-	lua_pushstring(L, "__index");
-	lua_pushcclosure(L, LuaFunctionWrapper<decltype(&BonusListProxy::index), &BonusListProxy::index>::invoke, 0);
-	lua_rawset(L, -3);
-}
-
 VCMI_REGISTER_SCRIPT_API(BonusBearerProxy, "BonusBearer");
 
 const std::vector<BonusBearerProxy::CustomRegType> BonusBearerProxy::REGISTER_CUSTOM =
@@ -266,6 +250,7 @@ int BonusBearerProxy::getBonuses(lua_State * L)
 	return S.retPushed();
 }
 
+#endif
 
 }
 }

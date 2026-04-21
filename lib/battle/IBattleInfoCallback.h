@@ -14,6 +14,7 @@
 #include "BattleHexArray.h"
 
 #include <vcmi/Entity.h>
+#include <vcmi/scripting/ApiTags.h>
 
 #define RETURN_IF_NOT_BATTLE(...) do { if(!duringBattle()) {logGlobal->error("%s called when no battle!", __FUNCTION__); return __VA_ARGS__; } } while (false)
 
@@ -48,7 +49,7 @@ struct DamageEstimation
 	DamageRange kills;
 };
 
-class DLL_LINKAGE IBattleInfoCallback : public IConstBonusProvider
+class DLL_LINKAGE IBattleInfoCallback : public IConstBonusProvider, public scripting::ApiRawPointer<IBattleInfoCallback>
 {
 public:
 	virtual ~IBattleInfoCallback() = default;

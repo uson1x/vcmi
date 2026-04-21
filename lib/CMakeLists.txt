@@ -423,6 +423,7 @@ set(lib_MAIN_HEADERS
 	../include/vcmi/events/SubscriptionRegistry.h
 	../include/vcmi/events/TurnStarted.h
 
+	../include/vcmi/scripting/ApiTags.h
 	../include/vcmi/scripting/Service.h
 
 	../include/vcmi/spells/Caster.h

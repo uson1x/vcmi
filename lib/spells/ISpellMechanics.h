@@ -176,7 +176,7 @@ protected:
 	ISpellMechanicsFactory(const CSpell * s);
 };
 
-class DLL_LINKAGE Mechanics
+class DLL_LINKAGE Mechanics : public scripting::ApiRawPointer<Mechanics>
 {
 public:
 	virtual ~Mechanics();

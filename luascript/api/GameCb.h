@@ -10,9 +10,11 @@
 
 #pragma once
 
-#include <vcmi/scripting/Service.h>
-
 #include "../LuaWrapper.h"
+
+#include "../../lib/callback/IGameInfoCallback.h"
+
+#include <vcmi/scripting/Service.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
 

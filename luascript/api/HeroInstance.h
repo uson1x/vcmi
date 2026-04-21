@@ -25,8 +25,8 @@ namespace api
 
 class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>
 {
-	static int isMale(lua_State * L);
-	static int isFemale(lua_State * L);
+	static bool isMale(const CGHeroInstance * hero);
+	static bool isFemale(const CGHeroInstance * hero);
 
 public:
 	using Wrapper = RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>;

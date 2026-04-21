@@ -28,10 +28,10 @@ namespace events
 {
 
 
-class EventSubscriptionProxy : public UniquePointerWrapper<::events::EventSubscription, EventSubscriptionProxy>
+class EventSubscriptionProxy : public SharedPointerWrapper<::events::EventSubscription, EventSubscriptionProxy>
 {
 public:
-	using Wrapper = UniquePointerWrapper<::events::EventSubscription, EventSubscriptionProxy>;
+	using Wrapper = SharedPointerWrapper<::events::EventSubscription, EventSubscriptionProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
@@ -80,8 +80,8 @@ public:
 			S.clear();
 		};
 
-		std::unique_ptr<::events::EventSubscription> subscription = registry->subscribeBefore(eventBus, std::move(callback));
-		S.push(std::move(subscription));
+		std::shared_ptr<::events::EventSubscription> subscription = registry->subscribeBefore(eventBus, std::move(callback));
+		S.push(subscription);
 		return 1;
 	}
 
@@ -120,7 +120,7 @@ public:
 			S.clear();
 		};
 
-		std::unique_ptr<::events::EventSubscription> subscription = registry->subscribeAfter(eventBus, std::move(callback));
+		std::shared_ptr<::events::EventSubscription> subscription = registry->subscribeAfter(eventBus, std::move(callback));
 		S.push(std::move(subscription));
 		return 1;
 	}

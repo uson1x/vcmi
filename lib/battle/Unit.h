@@ -11,6 +11,7 @@
 #pragma once
 
 #include <vcmi/Creature.h>
+#include <vcmi/scripting/ApiTags.h>
 #include <vcmi/spells/Caster.h>
 
 #include "../bonuses/Bonus.h"
@@ -62,7 +63,7 @@ struct HealInfo
 
 class CUnitState;
 
-class DLL_LINKAGE Unit : public IUnitInfo, public spells::Caster, public virtual IBonusBearer, public ACreature
+class DLL_LINKAGE Unit : public IUnitInfo, public spells::Caster, public virtual IBonusBearer, public ACreature, public	scripting::ApiRawPointer<Unit>
 {
 	static BattleHexArray::ArrayOfBattleHexArrays precomputeUnitHexes(BattleSide side, bool twoHex);
 

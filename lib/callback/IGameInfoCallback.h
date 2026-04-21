@@ -13,6 +13,8 @@
 #include "../constants/Enumerations.h"
 #include "../int3.h"
 
+#include <vcmi/scripting/ApiTags.h>
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 struct StartInfo;
@@ -54,7 +56,7 @@ class RNG;
 
 /// Provide interfaces through which map objects can access game state data
 /// TODO: currently it is also used as Environment::GameCb. Consider separating these two interfaces
-class DLL_LINKAGE IGameInfoCallback : boost::noncopyable
+class DLL_LINKAGE IGameInfoCallback : boost::noncopyable, public scripting::ApiRawPointer<IGameInfoCallback>
 {
 public:
 	~IGameInfoCallback() = default;

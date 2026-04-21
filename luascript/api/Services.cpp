@@ -37,70 +37,43 @@ VCMI_REGISTER_CORE_SCRIPT_API(ServicesProxy, "library.Services");
 
 const std::vector<ServicesProxy::CustomRegType> ServicesProxy::REGISTER_CUSTOM =
 {
-	{"artifacts", LuaMethodWrapper<Services, decltype(&Services::artifacts), &Services::artifacts>::invoke, false},
-	{"creatures", LuaMethodWrapper<Services, decltype(&Services::creatures), &Services::creatures>::invoke, false},
-	{"factions", LuaMethodWrapper<Services, decltype(&Services::factions), &Services::factions>::invoke, false},
-	{"heroClasses", LuaMethodWrapper<Services, decltype(&Services::heroClasses), &Services::heroClasses>::invoke, false},
-	{"heroTypes", LuaMethodWrapper<Services, decltype(&Services::heroTypes), &Services::heroTypes>::invoke, false},
-	{"spells", LuaMethodWrapper<Services, decltype(&Services::spells), &Services::spells>::invoke, false},
-	{"skills", LuaMethodWrapper<Services, decltype(&Services::skills), &Services::skills>::invoke, false},
+	{"getArtifactByName", LuaFunctionWrapper<ServicesProxy::getArtifactByName>::invoke, false},
+	{"getCreatureByName", LuaFunctionWrapper<ServicesProxy::getCreatureByName>::invoke, false},
+	{"getHeroClassByName", LuaFunctionWrapper<ServicesProxy::getHeroClassByName>::invoke, false},
+	{"getHeroTypeByName", LuaFunctionWrapper<ServicesProxy::getHeroTypeByName>::invoke, false},
+	{"getSpellByName", LuaFunctionWrapper<ServicesProxy::getSpellByName>::invoke, false},
+	{"getSecondarySkillByName", LuaFunctionWrapper<ServicesProxy::getSecondarySkillByName>::invoke, false},
 };
 
-VCMI_REGISTER_CORE_SCRIPT_API(ArtifactServiceProxy, "library.Artifacts");
-
-const std::vector<ArtifactServiceProxy::CustomRegType> ArtifactServiceProxy::REGISTER_CUSTOM =
+const Artifact * ServicesProxy::getArtifactByName(const Services * services, const std::string & name)
 {
-	{"getByIndex", LuaMethodWrapper<ArtifactService, decltype(&ArtifactService::getByIndex), &ArtifactService::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<ArtifactService, decltype(&ArtifactService::getByName), &ArtifactService::getByName>::invoke, false}
-};
+	return services->artifacts()->getByName(name);
+}
 
-VCMI_REGISTER_CORE_SCRIPT_API(CreatureServiceProxy, "library.Creatures");
-
-const std::vector<CreatureServiceProxy::CustomRegType> CreatureServiceProxy::REGISTER_CUSTOM =
+const Creature * ServicesProxy::getCreatureByName(const Services * services, const std::string & name)
 {
-	{"getByIndex", LuaMethodWrapper<CreatureService, decltype(&CreatureService::getByIndex), &CreatureService::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<CreatureService, decltype(&CreatureService::getByName), &CreatureService::getByName>::invoke, false}
-};
+	return services->creatures()->getByName(name);
+}
 
-VCMI_REGISTER_CORE_SCRIPT_API(FactionServiceProxy, "library.Factions");
-
-const std::vector<FactionServiceProxy::CustomRegType> FactionServiceProxy::REGISTER_CUSTOM =
+const HeroClass * ServicesProxy::getHeroClassByName(const Services * services, const std::string & name)
 {
-	{"getByIndex", LuaMethodWrapper<FactionService, decltype(&FactionService::getByIndex), &FactionService::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<FactionService, decltype(&FactionService::getByName), &FactionService::getByName>::invoke, false}
-};
+	return services->heroClasses()->getByName(name);
+}
 
-VCMI_REGISTER_CORE_SCRIPT_API(HeroClassServiceProxy, "library.HeroClasses");
-
-const std::vector<HeroClassServiceProxy::CustomRegType> HeroClassServiceProxy::REGISTER_CUSTOM =
+const HeroType * ServicesProxy::getHeroTypeByName(const Services * services, const std::string & name)
 {
-	{"getByIndex", LuaMethodWrapper<HeroClassService, decltype(&HeroClassService::getByIndex), &HeroClassService::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<HeroClassService, decltype(&HeroClassService::getByName), &HeroClassService::getByName>::invoke, false}
-};
+	return services->heroTypes()->getByName(name);
+}
 
-VCMI_REGISTER_CORE_SCRIPT_API(HeroTypeServiceProxy, "library.HeroTypes");
-
-const std::vector<HeroTypeServiceProxy::CustomRegType> HeroTypeServiceProxy::REGISTER_CUSTOM =
+const spells::Spell * ServicesProxy::getSpellByName(const Services * services, const std::string & name)
 {
-	{"getByIndex", LuaMethodWrapper<HeroTypeService, decltype(&HeroTypeService::getByIndex), &HeroTypeService::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<HeroTypeService, decltype(&HeroTypeService::getByName), &HeroTypeService::getByName>::invoke, false}
-};
+	return services->spells()->getByName(name);
+}
 
-VCMI_REGISTER_CORE_SCRIPT_API(SkillServiceProxy, "library.Skills");
-
-const std::vector<SkillServiceProxy::CustomRegType> SkillServiceProxy::REGISTER_CUSTOM =
+const Skill * ServicesProxy::getSecondarySkillByName(const Services * services, const std::string & name)
 {
-	{"getByIndex", LuaMethodWrapper<SkillService, decltype(&SkillService::getByIndex), &SkillService::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<SkillService, decltype(&SkillService::getByName), &SkillService::getByName>::invoke, false}
-};
-
-VCMI_REGISTER_CORE_SCRIPT_API(SpellServiceProxy, "library.Spells");
-
-const std::vector<SpellServiceProxy::CustomRegType> SpellServiceProxy::REGISTER_CUSTOM =
-{
-	{"getByIndex", LuaMethodWrapper<spells::Service, decltype(&spells::Service::getByIndex), &spells::Service::getByIndex>::invoke, false},
-	{"getByName", LuaMethodWrapper<spells::Service, decltype(&spells::Service::getByName), &spells::Service::getByName>::invoke, false}
-};
+	return services->skills()->getByName(name);
+}
 
 }
 }

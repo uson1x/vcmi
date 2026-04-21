@@ -46,8 +46,6 @@ namespace scripting
 			{"getBattleID", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getBattleID), &Mechanics::getBattleID>::invoke, false},
 			{"calculateRawEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::calculateRawEffectValue), &Mechanics::calculateRawEffectValue>::invoke, false},
 			{"applySpecificSpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpecificSpellBonus), &Mechanics::applySpecificSpellBonus>::invoke, false},
-
-	//		{"adaptGenericProblem", LuaMethodWrapper<Mechanics, decltype(&Mechanics::adaptGenericProblem), &Mechanics::adaptGenericProblem>::invoke, false},
 		};
 	}
 }

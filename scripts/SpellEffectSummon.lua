@@ -1,23 +1,32 @@
-local MetaString = require("texts.MetaString")
-
--- expected parameters:
--- - id
--- - permanent
--- - exclusive
--- - summonByHealth
--- - summonSameUnit
+meta = {
+	type = spellEffect,
+	spellEffectSchema = {
+		required = { "id" },
+		properties = {
+			type = {},
+			indirect = {},
+			optional = {},
+			id = { type = "string" }, -- type of creature that can be summoned by the spell
+			permanent = { type = "boolean" }, -- if true, summoned units persists after combat
+			exclusive =  { type = "boolean" }, -- if true, spell can only be used if there are no summoned units of another typee
+			summonByHealth = { type = "boolean" }, -- if true, spell effect power represents summoned health, if not - summoned amount
+			summonSameUnit = { type = "boolean" } -- if true, spell will increase stack size of existing summon, if available, instead of summoning a separate stack 
+		},
+		additionalProperties = false
+	}
+}
 
 local function summonedEffectValue(parameters, mechanics)
-	effectPower = mechanics:getEffectPower()
-	rawEffectPower = mechanics:calculateRawEffectValue(0, effectPower)
-	finaleEffectPower = mechanics:applySpecificSpellBonus(rawEffectPower)
+	local effectPower = mechanics:getEffectPower()
+	local rawEffectPower = mechanics:calculateRawEffectValue(0, effectPower)
+	local finalEffectPower = mechanics:applySpecificSpellBonus(rawEffectPower)
 	
-	return finaleEffectPower
+	return finalEffectPower
 end
 
 local function summonedCreatureHealth(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
-	local creature = LIBRARY:creatures():getByName(parameters.id)
+	local creature = LIBRARY:getCreatureByName(parameters.id)
 	if parameters.summonByHealth then
 		return valueWithBonus
 	else
@@ -27,7 +36,7 @@ end
 
 local function summonedCreatureAmount(parameters, mechanics)
 	local valueWithBonus = summonedEffectValue(parameters, mechanics)
-	local creature = LIBRARY:creatures():getByName(parameters.id)
+	local creature = LIBRARY:getCreatureByName(parameters.id)
 	if parameters.summonByHealth then
 		return math.floor(valueWithBonus / creature:getMaxHealth())
 	else
@@ -35,24 +44,34 @@ local function summonedCreatureAmount(parameters, mechanics)
 	end
 end
 
+-- TODO
+-- initializes parameters of the script using spell effect json
+-- returns converted parameters that contain resolved identifiers
+initialize = function(parameters)
+	parameters.creature = LIBRARY:getCreatureByName(parameters.id)
+	return parameters
+end
+
+--- Returns true if specified target can be affected by the spell
+--- if target can not be affected, script needs to call `problem:add`
+--- to explain the reason to the player
 applicableTarget = function(parameters, mechanics, problem, target)
     return true
 end
 
+--- Returns true if spell can be casted in general
+--- if no valid targets exist, script needs to call `problem:add`
+--- to explain the reason to the player
 applicable = function(parameters, mechanics, problem)
-	local creature = LIBRARY:creatures():getByName(parameters.id)
-	if creature == "nil" then
-		return mechanics:adaptGenericProblem(problem)
-	end
+	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then
-		return mechanics:adaptGenericProblem(problem)
+		return problem:addGeneric(mechanics:getCasterNameTextID())
 	end
 
 	-- check if there are summoned creatures of other type
 	if parameters.exclusive then
-		local battle = mechanics:getBattle();
-		local elemental = battle:getAnyUnitIf(function(unit)
+		local elemental = mechanics:getBattle():getAnyUnitIf(function(unit)
 			return (unit:getOwner() == mechanics:getCasterColor())
 				and (unit:isSummoned())
 				and (not unit:isClone())
@@ -86,8 +105,10 @@ applicable = function(parameters, mechanics, problem)
 	return true
 end
 
+--- Actually casts the spells and applies all changes caused by spell
+--- use `server` parameter to apply changes on specified target(s)
 apply = function(parameters, mechanics, server, target)
-	local creature = LIBRARY:creatures():getByName(parameters.id)
+	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	for _, dest in ipairs(target) do
 		if dest.unitValue then
@@ -122,8 +143,11 @@ apply = function(parameters, mechanics, server, target)
 	end
 end
 
+--- converts specified range into actual list of affected targets
+--- for example, area damage spells should locate all units on affected hexes
+--- and return list of affected units
 transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
-	local creature = LIBRARY:creatures():getByName(parameters.id)
+	local creature = LIBRARY:getCreatureByName(parameters.id)
 	local sameSummoned = mechanics:getBattle():getAnyUnitIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())
@@ -134,16 +158,22 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 
 	if sameSummoned == nil or not parameters.summonSameUnit then
 		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:getCasterSide())
-		if hex < 0 then
+		if not hex.isValid() then
 			return {} -- no free space. FIXME: should be in isApplicable
 		else
 			return {
-				{ hex }
+				{
+					hex = hex, 
+					unit = nil
+				}
 			}
 		end
 	else
 		return {
-			{ sameSummoned[1]:getPosition(), sameSummoned[1] }
+			{ 
+				hex = sameSummoned[1]:getPosition(), 
+				unit = sameSummoned[1]
+			}
 		}
 	end
 end

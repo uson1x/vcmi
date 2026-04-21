@@ -37,8 +37,8 @@ public:
 
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
 
-	template<typename... Args>
-	JsonNode callGlobalWithParameters(const std::string & name, Args&& ... parameters);
+	template<typename ReturnType, typename... Args>
+	ReturnType callGlobalWithParameters(const std::string & name, Args&& ... parameters);
 
 	void getGlobal(const std::string & name, int & value) override;
 	void getGlobal(const std::string & name, std::string & value) override;
@@ -91,8 +91,8 @@ private:
 	int logErrorImpl();
 };
 
-template<typename... Args>
-JsonNode LuaContext::callGlobalWithParameters(const std::string & name, Args&& ... parameters)
+template<typename ReturnType, typename... Args>
+ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&& ... parameters)
 {
 	LuaStack S(L);
 
@@ -100,14 +100,10 @@ JsonNode LuaContext::callGlobalWithParameters(const std::string & name, Args&& .
 
 	if(!S.isFunction(-1))
 	{
-		boost::format fmt("%s is not a function");
-		fmt % name;
-
-		logGlobal->error(fmt.str());
-
 		S.clear();
-
-		return JsonNode();
+		std::string error = "Function with name " + name + " was not found";
+		logGlobal->error(error);
+		throw LuaApiException(error);
 	}
 
 	int argc = sizeof...(Args);
@@ -115,24 +111,27 @@ JsonNode LuaContext::callGlobalWithParameters(const std::string & name, Args&& .
 
 	if(lua_pcall(L, argc, 1, 0))
 	{
-		std::string error = lua_tostring(L, -1);
-
-		boost::format fmt("Lua function %s failed with message: %s");
-		fmt % name % error;
-
-		logGlobal->error(fmt.str());
-
 		S.clear();
 
-		return JsonNode();
+		std::string error = lua_tostring(L, -1);
+		boost::format fmt("Lua function %s failed with message: %s");
+		fmt % name % error;
+		logGlobal->error(fmt.str());
+		throw LuaApiException(error);
 	}
 
-	JsonNode ret;
-
-	pop(ret);
-	S.balance();
-
-	return ret;
+	if constexpr (!std::is_void_v<ReturnType>)
+	{
+		ReturnType ret;
+		S.getOrThrow(-1, ret);
+		S.balance();
+		return ret;
+	}
+	else
+	{
+		S.balance();
+		return;
+	}
 }
 
 }

@@ -12,6 +12,8 @@
 
 #include "api/Registry.h"
 #include "../lib/constants/IdentifierBase.h"
+#include "vcmi/scripting/ApiTags.h"
+
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -21,20 +23,38 @@ class int3;
 namespace scripting
 {
 
-namespace detail
+class LuaApiException : public std::runtime_error
 {
-	template<typename T>
-	struct IsRegularClass
-	{
-		static constexpr auto value = std::is_class_v<T> && !std::is_base_of_v<IdentifierBase, T>;
-	};
+	using std::runtime_error::runtime_error;
+};
+
+class LuaStack;
+
+class LuaDeserializer
+{
+	LuaStack & stack;
+	lua_State * L;
+	int idx;
+
+public:
+	LuaDeserializer(LuaStack & stack, int idx);
 
 	template<typename T>
-	struct IsIdClass
-	{
-		static constexpr auto value = std::is_class_v<T> && std::is_base_of_v<IdentifierBase, T>;
-	};
-}
+	void operator()(const std::string &keyName, T & data) const;
+};
+
+class LuaSerializer
+{
+	LuaStack & stack;
+	lua_State * L;
+	int idx;
+
+public:
+	LuaSerializer(LuaStack & stack, int idx);
+
+	template<typename T>
+	void operator()(const std::string &keyName, const T & data) const;
+};
 
 class LuaStack
 {
@@ -82,96 +102,65 @@ public:
 
 	void push(const int3 & value);
 
-	template<typename T, typename std::enable_if_t< detail::IsIdClass<T>::value, int> = 0>
+	template<typename T, typename std::enable_if_t< std::is_base_of_v<IdentifierBase, T>, int> = 0>
 	void push(const T & value)
 	{
 		pushInteger(static_cast<lua_Integer>(value.getNum()));
 	}
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value, int> = 0>
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagRawPointer, T>, int> = 0>
 	void push(T * value)
 	{
-		using UData = T *;
-		static auto KEY = api::TypeRegistry::get()->getKey<UData>();
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		using PtrType = std::conditional_t<std::is_const_v<T>, const BaseType *, BaseType *>;
+		static auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
 
-		if(!value)
+		if(value == nullptr)
 		{
 			pushNil();
 			return;
 		}
 
-		void * raw = lua_newuserdata(L, sizeof(UData));
+		void * raw = lua_newuserdata(L, sizeof(PtrType));
 		if(!raw)
-		{
-			pushNil();
-			return;
-		}
+			throw LuaApiException("Failed to allocate new user data!");
 
-		auto * ptr = static_cast<UData *>(raw);
+		auto * ptr = static_cast<PtrType *>(raw);
 		*ptr = value;
 
 		luaL_getmetatable(L, KEY);
 		if(lua_isnil(L, -1))
-		{
-			assert(0);
-			throw std::runtime_error(std::string("Unregistered type pushed on Lua stack: ") + KEY);
-		}
+			throw LuaApiException(std::string("Unregistered type pushed on Lua stack: ") + KEY);
+
 		lua_setmetatable(L, -2);
 	}
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value, int> = 0>
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSharedPointer, T>, int> = 0>
 	void push(std::shared_ptr<T> value)
 	{
-		using UData = std::shared_ptr<T>;
-		static auto KEY = api::TypeRegistry::get()->getKey<UData>();
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		using PtrType = std::conditional_t<std::is_const_v<T>, std::shared_ptr<const BaseType>, std::shared_ptr<BaseType>>;
+		static auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
 
-		if(!value)
+		if(value == nullptr)
 		{
 			pushNil();
 			return;
 		}
 
-		void * raw = lua_newuserdata(L, sizeof(UData));
+		void * raw = lua_newuserdata(L, sizeof(PtrType));
 
 		if(!raw)
-		{
-			pushNil();
-			return;
-		}
+			throw LuaApiException("Failed to allocate new user data!");
 
-		new(raw) UData(value);
+		new(raw) PtrType(value);
 
 		luaL_getmetatable(L, KEY);
 		if(lua_isnil(L, -1))
-			throw std::runtime_error(std::string("Unregistered type pushed on Lua stack: ") + KEY);
-		lua_setmetatable(L, -2);
-	}
+			throw LuaApiException(std::string("Unregistered type pushed on Lua stack: ") + KEY);
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value, int> = 0>
-	void push(std::unique_ptr<T> && value)
-	{
-		using UData = std::unique_ptr<T>;
-		static auto KEY = api::TypeRegistry::get()->getKey<UData>();
-
-		if(!value)
-		{
-			pushNil();
-			return;
-		}
-
-		void * raw = lua_newuserdata(L, sizeof(UData));
-
-		if(!raw)
-		{
-			pushNil();
-			return;
-		}
-
-		new(raw) UData(std::move(value));
-
-		luaL_getmetatable(L, KEY);
-		if(lua_isnil(L, -1))
-			throw std::runtime_error(std::string("Unregistered type pushed on Lua stack: ") + KEY);
 		lua_setmetatable(L, -2);
 	}
 
@@ -194,7 +183,7 @@ public:
 		}
 	}
 
-	template<typename T, typename std::enable_if_t<detail::IsIdClass<T>::value, int> = 0>
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<IdentifierBase, T>, int> = 0>
 	bool tryGet(int position, T & value)
 	{
 		lua_Integer temp;
@@ -229,38 +218,82 @@ public:
 	bool tryGet(int position, double & value);
 	bool tryGet(int position, std::string & value);
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value && std::is_const_v<T>, int> = 0>
+	template<typename T>
+	bool tryGet(int idx, std::vector<T> & out)
+	{
+		if (!lua_istable(L, idx))
+			throw LuaApiException("value at index is not a table");
+
+		size_t len = lua_objlen(L, idx);
+		out.resize(len);
+
+		for (size_t i = 0; i < len; ++i) {
+			lua_rawgeti(L, idx, i+1);
+			tryGet(-1, out[i]);
+			lua_pop(L, 1);
+		}
+	}
+
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSerializable, T>, int> = 0>
+	STRONG_INLINE bool tryGet(int position, T & value)
+	{
+		LuaDeserializer serializer(*this, position);
+		value->serializeLua(serializer);
+		return true;
+	}
+
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagRawPointer, T> && std::is_const_v<T>, int> = 0>
 	STRONG_INLINE bool tryGet(int position, T * & value)
 	{
-		using NCValue = typename std::remove_const_t<T>;
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		using BasePtrType = BaseType *;
+		using ConstPtrType = const BaseType *;
 
-		using UData = NCValue *;
-		using CUData = T *;
-
-		return tryGetCUData<T *, UData, CUData>(position, value);
+		ConstPtrType basePtr;
+		bool result = tryGetCUData<BasePtrType, ConstPtrType>(position, basePtr);
+		value = dynamic_cast<T*>(basePtr);
+		return result;
 	}
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value && !std::is_const_v<T>, int> = 0>
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagRawPointer, T> && !std::is_const_v<T>, int> = 0>
 	STRONG_INLINE bool tryGet(int position, T * & value)
 	{
-		return tryGetUData<T *>(position, value);
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		using BasePtrType = BaseType*;
+
+		BasePtrType basePtr;
+		bool result = tryGetUData<BasePtrType>(position, basePtr);
+		value = dynamic_cast<T*>(basePtr);
+		return result;
 	}
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value && std::is_const_v<T>, int> = 0>
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSharedPointer, T> && std::is_const_v<T>, int> = 0>
 	STRONG_INLINE bool tryGet(int position, std::shared_ptr<T> & value)
 	{
-		using NCValue = typename std::remove_const_t<T>;
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		using BasePtrType = std::shared_ptr<BaseType>;
+		using ConstPtrType = std::shared_ptr<const BaseType>;
 
-		using UData = std::shared_ptr<NCValue>;
-		using CUData = std::shared_ptr<T>;
-
-		return tryGetCUData<std::shared_ptr<T>, UData, CUData>(position, value);
+		ConstPtrType basePtr;
+		bool result = tryGetCUData<BasePtrType, ConstPtrType>(position, basePtr);
+		value = std::dynamic_pointer_cast<T>(basePtr);
+		return result;
 	}
 
-	template<typename T, typename std::enable_if_t<detail::IsRegularClass<T>::value && !std::is_const_v<T>, int> = 0>
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSharedPointer, T> && !std::is_const_v<T>, int> = 0>
 	STRONG_INLINE bool tryGet(int position, std::shared_ptr<T> & value)
 	{
-		return tryGetUData<std::shared_ptr<T>>(position, value);
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		using BasePtrType = std::shared_ptr<BaseType>;
+
+		BasePtrType basePtr;
+		bool result = tryGetUData<BasePtrType>(position, basePtr);
+		value = std::dynamic_pointer_cast<T>(basePtr);
+		return result;
 	}
 
 	template<typename... Args>
@@ -273,49 +306,81 @@ public:
 		return !failed;
 	}
 
-	template<typename U>
-	bool tryGetUData(int position, U & value)
+	template<typename T>
+	void getOrThrow(int position, T & value)
 	{
-		static auto KEY = api::TypeRegistry::get()->getKey<U>();
+		bool result = tryGet(position, value);
+		if (!result)
+		{
+			const char * expectedType = typeid(T).name();
+			const char * actualType = lua_typename(L, position);
+			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + "at position" + std::to_string(position) + ", but found " + actualType;
+			throw LuaApiException( message );
+		}
+	}
+
+	template<typename BaseType>
+	bool tryGetUData(int position, BaseType & value)
+	{
+		if (lua_isnil(L, position))
+		{
+			value = nullptr;
+			return true;
+		}
+
+		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
 
 		void * raw = lua_touserdata(L, position);
 
 		if(!raw)
-			return false;
+		{
+			const char * expectedType = typeid(BaseType).name();
+			const char * actualType = lua_typename(L, position);
+			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + "at position" + std::to_string(position) + ", but found " + actualType;
+			throw LuaApiException( message );
+
+		}
 
 		if(lua_getmetatable(L, position) == 0)
-			return false;
+			throw LuaApiException( "Invalid Lua value! Found userdata without assigned metatable!");
 
 		lua_getfield(L, LUA_REGISTRYINDEX, KEY);
 
 		if(lua_rawequal(L, -1, -2) == 1)
 		{
-			value = *(static_cast<U *>(raw));
+			value = *(static_cast<BaseType *>(raw));
 			lua_pop(L, 2);
 			return true;
 		}
 
 		lua_pop(L, 2);
-		return false;
+		throw LuaApiException( "Failed to retrieve class " + std::string(typeid(BaseType).name()) + " from stack!");
 	}
 
-	template<typename T, typename U, typename CU>
-	bool tryGetCUData(int position, T & value)
+	template<typename BaseType, typename BaseConstType>
+	bool tryGetCUData(int position, BaseConstType & value)
 	{
-		static auto KEY = api::TypeRegistry::get()->getKey<U>();
-		static auto C_KEY = api::TypeRegistry::get()->getKey<CU>();
+		if (lua_isnil(L, position))
+		{
+			value = nullptr;
+			return true;
+		}
+
+		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static auto C_KEY = api::TypeRegistry::get()->getKey<BaseConstType>();
 
 		void * raw = lua_touserdata(L, position);
 
 		if(!raw)
 		{
-			int t = lua_type(L, position);
-			logGlobal->error("index=%d type=%s top=%d\n", position, lua_typename(L,t), lua_gettop(L));
-			return false;
+			const char * expectedType = typeid(BaseType).name();
+			const char * actualType = lua_typename(L, position);
+			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + "at position" + std::to_string(position) + ", but found " + actualType;
+			throw LuaApiException( message );
 		}
 
 		if(lua_getmetatable(L, position) == 0)
-			return false;
+			throw LuaApiException( "Invalid Lua value! Found userdata without assigned metatable!");
 
 		//top is metatable
 
@@ -323,7 +388,7 @@ public:
 
 		if(lua_rawequal(L, -1, -2) == 1)
 		{
-			value = *(static_cast<U *>(raw));
+			value = *(static_cast<BaseType *>(raw));
 			lua_pop(L, 2);
 			return true;
 		}
@@ -336,13 +401,13 @@ public:
 
 		if(lua_rawequal(L, -1, -2) == 1)
 		{
-			value = *(static_cast<CU *>(raw));
+			value = *(static_cast<BaseConstType *>(raw));
 			lua_pop(L, 2);
 			return true;
 		}
 
 		lua_pop(L, 2);
-		return false;
+		throw LuaApiException( "Failed to retrieve class " + std::string(typeid(BaseType).name()) + " from stack!");
 	}
 
 	bool tryGet(int position, JsonNode & value);
@@ -400,6 +465,41 @@ private:
 	lua_State * L;
 	int initialTop;
 };
+
+template<typename T>
+void LuaDeserializer::operator()(const std::string &keyName, T & data) const
+{
+	if (!lua_istable(L, idx))
+		throw LuaApiException("value at index is not a table");
+
+	// pushes table[keyName] on stack
+	lua_getfield(L, idx, keyName.c_str());
+
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		throw LuaApiException("Missing required field '" + keyName + "'");
+	}
+
+	try {
+		stack.tryGet(-1, data);
+	} catch (...) {
+		// restore stack
+		lua_pop(L, 1);
+		throw;
+	}
+
+	lua_pop(L, 1); // pop pushed value
+}
+
+template<typename T>
+void LuaSerializer::operator()(const std::string &keyName, const T & data) const
+{
+	if (!lua_istable(L, idx))
+		throw LuaApiException("value at index is not a table");
+
+    stack.push(data);
+    lua_setfield(L, idx, keyName.c_str());
+}
 
 }
 

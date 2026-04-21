@@ -11,6 +11,7 @@
 #pragma once
 
 #include "Metatype.h"
+#include "scripting/ApiTags.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -41,7 +42,7 @@ namespace scripting
 	class Service;
 }
 
-class DLL_LINKAGE Services
+class DLL_LINKAGE Services : public scripting::ApiRawPointer<Services>
 {
 public:
 	virtual ~Services() = default;
