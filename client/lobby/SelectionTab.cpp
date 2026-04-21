@@ -693,12 +693,13 @@ void SelectionTab::filter(int size, bool selectFirst)
 		else if(tabType == ESelectionScreen::newGame || tabType == ESelectionScreen::campaignList)
 		{
 			const std::string selectedMapFileURI = GAME->server().mi ? GAME->server().mi->fileURI : "";
+			const bool selectedRandomMap = tabType == ESelectionScreen::newGame	&& GAME->server().mi && GAME->server().mi->isRandomMap;
 			auto selectedMapIt = boost::range::find_if(curItems, [&selectedMapFileURI](std::shared_ptr<ElementInfo> e)
 			{
 				return !e->isFolder && e->fileURI == selectedMapFileURI;
 			});
 
-			if(selectedMapIt == curItems.end())
+			if(selectedMapIt == curItems.end() && !selectedRandomMap)
 			{
 				int firstPos = boost::range::find_if(curItems, [](std::shared_ptr<ElementInfo> e) { return !e->isFolder; }) - curItems.begin();
 				if(firstPos < curItems.size())
