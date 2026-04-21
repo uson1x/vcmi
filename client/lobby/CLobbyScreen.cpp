@@ -334,7 +334,15 @@ void CLobbyScreen::updateAfterStateChange()
 {
 	OBJECT_CONSTRUCTION;
 	updateHostLobbyChatState();
-	tabSel->filter(-1);
+	const bool shouldFilterByPlayerCount = screenType == ESelectionScreen::newGame && GAME->server().loadMode == ELoadMode::MULTI;
+	const size_t requiredHumanPlayers = shouldFilterByPlayerCount ? std::max<size_t>(2, GAME->server().playerNames.size()) : 0;
+
+	if(!compatibilityFilterInitialized || (shouldFilterByPlayerCount && requiredHumanPlayers != lastRequiredHumanPlayers))
+	{
+		tabSel->filter(-1);
+		compatibilityFilterInitialized = true;
+		lastRequiredHumanPlayers = requiredHumanPlayers;
+	}
 
 	if(!tabBattleOnlyMode)
 	{
