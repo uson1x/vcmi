@@ -72,7 +72,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 	if(screenType != ESelectionScreen::campaignList && GAME->server().loadMode == ELoadMode::MULTI && !GAME->server().hotseatMode)
 	{
 		buttonChat = std::make_shared<CButton>(Point(619, 105), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[48], std::bind(&CLobbyScreen::toggleChat, this), EShortcut::LOBBY_TOGGLE_CHAT);
-		buttonChat->setTextOverlay(LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
+		buttonChat->setTextOverlay(card->showChat ? LIBRARY->generaltexth->allTexts[531] : LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
 	}
 
 	switch(screenType)
@@ -334,7 +334,7 @@ void CLobbyScreen::updateAfterStateChange()
 {
 	OBJECT_CONSTRUCTION;
 	updateHostLobbyChatState();
-	//tabSel->filter(-1);
+	tabSel->filter(-1);
 
 	if(!tabBattleOnlyMode)
 	{

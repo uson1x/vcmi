@@ -868,6 +868,7 @@
 	"vcmi.mainMenu.ipAddressUnknown": "Neznámá",
 	"vcmi.mainMenu.join": "Připojit se",
 	"vcmi.mainMenu.joinTCP": "Připojit se do hry TCP/IP",
+	"vcmi.mainMenu.chooseAvailableServers": "Vyberte dostupný server pro připojení",
 	"vcmi.mainMenu.serverAddressEnter": "Zadejte adresu:",
 	"vcmi.mainMenu.serverClosing": "Zavírání...",
 	"vcmi.mainMenu.serverConnecting": "Připojování...",

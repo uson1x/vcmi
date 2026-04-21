@@ -71,6 +71,7 @@ private:
 	CanvasPtr createGateListColored(PlayerColor color, PlayerColor backColor) const;
 	CanvasPtr createHeroSlotsColored(PlayerColor backColor) const;
 	CanvasPtr createStackArtifactIndicator(const Point & size) const;
+	CanvasPtr createMuPopUpCustom() const;
 
 	void createPaletteShiftedSprites();
 	void generatePaletteShiftedAnimation(const AnimationPath & source, const std::vector<PaletteAnimation> & animation);

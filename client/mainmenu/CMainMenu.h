@@ -136,6 +136,7 @@ class CMultiPlayers : public WindowBase
 	ESelectionScreen screenType;
 	std::shared_ptr<CPicture> background;
 	std::shared_ptr<CTextBox> textTitle;
+	std::shared_ptr<CTextBox> textSubtitle;
 	std::array<std::shared_ptr<CTextInput>, 8> inputNames;
 	std::shared_ptr<CButton> buttonOk;
 	std::shared_ptr<CButton> buttonCancel;
@@ -229,4 +230,3 @@ public:
 
 	void tick(uint32_t msPassed) override;
 };
-

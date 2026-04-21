@@ -466,7 +466,7 @@ CMultiMode::CMultiMode(ESelectionScreen ScreenType)
 {
 	OBJECT_CONSTRUCTION;
 
-	background = std::make_shared<CPicture>(ImagePath::builtin("MUPOPUP.bmp"));
+	background = std::make_shared<CPicture>(ImagePath::builtin("MuPopUpCustom"));
 	pos = background->center(); //center, window has size of bg graphic
 
 	const auto& multiplayerConfig = CMainMenuConfig::get().getConfig()["multiplayer"];
@@ -480,10 +480,7 @@ CMultiMode::CMultiMode(ESelectionScreen ScreenType)
 	textTitleIp = std::make_shared<CTextBox>("", Rect(7, 38, 440, 50), 0, FONT_TINY, ETextAlignment::CENTER, Colors::WHITE);
 	textTitleIp->setText(LIBRARY->generaltexth->translate("vcmi.mainMenu.ipAddress") + ": " + (addresses.empty() ? LIBRARY->generaltexth->translate("vcmi.mainMenu.ipAddressUnknown") : (addresses.front() + ":" + std::to_string(GAME->server().getLocalPort()))));
 
-	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 465, 440, 18), 7, 465));
-	playerName = std::make_shared<CTextInput>(Rect(19, 436, 334, 16), background->getSurface());
-	playerName->setText(getPlayersNames()[0]);
-	playerName->setCallback(std::bind(&CMultiMode::onNameChange, this, _1));
+	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 422, 440, 18), 7, 422));
 
 	buttonHotseat = std::make_shared<CButton>(Point(373, 78 + 57 * 0), AnimationPath::builtin("MUBHOT.DEF"), LIBRARY->generaltexth->zelp[266], std::bind(&CMultiMode::hostTCP, this, EShortcut::MAIN_MENU_HOTSEAT), EShortcut::MAIN_MENU_HOTSEAT);
 	buttonLobby = std::make_shared<CButton>(Point(373, 78 + 57 * 1), AnimationPath::builtin("MUBONL.DEF"), LIBRARY->generaltexth->zelp[265], std::bind(&CMultiMode::openLobby, this), EShortcut::MAIN_MENU_LOBBY);
@@ -491,7 +488,7 @@ CMultiMode::CMultiMode(ESelectionScreen ScreenType)
 	buttonHost = std::make_shared<CButton>(Point(373, 78 + 57 * 3), AnimationPath::builtin("MUBHOST.DEF"), CButton::tooltip(LIBRARY->generaltexth->translate("vcmi.mainMenu.hostTCP"), ""), std::bind(&CMultiMode::hostTCP, this, EShortcut::MAIN_MENU_HOST_GAME), EShortcut::MAIN_MENU_HOST_GAME);
 	buttonJoin = std::make_shared<CButton>(Point(373, 78 + 57 * 4), AnimationPath::builtin("MUBJOIN.DEF"), CButton::tooltip(LIBRARY->generaltexth->translate("vcmi.mainMenu.joinTCP"), ""), std::bind(&CMultiMode::joinTCP, this, EShortcut::MAIN_MENU_JOIN_GAME), EShortcut::MAIN_MENU_JOIN_GAME);
 
-	buttonCancel = std::make_shared<CButton>(Point(373, 424), AnimationPath::builtin("MUBCANC.DEF"), LIBRARY->generaltexth->zelp[288], [this](){ close();}, EShortcut::GLOBAL_CANCEL);
+	buttonCancel = std::make_shared<CButton>(Point(373, 380), AnimationPath::builtin("MUBCANC.DEF"), LIBRARY->generaltexth->zelp[288], [this](){ close();}, EShortcut::GLOBAL_CANCEL);
 }
 
 void CMultiMode::openLobby()
@@ -546,18 +543,13 @@ JoinScreen::JoinScreen(ESelectionScreen ScreenType, std::vector<std::string> Pla
 {
 	OBJECT_CONSTRUCTION;
 
-	background = std::make_shared<CPicture>(ImagePath::builtin("MUPOPUP.bmp"));
+	background = std::make_shared<CPicture>(ImagePath::builtin("MuPopUpCustom"));
 	pos = background->center(); //center, window has size of bg graphic
 
 	textTitle = std::make_shared<CTextBox>("", Rect(7, 18, 440, 50), 0, FONT_BIG, ETextAlignment::CENTER, Colors::WHITE);
-	textTitle->setText(LIBRARY->generaltexth->zelp[263].second);
+	textTitle->setText(LIBRARY->generaltexth->translate("vcmi.mainMenu.chooseAvailableServers"));
 
-	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 465, 440, 18), 7, 465));
-
-	playerName = std::make_shared<CTextInput>(Rect(19, 436, 334, 16), background->getSurface());
-	playerName->setText(CMultiMode::getPlayersNames()[0]);
-	playerName->removeFocus();
-	playerName->deactivate();
+	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 422, 440, 18), 7, 422));
 
 	buttonSearch = std::make_shared<CButton>(Point(373, 78 + 57 * 0), AnimationPath::builtin("MUBSRCH.DEF"), LIBRARY->generaltexth->zelp[273], [this](){
 		auto savedScreenType = screenType;
@@ -569,7 +561,7 @@ JoinScreen::JoinScreen(ESelectionScreen ScreenType, std::vector<std::string> Pla
 	serverDiscovery = GAME->server().getNetworkHandler().createServerDiscovery(*this);
 	serverDiscovery->start();
 
-	buttonCancel = std::make_shared<CButton>(Point(373, 424), AnimationPath::builtin("MUBCANC.DEF"), LIBRARY->generaltexth->zelp[288], [this](){ close();}, EShortcut::GLOBAL_CANCEL);
+	buttonCancel = std::make_shared<CButton>(Point(373, 380), AnimationPath::builtin("MUBCANC.DEF"), LIBRARY->generaltexth->zelp[288], [this](){ close();}, EShortcut::GLOBAL_CANCEL);
 }
 
 JoinScreen::~JoinScreen()
@@ -607,22 +599,31 @@ CMultiPlayers::CMultiPlayers(const std::vector<std::string>& playerNames, ESelec
 	background = std::make_shared<CPicture>(ImagePath::builtin("MUHOTSEA.bmp"));
 	pos = background->center(); //center, window has size of bg graphic
 
-	std::string text;
+	std::string textTitleValue;
+	std::string textSubtitleValue;
+	std::string hotseatText = LIBRARY->generaltexth->allTexts[446];
+	std::vector<std::string> hotseatLines;
+	boost::split(hotseatLines, hotseatText, boost::is_any_of("\n"));
+	if(hotseatLines.size() > 1)
+	{
+		textSubtitleValue = hotseatLines[1];
+	}
+
 	switch (shortcut)
 	{
 	case EShortcut::MAIN_MENU_HOTSEAT:
-		text = LIBRARY->generaltexth->allTexts[446];
-		boost::replace_all(text, "\t", "\n");
+		textTitleValue = hotseatLines.empty() ? hotseatText : hotseatLines.front();
 		break;
 	case EShortcut::MAIN_MENU_HOST_GAME:
-		text = LIBRARY->generaltexth->translate("vcmi.mainMenu.hostTCP");
+		textTitleValue = LIBRARY->generaltexth->translate("vcmi.mainMenu.hostTCP");
 		break;
 	case EShortcut::MAIN_MENU_JOIN_GAME:
-		text = LIBRARY->generaltexth->translate("vcmi.mainMenu.joinTCP");
+		textTitleValue = LIBRARY->generaltexth->translate("vcmi.mainMenu.joinTCP");
 		break;
 	}
 
-	textTitle = std::make_shared<CTextBox>(text, Rect(25, 10, 315, 60), 0, FONT_BIG, ETextAlignment::CENTER, Colors::WHITE);
+	textTitle = std::make_shared<CTextBox>(textTitleValue, Rect(25, 10, 315, 30), 0, FONT_BIG, ETextAlignment::CENTER, Colors::WHITE);
+	textSubtitle = std::make_shared<CTextBox>(textSubtitleValue, Rect(25, 40, 315, 35), 0, FONT_BIG, ETextAlignment::CENTER, Colors::WHITE);
 
 	for(int i = 0; i < inputNames.size(); i++)
 	{

@@ -542,6 +542,17 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 	if(disconnectedPlayerNames.empty())
 		logNetwork->info("Connection %d disconnected from lobby with no mapped player names", static_cast<int>(connection->connectionID));
 
+	if(activeConnections.empty() || hostClientId == connection->connectionID)
+	{
+		setState(EServerState::SHUTDOWN);
+		return;
+	}
+
+	if(gh && getState() == EServerState::GAMEPLAY)
+	{
+		gh->handleClientDisconnection(connection->connectionID);
+	}
+
 	for(const auto & playerId : disconnectedPlayerIds)
 		playerNames.erase(playerId);
 
@@ -556,17 +567,6 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 			if(connectedPlayerIDs.empty())
 				setPlayerConnectedId(playerInfoEntry.second, PlayerConnectionID::PLAYER_AI);
 		}
-	}
-
-	if(activeConnections.empty() || hostClientId == connection->connectionID)
-	{
-		setState(EServerState::SHUTDOWN);
-		return;
-	}
-
-	if(gh && getState() == EServerState::GAMEPLAY)
-	{
-		gh->handleClientDisconnection(connection->connectionID);
 	}
 }
 
