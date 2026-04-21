@@ -427,7 +427,7 @@ void GlobalLobbyClient::onDisconnected(const std::shared_ptr<INetworkConnection>
 		ENGINE->windows().popWindows(1);
 	}
 
-	CInfoWindow::showInfoDialog("Connection to game lobby was lost!", {});
+	CInfoWindow::showInfoDialog(LIBRARY->generaltexth->translate("vcmi.lobby.login.connectionLost"), {});
 }
 
 void GlobalLobbyClient::sendMessage(const JsonNode & data)

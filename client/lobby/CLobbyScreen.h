@@ -16,6 +16,12 @@ class GraphicalPrimitiveCanvas;
 
 class CLobbyScreen final : public CSelectionBase
 {
+	bool waitingForPlayersMessageShown = false;
+
+	bool canStartLobbyGame() const;
+	void updateHostLobbyChatState();
+	void updateStartButtonState();
+
 public:
 	std::shared_ptr<CButton> buttonChat;
 	std::shared_ptr<GraphicalPrimitiveCanvas> blackScreen;
@@ -23,6 +29,7 @@ public:
 	CLobbyScreen(ESelectionScreen type, bool hideScreen = false);
 	~CLobbyScreen();
 	void toggleTab(std::shared_ptr<CIntObject> tab) final;
+	void tick(uint32_t msPassed) override;
 	void start(bool campaign);
 	void startCampaign();
 	void startScenario(bool allowOnlyAI = false);

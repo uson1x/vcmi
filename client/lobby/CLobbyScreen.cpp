@@ -20,6 +20,7 @@
 
 #include "../CServerHandler.h"
 #include "../GameEngine.h"
+#include "../GameChatHandler.h"
 #include "../GameInstance.h"
 #include "../gui/Shortcut.h"
 #include "../widgets/Buttons.h"
@@ -40,6 +41,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 	: CSelectionBase(screenType), bonusSel(nullptr)
 {
 	OBJECT_CONSTRUCTION;
+	addUsedEvents(TIME);
 	tabSel = std::make_shared<SelectionTab>(screenType);
 	curTab = tabSel;
 
@@ -59,7 +61,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		if(settings["general"]["enableUiEnhancements"].Bool())
 		{
 			if(screenType == ESelectionScreen::newGame)
-				buttonBattleMode = std::make_shared<CButton>(Point(619, 105), AnimationPath::builtin("GSPButton2Arrow"), CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyMode.help")), [this](){
+				buttonBattleMode = std::make_shared<CButton>(Point(619, 80), AnimationPath::builtin("GSPButton2Arrow"), CButton::tooltip("", LIBRARY->generaltexth->translate("vcmi.lobby.battleOnlyMode.help")), [this](){
 					updateAfterStateChange(); // creates tabBattleOnlyMode -> cannot created by init of object because GAME->server().isGuest() isn't valid at that point
 					toggleTab(tabBattleOnlyMode);
 				}, EShortcut::LOBBY_BATTLE_MODE);
@@ -67,9 +69,9 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		}
 	};
 
-	if(screenType != ESelectionScreen::campaignList)
+	if(screenType != ESelectionScreen::campaignList && GAME->server().loadMode == ELoadMode::MULTI && !GAME->server().hotseatMode)
 	{
-		buttonChat = std::make_shared<CButton>(Point(619, 80), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[48], std::bind(&CLobbyScreen::toggleChat, this), EShortcut::LOBBY_TOGGLE_CHAT);
+		buttonChat = std::make_shared<CButton>(Point(619, 105), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[48], std::bind(&CLobbyScreen::toggleChat, this), EShortcut::LOBBY_TOGGLE_CHAT);
 		buttonChat->setTextOverlay(LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
 	}
 
@@ -128,6 +130,8 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		blackScreen = std::make_shared<GraphicalPrimitiveCanvas>(Rect(Point(0, 0), pos.dimensions()));
 		blackScreen->addBox(Point(0, 0), pos.dimensions(), Colors::BLACK);
 	}
+
+	updateHostLobbyChatState();
 }
 
 CLobbyScreen::~CLobbyScreen()
@@ -135,6 +139,53 @@ CLobbyScreen::~CLobbyScreen()
 	// TODO: For now we always destroy whole lobby when leaving bonus selection screen
 	if(GAME->server().getState() == EClientState::LOBBY_CAMPAIGN)
 		GAME->server().sendClientDisconnecting();
+}
+
+bool CLobbyScreen::canStartLobbyGame() const
+{
+	if(GAME->server().isGuest() || GAME->server().mi == nullptr)
+		return false;
+
+	const bool isLanMultiplayerHost = GAME->server().loadMode == ELoadMode::MULTI
+		&& GAME->server().serverMode == EServerMode::LOCAL
+		&& !GAME->server().hotseatMode
+		&& GAME->server().isHost();
+
+	if(isLanMultiplayerHost && !GAME->server().hasRemoteClientInLobby())
+		return false;
+
+	return true;
+}
+
+void CLobbyScreen::updateHostLobbyChatState()
+{
+	const bool isLanMultiplayerHost = buttonChat
+		&& GAME->server().loadMode == ELoadMode::MULTI
+		&& GAME->server().serverMode == EServerMode::LOCAL
+		&& !GAME->server().hotseatMode
+		&& GAME->server().isHost();
+
+	if(!isLanMultiplayerHost)
+		return;
+
+	buttonChat->setTextOverlay(card->showChat ? LIBRARY->generaltexth->allTexts[531] : LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
+
+	if(GAME->server().hasRemoteClientInLobby())
+	{
+		waitingForPlayersMessageShown = false;
+		return;
+	}
+
+	if(!waitingForPlayersMessageShown)
+	{
+		GAME->server().getGameChat().onNewLobbyMessageReceived("System", LIBRARY->generaltexth->translate("vcmi.lobby.system.waitingForPlayers"));
+		waitingForPlayersMessageShown = true;
+	}
+}
+
+void CLobbyScreen::updateStartButtonState()
+{
+	buttonStart->block(!canStartLobbyGame());
 }
 
 void CLobbyScreen::toggleTab(std::shared_ptr<CIntObject> tab)
@@ -161,11 +212,20 @@ void CLobbyScreen::toggleTab(std::shared_ptr<CIntObject> tab)
 	}
 	else
 	{
-		buttonStart->block(GAME->server().mi == nullptr || GAME->server().isGuest());
+		updateStartButtonState();
 		card->changeSelection();
 	}
 
 	CSelectionBase::toggleTab(tab);
+}
+
+void CLobbyScreen::tick(uint32_t msPassed)
+{
+	CSelectionBase::tick(msPassed);
+
+	updateHostLobbyChatState();
+	if(curTab != tabBattleOnlyMode)
+		updateStartButtonState();
 }
 
 void CLobbyScreen::start(bool campaign)
@@ -221,9 +281,11 @@ void CLobbyScreen::startScenario(bool allowOnlyAI)
 void CLobbyScreen::toggleMode(bool host)
 {
 	tabSel->toggleMode();
-	buttonStart->block(!host);
 	if(screenType == ESelectionScreen::campaignList)
+	{
+		buttonStart->block(!host);
 		return;
+	}
 
 	auto buttonColor = host ? Colors::WHITE : Colors::ORANGE;
 	buttonSelect->setTextOverlay("  " + LIBRARY->generaltexth->allTexts[500], FONT_SMALL, buttonColor);
@@ -255,6 +317,8 @@ void CLobbyScreen::toggleMode(bool host)
 		tabTurnOptions->recreate();
 		tabExtraOptions->recreate();
 	}
+
+	updateStartButtonState();
 }
 
 void CLobbyScreen::toggleChat()
@@ -269,6 +333,9 @@ void CLobbyScreen::toggleChat()
 void CLobbyScreen::updateAfterStateChange()
 {
 	OBJECT_CONSTRUCTION;
+	updateHostLobbyChatState();
+	//tabSel->filter(-1);
+
 	if(!tabBattleOnlyMode)
 	{
 		tabBattleOnlyMode = std::make_shared<BattleOnlyModeTab>();
@@ -298,9 +365,9 @@ void CLobbyScreen::updateAfterStateChange()
 			tabExtraOptions->recreate();
 	}
 
-	if(curTab && curTab != tabBattleOnlyMode)
+	if(curTab != tabBattleOnlyMode)
 	{
-		buttonStart->block(GAME->server().mi == nullptr || GAME->server().isGuest());
+		updateStartButtonState();
 		card->changeSelection();
 	}
 

@@ -398,10 +398,11 @@ void CMainMenu::makeActiveInterface()
 	menu->switchToTab(menu->getActiveTab());
 }
 
-void CMainMenu::openLobby(ESelectionScreen screenType, bool host, const std::vector<std::string> & names, ELoadMode loadMode, bool battleMode, std::string server, ui16 port)
+void CMainMenu::openLobby(ESelectionScreen screenType, bool host, const std::vector<std::string> & names, ELoadMode loadMode, bool battleMode, bool hotseatMode, std::string server, ui16 port)
 {
 	GAME->server().resetStateForLobby(screenType == ESelectionScreen::newGame ? EStartMode::NEW_GAME : EStartMode::LOAD_GAME, screenType, EServerMode::LOCAL, names);
 	GAME->server().loadMode = loadMode;
+	GAME->server().hotseatMode = hotseatMode;
 	GAME->server().battleMode = battleMode;
 
 	ENGINE->windows().createAndPushWindow<CSimpleJoinScreen>(host, server, port);
@@ -590,7 +591,7 @@ void JoinScreen::onServerDiscovered(const DiscoveredServer & server)
 			auto savedScreenType = screenType;
 			auto savedPlayerNames = playerNames;
 			close();
-			CMainMenu::openLobby(savedScreenType, false, savedPlayerNames, ELoadMode::MULTI, false, server.address, server.port);
+			CMainMenu::openLobby(savedScreenType, false, savedPlayerNames, ELoadMode::MULTI, false, false, server.address, server.port);
 		});
 		button->setTextOverlay(LIBRARY->generaltexth->translate("vcmi.mainMenu.join"), FONT_SMALL, Colors::WHITE);
 		buttonsJoin.push_back(button);
@@ -600,7 +601,7 @@ void JoinScreen::onServerDiscovered(const DiscoveredServer & server)
 }
 
 CMultiPlayers::CMultiPlayers(const std::vector<std::string>& playerNames, ESelectionScreen ScreenType, bool Host, ELoadMode LoadMode, EShortcut shortcut)
-	: loadMode(LoadMode), screenType(ScreenType), host(Host)
+	: host(Host), hotseat(shortcut == EShortcut::MAIN_MENU_HOTSEAT), loadMode(LoadMode), screenType(ScreenType)
 {
 	OBJECT_CONSTRUCTION;
 	background = std::make_shared<CPicture>(ImagePath::builtin("MUHOTSEA.bmp"));
@@ -637,13 +638,24 @@ CMultiPlayers::CMultiPlayers(const std::vector<std::string>& playerNames, ESelec
 	{
 		inputNames[i]->setText(playerNames[i]);
 	}
+
+	buttonOk->block(hotseat && countEnteredNames() < 2);
 #ifndef VCMI_MOBILE
 	inputNames[0]->giveFocus();
 #endif
 }
 
+size_t CMultiPlayers::countEnteredNames() const
+{
+	return std::count_if(inputNames.begin(), inputNames.end(), [](const auto & playerName)
+	{
+		return playerName->getText().length();
+	});
+}
+
 void CMultiPlayers::onChange(std::string newText)
 {
+	buttonOk->block(hotseat && countEnteredNames() < 2);
 }
 
 void CMultiPlayers::enterSelectionScreen()
@@ -675,6 +687,9 @@ void CMultiPlayers::enterSelectionScreen()
 		playerName->clear();
 	}
 
+	if(hotseat && playerNames.size() < 2)
+		return;
+
 	if(!host)
 	{
 		auto savedScreenType = screenType;
@@ -683,7 +698,7 @@ void CMultiPlayers::enterSelectionScreen()
 		ENGINE->windows().createAndPushWindow<JoinScreen>(savedScreenType, savedPlayerNames);
 		return;
 	}
-	CMainMenu::openLobby(screenType, host, playerNames, loadMode, false);
+	CMainMenu::openLobby(screenType, host, playerNames, loadMode, false, hotseat);
 }
 
 CSimpleJoinScreen::CSimpleJoinScreen(bool host, std::string server, ui16 port)

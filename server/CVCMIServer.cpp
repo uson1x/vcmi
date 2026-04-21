@@ -495,7 +495,11 @@ void CVCMIServer::clientConnected(std::shared_ptr<GameConnection> c, std::vector
 		cp.connection = c->connectionID;
 		cp.name = name;
 		playerNames.try_emplace(id, cp);
-		announceTxt(boost::str(boost::format("%s (pid %d cid %d) joins the game") % name % static_cast<int>(id) % static_cast<int>(c->connectionID)));
+		logNetwork->info("Player joined lobby: name='%s', playerId=%d, connectionId=%d", name, static_cast<int>(id), static_cast<int>(c->connectionID));
+		MetaString joinMessage;
+		joinMessage.appendTextID("vcmi.lobby.system.playerJoined");
+		joinMessage.replaceRawString(name);
+		announceTxt(joinMessage);
 
 		//put new player in first slot with AI
 		for(auto & elem : si->playerInfos)
@@ -514,6 +518,45 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 	assert(vstd::contains(activeConnections, connection));
 	logGlobal->trace("Received disconnection request");
 	vstd::erase(activeConnections, connection);
+
+	std::vector<PlayerConnectionID> disconnectedPlayerIds;
+	std::vector<std::string> disconnectedPlayerNames;
+	for(const auto & playerEntry : playerNames)
+	{
+		if(playerEntry.second.connection == connection->connectionID)
+		{
+			disconnectedPlayerIds.push_back(playerEntry.first);
+			disconnectedPlayerNames.push_back(playerEntry.second.name);
+		}
+	}
+
+	for(const auto & playerName : disconnectedPlayerNames)
+	{
+		logNetwork->info("Player disconnected from lobby: name='%s', connectionId=%d", playerName, static_cast<int>(connection->connectionID));
+		MetaString disconnectMessage;
+		disconnectMessage.appendTextID("vcmi.lobby.system.playerDisconnected");
+		disconnectMessage.replaceRawString(playerName);
+		announceTxt(disconnectMessage);
+	}
+
+	if(disconnectedPlayerNames.empty())
+		logNetwork->info("Connection %d disconnected from lobby with no mapped player names", static_cast<int>(connection->connectionID));
+
+	for(const auto & playerId : disconnectedPlayerIds)
+		playerNames.erase(playerId);
+
+	if(!disconnectedPlayerIds.empty())
+	{
+		for(auto & playerInfoEntry : si->playerInfos)
+		{
+			auto & connectedPlayerIDs = playerInfoEntry.second.connectedPlayerIDs;
+			for(const auto & playerId : disconnectedPlayerIds)
+				connectedPlayerIDs.erase(playerId);
+
+			if(connectedPlayerIDs.empty())
+				setPlayerConnectedId(playerInfoEntry.second, PlayerConnectionID::PLAYER_AI);
+		}
+	}
 
 	if(activeConnections.empty() || hostClientId == connection->connectionID)
 	{
@@ -1196,4 +1239,3 @@ void CVCMIServer::sendPack(CPackForClient & pack, GameConnectionID connectionID)
 		if (c->connectionID == connectionID)
 			c->sendPack(pack);
 }
-

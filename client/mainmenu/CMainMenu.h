@@ -131,6 +131,7 @@ public:
 class CMultiPlayers : public WindowBase
 {
 	bool host;
+	bool hotseat;
 	ELoadMode loadMode;
 	ESelectionScreen screenType;
 	std::shared_ptr<CPicture> background;
@@ -140,6 +141,7 @@ class CMultiPlayers : public WindowBase
 	std::shared_ptr<CButton> buttonCancel;
 	std::shared_ptr<CGStatusBar> statusBar;
 
+	size_t countEnteredNames() const;
 	void onChange(std::string newText);
 	void enterSelectionScreen();
 
@@ -178,7 +180,7 @@ public:
 	void activate() override;
 	void onScreenResize() override;
 	void makeActiveInterface();
-	static void openLobby(ESelectionScreen screenType, bool host, const std::vector<std::string> & names, ELoadMode loadMode, bool battleMode, std::string server = {}, ui16 port = 0);
+	static void openLobby(ESelectionScreen screenType, bool host, const std::vector<std::string> & names, ELoadMode loadMode, bool battleMode, bool hotseatMode = false, std::string server = {}, ui16 port = 0);
 	static void openCampaignLobby(const std::string & campaignFileName, std::string campaignSet = "");
 	static void openCampaignLobby(std::shared_ptr<CampaignState> campaign);
 	static void startTutorial();
@@ -227,5 +229,4 @@ public:
 
 	void tick(uint32_t msPassed) override;
 };
-
 
