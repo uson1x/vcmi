@@ -484,7 +484,7 @@ void AdventureMapShortcuts::zoom( int distance)
 }
 
 void AdventureMapShortcuts::search(bool next)
-{	
+{
 	auto getColor = [](MapObjectID id ){
 		switch (id)
 		{
@@ -536,7 +536,7 @@ void AdventureMapShortcuts::search(bool next)
 			for(auto & obj : GAME->interface()->cb->getAllVisitableObjs())
 				if(selObj.first == GAME->interface()->cb->getObjInstance(obj->id)->getObjectName())
 					selVisitableObjInstances.push_back(obj->id);
-			
+
 			if(searchPos + 1 < selVisitableObjInstances.size() && searchLast == selObj.first)
 				searchPos++;
 			else
@@ -555,7 +555,7 @@ void AdventureMapShortcuts::search(bool next)
 			for(auto & obj : GAME->interface()->cb->getAllVisitableObjs())
 				if(selObj.first == GAME->interface()->cb->getObjInstance(obj->id)->getObjectName())
 					selVisitableObjInstances.push_back(obj);
-			
+
 			ENGINE->windows().createAndPushWindow<SearchPopup>(selVisitableObjInstances);
 		};
 
@@ -733,7 +733,7 @@ bool AdventureMapShortcuts::optionIsLocal()
 {
 	if (!optionInMapView() || !GAME->server().isHost() || !(GAME->server().serverMode == EServerMode::LOCAL))
 		return false;
-	
+
 	//exclude local multiplayer games (hot seat is ok)
 	auto hostClientId = GAME->server().hostClientId;
 	for(const auto& playerName : GAME->server().playerNames)
