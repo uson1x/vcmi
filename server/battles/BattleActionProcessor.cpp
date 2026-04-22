@@ -630,6 +630,8 @@ bool BattleActionProcessor::doWalkAndSpellcastAction(const CBattleInfoCallback &
 	parameters.setSpellLevel(std::max(0, bonus->val));
 	parameters.cast(gameHandler->spellcastEnvironment(), spellTarget);
 
+	processBattleEventTriggers(battle, CombatEventType::UNIT_SPELLCAST, stack, nullptr);
+
 	return true;
 }
 
