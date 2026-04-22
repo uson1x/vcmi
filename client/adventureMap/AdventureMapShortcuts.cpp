@@ -310,7 +310,7 @@ void AdventureMapShortcuts::endTurn()
 				}
 
 				const auto path = GAME->interface()->localState->getPath(hero);
-				if (!path.hasNextNode() || path.nextNode().turns)
+				if (!path.hasNextNode() || path.nextNode().turns == 0)
 				{
 					showMoveReminderDialog();
 					return;
