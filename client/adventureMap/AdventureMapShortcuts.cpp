@@ -284,27 +284,35 @@ void AdventureMapShortcuts::endTurn()
 	if(!GAME->interface()->makingTurn)
 		return;
 
+	auto showMoveReminderDialog = [this]()
+	{
+		GAME->interface()->showYesNoDialog(
+			LIBRARY->generaltexth->allTexts[55],
+			[this](){ owner.hotkeyEndingTurn(); },
+			nullptr
+		);
+	};
+
 	if(settings["adventure"]["heroReminder"].Bool())
 	{
-		for(auto hero : GAME->interface()->localState->getWanderingHeroes())
+		for(const auto hero : GAME->interface()->localState->getWanderingHeroes())
 		{
 			if(!GAME->interface()->localState->isHeroSleeping(hero) && hero->movementPointsRemaining() > 0)
 			{
-				// Only show hero reminder if conditions met:
-				// - There still movement points
-				// - Hero don't have a path or there not points for first step on path
-				GAME->interface()->localState->verifyPath(hero);
+				// Only show hero reminder if conditions are met:
+				// - There are still movement points
+				// - Hero doesn't have a path or there are no points for the first step on path
 
-				if(!GAME->interface()->localState->hasPath(hero))
+				if(!GAME->interface()->localState->verifyPath(hero))
 				{
-					GAME->interface()->showYesNoDialog( LIBRARY->generaltexth->allTexts[55], [this](){ owner.hotkeyEndingTurn(); }, nullptr);
+					showMoveReminderDialog();
 					return;
 				}
 
-				auto path = GAME->interface()->localState->getPath(hero);
-				if (path.nodes.size() < 2 || path.nodes[path.nodes.size() - 2].turns)
+				const auto path = GAME->interface()->localState->getPath(hero);
+				if (!path.hasNextNode() || path.nextNode().turns)
 				{
-					GAME->interface()->showYesNoDialog( LIBRARY->generaltexth->allTexts[55], [this](){ owner.hotkeyEndingTurn(); }, nullptr);
+					showMoveReminderDialog();
 					return;
 				}
 			}
