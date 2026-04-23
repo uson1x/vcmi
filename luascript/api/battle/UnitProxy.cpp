@@ -35,6 +35,7 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"isSummoned", LuaMethodWrapper<Unit, decltype(&Unit::isSummoned), &Unit::isSummoned>::invoke, false},
 	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
+	{"getPosition", LuaMethodWrapper<Unit, decltype(&Unit::getPosition), &Unit::getPosition>::invoke, false},
 
 	{"heal", LuaFunctionWrapper<UnitProxy::heal>::invoke, false},
 	{"getCreature", LuaFunctionWrapper<UnitProxy::getCreature>::invoke, false },

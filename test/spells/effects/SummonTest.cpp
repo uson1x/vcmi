@@ -35,6 +35,7 @@ public:
 	bool summonSameUnit;
 
 	const battle::Unit * otherSummonedUnit;
+	StrictMock<CreatureMock> otherSummonedType;
 
 	SummonTest()
 		: EffectFixture("core:summon"),
@@ -75,7 +76,7 @@ protected:
 		toSummon = creature1;
 
 		JsonNode options;
-		options["id"].String() = "airElemental";
+		options["id"].String() = "core:airElemental";
 		options["exclusive"].Bool() = exclusive;
 		options["summonSameUnit"].Bool() = summonSameUnit;
 
@@ -98,8 +99,17 @@ TEST_P(SummonTest, Applicable)
 	else
 		EXPECT_CALL(*battleFake, getUnitsIf(_)).Times(0);
 
-	EXPECT_CALL(creatureServiceMock, getByName(_)).WillRepeatedly(Return(&creatureStub));
+	if (otherSummoned != toSummon)
+	{
+		EXPECT_CALL(creatureServiceMock, getById(otherSummoned)).WillRepeatedly(Return(&otherSummonedType));
+		EXPECT_CALL(creatureServiceMock, getByIndex(otherSummoned.getNum())).WillRepeatedly(Return(&otherSummonedType));
+		EXPECT_CALL(creatureServiceMock, getByName("core:fireElemental")).WillRepeatedly(Return(&otherSummonedType));
+		EXPECT_CALL(otherSummonedType, getJsonKey()).WillRepeatedly(Return("core:fireElemental"));
+	}
+
+	EXPECT_CALL(creatureServiceMock, getByName("core:airElemental")).WillRepeatedly(Return(&creatureStub));
 	EXPECT_CALL(creatureStub, getId()).WillRepeatedly(Return(toSummon));
+	EXPECT_CALL(creatureStub, getJsonKey()).WillRepeatedly(Return("core:airElemental"));
 	EXPECT_CALL(creatureStub, isDoubleWide()).WillRepeatedly(Return(false));
 	EXPECT_CALL(mechanicsMock, getCasterColor()).WillRepeatedly(Return(PlayerColor(5)));
 	EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(summonSpellPower));
@@ -119,6 +129,7 @@ TEST_P(SummonTest, Transform)
 
 	EXPECT_CALL(creatureServiceMock, getByName(_)).WillRepeatedly(Return(&creatureStub));
 	EXPECT_CALL(creatureStub, getId()).WillRepeatedly(Return(toSummon));
+	EXPECT_CALL(creatureStub, getJsonKey()).WillRepeatedly(Return("core:airElemental"));
 	EXPECT_CALL(creatureStub, isDoubleWide()).WillRepeatedly(Return(false));
 	EXPECT_CALL(mechanicsMock, getCasterColor()).WillRepeatedly(Return(PlayerColor(5)));
 	EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(summonSpellPower));
@@ -184,7 +195,7 @@ public:
 		EXPECT_CALL(creatureServiceMock, getByIndex(Eq(toSummon.getNum()))).WillRepeatedly(Return(&toSummonType));
 		EXPECT_CALL(creatureServiceMock, getByName(_)).WillRepeatedly(Return(&toSummonType));
 		EXPECT_CALL(toSummonType, getMaxHealth()).WillRepeatedly(Return(unitHealth));
-		EXPECT_CALL(toSummonType, getJsonKey()).WillRepeatedly(Return("airElemental"));
+		EXPECT_CALL(toSummonType, getJsonKey()).WillRepeatedly(Return("core:airElemental"));
 
 		expectAmountCalculation();
 	}
@@ -219,7 +230,7 @@ protected:
 		summonByHealth = ::testing::get<1>(GetParam());
 
 		JsonNode options;
-		options["id"].String() = "airElemental";
+		options["id"].String() = "core:airElemental";
 		options["permanent"].Bool() = permanent;
 		options["summonByHealth"].Bool() = summonByHealth;
 

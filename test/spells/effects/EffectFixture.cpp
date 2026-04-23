@@ -99,10 +99,6 @@ void EffectFixture::setUp()
 	ON_CALL(mechanicsMock, spells()).WillByDefault(Return(&spellServiceMock));
 	ON_CALL(spellServiceMock, getById(_)).WillByDefault(Return(&spellStub));
 
-	ON_CALL(creatureServiceMock, getById(_)).WillByDefault(Return(&creatureStub));
-	ON_CALL(creatureServiceMock, getByIndex(_)).WillByDefault(Return(&creatureStub));
-	ON_CALL(creatureServiceMock, getByName(_)).WillByDefault(Return(&creatureStub));
-
 	ON_CALL(serverMock, getRNG()).WillByDefault(Return(&rngMock));
 
 	ON_CALL(serverMock, apply(Matcher<BattleLogMessage &>(_))).WillByDefault(Invoke(battleFake.get(),  &battle::BattleFake::accept<BattleLogMessage>));

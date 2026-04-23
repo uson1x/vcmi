@@ -66,6 +66,7 @@ applicable = function(parameters, mechanics, problem)
 	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then
+		print("SpellEffectSummon: zero summoned creatures!")
 		return problem:addGeneric(mechanics:getCasterNameTextID())
 	end
 
@@ -75,9 +76,10 @@ applicable = function(parameters, mechanics, problem)
 			return (unit:getOwner() == mechanics:getCasterColor())
 				and (unit:isSummoned())
 				and (not unit:isClone())
-				and (unit:getCreature() ~= creature)
+				and (unit:getCreature():getJsonKey() ~= creature:getJsonKey())
 		end)
 
+		print("SpellEffectSummon - summoning:", creature:getJsonKey(), " elemental is ", elemental)
 		if elemental ~= nil then
 			local hero = mechanics:getHeroCaster()
 			local himHer = "core.genrltxt.539"
@@ -99,6 +101,7 @@ applicable = function(parameters, mechanics, problem)
 					append = "core.genrltxt.538"
 				})
 			end
+			print("SpellEffectSummon - summoning:", creature:getJsonKey(), " already summoned: ", elemental:getCreature():getJsonKey())
 			return false
 		end
 	end
@@ -146,7 +149,7 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 		return (unit:getOwner() == mechanics:getCasterColor())
 			and (unit:isSummoned())
 			and (not unit:isClone())
-			and (unit:getCreature() == creature)
+			and (unit:getCreature():getJsonKey() == creature:getJsonKey())
 			and (unit:isAlive())
 	end)
 
