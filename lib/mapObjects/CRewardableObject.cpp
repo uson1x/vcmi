@@ -285,7 +285,7 @@ std::string CRewardableObject::getDescriptionMessage(PlayerColor player, const C
 	if (!wasScouted(player) || configuration.info.empty())
 		return getGenericDescriptionMessage();
 
-	auto scoutedMessage	= getScoutedDescriptionMessage(hero);
+	auto scoutedMessage = getScoutedDescriptionMessage(hero);
 	if (!scoutedMessage.empty())
 		return scoutedMessage;
 
