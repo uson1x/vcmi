@@ -1025,31 +1025,11 @@ void CCastleBuildings::enterBlacksmith(BuildingID building, ArtifactID artifactI
 	auto art = artifactID.toArtifact();
 
 	int price = art->getPrice();
-	bool possible = GAME->interface()->cb->getResourceAmount(EGameResID::GOLD) >= price;
-	ArtifactID existingArtifact;
-	if(possible)
-	{
-		for(auto slot : art->getPossibleSlots().at(ArtBearer::HERO))
-		{
-			const auto * currentArtifact = hero->getArt(slot);
+	ArtifactID existingArtifact = hero->getReplacedWarMachine(artifactID);
 
-			if(currentArtifact == nullptr)
-			{
-				possible = true;
-				break;
-			}
-			else if (currentArtifact->getTypeId() != artifactID)
-			{
-				existingArtifact = currentArtifact->getTypeId();
-				possible = true;
-				break;
-			}
-			else
-			{
-				possible = false;
-			}
-		}
-	}
+	bool canAfford = GAME->interface()->cb->getResourceAmount(EGameResID::GOLD) >= price;
+	bool hasSameMachine = existingArtifact == artifactID;
+	bool possible = canAfford && !hasSameMachine;
 
 	ENGINE->windows().createAndPushWindow<CBlacksmithDialog>(possible, artifactID, existingArtifact, hero->id);
 }
@@ -2403,13 +2383,13 @@ CBlacksmithDialog::CBlacksmithDialog(bool possible, ArtifactID aid, ArtifactID e
 			buy->addCallback([=](){
 				GAME->interface()->showYesNoDialog(
 					message.toString(),
-					[&](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); },
+					[hid, aid](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); },
 					nullptr);
 			});
 
 		}
 		else
-			buy->addCallback([=](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); });
+			buy->addCallback([hid, aid](){ GAME->interface()->cb->buyArtifact(GAME->interface()->cb->getHero(hid),aid); });
 	}
 	else
 		buy->block(true);

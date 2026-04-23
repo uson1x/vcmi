@@ -165,6 +165,27 @@ void CRecruitmentWindow::buy()
 {
 	CreatureID crid =  selected->creature->getId();
 	SlotID dstslot = dst->getSlotFor(crid);
+	const CGHeroInstance * hero = dynamic_cast<const CGHeroInstance *>(dst);
+
+	if (selected->creature->warMachine.hasValue() && hero)
+	{
+		ArtifactID newWarMachine = selected->creature->warMachine;
+		ArtifactID currentWarMachine = hero->getReplacedWarMachine(newWarMachine);
+		if (newWarMachine != currentWarMachine)
+		{
+			MetaString message;
+			message.appendTextID("vcmi.townWindow.blacksmith.replaceWarMachine");
+			message.replaceName(currentWarMachine);
+			message.replaceName(newWarMachine);
+
+			GAME->interface()->showYesNoDialog(
+				message.toString(),
+				[this, crid](){ onRecruit(crid, slider->getValue()); if(level >= 0) close();},
+				nullptr
+			);
+			return;
+		}
+	}
 
 	if(!dstslot.validSlot() && (selected->creature->warMachine == ArtifactID::NONE)) //no available slot
 	{
