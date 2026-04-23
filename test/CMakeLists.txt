@@ -102,19 +102,6 @@ set(test_HEADERS
 		mock/mock_IGameEventCallback.h
  		mock/mock_MapService.h
 		mock/mock_BonusBearer.h
-
-)
-
-list(APPEND test_SRCS
-	scripting/LuaSandboxTest.cpp
-	scripting/LuaSpellEffectTest.cpp
-	scripting/LuaSpellEffectAPITest.cpp
-	scripting/PoolTest.cpp
-	scripting/ScriptFixture.cpp
-)
-
-list(APPEND test_HEADERS
-	scripting/ScriptFixture.h
 )
 
 if(ENABLE_BATTLE_AI)
