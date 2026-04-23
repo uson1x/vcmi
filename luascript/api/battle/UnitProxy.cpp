@@ -19,11 +19,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace battle
+namespace scripting::api::battle
 {
 
 VCMI_REGISTER_CORE_SCRIPT_API(UnitProxy, "battle.Unit")
@@ -37,29 +33,23 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"isAlive", LuaMethodWrapper<Unit, decltype(&Unit::alive), &Unit::alive>::invoke, false},
 	{"isClone", LuaMethodWrapper<Unit, decltype(&Unit::isClone), &Unit::isClone>::invoke, false},
 	{"isSummoned", LuaMethodWrapper<Unit, decltype(&Unit::isSummoned), &Unit::isSummoned>::invoke, false},
-//	{"unitId", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitId), &IUnitInfo::unitId>::invoke, false},
 	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
 
-	{"getCreature", &UnitProxy::getCreature, false },
+	{"heal", LuaFunctionWrapper<UnitProxy::heal>::invoke, false},
+	{"getCreature", LuaFunctionWrapper<UnitProxy::getCreature>::invoke, false },
 };
 
-int UnitProxy::getCreature(lua_State * L)
+void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower power)
 {
-	LuaStack S(L);
-
-	const Unit * object;
-	if(!S.tryGet(1, object))
-		return S.retVoid();
-
-	S.clear();
-	const Creature * result = object->creatureId().toEntity(LIBRARY);
-	S.push(result);
-	return 1;
+	unit->heal(amount, level, power);
 }
 
+const Creature * UnitProxy::getCreature(const Unit * unit)
+{
+	return unit->creatureId().toEntity(LIBRARY);
 }
-}
+
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -32,7 +32,8 @@ public:
 	using Wrapper = RawPointerWrapper<const Unit, UnitProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static int getCreature(lua_State * L);
+	static void heal(Unit *, int64_t & amount, EHealLevel level, EHealPower power);
+	static const Creature * getCreature(const Unit *);
 };
 
 }

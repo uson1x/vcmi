@@ -34,6 +34,7 @@ public:
 
 	static int createUnit(lua_State * L);
 	static int updateUnit(lua_State * L);
+	static int healUnit(lua_State * L);
 	static int removeUnit(lua_State * L);
 };
 

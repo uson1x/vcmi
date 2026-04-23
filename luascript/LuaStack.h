@@ -30,32 +30,6 @@ class LuaApiException : public std::runtime_error
 
 class LuaStack;
 
-class LuaDeserializer
-{
-	LuaStack & stack;
-	lua_State * L;
-	int idx;
-
-public:
-	LuaDeserializer(LuaStack & stack, int idx);
-
-	template<typename T>
-	void operator()(const std::string &keyName, T & data) const;
-};
-
-class LuaSerializer
-{
-	LuaStack & stack;
-	lua_State * L;
-	int idx;
-
-public:
-	LuaSerializer(LuaStack & stack, int idx);
-
-	template<typename T>
-	void operator()(const std::string &keyName, const T & data) const;
-};
-
 class LuaStack
 {
 public:
@@ -71,6 +45,10 @@ public:
 		push(parameter);
 		return *this;
 	}
+
+	/// Converts stack position relative to top (e.g. -1) into absolute position
+	/// Behavior is identical to `lua_absindex` function, available from Lua 5.2
+	int absindex(int idx);
 
 	void pushNil();
 	void pushInteger(lua_Integer value);
@@ -164,6 +142,72 @@ public:
 		lua_setmetatable(L, -2);
 	}
 
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagCopyable, T>, int> = 0>
+	void push(const T & value)
+	{
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		static_assert(std::is_same_v<std::remove_const_t<DataType>, BaseType>, "Can not push derived class as copyable!");
+
+		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+
+		void * raw = lua_newuserdata(L, sizeof(BaseType));
+		if(!raw)
+			throw LuaApiException("Failed to allocate new user data!");
+
+		new(raw) BaseType(value);
+
+		luaL_getmetatable(L, KEY);
+		if(lua_isnil(L, -1))
+			throw LuaApiException(std::string("Unregistered type pushed on Lua stack: ") + KEY);
+
+		lua_setmetatable(L, -2);
+	}
+
+	template<typename T>
+	void push(const std::vector<T> & value)
+	{
+		lua_newtable(L);
+		int tableIndex = lua_gettop(L);
+
+		for (size_t i = 0; i < value.size(); ++i)
+		{
+			push(value[i]);
+			lua_rawseti(L, tableIndex, i + 1);
+		}
+	}
+
+	template<typename T>
+	void push(const std::map<std::string, T> & value)
+	{
+		lua_newtable(L);
+		int tableIndex = lua_gettop(L);
+
+		for (const auto &entry : value)
+		{
+			push(entry.second);
+			lua_setfield(L, tableIndex, entry.first.c_str());
+		}
+	}
+
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSerializable, T>, int> = 0>
+	void push(const T & value)
+	{
+		lua_newtable(L);
+		int tableIndex = lua_gettop(L);
+
+		// get non-const value - ugly, but required since same template method is used for deserialization
+		T & nonConstValue = const_cast<T&>(value);
+
+		const auto & luaSerializer = [this, tableIndex]<typename Field>(const std::string &keyName, const Field & data)
+		{
+			push(data);
+			lua_setfield(L, tableIndex, keyName.c_str());
+		};
+
+		nonConstValue.serializeScript(luaSerializer);
+	}
+
 	bool tryGetInteger(int position, lua_Integer & value);
 
 	bool tryGet(int position, bool & value);
@@ -232,13 +276,36 @@ public:
 			tryGet(-1, out[i]);
 			lua_pop(L, 1);
 		}
+
+		return true;
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSerializable, T>, int> = 0>
 	STRONG_INLINE bool tryGet(int position, T & value)
 	{
-		LuaDeserializer serializer(*this, position);
-		value->serializeLua(serializer);
+		const auto & deserializer = [this, position]<typename Data>(const std::string &keyName, Data & data)
+		{
+			if (!lua_istable(L, position))
+				throw LuaApiException("value at index is not a table");
+
+			// pushes table[keyName] on stack
+			// NOTE: if value is not present or set to nil, top of stack will contain nil
+			// do not handle it here, but in tryGet - attempt to tryGet values that don't support nil values
+			// will throw exceptions, while allowing null values (where supported) to load
+			lua_getfield(L, position, keyName.c_str());
+
+			try {
+				tryGet(absindex(-1), data);
+			} catch (...) {
+				// restore stack
+				lua_pop(L, 1);
+				throw;
+			}
+
+			lua_pop(L, 1); // pop pushed value
+		};
+
+		value.serializeScript(deserializer);
 		return true;
 	}
 
@@ -296,6 +363,16 @@ public:
 		return result;
 	}
 
+	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagCopyable, T>, int> = 0>
+	STRONG_INLINE bool tryGet(int position, T & value)
+	{
+		using DataType = T;
+		using BaseType = DataType::ScriptingApiName;
+		static_assert(std::is_same_v<DataType, BaseType>, "Can not push derived class as copyable!");
+
+		return tryGetUData<BaseType>(position, value);
+	}
+
 	template<typename... Args>
 	bool tryGetAll(int position, Args &...args) {
 		bool failed = false;
@@ -314,7 +391,7 @@ public:
 		{
 			const char * expectedType = typeid(T).name();
 			const char * actualType = lua_typename(L, position);
-			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + "at position" + std::to_string(position) + ", but found " + actualType;
+			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + " at position" + std::to_string(position) + ", but found " + actualType;
 			throw LuaApiException( message );
 		}
 	}
@@ -322,10 +399,13 @@ public:
 	template<typename BaseType>
 	bool tryGetUData(int position, BaseType & value)
 	{
-		if (lua_isnil(L, position))
+		if constexpr (std::is_assignable_v<std::remove_cvref_t<BaseType>&, std::nullptr_t>)
 		{
-			value = nullptr;
-			return true;
+			if (lua_isnil(L, position))
+			{
+				value = nullptr;
+				return true;
+			}
 		}
 
 		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
@@ -465,41 +545,6 @@ private:
 	lua_State * L;
 	int initialTop;
 };
-
-template<typename T>
-void LuaDeserializer::operator()(const std::string &keyName, T & data) const
-{
-	if (!lua_istable(L, idx))
-		throw LuaApiException("value at index is not a table");
-
-	// pushes table[keyName] on stack
-	lua_getfield(L, idx, keyName.c_str());
-
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 1);
-		throw LuaApiException("Missing required field '" + keyName + "'");
-	}
-
-	try {
-		stack.tryGet(-1, data);
-	} catch (...) {
-		// restore stack
-		lua_pop(L, 1);
-		throw;
-	}
-
-	lua_pop(L, 1); // pop pushed value
-}
-
-template<typename T>
-void LuaSerializer::operator()(const std::string &keyName, const T & data) const
-{
-	if (!lua_istable(L, idx))
-		throw LuaApiException("value at index is not a table");
-
-    stack.push(data);
-    lua_setfield(L, idx, keyName.c_str());
-}
 
 }
 

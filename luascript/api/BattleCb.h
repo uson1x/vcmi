@@ -11,21 +11,19 @@
 #pragma once
 
 #include <vcmi/scripting/Service.h>
-#include "../../lib/battle/CBattleInfoCallback.h"
+#include "../../lib/battle/IBattleInfoCallback.h"
 
 #include "../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
-class BattleCbProxy : public RawPointerWrapper<const CBattleInfoCallback, BattleCbProxy>
+class BattleCbProxy : public RawPointerWrapper<const IBattleInfoCallback, BattleCbProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const CBattleInfoCallback, BattleCbProxy>;
+	using Wrapper = RawPointerWrapper<const IBattleInfoCallback, BattleCbProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
@@ -36,7 +34,6 @@ public:
 	static int getAnyUnitIf(lua_State * L);
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

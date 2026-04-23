@@ -1,10 +1,40 @@
-#ifndef BATTLEHEXPROXY_H
-#define BATTLEHEXPROXY_H
+/*
+ * BattleHexProxy.h, part of VCMI engine
+ *
+ * Authors: listed in file AUTHORS in main folder
+ *
+ * License: GNU General Public License v2.0 or later
+ * Full text of license available in license.txt file, in main folder
+ *
+ */
 
-class BattleHexProxy
+#pragma once
+
+#include <vcmi/scripting/Service.h>
+#include "../../../lib/battle/BattleHex.h"
+#include "../../LuaWrapper.h"
+
+VCMI_LIB_NAMESPACE_BEGIN
+
+	namespace scripting
 {
-public:
-	BattleHexProxy();
-};
+	namespace api
+	{
+		namespace battle
+		{
 
-#endif // BATTLEHEXPROXY_H
+			class BattleHexProxy : public CopyableWrapper<const BattleHex, BattleHexProxy>
+			{
+			public:
+				using Wrapper = CopyableWrapper<const BattleHex, BattleHexProxy>;
+				static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+
+				static bool isValid(BattleHex & hex);
+				static int toInteger(BattleHex & hex);
+			};
+
+		}
+	}
+}
+
+VCMI_LIB_NAMESPACE_END

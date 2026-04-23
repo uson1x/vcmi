@@ -38,6 +38,7 @@ set(lib_SRCS
 		api/BattleCb.cpp
 		api/BonusSystem.cpp
 		api/Creature.cpp
+		api/Enums.cpp
 		api/Faction.cpp
 		api/GameCb.cpp
 		api/HeroClass.cpp
@@ -89,6 +90,7 @@ set(lib_HDRS
 		api/BattleCb.h
 		api/BonusSystem.h
 		api/Creature.h
+		api/Enums.h
 		api/Faction.h
 		api/GameCb.h
 		api/HeroClass.h

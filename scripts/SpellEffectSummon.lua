@@ -111,31 +111,25 @@ apply = function(parameters, mechanics, server, target)
 	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	for _, dest in ipairs(target) do
-		if dest.unitValue then
-			local summoned = dest.unitValue
-			local state = summoned:acquire()
-			local healthValue = summonedCreatureHealth(parameters, mechanics)
-			
-			state:heal(
-				healthValue, 
-				EHealLevel.OVERHEAL, 
-				(parameters.permanent and EHealPower.PERMANENT or EHealPower.ONE_BATTLE)
-			)
-
-			server:updateUnit(
+		if dest.unit ~= nil then
+			server:healUnit(
 				mechanics:getBattleID(),
-				summoned:unitId(),
-				state:save(),
-				healthValue
+				dest.unit,
+				summonedCreatureHealth(parameters, mechanics), 
+				ENUM.HealLevel.overheal, 
+				parameters.permanent and ENUM.HealPower.permanent or ENUM.HealPower.oneBattle
 			)
 		else
+			print("SpellEffectSummon. Hex: ", dest.hex)
+			assert(dest.hex ~= nil)
 			server:createUnit(
 				mechanics:getBattleID(),
+				mechanics:getBattle():getNextUnitId(),
 				{
 					count = summonedCreatureAmount(parameters, mechanics),
 					type = creature:getJsonKey(),
 					side = mechanics:getCasterSide(),
-					position = dest.hexValue,
+					position = dest.hex:toInteger(),
 					summoned = not parameters.permanent
 				}
 			)
@@ -158,7 +152,7 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 
 	if sameSummoned == nil or not parameters.summonSameUnit then
 		local hex = mechanics:getBattle():getAvailableHex(creature, mechanics:getCasterSide())
-		if not hex.isValid() then
+		if not hex:isValid() then
 			return {} -- no free space. FIXME: should be in isApplicable
 		else
 			return {
@@ -171,8 +165,8 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 	else
 		return {
 			{ 
-				hex = sameSummoned[1]:getPosition(), 
-				unit = sameSummoned[1]
+				hex = sameSummoned:getPosition(), 
+				unit = sameSummoned
 			}
 		}
 	end

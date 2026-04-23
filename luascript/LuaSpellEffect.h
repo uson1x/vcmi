@@ -76,9 +76,6 @@ private:
 	JsonNode parameters;
 
 	std::shared_ptr<LuaContext> resolveScript(const Mechanics * m) const;
-
-	JsonNode spellTargetToJson(const Target & spellTarget) const;
-	Target spellTargetFromJson(const Mechanics * m, const JsonNode & config) const;
 };
 
 }

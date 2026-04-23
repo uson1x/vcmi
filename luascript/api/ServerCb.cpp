@@ -15,6 +15,7 @@
 
 #include "../LuaStack.h"
 #include "../../lib/networkPacks/PacksForClientBattle.h"
+#include "../../lib/battle/Unit.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -27,24 +28,10 @@ VCMI_REGISTER_CORE_SCRIPT_API(ServerCbProxy, "game.Server");
 
 const std::vector<ServerCbProxy::CustomRegType> ServerCbProxy::REGISTER_CUSTOM =
 {
-//	{
-//		"addToBattleLog",
-//		&ServerCbProxy::apply<BattleLogMessage>,
-//		false
-//	},
-//	{
-//		"moveUnit",
-//		&ServerCbProxy::apply<BattleStackMoved>,
-//		false
-//	},
 		{ "createUnit", &ServerCbProxy::createUnit, false },
 		{ "updateUnit", &ServerCbProxy::updateUnit, false },
+		{ "healUnit", &ServerCbProxy::healUnit, false },
 		{ "removeUnit", &ServerCbProxy::removeUnit, false },
-//	{
-//		"commitPackage",
-//		&ServerCbProxy::commitPackage,
-//		false
-//	}
 };
 
 int ServerCbProxy::commitPackage(lua_State * L)
@@ -106,11 +93,41 @@ int ServerCbProxy::createUnit(lua_State * L)
 	ServerCallback * object = nullptr;
 	BattleUnitsChanged buc;
 	UnitChanges uc;
-	uc.operation = UnitChanges::EOperation::UPDATE;
+	uc.operation = UnitChanges::EOperation::ADD;
 
-	if (!S.tryGetAll(1, object, buc.battleID, uc.data))
+	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data))
 		return S.retVoid();
 
+	buc.changedStacks.push_back(uc);
+
+	object->apply(buc);
+	return S.retVoid();
+}
+
+int ServerCbProxy::healUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleID battleID;
+	const battle::Unit * unit = nullptr;
+	int64_t healthDelta;
+	EHealPower healPower;
+	EHealLevel healLevel;
+
+	if (!S.tryGetAll(1, object, battleID, unit, healthDelta, healLevel, healPower))
+		return S.retVoid();
+
+	auto changedUnit = unit->acquire();
+	changedUnit->heal(healthDelta, healLevel, healPower);
+
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	buc.battleID = battleID;
+	uc.operation = UnitChanges::EOperation::UPDATE;
+	uc.id = unit->unitId();
+	uc.data = changedUnit->save();
+	uc.healthDelta = healthDelta;
 	buc.changedStacks.push_back(uc);
 
 	object->apply(buc);

@@ -30,7 +30,6 @@ public:
 	virtual ~LuaContext();
 
 	void run(const JsonNode & initialState) override;
-	void run(ServerCallback * server, const JsonNode & initialState) override;
 
 	//log error and return nil from LuaCFunction
 	int errorRetVoid(const std::string & message);
@@ -111,9 +110,9 @@ ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&&
 
 	if(lua_pcall(L, argc, 1, 0))
 	{
+		std::string error = lua_tostring(L, -1);
 		S.clear();
 
-		std::string error = lua_tostring(L, -1);
 		boost::format fmt("Lua function %s failed with message: %s");
 		fmt % name % error;
 		logGlobal->error(fmt.str());
@@ -123,7 +122,7 @@ ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&&
 	if constexpr (!std::is_void_v<ReturnType>)
 	{
 		ReturnType ret;
-		S.getOrThrow(-1, ret);
+		S.getOrThrow(S.absindex(-1), ret);
 		S.balance();
 		return ret;
 	}

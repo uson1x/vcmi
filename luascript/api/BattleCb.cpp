@@ -21,9 +21,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
 VCMI_REGISTER_CORE_SCRIPT_API(BattleCbProxy, "game.Battle");
@@ -46,7 +44,7 @@ int BattleCbProxy::getBattlefieldType(lua_State * L)
 {
 	LuaStack S(L);
 
-	const CBattleInfoCallback * object;
+	const IBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -59,7 +57,7 @@ int BattleCbProxy::getTerrainType(lua_State * L)
 {
 	LuaStack S(L);
 
-	const CBattleInfoCallback * object;
+	const IBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -70,7 +68,7 @@ int BattleCbProxy::getAvailableHex(lua_State * L)
 {
 	LuaStack S(L);
 
-	const CBattleInfoCallback * object;
+	const IBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -85,16 +83,15 @@ int BattleCbProxy::getAvailableHex(lua_State * L)
 
 	S.clear();
 	BattleHex result = object->getAvailableHex(creature, side, hexVal);
-	S.push(result.toInt());
+	S.push(result);
 	return 1;
 }
-
 
 int BattleCbProxy::getUnitByPos(lua_State * L)
 {
 	LuaStack S(L);
 
-	const CBattleInfoCallback * object;
+	const IBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -119,7 +116,7 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 {
 	LuaStack S(L);
 
-	const CBattleInfoCallback * object;
+	const IBattleInfoCallback * object;
 	if(!S.tryGet(1, object))
 		return S.retVoid();
 
@@ -134,14 +131,14 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 		S2.push(unit);
 
 		if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
-			std::string error = lua_tostring(L, -1);
+			std::string error = lua_tostring(L, S2.absindex(-1));
 			logGlobal->error("Lua getAnyUnitIf callback failed with message: %s", error);
 			S2.clear();
 			return false;
 		}
 
 		bool result = false;
-		S2.tryGet(-1, result);
+		S2.tryGet(S2.absindex(-1), result);
 		S2.balance();
 		return result;
 	});
@@ -156,7 +153,6 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 	return 1;
 }
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

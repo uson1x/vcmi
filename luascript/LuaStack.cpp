@@ -35,6 +35,14 @@ void LuaStack::clear()
 	lua_settop(L, 0);
 }
 
+int LuaStack::absindex(int idx)
+{
+	if (idx > 0)
+		return idx;
+
+	return lua_gettop(L) + 1 + idx;
+}
+
 void LuaStack::pushByIndex(lua_Integer index)
 {
 	lua_pushvalue(L, index);
@@ -168,6 +176,7 @@ bool LuaStack::tryGet(int position, int3 & value)
 bool LuaStack::tryGet(int position, JsonNode & value)
 {
 	auto type = lua_type(L, position);
+	value.setModScope("game");
 
 	switch(type)
 	{

@@ -80,20 +80,16 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const Ef
 	if(target.empty())
 		return false;
 
-	JsonNode targetJson = spellTargetToJson(target);
-	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_TARGET, parameters, m, targetJson);
+	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_TARGET, parameters, m, target);
 
 	return result;
 }
 
 void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
 {
-	if(target.empty())
-		return;
-
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	context->callGlobalWithParameters<void>(APPLY, parameters, m, server, spellTargetToJson(target));
+	context->callGlobalWithParameters<void>(APPLY, parameters, m, server, target);
 }
 
 EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
@@ -105,11 +101,9 @@ EffectTarget LuaSpellEffect::transformTarget(const Mechanics * m, const Target &
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	JsonNode aimPointJson = spellTargetToJson(aimPoint);
-	JsonNode spellTargetJson = spellTargetToJson(spellTarget);
-	JsonNode response = context->callGlobalWithParameters<JsonNode>(TRANSFORM_TARGET, parameters, m, aimPointJson, spellTargetJson);
+	Target response = context->callGlobalWithParameters<Target>(TRANSFORM_TARGET, parameters, m, aimPoint, spellTarget);
 
-	return spellTargetFromJson(m, response);
+	return response;
 }
 
 void LuaSpellEffect::serializeJsonEffect(JsonSerializeFormat & handler)
@@ -127,45 +121,6 @@ std::shared_ptr<scripting::LuaContext> LuaSpellEffect::resolveScript(const Mecha
 		throw std::runtime_error("Failed to execute Lua script effect! Context not available!");
 
 	return luaContext;
-}
-
-JsonNode LuaSpellEffect::spellTargetToJson(const Target & target) const
-{
-	JsonNode requestP;
-
-	for(const auto & dest : target)
-	{
-		JsonNode targetData;
-		targetData.Vector().emplace_back(dest.hexValue.toInt());
-
-		if(dest.unitValue)
-			targetData.Vector().emplace_back(dest.unitValue->unitId());
-		else
-			targetData.Vector().emplace_back(-1);
-
-		requestP.Vector().push_back(targetData);
-	}
-
-	return requestP;
-}
-
-Target LuaSpellEffect::spellTargetFromJson(const Mechanics * m, const JsonNode & config) const
-{
-	Target result;
-
-	for (const auto & entry : config.Vector())
-	{
-		Destination dest;
-
-		if (!entry[1].isNull() && entry[1].Integer() != -1 )
-			dest = Destination(m->battle()->battleGetUnitByID(entry[1].Integer()), BattleHex(entry[0].Integer()));
-		else
-			dest = Destination(BattleHex(entry[0].Integer()));
-
-		result.push_back(dest);
-	}
-
-	return result;
 }
 
 }

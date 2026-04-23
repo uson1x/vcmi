@@ -13,6 +13,8 @@
 #include "LuaStack.h"
 #include "LuaReference.h"
 
+#include "api/Enums.h"
+
 #include "../lib/callback/IGameInfoCallback.h"
 #include "../lib/json/JsonNode.h"
 #include "../lib/filesystem/Filesystem.h"
@@ -24,6 +26,31 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+/// Custom text printing function for use in scripting
+/// based on luaB_print (part of Lua source code)
+/// adapted to C++ & VCMI logging facilities
+static int luaPrint(lua_State *L) {
+	int n = lua_gettop(L);
+	lua_getglobal(L, "tostring");
+	std::string out;
+	for (int i = 1; i <= n; ++i)
+	{
+		lua_pushvalue(L, -1);
+		lua_pushvalue(L, i);
+		lua_call(L, 1, 1);
+		const char *s = lua_tostring(L, -1);
+		if (s)
+			out += s;
+		if (i > 1)
+			out += '\t';
+
+		lua_pop(L, 1);
+	}
+
+	logScript->info("%s", out);
+	return 0;
+}
+
 namespace scripting
 {
 
@@ -34,14 +61,13 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 	script(source),
 	env(env_)
 {
-	static const std::vector<luaL_Reg> STD_LIBS =
-	{
+	static constexpr std::array<luaL_Reg, 4> STD_LIBS =
+	{{
 		{"", luaopen_base},
 		{LUA_TABLIBNAME, luaopen_table},
 		{LUA_STRLIBNAME, luaopen_string},
-		{LUA_MATHLIBNAME, luaopen_math},
-		{LUA_BITLIBNAME, luaopen_bit}
-	};
+		{LUA_MATHLIBNAME, luaopen_math}
+	}};
 
 	for(const luaL_Reg & lib : STD_LIBS)
 	{
@@ -65,12 +91,16 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 	popAll();
 
 	LuaStack S(L);
+	api::Enums enums;
 
 	S.push(env->game());
 	lua_setglobal(L, "GAME");
 
 	S.push(env->services());
 	lua_setglobal(L, "LIBRARY");
+
+	S.push(enums);
+	lua_setglobal(L, "ENUM");
 
 	popAll();
 }
@@ -101,7 +131,7 @@ void LuaContext::cleanupGlobals()
 	S.pushNil();
 	lua_setglobal(L, "loadstring");
 
-	S.pushNil();
+	lua_pushcfunction(L, luaPrint);
 	lua_setglobal(L, "print");
 
 	S.clear();
@@ -119,30 +149,10 @@ void LuaContext::cleanupGlobals()
 	S.pushNil();
 	lua_rawset(L, -3);
 
-
 	S.push("randomseed");
 	S.pushNil();
 	lua_rawset(L, -3);
 	S.clear();
-}
-
-void LuaContext::run(ServerCallback * server, const JsonNode & initialState)
-{
-	{
-		LuaStack S(L);
-		S.push(server);
-		lua_setglobal(L, "SERVER");
-		S.clear();
-	}
-
-	run(initialState);
-
-//	{
-//		LuaStack S(L);
-//		S.pushNil();
-//		lua_setglobal(L, "SERVER");
-//		S.clear();
-//	}
 }
 
 void LuaContext::run(const JsonNode & initialState)
@@ -153,7 +163,7 @@ void LuaContext::run(const JsonNode & initialState)
 
 	if(ret)
 	{
-		logGlobal->error("Script '%s' failed to load, error: %s", script->getJsonKey(), toStringRaw(-1));
+		logScript->error("Script '%s' failed to load, error: %s", script->getJsonKey(), toStringRaw(-1));
 		popAll();
 		return;
 	}
@@ -166,7 +176,7 @@ void LuaContext::run(const JsonNode & initialState)
 
 	if(ret)
 	{
-		logGlobal->error("Script '%s' failed to run, error: '%s'", script->getJsonKey(), toStringRaw(-1));
+		logScript->error("Script '%s' failed to run, error: '%s'", script->getJsonKey(), toStringRaw(-1));
 		popAll();
 	}
 }

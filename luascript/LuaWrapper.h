@@ -81,7 +81,7 @@ namespace detail
 			if(objPtr)
 			{
 				auto obj = static_cast<UDataType *>(objPtr);
-				obj->reset();
+				obj->~UDataType();
 			}
 			lua_settop(L, 0);
 			return 0;
@@ -117,6 +117,7 @@ public:
 
 	static_assert(std::is_base_of_v<TagRawPointer, ObjectType>, "Class must inherit from ApiRawPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
+	static_assert(!std::is_base_of_v<TagCopyable, ObjectType>, "Class must not inherit from ApiCopyable to be used with this class!");
 
 	void pushMetatable(lua_State * L) const override final
 	{
@@ -157,6 +158,7 @@ public:
 
 	static_assert(std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must inherit from ApiSharedPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
+	static_assert(!std::is_base_of_v<TagCopyable, ObjectType>, "Class must not inherit from ApiCopyable to be used with this class!");
 
 	static int constructor(lua_State * L)
 	{
@@ -194,6 +196,56 @@ protected:
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
 	}
 };
+
+template<class T, class Proxy = T>
+class CopyableWrapper : public RegistarBase
+{
+public:
+	using ObjectType = typename std::remove_cv_t<T>;
+	using UDataType = T;
+	using CustomRegType = detail::CustomRegType;
+
+	static_assert(std::is_base_of_v<TagCopyable, ObjectType>, "Class must inherit from ApiCopyable to be used with this class!");
+	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
+	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
+
+	static int constructor(lua_State * L)
+	{
+		LuaStack S(L);
+		S.clear();//we do not accept any parameters in constructor
+		ObjectType obj;
+		S.push(obj);
+		return 1;
+	}
+
+	void pushMetatable(lua_State * L) const override final
+	{
+		static auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
+
+		LuaStack S(L);
+
+		if(luaL_newmetatable(L, KEY) != 0)
+		{
+			adjustMetatable(L);
+
+			S.push("__gc");
+			lua_pushcfunction(L, &(detail::Dispatcher<Proxy, UDataType>::destructor));
+			lua_rawset(L, -3);
+		}
+
+		S.balance();
+
+		detail::Dispatcher<Proxy, UDataType>::pushStaticTable(L);
+
+		adjustStaticTable(L);
+	}
+protected:
+	void adjustMetatable(lua_State * L) const override
+	{
+		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
+	}
+};
+
 
 }
 
