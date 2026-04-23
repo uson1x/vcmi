@@ -1191,6 +1191,10 @@ AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(co
 		}
 	}
 
+	// Status bar overlay: darken bottom strip to match original dialog style
+	const int statusBarOverlayHeight = 30;
+	canvas.drawColorBlended(Rect(0, size.y - statusBarOverlayHeight, size.x, statusBarOverlayHeight), ColorRGBA(0, 0, 0, 88));
+
 	auto drawHorizontal = [&canvas](const std::shared_ptr<IImage> & source, int y, int xBegin, int xEnd)
 	{
 		for(int x = xBegin; x < xEnd; x += source->width())
