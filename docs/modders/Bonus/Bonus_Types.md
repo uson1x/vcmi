@@ -59,7 +59,7 @@ Example:
 ```json
 {
     "type" : "ON_COMBAT_EVENT",
-	"subtype" : "defend",
+	"subtype" : "combatEventDefend",
 	"addInfo" : {
 	    "effect" : [
 		    {
