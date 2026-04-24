@@ -36,6 +36,8 @@ public:
 	void addAnimationFile(const AnimationPath & path, AnimationLayoutMap & anim);
 	void addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size, const PlayerColor & playerColor);
 	void addRecruitmentBackground(const std::string & fileName, const Point & size);
+	void addUniversityBackground(const std::string & fileName, const Point & size, int skillColumns);
+	void addUniversityConfirmBackground(const std::string & fileName, const Point & size, int costElements);
 
 	AnimationLayoutMap createAdventureMapButton(const ImagePath & overlay, bool small);
 	AnimationLayoutMap createSliderBar(bool brown, bool horizontal, int length);
@@ -65,6 +67,8 @@ private:
 	CanvasPtr createCreatureInfoPanel(int boxesAmount) const;
 	CanvasPtr createDialogBackgroundWithStatusBar(const Point & size, const PlayerColor & playerColor) const;
 	CanvasPtr createRecruitmentDialogBackground(const Point & size, const PlayerColor & playerColor) const;
+	CanvasPtr createUniversityDialogBackground(const Point & size, const PlayerColor & playerColor, int skillColumns) const;
+	CanvasPtr createUniversityConfirmDialogBackground(const Point & size, const PlayerColor & playerColor, int costElements) const;
 	enum CreateResourceWindowType{ ARTIFACTS_BUYING, ARTIFACTS_SELLING, MARKET_RESOURCES, FREELANCERS_GUILD, TRANSFER_RESOURCES };
 	CanvasPtr createResourceWindow(CreateResourceWindowType type, int count, PlayerColor color) const;
 	enum CreatureInfoPanelElement{ BONUS_EFFECTS, SPELL_EFFECTS, BUTTON_PANEL, COMMANDER_BACKGROUND, COMMANDER_ABILITIES };

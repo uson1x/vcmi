@@ -84,6 +84,15 @@ void AssetGenerator::initialize()
 	addRecruitmentBackground("TPRCRT4", Point(484, 394));
 	addRecruitmentBackground("TPRCRT5", Point(594, 394));
 	addRecruitmentBackground("TPRCRT6", Point(704, 394));
+	addUniversityBackground("UNIVRS1", Point(466, 388), 1);
+	addUniversityBackground("UNIVRS2", Point(466, 388), 2);
+	addUniversityBackground("UNIVRS3", Point(466, 388), 3);
+	addUniversityBackground("UNIVRS4", Point(466, 388), 4);
+	addUniversityBackground("UNIVRS5", Point(570, 388), 5);
+	addUniversityBackground("UNIVRS6", Point(674, 388), 6);
+	addUniversityBackground("UNIVRS7", Point(778, 388), 7);
+	addUniversityConfirmBackground("UNIVRSC1", Point(466, 388), 1);
+	addUniversityConfirmBackground("UNIVRSC2", Point(466, 388), 2);
 
 	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
 	{
@@ -163,6 +172,26 @@ void AssetGenerator::addRecruitmentBackground(const std::string & fileName, cons
 		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
 		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
 		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor](){ return createRecruitmentDialogBackground(size, playerColor);};
+	}
+}
+
+void AssetGenerator::addUniversityBackground(const std::string & fileName, const Point & size, int skillColumns)
+{
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
+		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
+		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor, skillColumns](){ return createUniversityDialogBackground(size, playerColor, skillColumns);};
+	}
+}
+
+void AssetGenerator::addUniversityConfirmBackground(const std::string & fileName, const Point & size, int costElements)
+{
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
+		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
+		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor, costElements](){ return createUniversityConfirmDialogBackground(size, playerColor, costElements);};
 	}
 }
 
@@ -1274,6 +1303,104 @@ AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(cons
 
 	// Central black input bar - 142x20
 	drawPlate(centered(Rect(171, 278, 142, 20)), true);
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const Point & size, const PlayerColor & playerColor, int skillColumns) const
+{
+	auto image = createDialogBackgroundWithStatusBar(size, playerColor);
+	Canvas canvas = image->getCanvas();
+
+	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
+	const ColorRGBA borderColor = ColorRGBA(128, 100, 75);
+	const ColorRGBA slotColor = ColorRGBA(0, 0, 0, 95);
+
+	auto drawPlate = [&canvas, rectangleColor, borderColor](const Rect & rect)
+	{
+		canvas.drawColorBlended(rect, rectangleColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	auto drawSlot = [&canvas, slotColor, borderColor](const Rect & rect)
+	{
+		canvas.drawColorBlended(rect, slotColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	// Main text block
+	const int largeBlockY = 127;
+	const int largeBlockHeight = 74;
+	const int largeBlockWidth = 414;
+	const int largeBlockX = (size.x - largeBlockWidth) / 2;
+	drawPlate(Rect(largeBlockX, largeBlockY, largeBlockWidth, largeBlockHeight));
+
+	// Skill rows. Keep 2px gap between columns and center the whole strip set.
+	const int smallBlockWidth = 102;
+	const int smallBlockHeight = 20;
+	const int smallBlockGap = 2;
+	const int firstRowY = largeBlockY + largeBlockHeight + 10; // 10px below large block
+	const int secondRowY = firstRowY + smallBlockHeight + 50; // 50px below first row (edge to edge)
+
+	std::vector<int> stripX(skillColumns);
+	const int stripSetWidth = skillColumns * smallBlockWidth + (skillColumns - 1) * smallBlockGap;
+	const int stripStartX = (size.x - stripSetWidth) / 2;
+	for(int i = 0; i < skillColumns; ++i)
+	{
+		stripX[i] = stripStartX + i * (smallBlockWidth + smallBlockGap);
+
+		drawPlate(Rect(stripX[i], firstRowY, smallBlockWidth, smallBlockHeight));
+		drawPlate(Rect(stripX[i], secondRowY, smallBlockWidth, smallBlockHeight));
+	}
+
+	// Icon boxes centered in each strip column
+	const int iconSize = 44;
+	const int iconY = firstRowY + smallBlockHeight + 3; // 3px below first row and 3px above second row
+	for(int i = 0; i < skillColumns; ++i)
+	{
+		const int iconX = stripX[i] + (smallBlockWidth - iconSize) / 2;
+		drawSlot(Rect(iconX, iconY, iconSize, iconSize));
+	}
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createUniversityConfirmDialogBackground(const Point & size, const PlayerColor & playerColor, int costElements) const
+{
+	auto image = createDialogBackgroundWithStatusBar(size, playerColor);
+	Canvas canvas = image->getCanvas();
+
+	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
+	const ColorRGBA borderColor = ColorRGBA(128, 100, 75);
+
+	auto drawPlate = [&canvas, rectangleColor, borderColor](const Rect & rect)
+	{
+		canvas.drawColorBlended(rect, rectangleColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	// Text block: same geometry as UNIVRS4
+	drawPlate(Rect((size.x - 414) / 2, 127, 414, 74));
+
+	// Centered header/action plates
+	drawPlate(Rect((size.x - 105) / 2, 26, 105, 21));
+	drawPlate(Rect((size.x - 105) / 2, 95, 105, 21));
+	const int costPlateWidth = 71;
+	const int costPlateHeight = 19;
+	const int costPlateY = 258;
+	const int costPlateGap = 10;
+
+	if(costElements <= 1)
+	{
+		drawPlate(Rect((size.x - costPlateWidth) / 2, costPlateY, costPlateWidth, costPlateHeight));
+	}
+	else
+	{
+		const int totalWidth = 2 * costPlateWidth + costPlateGap;
+		const int firstX = (size.x - totalWidth) / 2;
+		drawPlate(Rect(firstX, costPlateY, costPlateWidth, costPlateHeight));
+		drawPlate(Rect(firstX + costPlateWidth + costPlateGap, costPlateY, costPlateWidth, costPlateHeight));
+	}
 
 	return image;
 }
