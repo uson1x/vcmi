@@ -840,7 +840,7 @@ SetSizeWindow::SetSizeWindow(int3 initSize, const CRmgTemplate * mapTemplate, st
 			label->setColor(labelColors);
 	};
 
-	titles.push_back(std::make_shared<CLabel>(150, 15, FONT_BIG, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->translate("vcmi.lobby.customRmgSize.title")));
+	titles.push_back(std::make_shared<CLabel>(150, 15, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW, LIBRARY->generaltexth->translate("vcmi.lobby.customRmgSize.title")));
 
 	for(int i = 0; i < 3; i++)
 	{
