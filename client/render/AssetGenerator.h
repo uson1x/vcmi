@@ -35,6 +35,7 @@ public:
 	void addImageFile(const ImagePath & path, ImageGenerationFunctor & img);
 	void addAnimationFile(const AnimationPath & path, AnimationLayoutMap & anim);
 	void addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size, const PlayerColor & playerColor);
+	void addSpellResearchBackground(const std::string & fileName, const Point & size);
 	void addRecruitmentBackground(const std::string & fileName, const Point & size);
 	void addUniversityBackground(const std::string & fileName, const Point & size, int skillColumns);
 	void addUniversityConfirmBackground(const std::string & fileName, const Point & size, int costElements);

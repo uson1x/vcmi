@@ -1009,6 +1009,7 @@
 	"vcmi.spellResearch.pay": "Chceš nahradit {%SPELL1} za {%SPELL2}? Nebo zrušit toto kouzlo a pokračovat ve výzkumu dalších kouzel?",
 	"vcmi.spellResearch.research": "Prozkoumat toto kouzlo",
 	"vcmi.spellResearch.skip": "Přeskočit toto kouzlo",
+	"vcmi.spellResearch.title": "Výzkum kouzel",
 	"vcmi.stackExperience.description": "» P o d r o b n o s t i   z k u š e n o s t í   o d d í l u «\n\nDruh jednotky ................... : %s\nÚroveň hodnosti ................. : %s (%i)\nBody zkušeností ............... : %i\nZkušenostních bodů do další úrovně hodnosti .. : %i\nMaximum zkušeností na bitvu ... : %i%% (%i)\nPočet jednotek v oddílu .... : %i\nMaximum nových rekrutů\n bez ztráty současné hodnosti .... : %i\nNásobič zkušeností ........... : %.2f\nNásobič vylepšení .............. : %.2f\nZkušnosti po 10. úrovně hodnosti ........ : %i\nMaximální počet nových rekrutů pro zachování\n 10. úrovně hodnosti s maximálními zkušenostmi: %i",
 	"vcmi.stackExperience.rank.0": "Začátečník",
 	"vcmi.stackExperience.rank.1": "Učeň",

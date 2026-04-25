@@ -93,6 +93,7 @@ void AssetGenerator::initialize()
 	addUniversityBackground("UNIVRS7", Point(778, 388), 7);
 	addUniversityConfirmBackground("UNIVRSC1", Point(466, 388), 1);
 	addUniversityConfirmBackground("UNIVRSC2", Point(466, 388), 2);
+	addSpellResearchBackground("spellResearchDialog", Point(328, 474));
 
 	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
 	{
@@ -163,6 +164,16 @@ void AssetGenerator::addAnimationFile(const AnimationPath & path, AnimationLayou
 void AssetGenerator::addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size, const PlayerColor & playerColor)
 {
 	imageFiles[ImagePath::builtin(fileName)] = [this, size, playerColor](){ return createDialogBackgroundWithStatusBar(size, playerColor);};
+}
+
+void AssetGenerator::addSpellResearchBackground(const std::string & fileName, const Point & size)
+{
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
+		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
+		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor](){ return createDialogBackgroundWithStatusBar(size, playerColor);};
+	}
 }
 
 void AssetGenerator::addRecruitmentBackground(const std::string & fileName, const Point & size)
