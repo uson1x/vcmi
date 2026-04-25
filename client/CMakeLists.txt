@@ -177,6 +177,7 @@ set(vcmiclientcommon_SRCS
 	windows/CQuestLog.cpp
 	windows/CSpellWindow.cpp
 	windows/CTutorialWindow.cpp
+	windows/wiki/WikiCommon.cpp
 	windows/wiki/WikiWindow.cpp
 	windows/wiki/WikiCreatureContent.cpp
 	windows/wiki/WikiHeroContent.cpp
@@ -416,6 +417,7 @@ set(vcmiclientcommon_HEADERS
 	windows/CQuestLog.h
 	windows/CSpellWindow.h
 	windows/CTutorialWindow.h
+	windows/wiki/WikiCommon.h
 	windows/wiki/WikiWindow.h
 	windows/wiki/WikiCreatureContent.h
 	windows/wiki/WikiHeroContent.h

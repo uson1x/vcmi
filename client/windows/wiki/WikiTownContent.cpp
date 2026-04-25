@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 #include "WikiTownContent.h"
+#include "WikiCommon.h"
 #include "WikiWindow.h"
 
 #include "../../widgets/CViewport.h"
@@ -43,32 +44,13 @@
 #include <algorithm>
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────────────────────────────
-// Colours for table grid – brown (default) theme
-// ─────────────────────────────────────────────────────────────────────────────
-
-static const ColorRGBA COL_TABLE_BORDER_BROWN {200, 180, 120, 220};
-static const ColorRGBA COL_TABLE_INNER_BROWN  { 90,  80,  50, 160};
-static const ColorRGBA COL_HEADER_FILL_BROWN  { 60,  50,  30, 140};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Colours for table grid – blue theme
-// ─────────────────────────────────────────────────────────────────────────────
-
-static const ColorRGBA COL_TABLE_BORDER_BLUE { 80, 140, 220, 220};
-static const ColorRGBA COL_TABLE_INNER_BLUE  { 30,  60, 120, 160};
-static const ColorRGBA COL_HEADER_FILL_BLUE  { 20,  40,  80, 140};
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Layout constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-static constexpr int SECTION_GAP  = 10;  ///< vertical gap between sections
-static constexpr int CELL_PAD_L   =  4;  ///< left padding inside a table cell
-static constexpr int CELL_PAD_T   =  2;  ///< top  padding inside a table cell
-static constexpr int RES_ICON_W   = 14;  ///< resource icon width
-static constexpr int RES_GAP      =  3;  ///< gap between resource entries
-static constexpr int TABLE_MARGIN =  4;  ///< horizontal margin around tables
+static constexpr int SECTION_GAP  = 10;
+static constexpr int CELL_PAD_L   =  4;
+static constexpr int CELL_PAD_T   =  2;
+static constexpr int TABLE_MARGIN =  4;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WikiTownView
@@ -201,113 +183,6 @@ public:
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Table grid helper
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Creates a GraphicalPrimitiveCanvas that draws the outer border,
-/// header/body separator, column separators and inter-row dividers.
-///
-/// @param x,y          top-left of the table (parent-local)
-/// @param totalW       total width (must equal sum of colWidths)
-/// @param colWidths    width of each column in order
-/// @param headerH      height of the header row
-/// @param dataRowH     height of each data row
-/// @param dataRowCount number of data rows (not counting the header)
-/// @param blue         use blue colour theme instead of brown
-static std::shared_ptr<GraphicalPrimitiveCanvas> makeTableGrid(
-	int x, int y, int totalW,
-	const std::vector<int> & colWidths,
-	int headerH,
-	int dataRowH,
-	int dataRowCount,
-	bool blue = false)
-{
-	const ColorRGBA & colBorder = blue ? COL_TABLE_BORDER_BLUE : COL_TABLE_BORDER_BROWN;
-	const ColorRGBA & colInner  = blue ? COL_TABLE_INNER_BLUE  : COL_TABLE_INNER_BROWN;
-	const ColorRGBA & colHeader = blue ? COL_HEADER_FILL_BLUE  : COL_HEADER_FILL_BROWN;
-
-	const int totalH = headerH + dataRowH * dataRowCount;
-	auto grid = std::make_shared<GraphicalPrimitiveCanvas>(Rect(x, y, totalW, totalH));
-
-	// Header background fill
-	grid->addBox(Point(0, 0), Point(totalW, headerH), colHeader);
-
-	// Outer border
-	grid->addRectangle(Point(0, 0), Point(totalW, totalH), colBorder);
-
-	// Header / body separator
-	grid->addLine(Point(0, headerH), Point(totalW, headerH), colBorder);
-
-	// Horizontal inter-row dividers
-	for(int r = 1; r < dataRowCount; ++r)
-	{
-		const int lineY = headerH + r * dataRowH;
-		grid->addLine(Point(1, lineY), Point(totalW - 2, lineY), colInner);
-	}
-
-	// Vertical column separators
-	int cx = 0;
-	for(int i = 0; i + 1 < (int)colWidths.size(); ++i)
-	{
-		cx += colWidths[i];
-		grid->addLine(Point(cx, 1), Point(cx, totalH - 2), colInner);
-	}
-
-	return grid;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Resource-cost helper
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Appends resource icon + amount label pairs into `out`, laid out
-/// horizontally starting at (startX, y), clipped to maxWidth.
-static void addResourceCost(
-	std::vector<std::shared_ptr<CIntObject>> & out,
-	const TResources & cost,
-	int startX, int y, int maxWidth)
-{
-	struct ResInfo { GameResID id; int amount; };
-	std::vector<ResInfo> entries;
-
-	TResources::nziterator it(cost);
-	while(it.valid())
-	{
-		entries.push_back({it->resType, static_cast<int>(it->resVal)});
-		++it;
-	}
-
-	if(entries.empty())
-		return;
-
-	// Gold always first, then others in natural enum order
-	std::stable_sort(entries.begin(), entries.end(), [](const ResInfo & a, const ResInfo & b){
-		const bool aGold = (a.id == GameResID::GOLD);
-		const bool bGold = (b.id == GameResID::GOLD);
-		if(aGold != bGold) return aGold;
-		return a.id < b.id;
-	});
-
-	const int entryW = RES_ICON_W + 26 + RES_GAP;
-	int x = startX;
-
-	for(const auto & e : entries)
-	{
-		if(x + entryW > startX + maxWidth)
-			break;
-
-		out.push_back(std::make_shared<CAnimImage>(
-			AnimationPath::builtin("SMALRES"), e.id.getNum(), 0, x, y));
-		out.push_back(std::make_shared<CLabel>(
-			x + RES_ICON_W + 7, y + 1,
-			FONT_TINY, ETextAlignment::TOPLEFT, Colors::WHITE,
-			std::to_string(e.amount)));
-
-		x += entryW;
-	}
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Icon dimension helper
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -326,71 +201,6 @@ static Point iconDimensions(const AnimationPath & path, int maxSide = 200)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ClickableTableRow – transparent click area for a table row
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Invisible click overlay for one table row.  Supports left-click
-/// (navigate) and right-click (popup / creature window).
-class ClickableTableRow : public CIntObject
-{
-	std::function<void()> onLeftClick;
-	std::function<void()> onRightClick;
-	Rect viewportClipRect;
-	bool hovered = false;
-	bool blueTheme = false;
-
-public:
-	ClickableTableRow(Rect area, std::function<void()> lclick,
-	                  std::function<void()> rclick, bool blue,
-	                  Rect clipRect)
-		: CIntObject(LCLICK | SHOW_POPUP | HOVER, area.topLeft())
-		, onLeftClick(std::move(lclick))
-		, onRightClick(std::move(rclick))
-		, viewportClipRect(clipRect)
-		, blueTheme(blue)
-	{
-		pos.w = area.w;
-		pos.h = area.h;
-	}
-
-	void clickPressed(const Point & cur) override
-	{
-		if(!viewportClipRect.isInside(cur))
-			return;
-		if(onLeftClick)
-			onLeftClick();
-	}
-	void showPopupWindow(const Point & cur) override
-	{
-		if(!viewportClipRect.isInside(cur))
-			return;
-		if(onRightClick)
-			onRightClick();
-	}
-	void hover(bool on) override
-	{
-		if(hovered != on)
-		{
-			hovered = on;
-			redraw();
-		}
-	}
-	void showAll(Canvas & to) override
-	{
-		const Point cur = ENGINE->getCursorPosition();
-		hovered = pos.isInside(cur) && viewportClipRect.isInside(cur);
-		if(hovered)
-		{
-			const ColorRGBA hoverCol = blueTheme
-				? ColorRGBA(60, 100, 180, 60)
-				: ColorRGBA(180, 160, 100, 60);
-			to.drawColorBlended(pos, hoverCol);
-		}
-		CIntObject::showAll(to);
-	}
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
 // buildTownContent
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -403,6 +213,10 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 {
 	std::vector<std::shared_ptr<CIntObject>> widgets;
 
+	// Neutral factions (and factions without a town) are valid wiki entries;
+	// return an empty widget list rather than crashing.
+	// Note: navigating from neutral creatures to a faction page is not possible
+	// because creature wiki pages carry no faction navigation link.
 	if(!faction || !faction->hasTown())
 		return widgets;
 
@@ -449,19 +263,17 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 	// ── 3. Buildings table ──────────────────────────────────────────────
 
 	{
-		curY += 8; // extra padding above section title
+		curY += 8;
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 			LIBRARY->generaltexth->translate("vcmi.wiki.town.buildings")));
 		curY += 20;
 
-		// Actual icon dimensions from the building atlas (first frame)
 		const Point iconSz = iconDimensions(town->clientInfo.buildingsIcons);
 		const int rowH     = iconSz.y + 4;
 		const int headerH  = 18;
 
-		// Collect and sort buildings by ID for stable display order
 		std::vector<const CBuilding *> bldRows;
 		for(const auto & [bid, bld] : town->buildings)
 		{
@@ -472,18 +284,15 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 		std::sort(bldRows.begin(), bldRows.end(),
 			[](const CBuilding * a, const CBuilding * b){ return a->bid < b->bid; });
 
-		// Column layout: [icon | name (50 %) | cost (50 %)]
 		const int tableW  = W - TABLE_MARGIN * 2;
 		const int colIcon = iconSz.x + 4;
 		const int colHalf = (tableW - colIcon) / 2;
 		const std::vector<int> cols = {colIcon, colHalf, tableW - colIcon - colHalf};
 
-		// Grid lines
-		widgets.push_back(makeTableGrid(
+		widgets.push_back(wikiMakeTableGrid(
 			TABLE_MARGIN, curY, tableW, cols,
 			headerH, rowH, (int)bldRows.size(), blueStyle));
 
-		// Header labels
 		widgets.push_back(std::make_shared<CLabel>(
 			TABLE_MARGIN + colIcon + CELL_PAD_L, curY + CELL_PAD_T,
 			FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
@@ -494,7 +303,6 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 			LIBRARY->generaltexth->translate("vcmi.wiki.town.cost")));
 		curY += headerH;
 
-		// Data rows
 		for(const CBuilding * bld : bldRows)
 		{
 			if(!town->clientInfo.buildingsIcons.getName().empty())
@@ -508,12 +316,11 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 				bld->getNameTranslated()));
 
-			addResourceCost(widgets, bld->resources,
+			wikiAddResourceCost(widgets, bld->resources,
 				TABLE_MARGIN + colIcon + colHalf + CELL_PAD_L,
 				curY + CELL_PAD_T,
 				cols[2] - CELL_PAD_L * 2);
 
-			// Right-click on row -> show building description
 			{
 				std::string desc = bld->getDescriptionTranslated();
 				if(!desc.empty())
@@ -521,7 +328,7 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				std::function<void()> rclick;
 				if(!desc.empty())
 					rclick = [desc](){ CRClickPopup::createAndPush(desc); };
-				widgets.push_back(std::make_shared<ClickableTableRow>(
+				widgets.push_back(std::make_shared<WikiClickable>(
 					Rect(TABLE_MARGIN, curY, tableW, rowH),
 					nullptr, std::move(rclick), blueStyle, clipRect));
 			}
@@ -535,19 +342,17 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 	// ── 4. Creatures table ──────────────────────────────────────────────
 
 	{
-		curY += 8; // extra padding above section title
+		curY += 8;
 		widgets.push_back(std::make_shared<CLabel>(
 			W / 2, curY,
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 			LIBRARY->generaltexth->translate("vcmi.wiki.town.creatures")));
 		curY += 20;
 
-		// Actual CPRSMALL icon dimensions
 		const Point iconSz = iconDimensions(AnimationPath::builtin("CPRSMALL"));
 		const int rowH     = iconSz.y + 4;
 		const int headerH  = 18;
 
-		// Collect creature rows (base + upgrades per tier)
 		struct CreatureRow { const CCreature * creature; int tier; bool isUpgrade; };
 		std::vector<CreatureRow> crRows;
 
@@ -562,25 +367,21 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 			}
 		}
 
-		// Column layout: [icon | name | cost | Lv | Atk | Def | Dmg | Spd | HP | Gr | AI]
-		// Keep it compact – stat columns use FONT_TINY
 		const int tableW   = W - TABLE_MARGIN * 2;
 		const int colIcon  = iconSz.x + 4;
-		const int statW    = 26;  // width per stat column
-		const int numStats = 8;   // Lv, Atk, Def, Dmg, Spd, HP, Gr, AI
-		const int costW    = 96;  // resource-cost column (fits 2 resources @ 43px each)
+		const int statW    = 26;
+		const int numStats = 8;
+		const int costW    = 96;
 		const int nameW    = tableW - colIcon - costW - statW * numStats;
 		const std::vector<int> cols = {
 			colIcon, nameW, costW,
 			statW, statW, statW, statW, statW, statW, statW, statW
 		};
 
-		// Grid lines
-		widgets.push_back(makeTableGrid(
+		widgets.push_back(wikiMakeTableGrid(
 			TABLE_MARGIN, curY, tableW, cols,
 			headerH, rowH, (int)crRows.size(), blueStyle));
 
-		// Header labels
 		{
 			int hx = TABLE_MARGIN + colIcon;
 			widgets.push_back(std::make_shared<CLabel>(
@@ -616,7 +417,6 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 		}
 		curY += headerH;
 
-		// Data rows
 		for(const auto & row : crRows)
 		{
 			widgets.push_back(std::make_shared<CAnimImage>(
@@ -624,7 +424,6 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				row.creature->getIconIndex(), 0,
 				TABLE_MARGIN + 2, curY + 2));
 
-			// Tier prefix: "T<level>: " for base creature, " +  " for upgrade
 			const std::string tierStr = row.isUpgrade
 				? "  +  "
 				: ("T" + std::to_string(row.creature->getLevel()) + ": ");
@@ -634,18 +433,15 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 				tierStr + row.creature->getNameSingularTranslated()));
 
-			// Resource cost
-			addResourceCost(widgets, row.creature->getFullRecruitCost(),
+			wikiAddResourceCost(widgets, row.creature->getFullRecruitCost(),
 				TABLE_MARGIN + colIcon + nameW + CELL_PAD_L,
 				curY + CELL_PAD_T,
 				costW - CELL_PAD_L * 2);
 
-			// Stat values
 			{
 				int sx = TABLE_MARGIN + colIcon + nameW + costW;
 				const auto * cr = row.creature;
 
-				// Damage as "min-max" or just "min" if equal
 				const int dmgMin = cr->getBaseDamageMin();
 				const int dmgMax = cr->getBaseDamageMax();
 				const std::string dmgStr = (dmgMin == dmgMax)
@@ -672,7 +468,6 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				}
 			}
 
-			// Clickable row overlay: left-click navigates, right-click opens creature window
 			{
 				std::function<void()> lclick;
 				if(navigateCallback)
@@ -688,7 +483,7 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 				{
 					ENGINE->windows().createAndPushWindow<CStackWindow>(crPtr, true);
 				};
-				widgets.push_back(std::make_shared<ClickableTableRow>(
+				widgets.push_back(std::make_shared<WikiClickable>(
 					Rect(TABLE_MARGIN, curY, tableW, rowH),
 					std::move(lclick), std::move(rclick), blueStyle, clipRect));
 			}
@@ -719,23 +514,22 @@ std::vector<std::shared_ptr<CIntObject>> buildTownContent(
 
 		if(!mightHeroes.empty() || !magicHeroes.empty())
 		{
-curY += 8; // extra padding above section title
-		widgets.push_back(std::make_shared<CLabel>(
+			curY += 8;
+			widgets.push_back(std::make_shared<CLabel>(
 				W / 2, curY,
 				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 				LIBRARY->generaltexth->translate("vcmi.wiki.town.heroes")));
 			curY += 20;
 
 			const int tableW2  = W - TABLE_MARGIN * 2;
-			const int colPort  = 52; // PortraitsSmall frames are 48px wide + 4 padding
+			const int colPort  = 52;
 			const int colGend  = 22;
 			const int colSpec2 = 170;
 			const int colName2 = tableW2 - colPort - colGend - colSpec2;
 			const std::vector<int> heroCols = {colPort, colName2, colGend, colSpec2};
 			const int heroHeaderH = 18;
-			const int heroRowH    = 36; // PortraitsSmall frames are 32px tall + 4 padding
+			const int heroRowH    = 36;
 
-			// Collect unique class names from a hero group as "Class1 / Class2"
 			auto classNamesStr = [](const std::vector<HeroData> & rows) -> std::string
 			{
 				std::string result;
@@ -752,12 +546,11 @@ curY += 8; // extra padding above section title
 				return result;
 			};
 
-			// Render one affinity group
 			auto renderHeroGroup = [&](const std::vector<HeroData> & rows, const std::string & header)
 			{
 				if(rows.empty()) return;
 
-				widgets.push_back(makeTableGrid(
+				widgets.push_back(wikiMakeTableGrid(
 					TABLE_MARGIN, curY, tableW2, heroCols,
 					heroHeaderH, heroRowH, (int)rows.size(), blueStyle));
 
@@ -770,31 +563,26 @@ curY += 8; // extra padding above section title
 				{
 					const CHero * h = hd.hero;
 
-					// Portrait
 					widgets.push_back(std::make_shared<CAnimImage>(
 						AnimationPath::builtin("PortraitsSmall"),
 						h->imageIndex, 0,
 						TABLE_MARGIN + 2, curY + 2));
 
-					// Name
 					widgets.push_back(std::make_shared<CLabel>(
 						TABLE_MARGIN + colPort + CELL_PAD_L, curY + CELL_PAD_T,
 						FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 						h->getNameTranslated()));
 
-					// Gender (M / F)
 					widgets.push_back(std::make_shared<CLabel>(
 						TABLE_MARGIN + colPort + colName2 + colGend / 2, curY + CELL_PAD_T,
 						FONT_SMALL, ETextAlignment::TOPCENTER, Colors::WHITE,
 						(h->gender == EHeroGender::FEMALE) ? "F" : "M"));
 
-					// Specialty name
 					widgets.push_back(std::make_shared<CLabel>(
 						TABLE_MARGIN + colPort + colName2 + colGend + CELL_PAD_L, curY + CELL_PAD_T,
 						FONT_TINY, ETextAlignment::TOPLEFT, Colors::WHITE,
 						h->getSpecialtyNameTranslated()));
 
-					// Clickable overlay: left-click navigates, right-click shows hero overview
 					std::function<void()> lclick;
 					if(navigateCallback)
 					{
@@ -809,7 +597,7 @@ curY += 8; // extra padding above section title
 					{
 						ENGINE->windows().createAndPushWindow<CHeroOverview>(hId);
 					};
-					widgets.push_back(std::make_shared<ClickableTableRow>(
+					widgets.push_back(std::make_shared<WikiClickable>(
 						Rect(TABLE_MARGIN, curY, tableW2, heroRowH),
 						std::move(lclick), std::move(rclick), blueStyle, clipRect));
 

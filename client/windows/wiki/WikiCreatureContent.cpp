@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 #include "WikiCreatureContent.h"
+#include "WikiCommon.h"
 
 #include "../../widgets/CViewport.h"
 #include "../../widgets/Images.h"
@@ -20,7 +21,6 @@
 #include "../../GameEngine.h"
 #include "../../gui/WindowHandler.h"
 #include "../CCreatureWindow.h"
-#include "WikiTownContent.h"   // reuse ClickableTableRow / makeTableGrid / addResourceCost via inline helpers
 
 #include "../../../lib/CCreatureHandler.h"
 #include "../../../lib/CBonusTypeHandler.h"
@@ -30,124 +30,13 @@
 #include "../InfoWindows.h"
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Colour palette (mirrors WikiTownContent)
-// ─────────────────────────────────────────────────────────────────────────────
-
-static const ColorRGBA COL_BDR_BROWN {200, 180, 120, 220};
-static const ColorRGBA COL_INN_BROWN  { 90,  80,  50, 160};
-
-static const ColorRGBA COL_BDR_BLUE { 80, 140, 220, 220};
-static const ColorRGBA COL_INN_BLUE  { 30,  60, 120, 160};
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Layout constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-static constexpr int MARGIN   =  4;
-static constexpr int GAP      = 10;
-static constexpr int CELL_L   =  4;
-static constexpr int CELL_T   =  2;
-static constexpr int RES_W    = 14;
-static constexpr int RES_GAP  =  3;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Local helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Small 2-column stats grid: [label | value]
-static std::shared_ptr<GraphicalPrimitiveCanvas> makeStatsGrid(
-	int x, int y, int totalW,
-	int colLabel, int rowH, int rowCount, bool blue)
-{
-	const ColorRGBA & bdr = blue ? COL_BDR_BLUE : COL_BDR_BROWN;
-	const ColorRGBA & inn = blue ? COL_INN_BLUE : COL_INN_BROWN;
-	const int totalH = rowH * rowCount;
-
-	auto g = std::make_shared<GraphicalPrimitiveCanvas>(Rect(x, y, totalW, totalH));
-	g->addRectangle(Point(0, 0), Point(totalW, totalH), bdr);
-	for(int r = 1; r < rowCount; ++r)
-		g->addLine(Point(1, r * rowH), Point(totalW - 2, r * rowH), inn);
-	g->addLine(Point(colLabel, 1), Point(colLabel, totalH - 2), inn);
-	return g;
-}
-
-/// Resource cost helper (reimplemented locally so no dependency on WikiTownContent internals)
-static void addResCost(
-	std::vector<std::shared_ptr<CIntObject>> & out,
-	const TResources & cost,
-	int startX, int y, int maxW)
-{
-	struct R { GameResID id; int amount; };
-	std::vector<R> entries;
-	TResources::nziterator it(cost);
-	while(it.valid()) { entries.push_back({it->resType, static_cast<int>(it->resVal)}); ++it; }
-	if(entries.empty()) return;
-
-	// Gold first
-	std::stable_sort(entries.begin(), entries.end(), [](const R & a, const R & b){
-		const bool ag = (a.id == GameResID::GOLD);
-		const bool bg = (b.id == GameResID::GOLD);
-		if(ag != bg) return ag;
-		return a.id < b.id;
-	});
-
-	const int entW = RES_W + 26 + RES_GAP;
-	int x = startX;
-	for(const auto & e : entries)
-	{
-		if(x + entW > startX + maxW) break;
-		out.push_back(std::make_shared<CAnimImage>(
-			AnimationPath::builtin("SMALRES"), e.id.getNum(), 0, x, y));
-		out.push_back(std::make_shared<CLabel>(
-			x + RES_W + 7, y + 1,
-			FONT_TINY, ETextAlignment::TOPLEFT, Colors::WHITE,
-			std::to_string(e.amount)));
-		x += entW;
-	}
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ClickablePortrait – portrait icon that triggers left/right click callbacks
-// ─────────────────────────────────────────────────────────────────────────────
-
-class ClickablePortrait : public CIntObject
-{
-	std::function<void()> onLClick;
-	std::function<void()> onRClick;
-	bool hovered = false;
-	bool blueTheme = false;
-
-public:
-	ClickablePortrait(Point pos_, int w, int h,
-	                  std::function<void()> lclick,
-	                  std::function<void()> rclick,
-	                  bool blue)
-		: CIntObject(LCLICK | SHOW_POPUP | HOVER, pos_)
-		, onLClick(std::move(lclick))
-		, onRClick(std::move(rclick))
-		, blueTheme(blue)
-	{
-		pos.w = w;
-		pos.h = h;
-	}
-
-	void clickPressed(const Point &) override { if(onLClick) onLClick(); }
-	void showPopupWindow(const Point &) override { if(onRClick) onRClick(); }
-	void hover(bool on) override { if(hovered != on) { hovered = on; redraw(); } }
-	void showAll(Canvas & to) override
-	{
-		const Point cur = ENGINE->getCursorPosition();
-		hovered = pos.isInside(cur);
-		if(hovered)
-		{
-			const ColorRGBA hc = blueTheme
-				? ColorRGBA(60, 100, 180, 60)
-				: ColorRGBA(180, 160, 100, 60);
-			to.drawColorBlended(pos, hc);
-		}
-		CIntObject::showAll(to);
-	}
-};
+static constexpr int MARGIN = 4;
+static constexpr int GAP    = 10;
+static constexpr int CELL_L = 4;
+static constexpr int CELL_T = 2;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // buildCreatureContent – main entry point
@@ -177,7 +66,6 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 
 	// ── 2. Creature animation (CCreaturePic handles footset + faction background) ──
 	{
-		// Create at x=0, then use moveBy() to center based on actual bg width
 		auto pic = std::make_shared<CCreaturePic>(0, curY, creature, true, true);
 		const int picW = pic->pos.w;
 		const int picH = pic->pos.h;
@@ -185,10 +73,9 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 		pic->moveBy(Point(centerX, 0));
 		widgets.push_back(pic);
 
-		// Right-click overlay → CStackWindow popup (sized to actual CCreaturePic dimensions)
 		const CreatureID crId(creature->getIndex());
-		widgets.push_back(std::make_shared<ClickablePortrait>(
-			Point(centerX, curY), picW, picH,
+		widgets.push_back(std::make_shared<WikiClickable>(
+			Rect(centerX, curY, picW, picH),
 			nullptr,
 			[crId](){
 				ENGINE->windows().createAndPushWindow<CStackWindow>(
@@ -221,7 +108,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 			LIBRARY->generaltexth->translate("vcmi.wiki.creature.section.stats")));
 		curY += 20;
-		// Collect stat rows
+
 		auto tr = [](const char * key){ return LIBRARY->generaltexth->translate(key); };
 		struct StatRow { std::string label; std::string value; };
 		std::vector<StatRow> stats;
@@ -263,12 +150,12 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 		stats.push_back({tr("vcmi.wiki.creature.stat.aivalue"),    std::to_string(creature->getAIValue())});
 		stats.push_back({tr("vcmi.wiki.creature.stat.fightvalue"), std::to_string(creature->getFightValue())});
 
-		const int tableW  = W - MARGIN * 2;
-		const int rowH    = 18;
-		const int colLbl  = tableW / 2;
-		const int rowCnt  = static_cast<int>(stats.size());
+		const int tableW = W - MARGIN * 2;
+		const int rowH   = 18;
+		const int colLbl = tableW / 2;
+		const int rowCnt = static_cast<int>(stats.size());
 
-		widgets.push_back(makeStatsGrid(MARGIN, curY, tableW, colLbl, rowH, rowCnt, blueStyle));
+		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, {colLbl, tableW - colLbl}, 0, rowH, rowCnt, blueStyle));
 
 		for(int i = 0; i < rowCnt; ++i)
 		{
@@ -298,14 +185,13 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 				LIBRARY->generaltexth->translate("vcmi.wiki.creature.section.cost")));
 			curY += 20;
-			addResCost(widgets, cost, MARGIN, curY, W - MARGIN * 2);
+			wikiAddResourceCost(widgets, cost, MARGIN, curY, W - MARGIN * 2);
 			curY += 18 + GAP;
 		}
 	}
 
 	// ── 5. Upgrades / related creatures ─────────────────────────────────
 	{
-		// Collect upgrade targets
 		std::vector<const CCreature *> upgrades;
 		for(const CreatureID uid : creature->upgrades)
 		{
@@ -316,7 +202,6 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			}
 		}
 
-		// Find base creature (any creature that has this creature in its upgrades)
 		std::vector<const CCreature *> bases;
 		for(const auto & cr : LIBRARY->creh->objects)
 		{
@@ -327,53 +212,47 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			}
 		}
 
-		// Helper: render a 2-column table of related creatures
 		auto addRelatedTable = [&](const std::string & sectionLabel,
 		                           const std::vector<const CCreature *> & list)
 		{
 			if(list.empty()) return;
 			curY += 16;
-			// Centered section label
 			widgets.push_back(std::make_shared<CLabel>(
 				W / 2, curY,
 				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW, sectionLabel));
 			curY += 20;
 
-			const int iconW  = 36; // CPRSMALL (32px) + 4 padding
+			const int iconW  = 36;
 			const int rowH   = 36;
 			const int tableW = W - MARGIN * 2;
+			const ColorRGBA bdr = wikiBorderColor(blueStyle);
 
 			for(const CCreature * rel : list)
 			{
 				if(!rel) continue;
 
-				// Row border (no fill)
-				const ColorRGBA & bdr = blueStyle ? COL_BDR_BLUE : COL_BDR_BROWN;
 				auto rowBg = std::make_shared<GraphicalPrimitiveCanvas>(
 					Rect(MARGIN, curY, tableW, rowH));
 				rowBg->addRectangle(Point(0,0), Point(tableW, rowH), bdr);
 				widgets.push_back(rowBg);
 
-				// Icon column
 				widgets.push_back(std::make_shared<CAnimImage>(
 					AnimationPath::builtin("CPRSMALL"),
 					rel->getIconIndex(), 0,
 					MARGIN + 2, curY + 2));
 
-				// Name column
 				widgets.push_back(std::make_shared<CLabel>(
 					MARGIN + iconW + CELL_L, curY + rowH / 2 - 5,
 					FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 					rel->getNameSingularTranslated()));
 
-				// Clickable overlay: left-click → navigate, right-click → CStackWindow
 				const std::string relJsonKey = rel->getJsonKey();
 				std::function<void()> lclick;
 				if(navigateCallback)
 					lclick = [navigateCallback, relJsonKey](){ navigateCallback(relJsonKey); };
 				const CreatureID relId(rel->getIndex());
-				widgets.push_back(std::make_shared<ClickablePortrait>(
-					Point(MARGIN, curY), tableW, rowH,
+				widgets.push_back(std::make_shared<WikiClickable>(
+					Rect(MARGIN, curY, tableW, rowH),
 					std::move(lclick),
 					[relId](){
 						ENGINE->windows().createAndPushWindow<CStackWindow>(
@@ -386,7 +265,6 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			curY += GAP - 2;
 		};
 
-		// Show both base creatures AND upgrades if applicable
 		addRelatedTable(
 			LIBRARY->generaltexth->translate("vcmi.wiki.creature.upgradeOf"),
 			bases);
@@ -397,14 +275,13 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 
 	// ── 7. Abilities (creature bonuses with icons) ───────────────────────
 	{
-		// Collect visible non-hidden CREATURE_ABILITY bonuses, deduplicated
 		struct AbilityRow
 		{
 			std::string text;
 			ImagePath   icon;
 		};
 		std::vector<AbilityRow> abilityRows;
-		std::set<std::pair<int,int>> seen; // (type, subtype) deduplication
+		std::set<std::pair<int,int>> seen;
 
 		auto bonusList = creature->getBonuses(Selector::all);
 		for(const auto & b : *bonusList)
@@ -427,8 +304,9 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			curY += 20;
 
 			static constexpr int ICON_SIZE = 51;
-			static constexpr int ICON_COL  = ICON_SIZE + 4; // column width when icon present
+			static constexpr int ICON_COL  = ICON_SIZE + 4;
 			const int tableW = W - MARGIN * 2;
+			const ColorRGBA bdr = wikiBorderColor(blueStyle);
 
 			for(const auto & ab : abilityRows)
 			{
@@ -436,21 +314,16 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 				const int  textX   = MARGIN + (hasIcon ? ICON_COL : 0) + CELL_L;
 				const int  textW   = tableW - (hasIcon ? ICON_COL : 0) - CELL_L * 2;
 
-				// Build the real label – measure its height to compute adaptive row size
 				auto textLabel = std::make_shared<CMultiLineLabel>(
 					Rect(textX, curY + CELL_T, textW, 4000),
 					FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, ab.text);
 				const int textH = textLabel->textSize.y;
 
-				// Row is at least tall enough to fit the icon (if any), otherwise just text
 				const int minH = hasIcon ? (ICON_SIZE + CELL_T * 2) : (CELL_T * 2 + 12);
 				const int rowH = std::max(minH, textH + CELL_T * 2);
 
-				// Clamp label height to the computed row
 				textLabel->pos.h = rowH - CELL_T * 2;
 
-				// Row border (no fill)
-				const ColorRGBA & bdr = blueStyle ? COL_BDR_BLUE : COL_BDR_BROWN;
 				auto rowBorder = std::make_shared<GraphicalPrimitiveCanvas>(
 					Rect(MARGIN, curY, tableW, rowH));
 				rowBorder->addRectangle(Point(0, 0), Point(tableW, rowH), bdr);
@@ -464,10 +337,9 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 
 				widgets.push_back(textLabel);
 
-				// Right-click popup with ability text
 				const std::string popupText = ab.text;
-				widgets.push_back(std::make_shared<ClickablePortrait>(
-					Point(MARGIN, curY), tableW, rowH,
+				widgets.push_back(std::make_shared<WikiClickable>(
+					Rect(MARGIN, curY, tableW, rowH),
 					nullptr,
 					[popupText](){ CRClickPopup::createAndPush(popupText); },
 					blueStyle));
