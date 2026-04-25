@@ -312,7 +312,6 @@ static QString defaultStartDirForOpen()
 {
 #if defined(VCMI_MOBILE)
 	const QStandardPaths::StandardLocation mobilePrefs[] = {
-		QStandardPaths::DocumentsLocation,
 		QStandardPaths::HomeLocation
 	};
 	for(auto location : mobilePrefs)
