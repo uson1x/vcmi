@@ -149,7 +149,7 @@ void CMenuScreen::keyPressed(EShortcut key)
 //function for std::string -> std::function conversion for main menu
 static std::function<void()> genCommand(CMenuScreen * menu, std::vector<std::string> menuType, const std::string & string)
 {
-	static const std::vector<std::string> commandType = {"to", "campaigns", "start", "load", "exit", "highscores"};
+	static const std::vector<std::string> commandType = {"to", "campaigns", "start", "load", "exit", "highscores", "wiki"};
 
 	static const std::vector<std::string> gameType = {"single", "multi", "campaign", "tutorial", "battle"};
 
@@ -217,6 +217,10 @@ static std::function<void()> genCommand(CMenuScreen * menu, std::vector<std::str
 			case 5: //highscores
 			{
 				return []() { CMainMenu::openHighScoreScreen(); };
+			}
+			case 6: //wiki
+			{
+				return []() { ENGINE->windows().createAndPushWindow<WikiWindow>(WikiWindow::Style::BLUE); };
 			}
 			}
 		}
