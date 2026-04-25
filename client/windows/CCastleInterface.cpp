@@ -95,7 +95,7 @@ CSpellResearchDialog::CSpellResearchDialog(const std::string & textToShow, const
 	components = std::make_shared<CComponentBox>(comps, Rect(sideMarginComp, componentsTop, pos.w - 2 * sideMarginComp, 0));
 
 	const int buttonY = 468 - statusbarHeight - gapBeforeStatusbar - 32;
-	const int buttonSpacing = 9;
+	const int buttonSpacing = 16;
 	const int totalButtonsWidth = 3 * 80 + 2 * buttonSpacing;
 	int buttonX = (pos.w - totalButtonsWidth) / 2;
 
