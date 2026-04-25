@@ -55,13 +55,14 @@ struct WikiEntry
 	std::string description;  ///< full description; empty = show auto-stub text
 	std::optional<WikiIconInfo> icon;
 	std::string modScope;     ///< mod scope the entity belongs to (empty for glossary)
+	std::string subtitle;     ///< second display line (hero class, faction, alignment, entry count)
 };
 
 /// A single clickable row inside the category or element columns
 class WikiListItem : public CIntObject
 {
 	// Private constants – sizes / margins
-	static constexpr int ICON_SIZE  = 14;  ///< icon rendered at this square size
+	static constexpr int ICON_SIZE  = 28;  ///< icon rendered at this square size (doubled for 40 px rows)
 	static constexpr int MARGIN_L   = 6;   ///< left padding
 	static constexpr int MARGIN_TOP = 2;   ///< top padding for text
 
@@ -69,22 +70,25 @@ class WikiListItem : public CIntObject
 	std::shared_ptr<CAnimImage>  icon;
 	std::optional<ColorRGBA>     colorFillIcon; ///< used for terrain (solid color square)
 	std::shared_ptr<CLabel>      label;
+	std::shared_ptr<CLabel>      sublabel;       ///< second line (hero class / faction / alignment / count)
+	ColorRGBA                    sublabelColor;  ///< hint colour picked once in ctor (blue or brown)
 	bool selected = false;
 	bool blueStyle = false;
 
 	void updateLook();
 
 public:
-	static constexpr int ITEM_H = 20;  ///< row height – set on item->pos.h by callers
+	static constexpr int ITEM_H = 40;  ///< row height – set on item->pos.h by callers
 
 	std::function<void(WikiListItem *)> onSelected;
 	std::string text;
 	size_t index = 0;
 
-	WikiListItem(size_t index, std::string text,
+	WikiListItem(size_t index, std::string text, std::string subtitle,
 	             std::function<void(WikiListItem *)> callback,
 	             std::optional<WikiIconInfo> iconInfo = std::nullopt,
-	             bool blueStyle = false);
+	             bool blueStyle = false,
+	             int itemWidth = 100);
 
 	void clickPressed(const Point & cursorPosition) override;
 	void showPopupWindow(const Point & cursorPosition) override;

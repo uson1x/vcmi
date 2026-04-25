@@ -25,6 +25,8 @@
 #include "../../widgets/TextControls.h"
 #include "../../render/Canvas.h"
 #include "../../render/Colors.h"
+#include "../../render/IImage.h"
+#include "../../render/IRenderHandler.h"
 #include "../../widgets/CTextInput.h"
 #include "../InfoWindows.h"
 
@@ -34,6 +36,7 @@
 #include "../../../lib/entities/faction/CTown.h"
 #include "../../../lib/CCreatureHandler.h"
 #include "../../../lib/entities/hero/CHeroHandler.h"
+#include "../../../lib/entities/hero/CHeroClass.h"
 #include "../../../lib/entities/artifact/CArtHandler.h"
 #include "../../../lib/spells/CSpellHandler.h"
 #include "../../../lib/CSkillHandler.h"
@@ -46,10 +49,11 @@
 // WikiListItem
 // ============================================================================
 
-WikiListItem::WikiListItem(size_t itemIndex, std::string itemText,
+WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string itemSubtitle,
 	std::function<void(WikiListItem *)> callback,
 	std::optional<WikiIconInfo> iconInfo,
-	bool blueStyle_)
+	bool blueStyle_,
+	int itemWidth)
 	: onSelected(std::move(callback))
 	, text(std::move(itemText))
 	, index(itemIndex)
@@ -59,38 +63,69 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText,
 
 	addUsedEvents(LCLICK | HOVER | SHOW_POPUP);
 
+	sublabelColor = blueStyle_
+		? ColorRGBA(100, 160, 240, 255)
+		: ColorRGBA(158, 130, 105, 255);
+
 	int labelOffsetX = MARGIN_L;
 
 	if(iconInfo)
 	{
 		if(iconInfo->colorFill)
 		{
-			// Solid colour square (used for terrain)
+			// Solid colour square (used for terrain) – always square, no aspect issue
 			colorFillIcon = iconInfo->colorFill;
 			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
 		}
 		else
 		{
-			const int iconY = (ITEM_H - ICON_SIZE) / 2;
+			// Query native image size to compute aspect-correct rendered height and center it.
+			auto refImg = ENGINE->renderHandler().loadImage(
+				iconInfo->path, (int)iconInfo->frame, (int)iconInfo->group, EImageBlitMode::COLORKEY);
+			const Point nativeSz = refImg ? refImg->dimensions() : Point(ICON_SIZE, ICON_SIZE);
+			const int iconActualH = (nativeSz.x > 0)
+				? std::max(1, ICON_SIZE * nativeSz.y / nativeSz.x)
+				: ICON_SIZE;
+			const int iconY = std::max(0, (ITEM_H - iconActualH) / 2);
 			icon = std::make_shared<CAnimImage>(
 				iconInfo->path,
 				iconInfo->frame,
-				Rect(MARGIN_L, iconY, ICON_SIZE, ICON_SIZE),
+				Rect(MARGIN_L, iconY, ICON_SIZE, iconActualH),
 				iconInfo->group);
 			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
 		}
-	}  // end if(iconInfo)
+	}
 
-	const int labelY = MARGIN_TOP + 1;
-	label = std::make_shared<CLabel>(labelOffsetX, labelY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, text);
+	// Alignment and anchor depend on whether an icon is present.
+	const ETextAlignment hAlign = iconInfo ? ETextAlignment::CENTERLEFT : ETextAlignment::CENTER;
+	const int labelRectX = iconInfo ? labelOffsetX : 0;
+	const int labelAnchorX = iconInfo ? labelOffsetX : (itemWidth / 2);
+	const int labelW = std::max(10, itemWidth - labelRectX - (iconInfo ? MARGIN_L : 0));
+
+	if(!itemSubtitle.empty())
+	{
+		// Two-line layout: name centred in the top half, subtitle in the bottom half.
+		label = std::make_shared<CLabel>(
+			labelAnchorX, ITEM_H / 4,
+			FONT_SMALL, hAlign, Colors::WHITE, text);
+		sublabel = std::make_shared<CLabel>(
+			labelAnchorX, ITEM_H / 4 * 3,
+			FONT_SMALL, hAlign, sublabelColor, itemSubtitle);
+	}
+	else
+	{
+		// Single entry: CMultiLineLabel so long names can wrap.
+		// Vertically centred via y-offset of 3 (height = ITEM_H - 6, 3 px margin each side).
+		label = std::make_shared<CMultiLineLabel>(
+			Rect(labelRectX, 3, labelW, ITEM_H - 6),
+			FONT_SMALL, hAlign, Colors::WHITE, text);
+	}
 }
 
 void WikiListItem::updateLook()
 {
-	if(selected)
-		label->setColor(Colors::YELLOW);
-	else
-		label->setColor(Colors::WHITE);
+	label->setColor(selected ? Colors::YELLOW : Colors::WHITE);
+	// sublabel keeps its characteristic hint colour at all times
 	redraw();
 }
 
@@ -145,6 +180,7 @@ void WikiListItem::hover(bool on)
 	if(!selected)
 	{
 		label->setColor(on ? ColorRGBA(255, 220, 120, 255) : Colors::WHITE);
+		// sublabel keeps its characteristic hint colour on hover too
 		redraw();
 	}
 }
@@ -196,20 +232,20 @@ static constexpr int HEADER_Y      = 40;
 static constexpr int CONTENT_TOP   = 58;
 // CONTENT_BOT chosen so CONTENT_H is an exact multiple of ITEM_H (no half-rows)
 static constexpr int CONTENT_BOT   = 538;                          // 58 + 480
-static constexpr int CONTENT_H     = CONTENT_BOT - CONTENT_TOP;    // 480 = 24 * 20
+static constexpr int CONTENT_H     = CONTENT_BOT - CONTENT_TOP;    // 480 = 12 * 40
 
 // Row height – must match WikiListItem::ITEM_H
-static_assert(WikiListItem::ITEM_H == 20, "ITEM_H mismatch");
+static_assert(WikiListItem::ITEM_H == 40, "ITEM_H mismatch");
 static constexpr int ITEM_H        = WikiListItem::ITEM_H;
-static constexpr int VISIBLE_ITEMS = CONTENT_H / ITEM_H; // 24
+static constexpr int VISIBLE_ITEMS = CONTENT_H / ITEM_H; // 12
 
 // Element column uses one row less to make room for the search box
-static constexpr int ELEM_VISIBLE_ITEMS = VISIBLE_ITEMS - 1;        // 23
-static constexpr int ELEM_LIST_H        = ELEM_VISIBLE_ITEMS * ITEM_H; // 460
+static constexpr int ELEM_VISIBLE_ITEMS = VISIBLE_ITEMS - 1;        // 11
+static constexpr int ELEM_LIST_H        = ELEM_VISIBLE_ITEMS * ITEM_H; // 440
 
-// Search box placed directly below the element list
-static constexpr int SEARCH_BOX_Y = CONTENT_TOP + ELEM_LIST_H + 2;  // 520
-static constexpr int SEARCH_BOX_H = 16;
+// Search box placed directly below the element list – flush, fills the remaining row
+static constexpr int SEARCH_BOX_Y = CONTENT_TOP + ELEM_LIST_H;       // 498
+static constexpr int SEARCH_BOX_H = CONTENT_BOT - SEARCH_BOX_Y;      // 40 = ITEM_H
 
 // Slider width
 static constexpr int SLIDER_W      = 16;
@@ -321,7 +357,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
 				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt, "" });
+				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt, "", "" });
 			}
 		}
 		catch(const std::exception &) {} // file absent → empty glossary
@@ -335,12 +371,23 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	{
 		const int iTown = static_cast<int>(WikiCategory::TOWN);
 		for(const auto & faction : LIBRARY->townh->objects)
-			if(faction && faction->hasTown() && !faction->special)
-				categoryEntries[iTown].push_back({
-					faction->getJsonKey(), faction->getNameTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt },
-					faction->getModScope()
-				});
+		{
+			if(!faction || !faction->hasTown() || faction->special) continue;
+			std::string alignStr;
+			switch(faction->getAlignment())
+			{
+				case EAlignment::GOOD:    alignStr = LIBRARY->generaltexth->translate("vcmi.wiki.alignment.good");    break;
+				case EAlignment::EVIL:    alignStr = LIBRARY->generaltexth->translate("vcmi.wiki.alignment.evil");    break;
+				case EAlignment::NEUTRAL: alignStr = LIBRARY->generaltexth->translate("vcmi.wiki.alignment.neutral"); break;
+				default: break;
+			}
+			categoryEntries[iTown].push_back({
+				faction->getJsonKey(), faction->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt },
+				faction->getModScope(),
+				alignStr
+			});
+		}
 		std::sort(categoryEntries[iTown].begin(), categoryEntries[iTown].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
@@ -349,12 +396,16 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	{
 		const int iHero = static_cast<int>(WikiCategory::HERO);
 		for(const auto & hero : LIBRARY->heroh->objects)
-			if(hero && !hero->special)
-				categoryEntries[iHero].push_back({
-					hero->getJsonKey(), hero->getNameTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt },
-					hero->getModScope()
-				});
+		{
+			if(!hero || hero->special) continue;
+			const std::string heroClassName = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
+			categoryEntries[iHero].push_back({
+				hero->getJsonKey(), hero->getNameTranslated(), "",
+				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt },
+				hero->getModScope(),
+				heroClassName
+			});
+		}
 		std::sort(categoryEntries[iHero].begin(), categoryEntries[iHero].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
@@ -365,6 +416,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		if(art && art->getWarMachine() != CreatureID::NONE)
 			warMachineCreatures.insert(art->getWarMachine());
 
+	// Build faction name lookup for creature subtitles
+	std::map<FactionID, std::string> factionNameById;
+	for(const auto & faction : LIBRARY->townh->objects)
+		if(faction)
+			factionNameById[faction->getId()] = faction->getNameTranslated();
+
 	// Creatures – normal creatures plus war machines (always show war machines)
 	{
 		const int iCreature = static_cast<int>(WikiCategory::CREATURE);
@@ -373,11 +430,16 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			if(!creature) continue;
 			const bool isWM = warMachineCreatures.count(CreatureID(creature->getIndex())) > 0;
 			if(!creature->special || isWM)
+			{
+				const auto it = factionNameById.find(creature->getFactionID());
+				const std::string factionName = (it != factionNameById.end()) ? it->second : "";
 				categoryEntries[iCreature].push_back({
 					creature->getJsonKey(), creature->getNameSingularTranslated(), "",
 					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt },
-					creature->getModScope()
+					creature->getModScope(),
+					factionName
 				});
+			}
 		}
 		std::sort(categoryEntries[iCreature].begin(), categoryEntries[iCreature].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -393,7 +455,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					artifact->getNameTranslated(),
 					artifact->getDescriptionTranslated(),
 					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt },
-					artifact->getModScope()
+					artifact->getModScope(), ""
 				});
 		std::sort(categoryEntries[iArtifact].begin(), categoryEntries[iArtifact].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -420,7 +482,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					spell->getJsonKey(),
 					spell->getNameTranslated(), desc,
 					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt },
-					spell->getModScope()
+					spell->getModScope(), ""
 				});
 			}
 		std::sort(categoryEntries[iSpell].begin(), categoryEntries[iSpell].end(),
@@ -448,7 +510,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					skill->getJsonKey(),
 					skill->getNameTranslated(), desc,
 					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt },
-					skill->getModScope()
+					skill->getModScope(), ""
 				});
 			}
 		std::sort(categoryEntries[iSkill].begin(), categoryEntries[iSkill].end(),
@@ -478,7 +540,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				std::string desc;
 				if(!nativeTowns.empty())
 					desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}\n\n" + nativeTowns;
-				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon, terrain->getModScope() });
+				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon, terrain->getModScope(), "" });
 			}
 		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
@@ -494,13 +556,13 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	{
 		const Rect sbRect(COL2_X, SEARCH_BOX_Y, COL2_LIST_W + SLIDER_W, SEARCH_BOX_H);
 		const ColorRGBA sbBorderColor = (style == Style::BLUE)
-		                              ? ColorRGBA(40, 100, 200, 200)
-		                              : ColorRGBA(128, 100,  75, 200);
+		                              ? ColorRGBA(40, 120, 220, 255)
+		                              : ColorRGBA(140, 110,  80, 255);
 		const ColorRGBA sbHintColor   = (style == Style::BLUE)
 		                              ? ColorRGBA(100, 160, 240, 255)
 		                              : ColorRGBA(158, 130, 105, 255);
 		searchBoxRect = std::make_shared<TransparentFilledRectangle>(
-			sbRect, ColorRGBA(0, 0, 0, 75), sbBorderColor);
+			sbRect, ColorRGBA(0, 0, 0, 120), sbBorderColor);
 		searchBoxHint = std::make_shared<CLabel>(
 			sbRect.center().x, sbRect.center().y,
 			FONT_SMALL, ETextAlignment::CENTER, sbHintColor,
@@ -607,8 +669,10 @@ void WikiWindow::buildCategoryList()
 	auto createCatItem = [this](size_t idx) -> std::shared_ptr<CIntObject>
 	{
 		std::string name = (idx < categoryNames.size()) ? categoryNames[idx] : "";
+		std::string countStr = (idx < categoryEntries.size())
+			? std::to_string(categoryEntries[idx].size()) : "";
 		auto item = std::make_shared<WikiListItem>(
-			idx, name,
+			idx, name, countStr,
 			[this](WikiListItem * clicked) {
 				// Deselect previously visible category item before updating the index
 				if(activeCategoryIndex >= 0 && categoryList)
@@ -622,8 +686,8 @@ void WikiWindow::buildCategoryList()
 				onCategoryClicked((int)clicked->index);
 			},
 			std::nullopt,
-			style == Style::BLUE);
-		// No icon in the default stub – icons can be added later per-entry.
+			style == Style::BLUE,
+			COL1_LIST_W + SLIDER_W);
 		item->pos.w = COL1_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeCategoryIndex)
@@ -690,9 +754,10 @@ void WikiWindow::buildElementList(int categoryIndex)
 	auto createElemItem = [this, entries](size_t idx) -> std::shared_ptr<CIntObject>
 	{
 		const std::string name = (idx < entries.size()) ? entries[idx].name : "";
+		const std::string subtitle = (idx < entries.size()) ? entries[idx].subtitle : "";
 		const std::optional<WikiIconInfo> icon = (idx < entries.size()) ? entries[idx].icon : std::nullopt;
 		auto item = std::make_shared<WikiListItem>(
-			idx, name,
+			idx, name, subtitle,
 			[this](WikiListItem * clicked) {
 				// Deselect previously visible element item before updating the index
 				if(activeElementIndex >= 0 && elementList)
@@ -704,7 +769,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 				}
 				clicked->setSelected(true);
 				onElementClicked((int)clicked->index);
-			}, icon, style == Style::BLUE);
+			}, icon, style == Style::BLUE, COL2_LIST_W);
 		item->pos.w = COL2_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeElementIndex)
@@ -712,8 +777,8 @@ void WikiWindow::buildElementList(int categoryIndex)
 		return item;
 	};
 
-	// See COL1 comment above for the coordinate rationale.
-	static constexpr int COL2_SLIDER_REL_X = COL2_LIST_W + 1; // = 145
+	// Slider sits 2 px inside from the list-content boundary, 1 px below the top, shrunk 1 px in length.
+	static constexpr int COL2_SLIDER_REL_X = COL2_LIST_W - 1; // = 143
 
 	const int sliderBits = (style == Style::BLUE) ? 5 : 1;
 
@@ -725,7 +790,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 		total,
 		0,
 		(total > ELEM_VISIBLE_ITEMS) ? sliderBits : 0,
-		Rect(COL2_SLIDER_REL_X, 0, ELEM_LIST_H, SLIDER_W));
+		Rect(COL2_SLIDER_REL_X, 1, ELEM_LIST_H - 1, SLIDER_W));
 
 	// FIX: set pos.w/h so WikiListItem::showAll's clip rect is non-zero
 	elementList->pos.w = COL2_LIST_W + SLIDER_W;
