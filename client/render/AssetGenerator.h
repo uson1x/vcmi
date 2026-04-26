@@ -37,6 +37,7 @@ public:
 
 	AnimationLayoutMap createAdventureMapButton(const ImagePath & overlay, bool small);
 	AnimationLayoutMap createSliderBar(bool brown, bool horizontal, int length);
+	AnimationLayoutMap createAdventureOptionsButton(const ImagePath & overlay);
 
 private:
 	struct PaletteAnimation
@@ -71,6 +72,8 @@ private:
 	CanvasPtr createGateListColored(PlayerColor color, PlayerColor backColor) const;
 	CanvasPtr createHeroSlotsColored(PlayerColor backColor) const;
 	CanvasPtr createStackArtifactIndicator(const Point & size) const;
+
+	CanvasPtr createAdventureOptionsBackground(PlayerColor color) const;
 
 	void createPaletteShiftedSprites();
 	void generatePaletteShiftedAnimation(const AnimationPath & source, const std::vector<PaletteAnimation> & animation);

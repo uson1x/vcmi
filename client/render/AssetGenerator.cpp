@@ -104,6 +104,12 @@ void AssetGenerator::initialize()
 
 	imageFiles[ImagePath::builtin("heroSlotsBlue.png")] = [this](){ return createHeroSlotsColored(PlayerColor(1));};
 
+	for (PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	{
+		std::string name = "AdventureOptionsBackground" + (color == -1 ? "" : "-" + color.toString());
+		imageFiles[ImagePath::builtin(name)] = [this, color](){ return createAdventureOptionsBackground(std::max(PlayerColor(0), color));};
+	}
+
 	createPaletteShiftedSprites();
 }
 
@@ -1111,6 +1117,139 @@ AssetGenerator::CanvasPtr AssetGenerator::createHeroSlotsColored(PlayerColor bac
 			canvas.draw(img, Point(x * 36, 130 + y * 36), Rect(3, 75, 36, 36));
 
 	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createAdventureOptionsBackground(PlayerColor color) const
+{
+	auto locator = ImageLocator(ImagePath::builtin("ADVOPTS"), EImageBlitMode::COLORKEY);
+	std::shared_ptr<IImage> img = ENGINE->renderHandler().loadImage(locator);
+	img->playerColored(color);
+
+	std::shared_ptr<IImage> backgroundImg = ENGINE->renderHandler().loadImage(ImageLocator(ImagePath::builtin("DiBoxBck"), EImageBlitMode::OPAQUE));
+	backgroundImg->adjustPalette(ColorFilter::genRangeShifter(0.f, 0.f, 0.f, 0.75f, 0.75f, 0.75f), 0); //darken
+
+	auto image = ENGINE->renderHandler().createImage(img->dimensions(), CanvasScalingPolicy::IGNORE);
+	Canvas canvas = image->getCanvas();
+	canvas.draw(img, Point(0, 0));
+
+	Point backgroundSize(189, 48);
+	for(int i = 0; i<5; i++)
+		for(int x = 0; x < backgroundSize.x; x += backgroundImg->width())
+			canvas.draw(backgroundImg, Point(78 + x, 25 + i * 58), Rect(0, 0, std::min(backgroundImg->width(), backgroundSize.x - x), std::min(backgroundImg->height(), backgroundSize.y)));
+
+	return image;
+}
+
+AssetGenerator::AnimationLayoutMap AssetGenerator::createAdventureOptionsButton(const ImagePath & overlay)
+{
+    auto baseImg = ENGINE->renderHandler().loadAnimation(AnimationPath::builtin("ADVTURN"), EImageBlitMode::OPAQUE);
+
+    AnimationLayoutMap layout;
+    for(int i = 0; i < 4; i++)
+    {
+        ImagePath spriteName = ImagePath::builtin("adventureOptionsButton_" + overlay.getName() + "_" + std::to_string(i) + ".png");
+
+        imageFiles[spriteName] = [baseImg, overlay, i](){
+            auto sourceFrame = baseImg->getImage(i);
+            auto newImg = ENGINE->renderHandler().createImage(sourceFrame->dimensions(), CanvasScalingPolicy::IGNORE);
+            auto canvas = newImg->getCanvas();
+
+            canvas.draw(sourceFrame, Point(0, 0));
+
+            const int startX = 7, startY = 8;
+            const int width = 36, height = 35;
+
+            // 1. Draw gradient background into area
+            {
+                ColorRGBA colorLeft(201, 177, 103);
+                ColorRGBA colorRight(171, 140, 74);
+
+                for(int y = startY; y < startY + height; ++y)
+                {
+                    bool isScratchRow = ((y * 2147483647) % 13) > 8;
+                    int rowBaseBias = ((y * 1103515245) % 11) - 5;
+
+                    for(int x = startX; x < startX + width; ++x)
+                    {
+                        float tx = static_cast<float>(x - startX) / width;
+
+                        int r = colorLeft.r + (colorRight.r - colorLeft.r) * tx;
+                        int g = colorLeft.g + (colorRight.g - colorLeft.g) * tx;
+                        int b = colorLeft.b + (colorRight.b - colorLeft.b) * tx;
+
+                        int scratchImpact = 0;
+                        if(isScratchRow && (x + (y % 4)) % 15 < 10)
+                            scratchImpact = (std::rand() % 100 > 70) ? -8 : -4;
+                        int grain = (std::rand() % 8) - 4;
+
+                        canvas.drawPoint(Point(x, y), ColorRGBA(
+                            std::max(0, std::min(255, r + rowBaseBias + scratchImpact + grain)),
+                            std::max(0, std::min(255, g + rowBaseBias + scratchImpact + grain)),
+                            std::max(0, std::min(255, b + rowBaseBias + scratchImpact + grain))
+                        ));
+                    }
+                }
+            }
+
+            // 2. Draw white copy of overlay shifted +1/+1 for border, then normal overlay on top
+            auto overlayImg = ENGINE->renderHandler().loadImage(ImageLocator(overlay, EImageBlitMode::COLORKEY));
+
+            // Create white version: draw overlay to temp canvas, then set all pixels to white keeping alpha
+            auto whiteImg = ENGINE->renderHandler().createImage(overlayImg->dimensions(), CanvasScalingPolicy::IGNORE);
+            Canvas whiteCanvas = whiteImg->getCanvas();
+            whiteCanvas.draw(overlayImg, Point(0, 0));
+            for(int y = 0; y < overlayImg->dimensions().y; ++y)
+                for(int x = 0; x < overlayImg->dimensions().x; ++x)
+                {
+                    auto pixel = whiteCanvas.getPixel(Point(x, y));
+                    whiteCanvas.drawPoint(Point(x, y), ColorRGBA(255, 255, 255, pixel.a));
+                }
+            canvas.draw(whiteImg, Point(startX + 1, startY + 1), Rect(0, 0, width, height));
+            canvas.draw(overlayImg, Point(startX, startY), Rect(0, 0, width, height));
+
+            // 2. Apply scanlines (frame 2) and darken (frames 1 & 3) over the entire image
+            const float stateMultiplier = (i == 1 || i == 3) ? 0.7f : 1.0f;
+            const bool applyScanlines = (i == 2);
+
+            for(int y = 0; y < sourceFrame->dimensions().y; ++y)
+            {
+                for(int x = 0; x < sourceFrame->dimensions().x; ++x)
+                {
+                    auto pixel = canvas.getPixel(Point(x, y));
+                    float r = pixel.r;
+                    float g = pixel.g;
+                    float b = pixel.b;
+
+                    if(applyScanlines)
+                    {
+                        int scanPos = (x + y) % 4;
+                        float scanMult;
+                        if(scanPos == 0)                          scanMult = 0.0f;   // deep dark core
+                        else if(scanPos == 1 || scanPos == 3)     scanMult = 0.65f;  // surrounding shadow
+                        else                                      scanMult = 1.10f;  // slight highlight
+                        r *= scanMult;
+                        g *= scanMult;
+                        b *= scanMult;
+                    }
+
+                    r *= stateMultiplier;
+                    g *= stateMultiplier;
+                    b *= stateMultiplier;
+
+                    canvas.drawPoint(Point(x, y), ColorRGBA(
+                        std::max(0, std::min(255, static_cast<int>(r))),
+                        std::max(0, std::min(255, static_cast<int>(g))),
+                        std::max(0, std::min(255, static_cast<int>(b))),
+                        pixel.a
+                    ));
+                }
+            }
+            return newImg;
+        };
+
+        layout[0].push_back(ImageLocator(spriteName, EImageBlitMode::SIMPLE));
+    }
+    return layout;
 }
 
 AssetGenerator::CanvasPtr AssetGenerator::createStackArtifactIndicator(const Point & size) const
