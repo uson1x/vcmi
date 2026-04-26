@@ -95,12 +95,7 @@ void AssetGenerator::initialize()
 	addUniversityConfirmBackground("UNIVRSC2", Point(466, 388), 2);
 	addSpellResearchBackground("spellResearchDialog", Point(328, 474));
 
-	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
-	{
-		const std::string name = "heroBackpackDialog" + (color == -1 ? "" : "-" + color.toString());
-		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
-		addDialogBackgroundWithStatusBar(name, Point(426, 465), playerColor);
-	}
+	addDialogBackgroundWithStatusBar("heroBackpackDialog", Point(426, 465));
 
 	imageFiles[ImagePath::builtin("questDialog.png")] = [this](){ return createQuestWindow();};
 	imageFiles[ImagePath::builtin("stackArtifactIndicatorSmall.png")] = [this](){ return createStackArtifactIndicator(Point(14, 14));};
@@ -161,49 +156,29 @@ void AssetGenerator::addAnimationFile(const AnimationPath & path, AnimationLayou
 	animationFiles[path] = anim;
 }
 
-void AssetGenerator::addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size, const PlayerColor & playerColor)
+void AssetGenerator::addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size)
 {
-	imageFiles[ImagePath::builtin(fileName)] = [this, size, playerColor](){ return createDialogBackgroundWithStatusBar(size, playerColor);};
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackgroundWithStatusBar(size);};
 }
 
 void AssetGenerator::addSpellResearchBackground(const std::string & fileName, const Point & size)
 {
-	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
-	{
-		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
-		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
-		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor](){ return createDialogBackgroundWithStatusBar(size, playerColor);};
-	}
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackgroundWithStatusBar(size);};
 }
 
 void AssetGenerator::addRecruitmentBackground(const std::string & fileName, const Point & size)
 {
-	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
-	{
-		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
-		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
-		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor](){ return createRecruitmentDialogBackground(size, playerColor);};
-	}
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createRecruitmentDialogBackground(size);};
 }
 
 void AssetGenerator::addUniversityBackground(const std::string & fileName, const Point & size, int skillColumns)
 {
-	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
-	{
-		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
-		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
-		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor, skillColumns](){ return createUniversityDialogBackground(size, playerColor, skillColumns);};
-	}
+	imageFiles[ImagePath::builtin(fileName)] = [this, size, skillColumns](){ return createUniversityDialogBackground(size, skillColumns);};
 }
 
 void AssetGenerator::addUniversityConfirmBackground(const std::string & fileName, const Point & size, int costElements)
 {
-	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
-	{
-		const std::string name = fileName + (color == -1 ? "" : "-" + color.toString());
-		const PlayerColor playerColor = color == -1 ? PlayerColor(1) : std::max(PlayerColor(0), color);
-		imageFiles[ImagePath::builtin(name)] = [this, size, playerColor, costElements](){ return createUniversityConfirmDialogBackground(size, playerColor, costElements);};
-	}
+	imageFiles[ImagePath::builtin(fileName)] = [this, size, costElements](){ return createUniversityConfirmDialogBackground(size, costElements);};
 }
 
 auto getColorFilters()
@@ -1209,19 +1184,15 @@ AssetGenerator::CanvasPtr AssetGenerator::createStackArtifactIndicator(const Poi
 	return image;
 }
 
-AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(const Point & size, const PlayerColor & playerColor) const
+AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(const Point & size) const
 {
 	// Generic compositing helper:
 	// 1) tile DiBoxBck over full target size
-	// 2) build border and status-bar frame from DIALGBOX pieces
+	// 2) add darkened status-bar strip at the bottom
 	auto image = ENGINE->renderHandler().createImage(size, CanvasScalingPolicy::IGNORE);
 	Canvas canvas = image->getCanvas();
 
 	auto background = ENGINE->renderHandler().loadImage(ImageLocator(ImagePath::builtin("DiBoxBck"), EImageBlitMode::OPAQUE));
-	auto dialogBox = ENGINE->renderHandler().loadAnimation(AnimationPath::builtin("DIALGBOX"), EImageBlitMode::COLORKEY);
-	if (playerColor.isValidPlayer() && playerColor != PlayerColor(1))
-		dialogBox->playerColored(playerColor);
-
 	// Fill whole area with DiBoxBck texture first.
 	for (int y = 0; y < size.y; y += background->height())
 	{
@@ -1235,49 +1206,12 @@ AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(co
 	const int statusBarOverlayHeight = 30;
 	canvas.drawColorBlended(Rect(0, size.y - statusBarOverlayHeight, size.x, statusBarOverlayHeight), ColorRGBA(0, 0, 0, 88));
 
-	auto drawHorizontal = [&canvas](const std::shared_ptr<IImage> & source, int y, int xBegin, int xEnd)
-	{
-		for(int x = xBegin; x < xEnd; x += source->width())
-		{
-			int width = std::min(source->width(), xEnd - x);
-			canvas.draw(source, Point(x, y), Rect(0, 0, width, source->height()));
-		}
-	};
-
-	auto drawVertical = [&canvas](const std::shared_ptr<IImage> & source, int x, int yBegin, int yEnd)
-	{
-		for(int y = yBegin; y < yEnd; y += source->height())
-		{
-			int height = std::min(source->height(), yEnd - y);
-			canvas.draw(source, Point(x, y), Rect(0, 0, source->width(), height));
-		}
-	};
-
-	auto topLeft = dialogBox->getImage(0, 0);
-	auto topRight = dialogBox->getImage(1, 0);
-	auto leftEdge = dialogBox->getImage(4, 0);
-	auto rightEdge = dialogBox->getImage(5, 0);
-	auto topEdge = dialogBox->getImage(6, 0);
-	auto bottomLeft = dialogBox->getImage(8, 0);
-	auto bottomRight = dialogBox->getImage(9, 0);
-	auto bottomEdge = dialogBox->getImage(10, 0);
-
-	drawHorizontal(topEdge, 0, topLeft->width(), size.x - topRight->width());
-	drawHorizontal(bottomEdge, size.y - bottomEdge->height(), bottomLeft->width(), size.x - bottomRight->width());
-	drawVertical(leftEdge, 0, topLeft->height(), size.y - bottomLeft->height());
-	drawVertical(rightEdge, size.x - rightEdge->width(), topRight->height(), size.y - bottomRight->height());
-
-	canvas.draw(topLeft, Point(0, 0));
-	canvas.draw(topRight, Point(size.x - topRight->width(), 0));
-	canvas.draw(bottomLeft, Point(0, size.y - bottomLeft->height()));
-	canvas.draw(bottomRight, Point(size.x - bottomRight->width(), size.y - bottomRight->height()));
-
 	return image;
 }
 
-AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(const Point & size, const PlayerColor & playerColor) const
+AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(const Point & size) const
 {
-	auto image = createDialogBackgroundWithStatusBar(size, playerColor);
+	auto image = createDialogBackgroundWithStatusBar(size);
 	Canvas canvas = image->getCanvas();
 
 	// Additional overlays used by original TPRCRT (semi-transparent plates and central black input area).
@@ -1318,9 +1252,9 @@ AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(cons
 	return image;
 }
 
-AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const Point & size, const PlayerColor & playerColor, int skillColumns) const
+AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const Point & size, int skillColumns) const
 {
-	auto image = createDialogBackgroundWithStatusBar(size, playerColor);
+	auto image = createDialogBackgroundWithStatusBar(size);
 	Canvas canvas = image->getCanvas();
 
 	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
@@ -1376,9 +1310,9 @@ AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const
 	return image;
 }
 
-AssetGenerator::CanvasPtr AssetGenerator::createUniversityConfirmDialogBackground(const Point & size, const PlayerColor & playerColor, int costElements) const
+AssetGenerator::CanvasPtr AssetGenerator::createUniversityConfirmDialogBackground(const Point & size, int costElements) const
 {
-	auto image = createDialogBackgroundWithStatusBar(size, playerColor);
+	auto image = createDialogBackgroundWithStatusBar(size);
 	Canvas canvas = image->getCanvas();
 
 	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);

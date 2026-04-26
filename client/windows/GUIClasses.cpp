@@ -72,7 +72,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-static ImagePath getRecruitmentBackground(const CGDwelling * dwelling, int level)
+ImagePath CRecruitmentWindow::getRecruitmentBackground(const CGDwelling * dwelling, int level)
 {
 	int cardsCount = 0;
 	for(int i = 0; i < dwelling->creatures.size(); i++)
@@ -84,36 +84,22 @@ static ImagePath getRecruitmentBackground(const CGDwelling * dwelling, int level
 	}
 
 	std::string fileName = cardsCount >= 6 ? "TPRCRT6" : cardsCount == 5 ? "TPRCRT5" : "TPRCRT4";
-
-	if (dwelling->tempOwner.isValidPlayer())
-		fileName += "-" + dwelling->tempOwner.toString();
-
 	return ImagePath::builtin(fileName);
 }
 
-static ImagePath getUniversityBackground(const CGHeroInstance * hero, size_t skillCount)
+ImagePath CUniversityWindow::getUniversityBackground(size_t skillCount)
 {
 	const int backgroundSkills = std::clamp(static_cast<int>(skillCount), 1, 7);
-	std::string fileName = "UNIVRS" + std::to_string(backgroundSkills);
-
-	if(hero && hero->tempOwner.isValidPlayer())
-		fileName += "-" + hero->tempOwner.toString();
-
-	return ImagePath::builtin(fileName);
+	return ImagePath::builtin("UNIVRS" + std::to_string(backgroundSkills));
 }
 
-static ImagePath getUniversityConfirmBackground(const CGHeroInstance * hero, int costElements)
+ImagePath CUniversityWindow::getUniversityConfirmBackground(int costElements)
 {
 	const int backgroundCostElements = std::clamp(costElements, 1, 2);
-	std::string fileName = "UNIVRSC" + std::to_string(backgroundCostElements);
-
-	if(hero && hero->tempOwner.isValidPlayer())
-		fileName += "-" + hero->tempOwner.toString();
-
-	return ImagePath::builtin(fileName);
+	return ImagePath::builtin("UNIVRSC" + std::to_string(backgroundCostElements));
 }
 
-static int getUniversityItemPosX(size_t itemIndex, size_t skillCount, int windowWidth)
+int CUniversityWindow::getUniversityItemPosX(size_t itemIndex, size_t skillCount, int windowWidth)
 {
 	const int skillColumns = std::clamp(static_cast<int>(skillCount), 1, 7);
 	const int smallBlockWidth = 102;
@@ -274,7 +260,7 @@ void CRecruitmentWindow::showAll(Canvas & to)
 }
 
 CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, const CArmedInstance * Dst, const std::function<void(CreatureID,int)> & Recruit, const std::function<void()> & onClose, int y_offset):
-	CWindowObject(PLAYER_COLORED, getRecruitmentBackground(Dwelling, Level)),
+	CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, getRecruitmentBackground(Dwelling, Level)),
 	onRecruit(Recruit),
 	onClose(onClose),
 	level(Level),
@@ -1084,7 +1070,7 @@ void CUniversityWindow::CItem::update()
 }
 
 CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID building, const IMarket * _market, const std::function<void()> & onWindowClosed)
-	: CWindowObject(PLAYER_COLORED, getUniversityBackground(_hero, _market->availableItemsIds(EMarketMode::RESOURCE_SKILL).size())),
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, getUniversityBackground(_market->availableItemsIds(EMarketMode::RESOURCE_SKILL).size())),
 	hero(_hero),
 	onWindowClosed(onWindowClosed),
 	market(_market)
@@ -1094,6 +1080,7 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 
 	std::string titleStr = LIBRARY->generaltexth->allTexts[602];
 	std::string speechStr = LIBRARY->generaltexth->allTexts[603];
+	int mapObjectTitleOffsetX = 0;
 
 	if(auto town = dynamic_cast<const CGTownInstance *>(_market))
 	{
@@ -1103,6 +1090,9 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 	else if(auto uni = dynamic_cast<const CGUniversity *>(_market); uni->appearance)
 	{
 		titlePic = std::make_shared<CAnimImage>(uni->appearance->animationFile, 0, 0, 0, 0, CShowableAnim::MAP_OBJECT_MODE);
+		const int mapObjectWidthPx = static_cast<int>(uni->appearance->getWidth()) * 32; // map object tile width in pixels
+		const int renderedWidthPx = titlePic->getPosition().w;
+		mapObjectTitleOffsetX = std::max(0, (renderedWidthPx - mapObjectWidthPx) / 2);
 		titleStr = uni->getObjectName();
 		speechStr = uni->getSpeechTranslated();
 	}
@@ -1112,7 +1102,7 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 	}
 
 	const int centerX = pos.w / 2;
-	titlePic->center(Point(centerX + pos.x, 76 + pos.y));
+	titlePic->center(Point(centerX + pos.x + mapObjectTitleOffsetX, 76 + pos.y));
 
 	const int speechFrameWidth = 414;
 	const int speechFrameHeight = 74;
@@ -1157,7 +1147,7 @@ void CUniversityWindow::makeDeal(SecondarySkill skill)
 }
 
 CUnivConfirmWindow::CUnivConfirmWindow(CUniversityWindow * owner_, SecondarySkill SKILL, bool available)
-	: CWindowObject(PLAYER_COLORED, getUniversityConfirmBackground(owner_->getHero(), 1)),
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, CUniversityWindow::getUniversityConfirmBackground(1)),
 	owner(owner_)
 {
 	OBJECT_CONSTRUCTION;

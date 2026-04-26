@@ -76,7 +76,7 @@ static bool useAvailableAmountAsCreatureLabel()
 }
 
 CSpellResearchDialog::CSpellResearchDialog(const std::string & textToShow, const std::vector<std::shared_ptr<CComponent>> & comps, const CGTownInstance * town, SpellID oldSpell, bool canAfford)
-	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("spellResearchDialog"))
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, ImagePath::builtin("spellResearchDialog"))
 {
 	OBJECT_CONSTRUCTION;
 

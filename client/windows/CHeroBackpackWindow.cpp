@@ -27,14 +27,11 @@
 #include "../../lib/texts/CGeneralTextHandler.h"
 
 CHeroBackpackWindow::CHeroBackpackWindow(const CGHeroInstance * hero, const std::vector<CArtifactsOfHeroPtr> & artsSets)
-	: CWindowWithArtifacts(&artsSets)
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, ImagePath::builtin("heroBackpackDialog"))
+	, CWindowWithArtifacts(&artsSets)
 {
 	OBJECT_CONSTRUCTION;
 	addUsedEvents(KEYBOARD);
-
-	const PlayerColor playerColor = GAME->interface()->playerID;
-	const std::string backgroundName = "heroBackpackDialog" + (playerColor.isValidPlayer() ? "-" + playerColor.toString() : "");
-	setBackground(ImagePath::builtin(backgroundName));
 
 	const Point artifactsOffset(17, 18);
 	arts = std::make_shared<CArtifactsOfHeroBackpack>();
@@ -76,7 +73,7 @@ CHeroBackpackWindow::CHeroBackpackWindow(const CGHeroInstance * hero, const std:
 		buttonPos += Point(button->pos.w + 10, 0);
 	}
 
-	statusbar = CGStatusBar::create(std::make_shared<CPicture>(ImagePath::builtin(backgroundName), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
+	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
 
 	addUsedEvents(LCLICK);
 	center();
