@@ -12,6 +12,7 @@
 #include "WikiTownContent.h"
 #include "WikiCreatureContent.h"
 #include "WikiHeroContent.h"
+#include "WikiArtifactContent.h"
 
 #include "../../gui/Shortcut.h"
 #include "../../gui/WindowHandler.h"
@@ -603,6 +604,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			Point(VP_W, VP_H),
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 		heroContentView->disable();
+
+		artifactContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		artifactContentView->disable();
 	}
 
 	// Mod-scope tag for non-viewport categories (artifact/spell/skill/terrain).
@@ -835,7 +842,10 @@ void WikiWindow::updateContent()
 	const bool useHeroViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::HERO))
 	                           && (activeElementIndex >= 0)
 	                           && heroContentView;
-	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport;
+	const bool useArtifactViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::ARTIFACT))
+	                               && (activeElementIndex >= 0)
+	                               && artifactContentView;
+	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport;
 
 	// Toggle viewport / textbox visibility
 	if(townContentView)
@@ -844,6 +854,8 @@ void WikiWindow::updateContent()
 		creatureContentView->setEnabled(useCreatureViewport);
 	if(heroContentView)
 		heroContentView->setEnabled(useHeroViewport);
+	if(artifactContentView)
+		artifactContentView->setEnabled(useArtifactViewport);
 	contentBox->setEnabled(!useCustomViewport);
 
 	// Standalone mod-scope label – only for non-viewport categories (textbox path).
@@ -887,6 +899,12 @@ void WikiWindow::updateContent()
 			const std::string & heroIdentifier = currentDisplayedEntries[activeElementIndex].identifier;
 			if(heroIdentifier != currentHeroName)
 				rebuildHeroViewport(heroIdentifier);
+		}
+		else if(useArtifactViewport)
+		{
+			const std::string & artKey = currentDisplayedEntries[activeElementIndex].identifier;
+			if(artKey != currentArtifactName)
+				rebuildArtifactViewport(artKey);
 		}
 
 		redraw();
@@ -1072,6 +1090,53 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 		heroContentWidgets.insert(heroContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
 	}
 	heroContentView->fitContentSize();
+
+	applyScrollBounds();
+}
+
+void WikiWindow::rebuildArtifactViewport(const std::string & artKey)
+{
+	currentArtifactName = artKey;
+	artifactContentWidgets.clear();
+
+	// Look up artifact by JSON key
+	const CArtifact * art = nullptr;
+	for(const auto & a : LIBRARY->arth->objects)
+	{
+		if(a && a->getJsonKey() == artKey)
+		{
+			art = a.get();
+			break;
+		}
+	}
+
+	if(!art || !artifactContentView)
+		return;
+
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	artifactContentView.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		artifactContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	const bool isBlue = (style == Style::BLUE);
+	auto navCb = [this](WikiCategory cat, const std::string & name)
+	{
+		navigateTo(WikiEntryKey{cat, name});
+	};
+	injectModScopeLabel(*artifactContentView, artifactContentWidgets, VP_W);
+	{
+		auto moreWidgets = buildArtifactContent(*artifactContentView, art,
+			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+		artifactContentWidgets.insert(artifactContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
+	}
+	artifactContentView->fitContentSize();
 
 	applyScrollBounds();
 }

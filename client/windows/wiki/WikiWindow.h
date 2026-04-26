@@ -166,6 +166,10 @@ private:
 	std::vector<std::shared_ptr<CIntObject>> heroContentWidgets;
 	std::string currentHeroName;
 
+	std::shared_ptr<CViewport> artifactContentView; ///< scrollable viewport for Artifact category
+	std::vector<std::shared_ptr<CIntObject>> artifactContentWidgets;
+	std::string currentArtifactName;
+
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
 	std::shared_ptr<CButton> backButton;
@@ -198,6 +202,8 @@ private:
 	void rebuildCreatureViewport(const std::string & creatureName);
 	/// Rebuilds the hero viewport content for the given hero name.
 	void rebuildHeroViewport(const std::string & heroName);
+	/// Rebuilds the artifact viewport content for the given artifact key.
+	void rebuildArtifactViewport(const std::string & artKey);
 
 	/// Inserts a mod-scope label as the first widget in a viewport when the
 	/// current entry belongs to a non-core mod.

@@ -32,6 +32,7 @@
 #include "../../../lib/entities/hero/EHeroGender.h"
 #include "../../../lib/entities/artifact/CArtifact.h"
 #include "../../../lib/entities/artifact/CArtHandler.h"
+#include "../../../lib/constants/Enumerations.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "WikiWindow.h"
 #include "../InfoWindows.h"
@@ -67,54 +68,76 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		? ColorRGBA(160, 210, 255, 255)
 		: Colors::YELLOW;
 
-	// ── 1. Title ────────────────────────────────────────────────────────
+	// ── 1. Title + class/gender subtitle ───────────────────────────────────
 	widgets.push_back(std::make_shared<CLabel>(
 		W / 2, curY,
 		FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW,
 		hero->getNameTranslated()));
-	curY += 28;
+	curY += 26;
 
-	// ── 2. Large portrait + class/gender info ────────────────────────────
 	{
+		// Gender: always use ♂/♀ Unicode glyphs directly
+		const char * genderGlyph = (hero->gender == EHeroGender::FEMALE) ? "\xe2\x99\x80" : "\xe2\x99\x82";
+
+		const std::string className = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
+
+		// Alignment as colored inline span using {#RRGGBB|text} syntax
+		std::string alignSpan;
+		if(hero->heroClass)
+		{
+			switch(hero->heroClass->getAlignment())
+			{
+				case EAlignment::GOOD:    alignSpan = "{#00C800|" + LIBRARY->generaltexth->translate("vcmi.wiki.alignment.good")    + "}"; break;
+				case EAlignment::EVIL:    alignSpan = "{#DC3232|" + LIBRARY->generaltexth->translate("vcmi.wiki.alignment.evil")    + "}"; break;
+				case EAlignment::NEUTRAL: alignSpan = "{#FFFFFF|" + LIBRARY->generaltexth->translate("vcmi.wiki.alignment.neutral") + "}"; break;
+				default: break;
+			}
+		}
+
+		// Compose "{yellow|ClassName} · ♂ · {color|Alignment}"
+		std::string subtitle = className.empty() ? std::string(genderGlyph) : (className + " \xc2\xb7 " + genderGlyph);
+		if(!alignSpan.empty())
+			subtitle += " \xc2\xb7 " + alignSpan;
+
+		widgets.push_back(std::make_shared<CLabel>(
+			W / 2, curY,
+			FONT_SMALL, ETextAlignment::CENTER, Colors::YELLOW, subtitle));
+		curY += 18;
+	}
+
+	// ── 2. Large portrait  +  biography side-by-side ────────────────────────
+	{
+		const int portraitW = 58;  // PortraitsLarge native width
+		const int portraitH = 68;  // clickable area height
+		const int bioX = MARGIN + portraitW + GAP;
+		const int bioW = W - bioX - MARGIN;
+
 		widgets.push_back(std::make_shared<CAnimImage>(
 			AnimationPath::builtin("PortraitsLarge"),
 			hero->imageIndex, 0,
 			MARGIN, curY));
 
-		const int textX = MARGIN + 62 + 6;
-		const std::string genderStr = (hero->gender == EHeroGender::FEMALE)
-			? LIBRARY->generaltexth->translate("vcmi.wiki.hero.gender.female")
-			: LIBRARY->generaltexth->translate("vcmi.wiki.hero.gender.male");
-		widgets.push_back(std::make_shared<CLabel>(
-			textX, curY + 8,
-			FONT_MEDIUM, ETextAlignment::TOPLEFT, Colors::YELLOW,
-			hero->heroClass ? hero->heroClass->getNameTranslated() : ""));
-		widgets.push_back(std::make_shared<CLabel>(
-			textX, curY + 28,
-			FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
-			genderStr));
-
 		const HeroTypeID hId = hero->getId();
 		widgets.push_back(std::make_shared<WikiClickable>(
-			Rect(MARGIN, curY, 62, 68),
+			Rect(MARGIN, curY, portraitW, portraitH),
 			nullptr,
 			[hId](){ ENGINE->windows().createAndPushWindow<CHeroOverview>(hId); },
 			blueStyle));
 
-		curY += 74 + GAP;
-	}
-
-	// ── 2.5. Biography ────────────────────────────────────────────────────
-	{
 		const std::string bio = hero->getBiographyTranslated();
 		if(!bio.empty())
 		{
-			auto label = std::make_shared<CMultiLineLabel>(
-				Rect(MARGIN, curY, W - MARGIN * 2, 4000),
+			auto bioLabel = std::make_shared<CMultiLineLabel>(
+				Rect(bioX, curY, bioW, 4000),
 				FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, bio);
-			label->pos.h = label->textSize.y;
-			curY += label->textSize.y + GAP;
-			widgets.push_back(std::move(label));
+			bioLabel->pos.h = bioLabel->textSize.y;
+			const int blockH = std::max(portraitH, (int)bioLabel->textSize.y);
+			curY += blockH + GAP;
+			widgets.push_back(std::move(bioLabel));
+		}
+		else
+		{
+			curY += portraitH + GAP;
 		}
 	}
 
@@ -280,6 +303,77 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		}
 	}
 
+	// ── 5.5. War machines ───────────────────────────────────────────────
+	{
+		// Like CHeroOverview: always show catapult + any war machines from initialArmy.
+		struct WMRow { const CCreature * cr; };
+		std::vector<WMRow> wmRows;
+
+		// Slot 0: catapult is always present
+		const CreatureID catapultId = CreatureID::CATAPULT;
+		if(catapultId.getNum() >= 0 && catapultId.getNum() < (int)LIBRARY->creh->objects.size())
+		{
+			const auto & cr = LIBRARY->creh->objects[catapultId.getNum()];
+			if(cr) wmRows.push_back({cr.get()});
+		}
+
+		// Additional war machines from hero's starting army
+		for(const auto & stack : hero->initialArmy)
+		{
+			if(stack.creature.getNum() < 0 || stack.creature.getNum() >= (int)LIBRARY->creh->objects.size())
+				continue;
+			const auto & cr = LIBRARY->creh->objects[stack.creature.getNum()];
+			if(cr && cr->warMachine != ArtifactID::NONE)
+				wmRows.push_back({cr.get()});
+		}
+
+		if(!wmRows.empty())
+		{
+			curY += 16;
+			widgets.push_back(std::make_shared<CLabel>(
+				W / 2, curY,
+				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
+				LIBRARY->generaltexth->translate("vcmi.heroOverview.warMachine")));
+			curY += 20;
+
+			const int iconW  = 36;
+			const int tableW = W - MARGIN * 2;
+			const int nameW  = tableW - iconW;
+			const std::vector<int> cols = { iconW, nameW };
+			const int rowH   = 36;
+
+			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+				0, rowH, static_cast<int>(wmRows.size()), blueStyle));
+
+			for(const auto & wr : wmRows)
+			{
+				widgets.push_back(std::make_shared<CAnimImage>(
+					AnimationPath::builtin("CPRSMALL"),
+					wr.cr->getIconIndex(), 0,
+					MARGIN + 2, curY + 2));
+				widgets.push_back(std::make_shared<CLabel>(
+					MARGIN + iconW + CELL_L, curY + rowH / 2 - 5,
+					FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
+					wr.cr->getNameSingularTranslated()));
+
+				const CCreature * crPtr = wr.cr;
+				std::function<void()> lclick;
+				if(navigateCallback)
+				{
+					const std::string crKey = crPtr->getJsonKey();
+					lclick = [navigateCallback, crKey](){ navigateCallback(WikiCategory::CREATURE, crKey); };
+				}
+				widgets.push_back(std::make_shared<WikiClickable>(
+					Rect(MARGIN, curY, tableW, rowH),
+					std::move(lclick),
+					[crPtr](){ ENGINE->windows().createAndPushWindow<CStackWindow>(crPtr, true); },
+					blueStyle));
+				curY += rowH;
+			}
+			curY += GAP;
+		}
+	}
+
 	// ── 6. Secondary skills ──────────────────────────────────────────────
 	if(!hero->secSkillsInit.empty())
 	{
@@ -346,8 +440,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		curY += GAP;
 	}
 
-	// ── 7. Starting spells ───────────────────────────────────────────────
-	if(!hero->spells.empty())
+	// ── 7. Starting spells (always shown) ──────────────────────────────
 	{
 		curY += 16;
 		widgets.push_back(std::make_shared<CLabel>(
@@ -356,16 +449,29 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			LIBRARY->generaltexth->translate("vcmi.heroOverview.spells")));
 		curY += 20;
 
-		std::vector<const CSpell *> validSpells;
-		for(const SpellID & sid : hero->spells)
+		if(!hero->haveSpellBook)
 		{
-			if(sid.getNum() < 0 || sid.getNum() >= (int)LIBRARY->spellh->objects.size()) continue;
-			const auto & sp = LIBRARY->spellh->objects[sid.getNum()];
-			if(sp) validSpells.push_back(sp.get());
+			const int tableW = W - MARGIN * 2;
+			const int rowH   = 28;
+			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, {tableW}, 0, rowH, 1, blueStyle));
+			widgets.push_back(std::make_shared<CLabel>(
+				MARGIN + tableW / 2, curY + rowH / 2 - 5,
+				FONT_SMALL, ETextAlignment::TOPCENTER, Colors::WHITE,
+				LIBRARY->generaltexth->translate("vcmi.wiki.hero.noSpellBook")));
+			curY += rowH + GAP;
 		}
-
-		if(!validSpells.empty())
+		else
 		{
+			std::vector<const CSpell *> validSpells;
+			for(const SpellID & sid : hero->spells)
+			{
+				if(sid.getNum() < 0 || sid.getNum() >= (int)LIBRARY->spellh->objects.size()) continue;
+				const auto & sp = LIBRARY->spellh->objects[sid.getNum()];
+				if(sp) validSpells.push_back(sp.get());
+			}
+
+			if(!validSpells.empty())
+			{
 			const int iconW   = 36;
 			const int tableW  = W - MARGIN * 2;
 			const int nameW   = tableW - iconW;
@@ -408,7 +514,13 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 					blueStyle));
 				curY += rowH;
 			}
-			curY += GAP;
+				curY += GAP;
+			}
+			else
+			{
+				// Has spellbook but no starting spells
+				curY += GAP;
+			}
 		}
 	}
 

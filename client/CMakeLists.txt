@@ -181,6 +181,7 @@ set(vcmiclientcommon_SRCS
 	windows/wiki/WikiWindow.cpp
 	windows/wiki/WikiCreatureContent.cpp
 	windows/wiki/WikiHeroContent.cpp
+	windows/wiki/WikiArtifactContent.cpp
 	windows/wiki/WikiTownContent.cpp
 	windows/CWindowObject.cpp
 	windows/CreaturePurchaseCard.cpp
@@ -421,6 +422,7 @@ set(vcmiclientcommon_HEADERS
 	windows/wiki/WikiWindow.h
 	windows/wiki/WikiCreatureContent.h
 	windows/wiki/WikiHeroContent.h
+	windows/wiki/WikiArtifactContent.h
 	windows/wiki/WikiTownContent.h
 	windows/CWindowObject.h
 	windows/CreaturePurchaseCard.h

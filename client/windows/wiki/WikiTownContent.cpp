@@ -175,6 +175,26 @@ static void addTownTitle(
 		faction->getNameTranslated()));
 	curY += 24;
 
+	// Alignment subtitle
+	{
+		std::string alignStr;
+		ColorRGBA alignCol = Colors::WHITE;
+		switch(faction->getAlignment())
+		{
+			case EAlignment::GOOD:    alignStr = LIBRARY->generaltexth->translate("vcmi.wiki.alignment.good");    alignCol = ColorRGBA(0,   200,  0,  255); break;
+			case EAlignment::EVIL:    alignStr = LIBRARY->generaltexth->translate("vcmi.wiki.alignment.evil");    alignCol = ColorRGBA(220,  50, 50, 255); break;
+			case EAlignment::NEUTRAL: alignStr = LIBRARY->generaltexth->translate("vcmi.wiki.alignment.neutral"); alignCol = Colors::WHITE;               break;
+			default: break;
+		}
+		if(!alignStr.empty())
+		{
+			widgets.push_back(std::make_shared<CLabel>(
+				W / 2, curY,
+				FONT_SMALL, ETextAlignment::CENTER, alignCol, alignStr));
+			curY += 16;
+		}
+	}
+
 	auto townView = std::make_shared<WikiTownView>(faction->town.get(), W, curY);
 	curY += townView->height() + SECTION_GAP;
 	widgets.push_back(std::move(townView));
@@ -440,12 +460,18 @@ static void addHeroesTable(
 		LIBRARY->generaltexth->translate("vcmi.wiki.town.heroes")));
 	curY += 20;
 
-	const int tableW2  = W - TABLE_MARGIN * 2;
-	const int colPort  = 52;
-	const int colGend  = 22;
-	const int colSpec2 = 170;
-	const int colName2 = tableW2 - colPort - colGend - colSpec2;
-	const std::vector<int> heroCols = {colPort, colName2, colGend, colSpec2};
+	const int tableW2   = W - TABLE_MARGIN * 2;
+	const int colPort   = 52;
+	const int colGend   = 22;
+	const int colSpecIcon = 34;  ///< specialty icon (UN44 scaled to 30×30)
+	const int colSpec2  = 136;   ///< specialty name text (was 170, minus icon col)
+	const int colName2  = tableW2 - colPort - colGend - colSpecIcon - colSpec2;
+	const std::vector<int> heroCols = {colPort, colName2, colGend, colSpecIcon, colSpec2};
+
+	// Gender: always use ♂/♀ glyphs
+	auto genderStr = [](const CHero * h) -> std::string {
+		return (h->gender == EHeroGender::FEMALE) ? "\xe2\x99\x80" : "\xe2\x99\x82";
+	};
 	const int heroHeaderH = 18;
 	const int heroRowH    = 36;
 
@@ -492,9 +518,19 @@ static void addHeroesTable(
 			widgets.push_back(std::make_shared<CLabel>(
 				TABLE_MARGIN + colPort + colName2 + colGend / 2, curY + CELL_PAD_T,
 				FONT_SMALL, ETextAlignment::TOPCENTER, Colors::WHITE,
-				(h->gender == EHeroGender::FEMALE) ? "F" : "M"));
+				genderStr(h)));
+
+			// Specialty icon (UN44, scaled to fit the row)
+			const int specIconSz = heroRowH - 4;
+			widgets.push_back(std::make_shared<CAnimImage>(
+				AnimationPath::builtin("UN44"),
+				h->imageIndex,
+				Rect(TABLE_MARGIN + colPort + colName2 + colGend + 2,
+				     curY + 2, specIconSz, specIconSz),
+				0));
+
 			widgets.push_back(std::make_shared<CLabel>(
-				TABLE_MARGIN + colPort + colName2 + colGend + CELL_PAD_L, curY + CELL_PAD_T,
+				TABLE_MARGIN + colPort + colName2 + colGend + colSpecIcon + CELL_PAD_L, curY + CELL_PAD_T,
 				FONT_TINY, ETextAlignment::TOPLEFT, Colors::WHITE,
 				h->getSpecialtyNameTranslated()));
 
