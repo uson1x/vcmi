@@ -67,6 +67,8 @@
 #include "../lib/CRandomGenerator.h"
 #include "../lib/CSkillHandler.h"
 #include "../lib/CSoundBase.h"
+#include "../lib/constants/EntityIdentifiers.h"
+#include "../lib/spells/CSpellHandler.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -163,6 +165,27 @@ void CRecruitmentWindow::buy()
 {
 	CreatureID crid =  selected->creature->getId();
 	SlotID dstslot = dst->getSlotFor(crid);
+	const CGHeroInstance * hero = dynamic_cast<const CGHeroInstance *>(dst);
+
+	if (selected->creature->warMachine.hasValue() && hero)
+	{
+		ArtifactID newWarMachine = selected->creature->warMachine;
+		ArtifactID currentWarMachine = hero->getReplacedWarMachine(newWarMachine);
+		if (newWarMachine != currentWarMachine)
+		{
+			MetaString message;
+			message.appendTextID("vcmi.townWindow.blacksmith.replaceWarMachine");
+			message.replaceName(currentWarMachine);
+			message.replaceName(newWarMachine);
+
+			GAME->interface()->showYesNoDialog(
+				message.toString(),
+				[this, crid](){ onRecruit(crid, slider->getValue()); if(level >= 0) close();},
+				nullptr
+			);
+			return;
+		}
+	}
 
 	if(!dstslot.validSlot() && (selected->creature->warMachine == ArtifactID::NONE)) //no available slot
 	{
@@ -335,6 +358,11 @@ CSplitWindow::CSplitWindow(const CCreature * creature, std::function<void(int, i
 	int total = leftAmount + rightAmount;
 	int leftMax = total - rightMin;
 	int rightMax = total - leftMin;
+	int defaultRightAmount = rightAmount;
+	if(settings["general"]["enableUiEnhancements"].Bool())
+		defaultRightAmount = std::clamp(total -1, rightMin, rightMax);
+	leftAmount = total - defaultRightAmount;
+	rightAmount = defaultRightAmount;
 
 	ok = std::make_shared<CButton>(Point(20, 263), AnimationPath::builtin("IOK6432"), CButton::tooltip(), std::bind(&CSplitWindow::apply, this), EShortcut::GLOBAL_ACCEPT);
 	cancel = std::make_shared<CButton>(Point(214, 263), AnimationPath::builtin("ICN6432"), CButton::tooltip(), std::bind(&CSplitWindow::close, this), EShortcut::GLOBAL_CANCEL);
@@ -357,7 +385,7 @@ CSplitWindow::CSplitWindow(const CCreature * creature, std::function<void(int, i
 	animLeft = std::make_shared<CCreaturePic>(20, 54, creature, true, false);
 	animRight = std::make_shared<CCreaturePic>(177, 54,creature, true, false);
 
-	slider = std::make_shared<CSlider>(Point(21, 194), 257, std::bind(&CSplitWindow::sliderMoved, this, _1), 0, sliderPosition, rightAmount - rightMin, Orientation::HORIZONTAL);
+	slider = std::make_shared<CSlider>(Point(21, 194), 257, std::bind(&CSplitWindow::sliderMoved, this, _1), 0, sliderPosition, defaultRightAmount - rightMin, Orientation::HORIZONTAL);
 
 	std::string titleStr = LIBRARY->generaltexth->allTexts[256];
 	boost::algorithm::replace_first(titleStr,"%s", creature->getNamePluralTranslated());
@@ -1124,7 +1152,7 @@ void CUnivConfirmWindow::makeDeal(SecondarySkill skill)
 	close();
 }
 
-CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits)
+CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, const MetaString & customTitle)
 	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("GARRISON"))
 {
 	OBJECT_CONSTRUCTION;
@@ -1136,11 +1164,17 @@ CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance
 	}
 	quit = std::make_shared<CButton>(Point(399, 314), AnimationPath::builtin("IOK6432.DEF"), CButton::tooltip(LIBRARY->generaltexth->tcommands[8], ""), [this](){ close(); }, EShortcut::GLOBAL_ACCEPT);
 
+	const CGHeroInstance * sourceHero = dynamic_cast<const CGHeroInstance *>(up);
+	const auto * sourceTown = dynamic_cast<const CGTownInstance *>(up);
+	if(sourceTown == nullptr && sourceHero != nullptr)
+		sourceTown = sourceHero->getVisitedTown();
+
+	if(sourceHero == nullptr && sourceTown != nullptr)
+		sourceHero = sourceTown->getGarrisonHero();
+
 	std::string titleText;
 	if(down->tempOwner == up->tempOwner)
-	{
-		titleText = LIBRARY->generaltexth->allTexts[709];
-	}
+		titleText = !customTitle.empty() ? customTitle.toString() : LIBRARY->generaltexth->allTexts[709];
 	else
 	{
 		//assume that this is joining monsters dialog
@@ -1156,8 +1190,12 @@ CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance
 	}
 	title = std::make_shared<CLabel>(275, 30, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW, titleText);
 
-	banner = std::make_shared<CAnimImage>(AnimationPath::builtin("CREST58"), up->getOwner().getNum(), 0, 28, 124);
-	portrait = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), down->getIconIndex(), 0, 29, 222);
+	if(sourceTown != nullptr && down->getVisitedTown() != sourceTown && sourceHero != nullptr)
+		banner = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), sourceHero->getIconIndex(), 0, 27, 127);
+	else
+		banner = std::make_shared<CAnimImage>(AnimationPath::builtin("CREST58"), up->getOwner().getNum(), 0, 27, 127);
+
+	portrait = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), down->getIconIndex(), 0, 27, 223);
 }
 
 void CGarrisonWindow::updateGarrisons()

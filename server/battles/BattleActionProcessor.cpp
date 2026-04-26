@@ -267,7 +267,10 @@ bool BattleActionProcessor::doAttackAction(const CBattleInfoCallback & battle, c
 		return false;
 	}
 
-	if(!CStack::isMeleeAttackPossible(stack, destinationStack))
+	const bool regularMeleeAttack = CStack::isMeleeAttackPossible(stack, destinationStack);
+	const bool longWeaponAttack = battle.isLongWeaponAttack(stack, destinationStack);
+
+	if(!regularMeleeAttack && !longWeaponAttack)
 	{
 		gameHandler->complain("Attack cannot be performed!");
 		return false;
@@ -295,7 +298,7 @@ bool BattleActionProcessor::doAttackAction(const CBattleInfoCallback & battle, c
 	for (int i = 0; i < totalAttacks; ++i)
 	{
 		//first strike
-		if(i == 0 && firstStrike && destinationStack->ableToRetaliate() && !stack->hasBonusOfType(BonusType::BLOCKS_RETALIATION) && !stack->isInvincible())
+		if(i == 0 && firstStrike && destinationStack->ableToRetaliate() && !stack->hasBonusOfType(BonusType::BLOCKS_RETALIATION) && !stack->isInvincible() && !longWeaponAttack)
 		{
 			makeAttack(battle, destinationStack, stack, 0, stack->getPosition(), true, false, true);
 		}
@@ -323,6 +326,7 @@ bool BattleActionProcessor::doAttackAction(const CBattleInfoCallback & battle, c
 		if(stack->alive()
 			&& !stack->hasBonusOfType(BonusType::BLOCKS_RETALIATION)
 			&& !stack->isInvincible()
+			&& !longWeaponAttack
 			&& (i == 0 && !firstStrike)
 			&& destinationStack->ableToRetaliate())
 		{
@@ -629,6 +633,8 @@ bool BattleActionProcessor::doWalkAndSpellcastAction(const CBattleInfoCallback &
 	spellTarget.emplace_back(destinationStack);
 	parameters.setSpellLevel(std::max(0, bonus->val));
 	parameters.cast(gameHandler->spellcastEnvironment(), spellTarget);
+
+	processBattleEventTriggers(battle, CombatEventType::UNIT_SPELLCAST, stack, nullptr);
 
 	return true;
 }

@@ -22,6 +22,7 @@ class CPicture;
 class IImage;
 class CAnimation;
 class CToggleButton;
+class ScenarioTabConfigurable;
 
 enum ESortBy
 {
@@ -121,11 +122,11 @@ private:
 	std::shared_ptr<CSlider> slider;
 	std::vector<std::shared_ptr<CButton>> buttonsSortBy;
 	std::shared_ptr<CLabel> labelTabTitle;
-	std::shared_ptr<CLabel> labelMapSizes;
 	ESelectionScreen tabType;
 	Rect inputNameRect;
 
 	std::shared_ptr<CButton> buttonDeleteMode;
+	std::shared_ptr<ScenarioTabConfigurable> scenarioTabConfigurable;
 	bool deleteMode;
 
 	bool enableUiEnhancements;

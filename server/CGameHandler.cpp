@@ -47,7 +47,6 @@
 #include "../lib/entities/faction/CTownHandler.h"
 #include "../lib/entities/hero/CHeroHandler.h"
 
-#include "../lib/filesystem/FileInfo.h"
 #include "../lib/filesystem/Filesystem.h"
 
 #include "../lib/gameState/CGameState.h"
@@ -1630,9 +1629,8 @@ bool CGameHandler::responseStatistic(PlayerColor player)
 void CGameHandler::save(const std::string & filename, PlayerColor playerToNotifyOnSuccess)
 {
 	logGlobal->info("Saving to %s", filename);
-	const auto stem	= FileInfo::GetPathStem(filename);
-	const auto savefname = stem.to_string() + ".vsgm1";
-	ResourcePath savePath(stem.to_string(), EResType::SAVEGAME);
+	ResourcePath savePath(filename, EResType::SAVEGAME);
+	const auto savefname = savePath.getOriginalName() + ".vsgm1";
 	CResourceHandler::get("local")->createResource(savefname);
 
 	std::string filenameWithoutPath;
@@ -1675,12 +1673,9 @@ void CGameHandler::save(const std::string & filename, PlayerColor playerToNotify
 void CGameHandler::load(const StartInfo &info)
 {
 	logGlobal->info("Loading from %s", info.mapname);
-	// No need to use the stem because info.mapname doesn't come with the file extension included
-	// const auto stem	= FileInfo::GetPathStem(info.mapname);
 
 	reinitScripting();
 
-	// CLoadFile lf(*CResourceHandler::get()->getResourceName(ResourcePath(stem.to_string(), EResType::SAVEGAME)), gs.get());
 	CLoadFile lf(*CResourceHandler::get()->getResourceName(ResourcePath(info.mapname, EResType::SAVEGAME)), gs.get());
 	gs = std::make_shared<CGameState>();
 	randomizer = std::make_unique<GameRandomizer>(*gs);
@@ -3421,7 +3416,7 @@ bool CGameHandler::complain(const std::string &problem)
 	return true;
 }
 
-void CGameHandler::showGarrisonDialog(ObjectInstanceID upobj, ObjectInstanceID hid, bool removableUnits)
+void CGameHandler::showGarrisonDialog(ObjectInstanceID upobj, ObjectInstanceID hid, bool removableUnits, const MetaString & customTitle)
 {
 	const auto * upperArmy = dynamic_cast<const CArmedInstance*>(gameInfo().getObj(upobj));
 	const auto * lowerArmy = dynamic_cast<const CArmedInstance*>(gameInfo().getObj(hid));
@@ -3436,6 +3431,7 @@ void CGameHandler::showGarrisonDialog(ObjectInstanceID upobj, ObjectInstanceID h
 	gd.hid = hid;
 	gd.objid = upobj;
 	gd.removableUnits = removableUnits;
+	gd.customTitle = customTitle;
 	gd.queryID = garrisonQuery->queryID;
 	sendAndApply(gd);
 }
@@ -3460,6 +3456,18 @@ bool CGameHandler::isAllowedExchange(ObjectInstanceID id1, ObjectInstanceID id2)
 {
 	if (id1 == id2)
 		return true;
+
+	for(const auto & query : queries->allQueries())
+	{
+		const auto * garrisonQuery = dynamic_cast<const CGarrisonDialogQuery *>(query.get());
+		if(garrisonQuery == nullptr)
+			continue;
+
+		const bool matchesForward = garrisonQuery->exchangingArmies[0]->id == id1 && garrisonQuery->exchangingArmies[1]->id == id2;
+		const bool matchesBackward = garrisonQuery->exchangingArmies[0]->id == id2 && garrisonQuery->exchangingArmies[1]->id == id1;
+		if(matchesForward || matchesBackward)
+			return true;
+	}
 
 	const CGObjectInstance *o1 = gameInfo().getObj(id1);
 	const CGObjectInstance *o2 = gameInfo().getObj(id2);
@@ -4013,7 +4021,7 @@ void CGameHandler::tryJoiningArmy(const CArmedInstance *src, const CArmedInstanc
 				}
 			}
 		}
-		showGarrisonDialog(src->id, dst->id, true); //show garrison window and optionally remove ourselves from map when player ends
+		showGarrisonDialog(src->id, dst->id, true, MetaString()); //show garrison window and optionally remove ourselves from map when player ends
 	}
 	else //merge
 	{

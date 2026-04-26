@@ -191,7 +191,8 @@ InfoCard::InfoCard()
 		parent->children.pop_back();
 		pos.w = background->pos.w;
 		pos.h = background->pos.h;
-		iconsMapSizes = std::make_shared<CAnimImage>(AnimationPath::builtin("SCNRMPSZ"), 4, 0, 313, 25); //let it be custom size (frame 4) by default
+		iconsMapSizes = std::make_shared<CAnimImage>(AnimationPath::builtin("SCNRMPSZ"), 0, 0, 313, 25);
+		iconsMapSizes->setFrame(iconsMapSizes->size() - 1); // use last available frame as "custom" icon
 
 		iconDifficulty = std::make_shared<CToggleGroup>(0);
 		{
@@ -263,8 +264,15 @@ void InfoCard::changeSelection()
 
 	const CMapHeader * header = mapInfo->mapHeader.get();
 
-	labelMapSize->setText(std::to_string(header->width) + "x" + std::to_string(header->height) + "x" + std::to_string(header->levels()));
-	iconsMapSizes->setFrame(mapInfo->getMapSizeIconId());
+	std::string mapSizeText = std::to_string(header->width) + "x" + std::to_string(header->height);
+	if(header->levels() > 1)
+		mapSizeText += "x" + std::to_string(header->levels());
+	labelMapSize->setText(mapSizeText);
+	size_t mapSizeIconFrame = mapInfo->getMapSizeIconId();
+	if(const auto * selectionScreen = dynamic_cast<const CSelectionBase *>(SEL);
+	   mapInfo->isRandomMap && selectionScreen && selectionScreen->tabRand && selectionScreen->tabRand->isCustomMapSizeMode())
+		mapSizeIconFrame = selectionScreen->tabRand->getCustomMapSizeIconFrame();
+	iconsMapSizes->setFrame(std::min<size_t>(mapSizeIconFrame, iconsMapSizes->size() - 1));
 
 	iconsVictoryCondition->setFrame(header->victoryIconIndex);
 	labelVictoryConditionText->setText(header->victoryMessage.toString());
