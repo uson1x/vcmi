@@ -13,6 +13,7 @@
 #include "WikiCreatureContent.h"
 #include "WikiHeroContent.h"
 #include "WikiArtifactContent.h"
+#include "WikiModContent.h"
 
 #include "../../gui/Shortcut.h"
 #include "../../gui/WindowHandler.h"
@@ -42,6 +43,8 @@
 #include "../../../lib/spells/CSpellHandler.h"
 #include "../../../lib/CSkillHandler.h"
 #include "../../../lib/TerrainHandler.h"
+#include "../../../lib/modding/CModHandler.h"
+#include "../../../lib/modding/ModDescription.h"
 #include "../../../lib/texts/TextOperations.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "../../../lib/json/JsonNode.h"
@@ -84,14 +87,30 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string i
 			auto refImg = ENGINE->renderHandler().loadImage(
 				iconInfo->path, (int)iconInfo->frame, (int)iconInfo->group, EImageBlitMode::COLORKEY);
 			const Point nativeSz = refImg ? refImg->dimensions() : Point(ICON_SIZE, ICON_SIZE);
-			const int iconActualH = (nativeSz.x > 0)
-				? std::max(1, ICON_SIZE * nativeSz.y / nativeSz.x)
-				: ICON_SIZE;
-			const int iconY = std::max(0, (ITEM_H - iconActualH) / 2);
+			// "Contain" scaling: fit the larger dimension to ICON_SIZE, preserve aspect.
+			int iconW2, iconH2;
+			if(nativeSz.x <= 0 || nativeSz.y <= 0)
+			{
+				iconW2 = ICON_SIZE; iconH2 = ICON_SIZE;
+			}
+			else if(nativeSz.y > nativeSz.x)
+			{
+				// Portrait: height is the larger dimension
+				iconH2 = ICON_SIZE;
+				iconW2 = std::max(1, ICON_SIZE * nativeSz.x / nativeSz.y);
+			}
+			else
+			{
+				// Landscape or square
+				iconW2 = ICON_SIZE;
+				iconH2 = std::max(1, ICON_SIZE * nativeSz.y / nativeSz.x);
+			}
+			const int iconX2 = MARGIN_L + (ICON_SIZE - iconW2) / 2;
+			const int iconY2 = (ITEM_H - iconH2) / 2;
 			icon = std::make_shared<CAnimImage>(
 				iconInfo->path,
 				iconInfo->frame,
-				Rect(MARGIN_L, iconY, ICON_SIZE, iconActualH),
+				Rect(iconX2, iconY2, iconW2, iconH2),
 				iconInfo->group);
 			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
 		}
@@ -346,6 +365,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	categoryNames[static_cast<int>(WikiCategory::SPELL)]     = LIBRARY->generaltexth->translate("vcmi.wiki.category.spell");
 	categoryNames[static_cast<int>(WikiCategory::SKILL)]     = LIBRARY->generaltexth->translate("vcmi.wiki.category.skill");
 	categoryNames[static_cast<int>(WikiCategory::TERRAIN)]   = LIBRARY->generaltexth->translate("vcmi.wiki.category.terrain");
+	categoryNames[static_cast<int>(WikiCategory::MOD)]       = LIBRARY->generaltexth->translate("vcmi.wiki.category.mod");
 	categoryEntries.resize(static_cast<int>(WikiCategory::COUNT));
 
 	// Glossary – loaded from a moddable JSON file
@@ -547,7 +567,10 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
-	// ---- Category list ------------------------------------------------------
+	// Mods – collected by WikiModContent
+	categoryEntries[static_cast<int>(WikiCategory::MOD)] = collectModEntries();
+
+	// ---- Category list
 	buildCategoryList();
 
 	// ---- Element list (initially empty) ------------------------------------
@@ -610,6 +633,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			Point(VP_W, VP_H),
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 		artifactContentView->disable();
+
+		modContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		modContentView->disable();
 	}
 
 	// Mod-scope tag for non-viewport categories (artifact/spell/skill/terrain).
@@ -845,7 +874,10 @@ void WikiWindow::updateContent()
 	const bool useArtifactViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::ARTIFACT))
 	                               && (activeElementIndex >= 0)
 	                               && artifactContentView;
-	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport;
+	const bool useModViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::MOD))
+	                          && (activeElementIndex >= 0)
+	                          && modContentView;
+	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport;
 
 	// Toggle viewport / textbox visibility
 	if(townContentView)
@@ -856,6 +888,8 @@ void WikiWindow::updateContent()
 		heroContentView->setEnabled(useHeroViewport);
 	if(artifactContentView)
 		artifactContentView->setEnabled(useArtifactViewport);
+	if(modContentView)
+		modContentView->setEnabled(useModViewport);
 	contentBox->setEnabled(!useCustomViewport);
 
 	// Standalone mod-scope label – only for non-viewport categories (textbox path).
@@ -905,6 +939,12 @@ void WikiWindow::updateContent()
 			const std::string & artKey = currentDisplayedEntries[activeElementIndex].identifier;
 			if(artKey != currentArtifactName)
 				rebuildArtifactViewport(artKey);
+		}
+		else if(useModViewport)
+		{
+			const std::string & modId = currentDisplayedEntries[activeElementIndex].identifier;
+			if(modId != currentModId)
+				rebuildModViewport(modId);
 		}
 
 		redraw();
@@ -1137,6 +1177,41 @@ void WikiWindow::rebuildArtifactViewport(const std::string & artKey)
 		artifactContentWidgets.insert(artifactContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
 	}
 	artifactContentView->fitContentSize();
+
+	applyScrollBounds();
+}
+
+void WikiWindow::rebuildModViewport(const std::string & modId)
+{
+	currentModId = modId;
+	modContentWidgets.clear();
+
+	if(!modContentView)
+		return;
+
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	modContentView.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		modContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	const bool isBlue = (style == Style::BLUE);
+	auto navCb = [this](WikiCategory cat, const std::string & name)
+	{
+		navigateTo(WikiEntryKey{cat, name});
+	};
+	{
+		auto moreWidgets = buildModContent(*modContentView, modId,
+			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+		modContentWidgets.insert(modContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
+	}
+	modContentView->fitContentSize();
 
 	applyScrollBounds();
 }

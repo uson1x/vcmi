@@ -35,7 +35,8 @@ enum class WikiCategory : int
 	SPELL     = 5,
 	SKILL     = 6,
 	TERRAIN   = 7,
-	COUNT     = 8
+	MOD       = 8,
+	COUNT     = 9
 };
 
 /// Optional icon descriptor for a WikiListItem row
@@ -170,6 +171,10 @@ private:
 	std::vector<std::shared_ptr<CIntObject>> artifactContentWidgets;
 	std::string currentArtifactName;
 
+	std::shared_ptr<CViewport> modContentView; ///< scrollable viewport for Mod category
+	std::vector<std::shared_ptr<CIntObject>> modContentWidgets;
+	std::string currentModId;
+
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
 	std::shared_ptr<CButton> backButton;
@@ -204,6 +209,8 @@ private:
 	void rebuildHeroViewport(const std::string & heroName);
 	/// Rebuilds the artifact viewport content for the given artifact key.
 	void rebuildArtifactViewport(const std::string & artKey);
+	/// Rebuilds the mod viewport content for the given mod ID.
+	void rebuildModViewport(const std::string & modId);
 
 	/// Inserts a mod-scope label as the first widget in a viewport when the
 	/// current entry belongs to a non-core mod.

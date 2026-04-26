@@ -53,6 +53,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 	if(!creature) return widgets;
 
 	OBJECT_CONSTRUCTION_TARGETED(viewport.content());
+	const Rect clipRect = viewport.clipRect();
 
 	const int W   = viewportWidth;
 	int       curY = 12;
@@ -81,7 +82,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 				ENGINE->windows().createAndPushWindow<CStackWindow>(
 					LIBRARY->creh->objects[crId.getNum()].get(), true);
 			},
-			blueStyle));
+			blueStyle, clipRect));
 
 		curY += picH + GAP;
 	}
@@ -258,7 +259,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 						ENGINE->windows().createAndPushWindow<CStackWindow>(
 							LIBRARY->creh->objects[relId.getNum()].get(), true);
 					},
-					blueStyle));
+					blueStyle, clipRect));
 
 				curY += rowH + 2;
 			}
@@ -342,7 +343,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 					Rect(MARGIN, curY, tableW, rowH),
 					nullptr,
 					[popupText](){ CRClickPopup::createAndPush(popupText); },
-					blueStyle));
+					blueStyle, clipRect));
 
 				curY += rowH + 2;
 			}

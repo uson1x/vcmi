@@ -61,6 +61,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 	if(!hero) return widgets;
 
 	OBJECT_CONSTRUCTION_TARGETED(viewport.content());
+	const Rect clipRect = viewport.clipRect();
 	const int W   = viewportWidth;
 	int       curY = 12;
 
@@ -76,8 +77,10 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 	curY += 26;
 
 	{
-		// Gender: always use ♂/♀ Unicode glyphs directly
-		const char * genderGlyph = (hero->gender == EHeroGender::FEMALE) ? "\xe2\x99\x80" : "\xe2\x99\x82";
+		// Gender: always use ♂/♀ Unicode glyphs, colored blue/pink
+		const std::string genderSpan = (hero->gender == EHeroGender::FEMALE)
+			? "{#FF69B4|\xe2\x99\x80}"
+			: "{#5080FF|\xe2\x99\x82}";
 
 		const std::string className = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 
@@ -94,8 +97,8 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			}
 		}
 
-		// Compose "{yellow|ClassName} · ♂ · {color|Alignment}"
-		std::string subtitle = className.empty() ? std::string(genderGlyph) : (className + " \xc2\xb7 " + genderGlyph);
+		// Compose "{yellow|ClassName} · {color|♂/♀} · {color|Alignment}"
+		std::string subtitle = className.empty() ? genderSpan : (className + " \xc2\xb7 " + genderSpan);
 		if(!alignSpan.empty())
 			subtitle += " \xc2\xb7 " + alignSpan;
 
@@ -296,7 +299,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 						ENGINE->windows().createAndPushWindow<CStackWindow>(
 							LIBRARY->creh->objects[crId.getNum()].get(), true);
 					},
-					blueStyle));
+					blueStyle, clipRect));
 				curY += rowH;
 			}
 			curY += GAP;
@@ -367,7 +370,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 					Rect(MARGIN, curY, tableW, rowH),
 					std::move(lclick),
 					[crPtr](){ ENGINE->windows().createAndPushWindow<CStackWindow>(crPtr, true); },
-					blueStyle));
+					blueStyle, clipRect));
 				curY += rowH;
 			}
 			curY += GAP;
@@ -434,7 +437,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 				[skPtr, skLvl](){
 					CRClickPopup::createAndPush(skPtr->getDescriptionTranslated(skLvl));
 				},
-				blueStyle));
+				blueStyle, clipRect));
 			curY += rowH;
 		}
 		curY += GAP;
@@ -509,9 +512,9 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 					Rect(MARGIN, curY, tableW, rowH),
 					std::move(lclick),
 					[spPtr](){
-						CRClickPopup::createAndPush(spPtr->getDescriptionTranslated(0));
+						CRClickPopup::createAndPush(spPtr->getDescriptionTranslated(1));
 					},
-					blueStyle));
+					blueStyle, clipRect));
 				curY += rowH;
 			}
 				curY += GAP;
