@@ -55,6 +55,8 @@ public:
 	void showPopupWindow(const Point & cur) override;
 	void hover(bool on) override;
 	void showAll(Canvas & to) override;
+
+	void gesturePanning(const Point & initialPosition, const Point & currentPosition, const Point & lastUpdateDistance) override;
 };
 
 /// Creates a styled table-grid canvas.

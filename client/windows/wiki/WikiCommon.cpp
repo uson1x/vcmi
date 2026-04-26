@@ -15,6 +15,7 @@
 #include "../../render/Canvas.h"
 #include "../../render/Colors.h"
 #include "../../GameEngine.h"
+#include "../../eventsSDL/InputHandler.h"
 
 #include "../../../lib/filesystem/ResourcePath.h"
 
@@ -27,7 +28,7 @@ WikiClickable::WikiClickable(Rect area,
                               std::function<void()> rclick,
                               bool blue,
                               std::optional<Rect> clip)
-	: CIntObject(LCLICK | SHOW_POPUP | HOVER, area.topLeft())
+	: CIntObject(LCLICK | SHOW_POPUP | HOVER | GESTURE, area.topLeft())
 	, onLeftClick(std::move(lclick))
 	, onRightClick(std::move(rclick))
 	, clipRect(clip)
@@ -60,6 +61,14 @@ void WikiClickable::hover(bool on)
 		hovered = on;
 		redraw();
 	}
+}
+
+void WikiClickable::gesturePanning(const Point & /*initialPosition*/, const Point & currentPosition, const Point & /*lastUpdateDistance*/)
+{
+	// InputSourceTouch never calls setCursorPosition() during panning, so
+	// getCursorPosition() stays frozen at the initial tap position.  Update it
+	// here so the normal showAll hover check tracks the live finger.
+	ENGINE->input().setCursorPosition(currentPosition);
 }
 
 void WikiClickable::showAll(Canvas & to)
