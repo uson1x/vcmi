@@ -342,22 +342,29 @@ static void addCreaturesTable(
 			FONT_TINY, ETextAlignment::TOPLEFT, Colors::YELLOW,
 			LIBRARY->generaltexth->translate("vcmi.wiki.creature.cost")));
 		hx += costW;
-		const std::vector<std::string> statHeaderKeys = {
-			"vcmi.wiki.creature.stat.level.short",
-			"vcmi.wiki.creature.stat.attack.short",
-			"vcmi.wiki.creature.stat.defense.short",
-			"vcmi.wiki.creature.stat.damage.short",
-			"vcmi.wiki.creature.stat.speed.short",
-			"vcmi.wiki.creature.stat.hitpoints.short",
-			"vcmi.wiki.creature.stat.growth.short",
-			"vcmi.wiki.creature.stat.aivalue.short",
+		static const std::vector<std::pair<std::string, std::string>> statIconDefs = {
+			{"stackWindow/iconLevel",   "vcmi.wiki.creature.stat.level"},
+			{"stackWindow/iconAttack",  "core.genrltxt.190"},
+			{"stackWindow/iconDefense", "core.genrltxt.191"},
+			{"stackWindow/iconDamage",  "core.genrltxt.199"},
+			{"stackWindow/iconSpeed",   "core.genrltxt.193"},
+			{"stackWindow/iconHealth",  "core.genrltxt.388"},
+			{"stackWindow/iconGrowth",  "core.genrltxt.194"},
+			{"stackWindow/iconAI",      "vcmi.wiki.creature.stat.aivalue"},
 		};
-		for(const auto & key : statHeaderKeys)
+		for(const auto & [iconName, descKey] : statIconDefs)
 		{
-			widgets.push_back(std::make_shared<CLabel>(
-				hx + statW / 2, curY + CELL_PAD_T,
-				FONT_TINY, ETextAlignment::TOPCENTER, Colors::YELLOW,
-				LIBRARY->generaltexth->translate(key)));
+			widgets.push_back(std::make_shared<CPicture>(
+				ImagePath::builtin(iconName),
+				hx + (statW - 17) / 2,
+				curY + (headerH - 19) / 2));
+			const std::string desc = LIBRARY->generaltexth->translate(descKey);
+			widgets.push_back(std::make_shared<WikiClickable>(
+				Rect(hx, curY, statW, headerH),
+				nullptr,
+				[desc](){ CRClickPopup::createAndPush(desc); },
+				blueStyle,
+				clipRect));
 			hx += statW;
 		}
 	}
