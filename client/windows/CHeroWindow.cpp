@@ -81,7 +81,7 @@ CHeroWindow::CHeroWindow(const CGHeroInstance * hero)
 	name = std::make_shared<CLabel>(190, 38, EFonts::FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW);
 	title = std::make_shared<CLabel>(190, 65, EFonts::FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE);
 
-	statusbar = CGStatusBar::create(7, 559, ImagePath::builtin("ADROLLVR.bmp"), 660);
+	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 559, 660, 19), 7, 559));
 
 	quitButton = std::make_shared<CButton>(Point(609, 516), AnimationPath::builtin("hsbtns.def"), CButton::tooltip(heroscrn[17]), [this](){ close(); }, EShortcut::GLOBAL_RETURN);
 
