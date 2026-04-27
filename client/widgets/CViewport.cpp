@@ -12,12 +12,15 @@
 #include "CViewport.h"
 
 #include "../render/Canvas.h"
+#include "../GameEngine.h"
+#include "../eventsSDL/InputHandler.h"
 
 CViewport::CViewport(const Rect & viewRect, const Point & contentSz,
                      CSlider::EStyle style)
 	: contentSize(contentSz)
 	, sliderStyle(style)
 {
+	addUsedEvents(TIME | GESTURE);
 	OBJECT_CONSTRUCTION;
 
 	pos.x += viewRect.x;
@@ -266,4 +269,95 @@ void CViewport::showAll(Canvas & to)
 		CanvasClipRectGuard clip(to, clipRect());
 		contentHolder->showAll(to);
 	}
+}
+
+bool CViewport::receiveEvent(const Point & position, int eventType) const
+{
+	if(eventType == GESTURE)
+		return clipRect().isInside(position);
+	return CIntObject::receiveEvent(position, eventType);
+}
+
+void CViewport::gesture(bool on, const Point & initialPosition, const Point & finalPosition)
+{
+	if(on)
+	{
+		swipeHistory.clear();
+		inertialVelX = 0.0;
+		inertialVelY = 0.0;
+	}
+	else
+	{
+		// Compute velocity from the recent swipe history window
+		if(swipeHistory.size() > 1)
+		{
+			Point diff(0, 0);
+			uint32_t firstTs = 0;
+			uint32_t now = ENGINE->input().getTicks();
+			for(const auto & entry : swipeHistory)
+			{
+				if(now - entry.first < SWIPE_CATCH_MS)
+				{
+					if(firstTs == 0)
+						firstTs = entry.first;
+					diff += entry.second;
+				}
+			}
+			const uint32_t dt = swipeHistory.back().first - firstTs;
+			if(diff.length() > 0 && dt > 0)
+			{
+				inertialVelX = static_cast<double>(diff.x) / static_cast<double>(dt);
+				inertialVelY = static_cast<double>(diff.y) / static_cast<double>(dt);
+				inertialPosX = scrollX;
+				inertialPosY = scrollY;
+			}
+		}
+		swipeHistory.clear();
+	}
+}
+
+void CViewport::gesturePanning(const Point & initialPosition, const Point & currentPosition, const Point & lastUpdateDistance)
+{
+	// Convert finger delta to scroll-position delta (matching Scrollable sign conventions:
+	// vertical same sign, horizontal negated).
+	swipeHistory.emplace_back(ENGINE->input().getTicks(), Point(-lastUpdateDistance.x, lastUpdateDistance.y));
+}
+
+void CViewport::applyInertialScroll(uint32_t msPassed)
+{
+	if(isGesturing())
+	{
+		inertialVelX = 0.0;
+		inertialVelY = 0.0;
+		return;
+	}
+
+	const double speed = std::sqrt(inertialVelX * inertialVelX + inertialVelY * inertialVelY);
+	if(speed <= MIN_SPEED)
+	{
+		inertialVelX = 0.0;
+		inertialVelY = 0.0;
+		return;
+	}
+
+	inertialPosX += inertialVelX * static_cast<double>(msPassed);
+	inertialPosY += inertialVelY * static_cast<double>(msPassed);
+
+	const int targetX = static_cast<int>(std::round(inertialPosX));
+	const int targetY = static_cast<int>(std::round(inertialPosY));
+
+	if(hSlider && !hSlider->isDisabled() && targetX != scrollX)
+		hSlider->scrollTo(std::max(0, targetX));
+
+	if(vSlider && !vSlider->isDisabled() && targetY != scrollY)
+		vSlider->scrollTo(std::max(0, targetY));
+
+	const double decay = 1.0 + static_cast<double>(msPassed) * SLOWDOWN_FACTOR;
+	inertialVelX /= decay;
+	inertialVelY /= decay;
+}
+
+void CViewport::tick(uint32_t msPassed)
+{
+	applyInertialScroll(msPassed);
 }

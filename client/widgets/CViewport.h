@@ -56,9 +56,27 @@ private:
 	void onScrollH(int val);
 	void updateSliders();                 ///< (re-)evaluate slider visibility, position & range
 
+	// Inertial (post-swipe) scrolling state
+	std::vector<std::pair<uint32_t, Point>> swipeHistory;
+	double inertialVelX = 0.0;   ///< px / ms, positive = scroll right
+	double inertialVelY = 0.0;   ///< px / ms, positive = scroll down
+	double inertialPosX = 0.0;   ///< fractional scroll X for sub-pixel accumulation
+	double inertialPosY = 0.0;   ///< fractional scroll Y for sub-pixel accumulation
+
+	static constexpr int    SWIPE_CATCH_MS   = 100;   ///< history window for velocity computation
+	static constexpr double SLOWDOWN_FACTOR  = 0.003; ///< post swipe slowdown speed
+	static constexpr double MIN_SPEED        = 0.1;   ///< px/ms below which inertia stops
+
+	void applyInertialScroll(uint32_t msPassed);
+
 protected:
 	void show(Canvas & to) override;
 	void showAll(Canvas & to) override;
+	void tick(uint32_t msPassed) override;
+
+	bool receiveEvent(const Point & position, int eventType) const override;
+	void gesture(bool on, const Point & initialPosition, const Point & finalPosition) override;
+	void gesturePanning(const Point & initialPosition, const Point & currentPosition, const Point & lastUpdateDistance) override;
 
 public:
 	CViewport(const Rect & viewRect, const Point & contentSz,
