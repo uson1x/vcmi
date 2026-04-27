@@ -538,8 +538,11 @@ static void addHeroesTable(
 				     curY + 2, specIconSz, specIconSz),
 				0));
 
-			widgets.push_back(std::make_shared<CLabel>(
-				TABLE_MARGIN + colPort + colName2 + colGend + colSpecIcon + CELL_PAD_L, curY + CELL_PAD_T,
+			widgets.push_back(std::make_shared<CMultiLineLabel>(
+				Rect(TABLE_MARGIN + colPort + colName2 + colGend + colSpecIcon + CELL_PAD_L,
+				     curY + CELL_PAD_T,
+				     colSpec2 - CELL_PAD_L * 2,
+				     heroRowH - CELL_PAD_T * 2),
 				FONT_TINY, ETextAlignment::TOPLEFT, Colors::WHITE,
 				h->getSpecialtyNameTranslated()));
 
