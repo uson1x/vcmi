@@ -946,43 +946,36 @@ void WikiWindow::updateContent()
 			if(modId != currentModId)
 				rebuildModViewport(modId);
 		}
-
-		redraw();
-		return;
 	}
-
-	if(activeCategoryIndex < 0 || activeElementIndex < 0)
+	else if(activeCategoryIndex < 0 || activeElementIndex < 0
+	     || activeElementIndex >= (int)currentDisplayedEntries.size())
 	{
 		contentBox->setText(LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"));
-		return;
-	}
-
-	if(activeElementIndex < 0 || activeElementIndex >= (int)currentDisplayedEntries.size())
-	{
-		contentBox->setText(LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"));
-		return;
-	}
-	const WikiEntry & entry = currentDisplayedEntries[activeElementIndex];
-
-	// Spell/Skill descriptions already contain {name} and level headers inline
-	const WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
-	const bool hasInlineTitle = (curCat == WikiCategory::ARTIFACT || curCat == WikiCategory::SPELL || curCat == WikiCategory::SKILL);
-
-	std::string text;
-	if(!entry.description.empty())
-	{
-		if(hasInlineTitle)
-			text = entry.description;
-		else
-			text = "{" + entry.name + "}\n\n" + entry.description;
 	}
 	else
 	{
-		// No description – show just the name (e.g. terrain with no native towns)
-		text = entry.name;
+		const WikiEntry & entry = currentDisplayedEntries[activeElementIndex];
+
+		// Spell/Skill descriptions already contain {name} and level headers inline
+		const WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
+		const bool hasInlineTitle = (curCat == WikiCategory::ARTIFACT || curCat == WikiCategory::SPELL || curCat == WikiCategory::SKILL);
+
+		std::string text;
+		if(!entry.description.empty())
+		{
+			if(hasInlineTitle)
+				text = entry.description;
+			else
+				text = "{" + entry.name + "}\n\n" + entry.description;
+		}
+		else
+		{
+			text = entry.name;
+		}
+		contentBox->setText(text);
 	}
 
-	contentBox->setText(text);
+	ENGINE->windows().totalRedraw();
 }
 
 void WikiWindow::rebuildTownViewport(const std::string & factionIdentifier)
