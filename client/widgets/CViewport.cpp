@@ -238,6 +238,7 @@ void CViewport::onScrollV(int val)
 {
 	const int delta = val - scrollY;
 	scrollY = val;
+	inertialPosY = scrollY;
 	contentHolder->moveBy(Point(0, -delta), true);
 	redraw();
 }
@@ -246,6 +247,7 @@ void CViewport::onScrollH(int val)
 {
 	const int delta = val - scrollX;
 	scrollX = val;
+	inertialPosX = scrollX;
 	contentHolder->moveBy(Point(-delta, 0), true);
 	redraw();
 }
@@ -282,66 +284,46 @@ void CViewport::gesture(bool on, const Point & initialPosition, const Point & fi
 {
 	if(on)
 	{
-		swipeHistory.clear();
-		inertialVelX = 0.0;
-		inertialVelY = 0.0;
+		smoothH.start();
+		smoothV.start();
+		inertialPosX = scrollX;
+		inertialPosY = scrollY;
 	}
 	else
 	{
-		// Compute velocity from the recent swipe history window
-		if(swipeHistory.size() > 1)
-		{
-			Point diff(0, 0);
-			uint32_t firstTs = 0;
-			uint32_t now = ENGINE->input().getTicks();
-			for(const auto & entry : swipeHistory)
-			{
-				if(now - entry.first < SWIPE_CATCH_MS)
-				{
-					if(firstTs == 0)
-						firstTs = entry.first;
-					diff += entry.second;
-				}
-			}
-			const uint32_t dt = swipeHistory.back().first - firstTs;
-			if(diff.length() > 0 && dt > 0)
-			{
-				inertialVelX = static_cast<double>(diff.x) / static_cast<double>(dt);
-				inertialVelY = static_cast<double>(diff.y) / static_cast<double>(dt);
-				inertialPosX = scrollX;
-				inertialPosY = scrollY;
-			}
-		}
-		swipeHistory.clear();
+		const uint32_t now = ENGINE->input().getTicks();
+		smoothH.finish(now);
+		smoothV.finish(now);
 	}
 }
 
 void CViewport::gesturePanning(const Point & initialPosition, const Point & currentPosition, const Point & lastUpdateDistance)
 {
-	// Convert finger delta to scroll-position delta (matching Scrollable sign conventions:
-	// vertical same sign, horizontal negated).
-	swipeHistory.emplace_back(ENGINE->input().getTicks(), Point(-lastUpdateDistance.x, lastUpdateDistance.y));
+	const uint32_t ts = ENGINE->input().getTicks();
+	const int deltaX = -lastUpdateDistance.x;
+	const int deltaY =  lastUpdateDistance.y;
+
+	smoothH.addStep(deltaX, ts);
+	smoothV.addStep(deltaY, ts);
+
+	// Apply live scroll so content actually moves with the finger.
+	// Keep inertialPos in sync so post-lift inertia continues from here.
+	if(hSlider && !hSlider->isDisabled())
+		hSlider->scrollTo(std::max(0, scrollX + deltaX));
+	if(vSlider && !vSlider->isDisabled())
+		vSlider->scrollTo(std::max(0, scrollY + deltaY));
+
+	inertialPosX = scrollX; // updated by onScrollH callback above
+	inertialPosY = scrollY; // updated by onScrollV callback above
 }
 
 void CViewport::applyInertialScroll(uint32_t msPassed)
 {
 	if(isGesturing())
-	{
-		inertialVelX = 0.0;
-		inertialVelY = 0.0;
 		return;
-	}
 
-	const double speed = std::sqrt(inertialVelX * inertialVelX + inertialVelY * inertialVelY);
-	if(speed <= MIN_SPEED)
-	{
-		inertialVelX = 0.0;
-		inertialVelY = 0.0;
-		return;
-	}
-
-	inertialPosX += inertialVelX * static_cast<double>(msPassed);
-	inertialPosY += inertialVelY * static_cast<double>(msPassed);
+	inertialPosX += smoothH.tick(msPassed);
+	inertialPosY += smoothV.tick(msPassed);
 
 	const int targetX = static_cast<int>(std::round(inertialPosX));
 	const int targetY = static_cast<int>(std::round(inertialPosY));
@@ -351,10 +333,6 @@ void CViewport::applyInertialScroll(uint32_t msPassed)
 
 	if(vSlider && !vSlider->isDisabled() && targetY != scrollY)
 		vSlider->scrollTo(std::max(0, targetY));
-
-	const double decay = 1.0 + static_cast<double>(msPassed) * SLOWDOWN_FACTOR;
-	inertialVelX /= decay;
-	inertialVelY /= decay;
 }
 
 void CViewport::tick(uint32_t msPassed)

@@ -12,6 +12,7 @@
 
 #include "../gui/CIntObject.h"
 #include "Slider.h"
+#include "Scrollable.h"
 
 /**
  * Generic scrollable viewport widget.
@@ -56,16 +57,10 @@ private:
 	void onScrollH(int val);
 	void updateSliders();                 ///< (re-)evaluate slider visibility, position & range
 
-	// Inertial (post-swipe) scrolling state
-	std::vector<std::pair<uint32_t, Point>> swipeHistory;
-	double inertialVelX = 0.0;   ///< px / ms, positive = scroll right
-	double inertialVelY = 0.0;   ///< px / ms, positive = scroll down
-	double inertialPosX = 0.0;   ///< fractional scroll X for sub-pixel accumulation
-	double inertialPosY = 0.0;   ///< fractional scroll Y for sub-pixel accumulation
-
-	static constexpr int    SWIPE_CATCH_MS   = 100;   ///< history window for velocity computation
-	static constexpr double SLOWDOWN_FACTOR  = 0.003; ///< post swipe slowdown speed
-	static constexpr double MIN_SPEED        = 0.1;   ///< px/ms below which inertia stops
+	SmoothScrollHelper smoothH; ///< horizontal inertia
+	SmoothScrollHelper smoothV; ///< vertical inertia
+	double inertialPosX = 0.0; ///< fractional scroll X for sub-pixel accumulation
+	double inertialPosY = 0.0; ///< fractional scroll Y for sub-pixel accumulation
 
 	void applyInertialScroll(uint32_t msPassed);
 
