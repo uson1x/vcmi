@@ -28,7 +28,7 @@ WikiClickable::WikiClickable(Rect area,
                               std::function<void()> rclick,
                               bool blue,
                               std::optional<Rect> clip)
-	: CIntObject(LCLICK | SHOW_POPUP | HOVER | GESTURE, area.topLeft())
+	: CIntObject(LCLICK | SHOW_POPUP | HOVER, area.topLeft())
 	, onLeftClick(std::move(lclick))
 	, onRightClick(std::move(rclick))
 	, clipRect(clip)
@@ -63,19 +63,11 @@ void WikiClickable::hover(bool on)
 	}
 }
 
-void WikiClickable::gesturePanning(const Point & /*initialPosition*/, const Point & currentPosition, const Point & /*lastUpdateDistance*/)
-{
-	// InputSourceTouch never calls setCursorPosition() during panning, so
-	// getCursorPosition() stays frozen at the initial tap position.  Update it
-	// here so the normal showAll hover check tracks the live finger.
-	ENGINE->input().setCursorPosition(currentPosition);
-}
-
 void WikiClickable::showAll(Canvas & to)
 {
 	const Point cur = ENGINE->getCursorPosition();
 	const bool inClip = !clipRect || clipRect->isInside(cur);
-	hovered = pos.isInside(cur) && inClip;
+	hovered = pos.isInside(cur) && inClip && ENGINE->input().getCurrentInputMode() != InputMode::TOUCH;
 	if(hovered)
 	{
 		const ColorRGBA hoverCol = blueTheme
