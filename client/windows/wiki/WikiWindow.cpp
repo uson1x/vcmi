@@ -688,13 +688,19 @@ void WikiWindow::applyScrollBounds()
 	{
 		auto slider = categoryList->getSlider();
 		if(slider)
+		{
 			slider->setScrollBounds(categoryList->pos - slider->pos.topLeft());
+			slider->setInertiaEnabled(true);
+		}
 	}
 	if(elementList)
 	{
 		auto slider = elementList->getSlider();
 		if(slider)
+		{
 			slider->setScrollBounds(elementList->pos - slider->pos.topLeft());
+			slider->setInertiaEnabled(true);
+		}
 	}
 }
 
