@@ -5,6 +5,7 @@
 This script type is used to implement spell effects, similar to built-in `core:summon`, `core:damage`, `core:heal`, and similar.
 
 Generally, when spell is being cast game will make following calls:
+
 - `applicable` when hero attepts to pick spell from a spellbook
 - `transformTarget` and `applicableTarget` when hero hovers spell over potential target
 - `apply` when player attempts to finish casting the spell
@@ -21,7 +22,7 @@ VCMI guarantees the following:
 VCMI does NOT guarantees:
 
 - any specific order or number of calls other than those specified in this section. Game may call `applicableTarget` multiple times, or even call `apply` without spell actually having an effect when AI estimates spells
-- global state is not guaranteed to remain the same between calls
+- global state of the script  is not guaranteed to remain the same between calls
 
 #### Available functions
 
@@ -29,13 +30,13 @@ VCMI does NOT guarantees:
 
 Signature: `applicable = function(parameters, mechanics, problem)`
 
-This function should return true if spell effect has at least one valid target on which it can be cast, or false if none of entities (such as units or hexes) can be used as target for the spell. 
+This function should return true if spell effect has at least one valid target on which it can be cast, or false if none of entities (such as units or hexes) can be used as target for the spell.
 
 Parameters:
 
 - `parameters` - contains all spell parameters provided in spell effect json config
-- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](#spellmechanics).
-- `problem` - storage for any "problems" with casting the spell. If spell can't be casted, reason for the failure must be added to the problem. See [SpellProblem](#spellproblem).
+- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](Api_Reference.md#spellmechanics).
+- `problem` - storage for any "problems" with casting the spell. If spell can't be casted, reason for the failure must be added to the problem. See [SpellProblem](Api_Reference.md#spellproblem).
 
 Return value: boolean
 
@@ -48,11 +49,11 @@ This function should examine `aimPoint` and `spellTarget` to generate list of ta
 Parameters:
 
 - `parameters` - contains all spell parameters provided in spell effect json config
-- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](#spellmechanics).
-- `aimPoint` - TODO. See [SpellTarget](#spelltarget).
-- `spellTarget` - TODO. See [SpellTarget](#spelltarget).
+- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](Api_Reference.md#spellmechanics).
+- `aimPoint` - TODO. See [SpellTarget](Api_Reference.md#spelltarget).
+- `spellTarget` - TODO. See [SpellTarget](Api_Reference.md#spelltarget).
 
-Return value: [SpellTarget](#spelltarget)
+Return value: [SpellTarget](Api_Reference.md#spelltarget)
 
 #### applicableTarget
 
@@ -63,9 +64,9 @@ This function should return true if spell can be cast on a specified target(s).
 Parameters:
 
 - `parameters` - contains all spell parameters provided in spell effect json config
-- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](#spellmechanics).
-- `problem` - storage for any "problems" with casting the spell. If spell can't be casted, reason for the failure must be added to the problem. See [SpellProblem](#spellproblem).
-- `target` - Target (such as unit or hex) on which this spell is being cast, after convertion by `transformTarget` See [SpellTarget](#spelltarget).
+- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](Api_Reference.md#spellmechanics).
+- `problem` - storage for any "problems" with casting the spell. If spell can't be casted, reason for the failure must be added to the problem. See [SpellProblem](Api_Reference.md#spellproblem).
+- `target` - Target (such as unit or hex) on which this spell is being cast, after convertion by `transformTarget` See [SpellTarget](Api_Reference.md#spelltarget).
 
 Return value: boolean
 
@@ -78,9 +79,9 @@ This function performs actual cast of the spell and applies all effects caused b
 Parameters:
 
 - `parameters` - contains all spell parameters provided in spell effect json config
-- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](#spellmechanics).
-- `server` - This parameter can be used to apply actual changes in a battle state [Server](#server).
-- `target` - Target (such as unit or hex) on which this spell is being cast, after convertion by `transformTarget` See [SpellTarget](#spelltarget).
+- `mechanics` - contains settings at which spell is being cast, such as state of hero or creature that acts as caster of the spell. See [SpellMechanics](Api_Reference.md#spellmechanics).
+- `server` - This parameter can be used to apply actual changes in a battle state [Server](Api_Reference.md#server).
+- `target` - Target (such as unit or hex) on which this spell is being cast, after convertion by `transformTarget` See [SpellTarget](Api_Reference.md#spelltarget).
 
 Return value: nothing
 

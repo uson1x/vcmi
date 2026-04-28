@@ -9,6 +9,7 @@ VCMI provides following global fields, that are accessible from any script:
 - `GAME` - Allows access to state of the ongoing game session. See [game](#game).
 
 Additionally, VCMI supports subset of Lua Standard Library:
+
 - `print()` - emulates standard Lua function with the same name, available for use as logging. Printed text will be available in log file and in console output 
 - `table` - standard Lua table manipulation library
 - `string` - standard Lua string manipulation library
@@ -17,9 +18,33 @@ Additionally, VCMI supports subset of Lua Standard Library:
 
 See [Lua Standard Library](Lua_Standard_Library.md) page for more details.
 
-## entity
+## Persistent data
 
 These classes represent global, non-changeable entities
+
+### enums
+
+This class is used to export all enumerations from engine that can be accessed by mods. Currently it contains following enumerations:
+- `HealLevel`
+  - `heal`
+  - `resurrect`
+  - `overheal`
+- `HealPower`
+  - `oneBattle`
+  - `permanent`
+
+### services
+
+Primary way to access all library entries. Available as `LIBRARY` global.
+
+NOTE: all `get???ByName` methods require string identifier of an object, for example `grandElf` or `core:grandElf`, and not human-readable name such as `Grand Elf`
+
+- `:getArtifactByName(string name)`
+- `:getCreatureByName(string name)`
+- `:getHeroClassByName(string name)`
+- `:getHeroTypeByName(string name)`
+- `:getSpellByName(string name)`
+- `:getSecondarySkillByName(string name)`
 
 ### Artifact
 
@@ -35,32 +60,17 @@ These classes represent global, non-changeable entities
 
 ### Spell
 
-## library
-
-These classes represent global, non-changeable containers for entities
-
-### services
-
-Primary way to access all library entries. Available as `LIBRARY` global.
-
-NOTE: all `get???ByName` methods require string identifier of an object, for example `grandElf` or `core:grandElf`, and not human-readable name such as `Grand Elf`
-
-- `:getArtifactByName(string name)`
-- `:getCreatureByName(string name)`
-- `:getHeroClassByName(string name)`
-- `:getHeroTypeByName(string name)`
-- `:getSpellByName(string name)`
-- `:getSecondarySkillByName(string name)`
-
-# enumerations
-
 ## game
 
 These classes represent global gamestate. Read-only by scripts, can be changed indirectly via network packs
 
 ### EventBus
 
+NOTE: inaccessible in current API
+
 ### EventSubscription
+
+NOTE: inaccessible in current API
 
 ### Battle
 

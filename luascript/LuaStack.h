@@ -146,7 +146,7 @@ public:
 	void push(const T & value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		static_assert(std::is_same_v<std::remove_const_t<DataType>, BaseType>, "Can not push derived class as copyable!");
 
 		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
@@ -313,7 +313,7 @@ public:
 	STRONG_INLINE bool tryGet(int position, T * & value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		using BasePtrType = BaseType *;
 		using ConstPtrType = const BaseType *;
 
@@ -327,7 +327,7 @@ public:
 	STRONG_INLINE bool tryGet(int position, T * & value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		using BasePtrType = BaseType*;
 
 		BasePtrType basePtr;
@@ -340,7 +340,7 @@ public:
 	STRONG_INLINE bool tryGet(int position, std::shared_ptr<T> & value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		using BasePtrType = std::shared_ptr<BaseType>;
 		using ConstPtrType = std::shared_ptr<const BaseType>;
 
@@ -354,7 +354,7 @@ public:
 	STRONG_INLINE bool tryGet(int position, std::shared_ptr<T> & value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		using BasePtrType = std::shared_ptr<BaseType>;
 
 		BasePtrType basePtr;
@@ -367,7 +367,7 @@ public:
 	STRONG_INLINE bool tryGet(int position, T & value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		static_assert(std::is_same_v<DataType, BaseType>, "Can not push derived class as copyable!");
 
 		return tryGetUData<BaseType>(position, value);

@@ -11,24 +11,29 @@ This page describes internal working of Lua scripting module. For usage of publi
   - convert HotA (and possibly - H3) Seer Huts into scripts
   - Move all spell effects to Lua form
   - Implement support for scriptable map objects
-  - Move damage calculator, or at least - damage formula to Lua: https://github.com/vcmi/vcmi/pull/5135
+  - Move damage calculator, or at least - damage formula to Lua, based on [existing PR](https://github.com/vcmi/vcmi/pull/5135)
   - Move map movement point limit calculation to Lua
+- Document public scripting API. Decide approach on how to handle it:
+  - Use .md form and place them as part of our docs, accessible from website
+  - Use [Lua Language Server format](https://luals.github.io/wiki/definition-files/) to make docs accessible from IDE
+  - Both .md and Lua Language Server
+  - Document everything in code and make exporter to both .md and Lua Language Server
 - Currently C++ bindings rely on undefined behavior, which previously was causing issues on Android. We need to remove `VCMI_REGISTER_CORE_SCRIPT_API` and `VCMI_REGISTER_CORE_SCRIPT_API` macro and perform these actions explicitly on initialization of scripting
-- Review existing API and ensure that it follows rules described here
-- Remove usage of numeric identifiers from script. In cases where entity does not exists, replace them with copyable API class
+- Review existing API and ensure that it follows rules described here,
+- Review class names and rename them where necessary. Same for file names.
+- Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
 - Add error handling instead of returning nil values whenever something goes wrong. Lua already provides `luaL_error` for such cases. Make sure that Lua stack size is correct whenever error occurs
 - Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
 - Consider config validation as part of the script. Options:
   - external json schema support
   - implement "validate" function that performs all checks manually
-  - have Lua generate json schema? 
+  - have Lua generate json schema?
 - ensure that there is debug logging available to scripts:
   - information logging
   - assertions
   - error messages
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
 - implement concurrency for LuaContext calls. Mutex might be relatively slow, but should be sufficient for initial release.
-
 
 ## General rules
 
@@ -48,15 +53,15 @@ Global state of a Lua script must never change - script should not make assumpti
 ## Exposing class to Lua script
 
 1. Decide how this class should be passed into Lua
-  - As Lua table (POD type): inherit class from `scripting::ApiSerializable` and implement `void serializeScript(Serializer & s)` method. Skip all subsequent steps. This approach is preferred for POD types
-  - As copy: inherit class from `scripting::ApiCopyable`. This approach is preferred for small classes that don't use inheritance to avoid lifetime management
-  - As raw pointer: inherit class from `scripting::ApiRawPointer`. Preferred for classes that are guaranteed to exists longer than scripts or for interfaces
-  - As shared pointer: inherit class from `scripting::ApiSharedPointer`. Preferred for short-lived classes or for interfaces
+   - As Lua table (POD type): inherit class from `scripting::ApiSerializable` and implement `void serializeScript(Serializer & s)` method. Skip all subsequent steps. This approach is preferred for POD types
+   - As copy: inherit class from `scripting::ApiCopyable`. This approach is preferred for small classes that don't use inheritance to avoid lifetime management
+   - As raw pointer: inherit class from `scripting::ApiRawPointer`. Preferred for classes that are guaranteed to exists longer than scripts or for interfaces
+   - As shared pointer: inherit class from `scripting::ApiSharedPointer`. Preferred for short-lived classes or for interfaces
 2. Create class named XXXProxy and place it into one of `luascript/api` subdirectories
 3. Provide all methods that needs to be exposed to a script in `REGISTER_CUSTOM` field:
-  - if method can be used as it, use `LuaMethodWrapper` or `LuaSharedMethodWrapper` adapters
-  - if method needs a simple adaptor, like provide a fixed parameter to a method, use `LuaFunctionWrapper` and implement static method with adapted signature in `XXXProxy` class
-  - if method needs a compex adaptor, like to allow optional parameters, implement static method `int doXXX(lua_State * L)` and use it directly. WARNING: Should be avoided
+   - if method can be used as it, use `LuaMethodWrapper` or `LuaSharedMethodWrapper` adapters
+   - if method needs a simple adaptor, like provide a fixed parameter to a method, use `LuaFunctionWrapper` and implement static method with adapted signature in `XXXProxy` class
+   - if method needs a compex adaptor, like to allow optional parameters, implement static method `int doXXX(lua_State * L)` and use it directly. WARNING: Should be avoided
 4. Allow access to this class in script by returning it via API call or by passing it into script callback
 
 ## Classes
@@ -87,7 +92,8 @@ Wrappers to adapt C++ method call into Lua callback signature `int function(lua_
 
 #### LuaStack
 
-Helper to manage Lua state. Provides helper function to:
+Helper to manage Lua state. Provides helper functions to:
+
 - push variables onto Lua stack
 - query variables located as specific position of the stack
 - adjust stack size, including automatic restoration of stack size to its initial size
