@@ -57,7 +57,7 @@ void AssetGenerator::initialize()
 		imageFiles[ImagePath::builtin(name)] = [this, color](){ return createResBarElement(std::max(PlayerColor(0), color));};
 	}
 
-	for (PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
+	for(PlayerColor color(-1); color < PlayerColor::PLAYER_LIMIT; ++color)
 	{
 		for(int amount : { 8, 9 })
 		{
@@ -81,6 +81,22 @@ void AssetGenerator::initialize()
 	imageFiles[ImagePath::builtin("stackWindow/button-panel.png")] = [this](){ return createCreatureInfoPanelElement(BUTTON_PANEL);};
 	imageFiles[ImagePath::builtin("stackWindow/commander-bg.png")] = [this](){ return createCreatureInfoPanelElement(COMMANDER_BACKGROUND);};
 	imageFiles[ImagePath::builtin("stackWindow/commander-abilities.png")] = [this](){ return createCreatureInfoPanelElement(COMMANDER_ABILITIES);};
+	addRecruitmentBackground("TPRCRT4", Point(484, 394));
+	addRecruitmentBackground("TPRCRT5", Point(594, 394));
+	addRecruitmentBackground("TPRCRT6", Point(704, 394));
+	addUniversityBackground("UNIVRS1", Point(466, 388), 1);
+	addUniversityBackground("UNIVRS2", Point(466, 388), 2);
+	addUniversityBackground("UNIVRS3", Point(466, 388), 3);
+	addUniversityBackground("UNIVRS4", Point(466, 388), 4);
+	addUniversityBackground("UNIVRS5", Point(570, 388), 5);
+	addUniversityBackground("UNIVRS6", Point(674, 388), 6);
+	addUniversityBackground("UNIVRS7", Point(778, 388), 7);
+	addUniversityConfirmBackground("UNIVRSC1", Point(466, 388), 1);
+	addUniversityConfirmBackground("UNIVRSC2", Point(466, 388), 2);
+	addSpellResearchBackground("spellResearchDialog", Point(328, 474));
+
+	addDialogBackgroundWithStatusBar("heroBackpackDialog", Point(426, 465));
+
 	imageFiles[ImagePath::builtin("questDialog.png")] = [this](){ return createQuestWindow();};
 	imageFiles[ImagePath::builtin("stackArtifactIndicatorSmall.png")] = [this](){ return createStackArtifactIndicator(Point(14, 14));};
 	imageFiles[ImagePath::builtin("stackArtifactIndicatorLarge.png")] = [this](){ return createStackArtifactIndicator(Point(22, 22));};
@@ -144,6 +160,31 @@ void AssetGenerator::addImageFile(const ImagePath & path, ImageGenerationFunctor
 void AssetGenerator::addAnimationFile(const AnimationPath & path, AnimationLayoutMap & anim)
 {
 	animationFiles[path] = anim;
+}
+
+void AssetGenerator::addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackgroundWithStatusBar(size);};
+}
+
+void AssetGenerator::addSpellResearchBackground(const std::string & fileName, const Point & size)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackgroundWithStatusBar(size);};
+}
+
+void AssetGenerator::addRecruitmentBackground(const std::string & fileName, const Point & size)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createRecruitmentDialogBackground(size);};
+}
+
+void AssetGenerator::addUniversityBackground(const std::string & fileName, const Point & size, int skillColumns)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size, skillColumns](){ return createUniversityDialogBackground(size, skillColumns);};
+}
+
+void AssetGenerator::addUniversityConfirmBackground(const std::string & fileName, const Point & size, int costElements)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size, costElements](){ return createUniversityConfirmDialogBackground(size, costElements);};
 }
 
 auto getColorFilters()
@@ -1277,6 +1318,172 @@ AssetGenerator::CanvasPtr AssetGenerator::createStackArtifactIndicator(const Poi
 			const auto alpha = static_cast<uint8_t>(alphaValue);
 			canvas.drawPoint(Point(x, y), ColorRGBA(0, 0, 0, alpha));
 		}
+	}
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(const Point & size) const
+{
+	// Generic compositing helper:
+	// 1) tile DiBoxBck over full target size
+	// 2) add darkened status-bar strip at the bottom
+	auto image = ENGINE->renderHandler().createImage(size, CanvasScalingPolicy::IGNORE);
+	Canvas canvas = image->getCanvas();
+
+	auto background = ENGINE->renderHandler().loadImage(ImageLocator(ImagePath::builtin("DiBoxBck"), EImageBlitMode::OPAQUE));
+	// Fill whole area with DiBoxBck texture first.
+	for (int y = 0; y < size.y; y += background->height())
+	{
+		for (int x = 0; x < size.x; x += background->width())
+		{
+			canvas.draw(background, Point(x, y), Rect(0, 0, std::min(background->width(), size.x - x), std::min(background->height(), size.y - y)));
+		}
+	}
+
+	// Status bar overlay: darken bottom strip to match original dialog style
+	const int statusBarOverlayHeight = 30;
+	canvas.drawColorBlended(Rect(0, size.y - statusBarOverlayHeight, size.x, statusBarOverlayHeight), ColorRGBA(0, 0, 0, 88));
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(const Point & size) const
+{
+	auto image = createDialogBackgroundWithStatusBar(size);
+	Canvas canvas = image->getCanvas();
+
+	// Additional overlays used by original TPRCRT (semi-transparent plates and central black input area).
+	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
+	const ColorRGBA borderColor = ColorRGBA(128, 100, 75);
+	const Point originalSize(484, 362);
+	const int offsetX = (image->width() - originalSize.x) / 2;
+
+	auto drawPlate = [&canvas, rectangleColor, borderColor](const Rect & rect, bool blackFill = false)
+	{
+		if(blackFill)
+			canvas.drawColor(rect, Colors::BLACK);
+		else
+			canvas.drawColorBlended(rect, rectangleColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	auto centered = [offsetX](const Rect & rect)
+	{
+		return Rect(rect.x + offsetX, rect.y, rect.w, rect.h);
+	};
+
+	// Top row side plates (left / right) - 97x19
+	drawPlate(centered(Rect(64, 223, 97, 19)));
+	drawPlate(centered(Rect(323, 223, 97, 19)));
+
+	// Bottom row side plates (left / right) - 97x19
+	drawPlate(centered(Rect(64, 278, 97, 19)));
+	drawPlate(centered(Rect(323, 278, 97, 19)));
+
+	// Small middle plates above central bar (left / right) - 65x19
+	drawPlate(centered(Rect(172, 244, 65, 19)));
+	drawPlate(centered(Rect(247, 244, 65, 19)));
+
+	// Central black input bar - 142x20
+	drawPlate(centered(Rect(171, 278, 142, 20)), true);
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const Point & size, int skillColumns) const
+{
+	auto image = createDialogBackgroundWithStatusBar(size);
+	Canvas canvas = image->getCanvas();
+
+	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
+	const ColorRGBA borderColor = ColorRGBA(128, 100, 75);
+	const ColorRGBA slotColor = ColorRGBA(0, 0, 0, 95);
+
+	auto drawPlate = [&canvas, rectangleColor, borderColor](const Rect & rect)
+	{
+		canvas.drawColorBlended(rect, rectangleColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	auto drawSlot = [&canvas, slotColor, borderColor](const Rect & rect)
+	{
+		canvas.drawColorBlended(rect, slotColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	// Main text block
+	const int largeBlockY = 127;
+	const int largeBlockHeight = 74;
+	const int largeBlockWidth = 414;
+	const int largeBlockX = (size.x - largeBlockWidth) / 2;
+	drawPlate(Rect(largeBlockX, largeBlockY, largeBlockWidth, largeBlockHeight));
+
+	// Skill rows. Keep 2px gap between columns and center the whole strip set.
+	const int smallBlockWidth = 102;
+	const int smallBlockHeight = 20;
+	const int smallBlockGap = 2;
+	const int firstRowY = largeBlockY + largeBlockHeight + 10; // 10px below large block
+	const int secondRowY = firstRowY + smallBlockHeight + 50; // 50px below first row (edge to edge)
+
+	std::vector<int> stripX(skillColumns);
+	const int stripSetWidth = skillColumns * smallBlockWidth + (skillColumns - 1) * smallBlockGap;
+	const int stripStartX = (size.x - stripSetWidth) / 2;
+	for(int i = 0; i < skillColumns; ++i)
+	{
+		stripX[i] = stripStartX + i * (smallBlockWidth + smallBlockGap);
+
+		drawPlate(Rect(stripX[i], firstRowY, smallBlockWidth, smallBlockHeight));
+		drawPlate(Rect(stripX[i], secondRowY, smallBlockWidth, smallBlockHeight));
+	}
+
+	// Icon boxes centered in each strip column
+	const int iconSize = 44;
+	const int iconY = firstRowY + smallBlockHeight + 3; // 3px below first row and 3px above second row
+	for(int i = 0; i < skillColumns; ++i)
+	{
+		const int iconX = stripX[i] + (smallBlockWidth - iconSize) / 2;
+		drawSlot(Rect(iconX, iconY, iconSize, iconSize));
+	}
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createUniversityConfirmDialogBackground(const Point & size, int costElements) const
+{
+	auto image = createDialogBackgroundWithStatusBar(size);
+	Canvas canvas = image->getCanvas();
+
+	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
+	const ColorRGBA borderColor = ColorRGBA(128, 100, 75);
+
+	auto drawPlate = [&canvas, rectangleColor, borderColor](const Rect & rect)
+	{
+		canvas.drawColorBlended(rect, rectangleColor);
+		canvas.drawBorder(rect, borderColor);
+	};
+
+	// Text block: same geometry as UNIVRS4
+	drawPlate(Rect((size.x - 414) / 2, 127, 414, 74));
+
+	// Centered header/action plates
+	drawPlate(Rect((size.x - 105) / 2, 26, 105, 21));
+	drawPlate(Rect((size.x - 105) / 2, 95, 105, 21));
+	const int costPlateWidth = 71;
+	const int costPlateHeight = 19;
+	const int costPlateY = 258;
+	const int costPlateGap = 10;
+
+	if(costElements <= 1)
+	{
+		drawPlate(Rect((size.x - costPlateWidth) / 2, costPlateY, costPlateWidth, costPlateHeight));
+	}
+	else
+	{
+		const int totalWidth = 2 * costPlateWidth + costPlateGap;
+		const int firstX = (size.x - totalWidth) / 2;
+		drawPlate(Rect(firstX, costPlateY, costPlateWidth, costPlateHeight));
+		drawPlate(Rect(firstX + costPlateWidth + costPlateGap, costPlateY, costPlateWidth, costPlateHeight));
 	}
 
 	return image;

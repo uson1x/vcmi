@@ -75,6 +75,54 @@ static bool useAvailableAmountAsCreatureLabel()
 	return settings["gameTweaks"]["availableCreaturesAsDwellingLabel"].Bool();
 }
 
+CSpellResearchDialog::CSpellResearchDialog(const std::string & textToShow, const std::vector<std::shared_ptr<CComponent>> & comps, const CGTownInstance * town, SpellID oldSpell, bool canAfford)
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, ImagePath::builtin("spellResearchDialog"))
+{
+	OBJECT_CONSTRUCTION;
+
+	const int sideMargin = 22;
+	const int sideMarginComp = 36;
+	const int titleY = 40;
+	const int textTop = 50;
+	const int textHeight = 90;
+	const int statusbarHeight = 26;
+	const int gapBeforeStatusbar = 12;
+	const int componentsTop = 150;
+
+	const std::string titleText = LIBRARY->generaltexth->translate("vcmi.spellResearch.title");
+	title = std::make_shared<CLabel>(pos.w / 2, titleY, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW, titleText);
+	description = std::make_shared<CTextBox>(textToShow, Rect(sideMargin, textTop, pos.w - 2 * sideMargin, textHeight), 0, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE);
+	components = std::make_shared<CComponentBox>(comps, Rect(sideMarginComp, componentsTop, pos.w - 2 * sideMarginComp, 0));
+
+	const int buttonY = 468 - statusbarHeight - gapBeforeStatusbar - 32;
+	const int buttonSpacing = 16;
+	const int totalButtonsWidth = 3 * 80 + 2 * buttonSpacing;
+	int buttonX = (pos.w - totalButtonsWidth) / 2;
+
+	acceptButton = std::make_shared<CButton>(Point(buttonX, buttonY), AnimationPath::builtin("settingsWindow/button80"), CButton::tooltip(LIBRARY->generaltexth->translate("vcmi.spellResearch.research"), ""), [this](){ close(); }, EShortcut::GLOBAL_ACCEPT);
+	acceptButton->setBorderColor(Colors::METALLIC_GOLD);
+	acceptButton->setOverlay(std::make_shared<CPicture>(ImagePath::builtin("spellResearch/accept")));
+	acceptButton->addCallback([town, oldSpell](){ GAME->interface()->cb->spellResearch(town, oldSpell, true); });
+	acceptButton->setEnabled(canAfford);
+	acceptButton->addPopupCallback([](){ CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("vcmi.spellResearch.research")); });
+
+	buttonX += 80 + buttonSpacing;
+	rerollButton = std::make_shared<CButton>(Point(buttonX, buttonY), AnimationPath::builtin("settingsWindow/button80"), CButton::tooltip(LIBRARY->generaltexth->translate("vcmi.spellResearch.skip"), ""), [this](){ close(); });
+	rerollButton->setBorderColor(Colors::METALLIC_GOLD);
+	rerollButton->setOverlay(std::make_shared<CPicture>(ImagePath::builtin("spellResearch/reroll")));
+	rerollButton->addCallback([town, oldSpell](){ GAME->interface()->cb->spellResearch(town, oldSpell, false); });
+	rerollButton->setEnabled(canAfford);
+	rerollButton->addPopupCallback([](){ CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("vcmi.spellResearch.skip")); });
+
+	buttonX += 80 + buttonSpacing;
+	closeButton = std::make_shared<CButton>(Point(buttonX, buttonY), AnimationPath::builtin("settingsWindow/button80"), CButton::tooltip(LIBRARY->generaltexth->translate("vcmi.spellResearch.abort"), ""), [this](){ close(); }, EShortcut::GLOBAL_CANCEL);
+	closeButton->setBorderColor(Colors::METALLIC_GOLD);
+	closeButton->setOverlay(std::make_shared<CPicture>(ImagePath::builtin("spellResearch/close")));
+	closeButton->addPopupCallback([](){ CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("vcmi.spellResearch.abort")); });
+
+	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
+}
+
 CBuildingRect::CBuildingRect(CCastleBuildings * Par, const CGTownInstance * Town, const CStructure * Str)
 	: CShowableAnim(0, 0, Str->defName, CShowableAnim::BASE, BUILDING_FRAME_TIME),
 	  parent(Par),
@@ -2294,25 +2342,10 @@ void CMageGuildScreen::Scroll::clickPressed(const Point & cursorPosition)
 			resComps.push_back(std::make_shared<CComponent>(ComponentType::RESOURCE, i->resType, i->resVal, CComponent::ESize::medium));
 		}
 
-		std::vector<std::pair<AnimationPath, CFunctionList<void()>>> pom;
-		for(int i = 0; i < 3; i++)
-			pom.emplace_back(AnimationPath::builtin("settingsWindow/button80"), nullptr);
-
 		auto text = LIBRARY->generaltexth->translate(GAME->interface()->cb->getResourceAmount().canAfford(cost) ? "vcmi.spellResearch.pay" : "vcmi.spellResearch.canNotAfford");
 		boost::replace_first(text, "%SPELL1", spell->id.toSpell()->getNameTranslated());
 		boost::replace_first(text, "%SPELL2", newSpell.toSpell()->getNameTranslated());
-		auto temp = std::make_shared<CInfoWindow>(text, GAME->interface()->playerID, resComps, pom);
-
-		temp->buttons[0]->setOverlay(std::make_shared<CPicture>(ImagePath::builtin("spellResearch/accept")));
-		temp->buttons[0]->addCallback([this, town](){ GAME->interface()->cb->spellResearch(town, spell->id, true); });
-		temp->buttons[0]->addPopupCallback([](){ CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("vcmi.spellResearch.research")); });
-		temp->buttons[0]->setEnabled(GAME->interface()->cb->getResourceAmount().canAfford(cost));
-		temp->buttons[1]->setOverlay(std::make_shared<CPicture>(ImagePath::builtin("spellResearch/reroll")));
-		temp->buttons[1]->addCallback([this, town](){ GAME->interface()->cb->spellResearch(town, spell->id, false); });
-		temp->buttons[1]->addPopupCallback([](){ CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("vcmi.spellResearch.skip")); });
-		temp->buttons[1]->setEnabled(GAME->interface()->cb->getResourceAmount().canAfford(cost));
-		temp->buttons[2]->setOverlay(std::make_shared<CPicture>(ImagePath::builtin("spellResearch/close")));
-		temp->buttons[2]->addPopupCallback([](){ CRClickPopup::createAndPush(LIBRARY->generaltexth->translate("vcmi.spellResearch.abort")); });
+		auto temp = std::make_shared<CSpellResearchDialog>(text, resComps, town, spell->id, GAME->interface()->cb->getResourceAmount().canAfford(cost));
 
 		ENGINE->windows().pushWindow(temp);
 	}

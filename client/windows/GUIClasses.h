@@ -98,6 +98,7 @@ class CRecruitmentWindow : public CStatusbarWindow
 	void select(std::shared_ptr<CCreatureCard> card);
 	void buy();
 	void sliderMoved(int to);
+	static ImagePath getRecruitmentBackground(const CGDwelling * dwelling, int level);
 
 	void showAll(Canvas & to) override;
 public:
@@ -389,7 +390,11 @@ class CUniversityWindow final : public CStatusbarWindow, public IMarketHolder
 	std::function<void()> onWindowClosed;
 
 public:
+	static ImagePath getUniversityBackground(size_t skillCount);
+	static ImagePath getUniversityConfirmBackground(int costElements);
+	static int getUniversityItemPosX(size_t itemIndex, size_t skillCount, int windowWidth);
 	CUniversityWindow(const CGHeroInstance * _hero, BuildingID building, const IMarket * _market, const std::function<void()> & onWindowClosed);
+	const CGHeroInstance * getHero() const;
 
 	void makeDeal(SecondarySkill skill);
 	void close() override;
