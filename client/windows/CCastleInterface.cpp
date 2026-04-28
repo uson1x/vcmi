@@ -1028,7 +1028,7 @@ void CCastleBuildings::enterBlacksmith(BuildingID building, ArtifactID artifactI
 	ArtifactID existingArtifact = hero->getReplacedWarMachine(artifactID);
 
 	bool canAfford = GAME->interface()->cb->getResourceAmount(EGameResID::GOLD) >= price;
-	bool hasSameMachine = existingArtifact == artifactID;
+	bool hasSameMachine = existingArtifact.hasValue() && existingArtifact == artifactID;
 	bool possible = canAfford && !hasSameMachine;
 
 	ENGINE->windows().createAndPushWindow<CBlacksmithDialog>(possible, artifactID, existingArtifact, hero->id);

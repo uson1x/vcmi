@@ -171,7 +171,7 @@ void CRecruitmentWindow::buy()
 	{
 		ArtifactID newWarMachine = selected->creature->warMachine;
 		ArtifactID currentWarMachine = hero->getReplacedWarMachine(newWarMachine);
-		if (newWarMachine != currentWarMachine)
+		if (currentWarMachine.hasValue() && newWarMachine != currentWarMachine)
 		{
 			MetaString message;
 			message.appendTextID("vcmi.townWindow.blacksmith.replaceWarMachine");
