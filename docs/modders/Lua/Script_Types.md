@@ -74,7 +74,7 @@ Return value: boolean
 
 Signature: `apply = function(parameters, mechanics, server, target)`
 
-This function performs actual cast of the spell and applies all effects caused by the spell to game via `server` parameter. It is guaranteed that `target` has been transformed via `transformTarget` and verified to be applicable via calls to `applicable` and `applicableTarget` 
+This function performs actual cast of the spell and applies all effects caused by the spell to game via `server` parameter. It is guaranteed that `target` has been transformed via `transformTarget` and verified to be applicable via calls to `applicable` and `applicableTarget`
 
 Parameters:
 
@@ -84,4 +84,3 @@ Parameters:
 - `target` - Target (such as unit or hex) on which this spell is being cast, after convertion by `transformTarget` See [SpellTarget](Api_Reference.md#spelltarget).
 
 Return value: nothing
-

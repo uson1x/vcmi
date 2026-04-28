@@ -5,12 +5,12 @@
 VCMI provides following global fields, that are accessible from any script:
 
 - `LIBRARY` - constant game data access, such as creatures, heroes, factions. See [services](#services).
-- `ENUM` - container for all enumerations accessible for Lua scripting. See [enum](#enum).
+- `ENUM` - container for all enumerations accessible for Lua scripting. See [enums](#enums).
 - `GAME` - Allows access to state of the ongoing game session. See [game](#game).
 
 Additionally, VCMI supports subset of Lua Standard Library:
 
-- `print()` - emulates standard Lua function with the same name, available for use as logging. Printed text will be available in log file and in console output 
+- `print()` - emulates standard Lua function with the same name, available for use as logging. Printed text will be available in log file and in console output
 - `table` - standard Lua table manipulation library
 - `string` - standard Lua string manipulation library
 - `math` - standard Lua math operations library
@@ -25,6 +25,7 @@ These classes represent global, non-changeable entities
 ### enums
 
 This class is used to export all enumerations from engine that can be accessed by mods. Currently it contains following enumerations:
+
 - `HealLevel`
   - `heal`
   - `resurrect`

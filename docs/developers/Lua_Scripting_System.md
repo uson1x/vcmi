@@ -20,6 +20,7 @@ This page describes internal working of Lua scripting module. For usage of publi
   - Document everything in code and make exporter to both .md and Lua Language Server
 - Currently C++ bindings rely on undefined behavior, which previously was causing issues on Android. We need to remove `VCMI_REGISTER_CORE_SCRIPT_API` and `VCMI_REGISTER_CORE_SCRIPT_API` macro and perform these actions explicitly on initialization of scripting
 - Review existing API and ensure that it follows rules described here,
+- Document C++ classes
 - Review class names and rename them where necessary. Same for file names.
 - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
 - Add error handling instead of returning nil values whenever something goes wrong. Lua already provides `luaL_error` for such cases. Make sure that Lua stack size is correct whenever error occurs
