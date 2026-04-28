@@ -24,12 +24,8 @@ class LuaScriptInstance;
 class LuaContext;
 }
 
-namespace spells
+namespace spells::effects
 {
-namespace effects
-{
-
-
 
 class LuaSpellEffectFactory : public IEffectFactory
 {
@@ -78,7 +74,6 @@ private:
 	std::shared_ptr<LuaContext> resolveScript(const Mechanics * m) const;
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

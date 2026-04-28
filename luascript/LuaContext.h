@@ -24,20 +24,28 @@ class LuaReference;
 class LuaContext : public Context
 {
 public:
-	static const std::string STATE_FIELD;
-
 	LuaContext(const Script * source, const Environment * env_);
 	virtual ~LuaContext();
 
 	void run(const JsonNode & initialState) override;
 
-	//log error and return nil from LuaCFunction
-	int errorRetVoid(const std::string & message);
-
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
 
 	template<typename ReturnType, typename... Args>
 	ReturnType callGlobalWithParameters(const std::string & name, Args&& ... parameters);
+
+private:
+	lua_State * L;
+
+	const Script * script;
+
+	const Environment * env;
+
+	std::shared_ptr<LuaReference> modules;
+	std::shared_ptr<LuaReference> scriptClosure;
+
+	//log error and return nil from LuaCFunction
+	int errorRetVoid(const std::string & message);
 
 	void getGlobal(const std::string & name, int & value) override;
 	void getGlobal(const std::string & name, std::string & value) override;
@@ -60,16 +68,6 @@ public:
 
 	std::string toStringRaw(int index);
 
-private:
-	lua_State * L;
-
-	const Script * script;
-
-	const Environment * env;
-
-	std::shared_ptr<LuaReference> modules;
-	std::shared_ptr<LuaReference> scriptClosure;
-
 	void cleanupGlobals();
 
 	void registerCore();
@@ -77,17 +75,8 @@ private:
 	//require global function
 	static int require(lua_State * L);
 
-	//print global function
-	static int print(lua_State * L);
-
-	static int logError(lua_State * L);
-
 	//require function implementation
 	int loadModule();
-
-	int printImpl();
-
-	int logErrorImpl();
 };
 
 template<typename ReturnType, typename... Args>

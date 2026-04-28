@@ -26,6 +26,8 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+static constexpr auto STATE_FIELD = "DATA";
+
 /// Custom text printing function for use in scripting
 /// based on luaB_print (part of Lua source code)
 /// adapted to C++ & VCMI logging facilities
@@ -53,8 +55,6 @@ static int luaPrint(lua_State *L) {
 
 namespace scripting
 {
-
-const std::string LuaContext::STATE_FIELD = "DATA";
 
 LuaContext::LuaContext(const Script * source, const Environment * env_):
 	L(luaL_newstate()),
@@ -403,9 +403,6 @@ void LuaContext::registerCore()
 	push(&LuaContext::require, this);
 	lua_setglobal(L, "require");
 
-	push(&LuaContext::logError, this);
-	lua_setglobal(L, "logError");
-
 	popAll();//just in case
 
 	for(const auto & registar : api::Registry::get()->getCoreData())
@@ -543,46 +540,6 @@ int LuaContext::loadModule()
 	lua_settop(L, 1);//table
 	return 1;
 }
-
-int LuaContext::print(lua_State * L)
-{
-	//TODO:
-	lua_settop(L, 0);
-	return 0;
-}
-
-int LuaContext::printImpl()
-{
-	//TODO:
-	return 0;
-}
-
-int LuaContext::logError(lua_State * L)
-{
-	auto * self = static_cast<LuaContext *>(lua_touserdata(L, lua_upvalueindex(1)));
-
-	if(!self)
-	{
-		lua_pushstring(L, "internal error");
-		lua_error(L);
-		return 0;
-	}
-
-	return self->logErrorImpl();
-}
-
-int LuaContext::logErrorImpl()
-{
-	LuaStack S(L);
-
-	std::string message;
-
-	if(S.tryGet(1, message))
-		logGlobal->error(message);
-
-	return S.retVoid();
-}
-
 
 }
 

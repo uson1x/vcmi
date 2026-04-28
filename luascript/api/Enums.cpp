@@ -11,6 +11,7 @@
 
 #include "Enums.h"
 
+VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
 {
@@ -33,3 +34,5 @@ Enums::EnumMap<EHealPower> Enums::exportHealPower() const
 }
 
 }
+
+VCMI_LIB_NAMESPACE_END

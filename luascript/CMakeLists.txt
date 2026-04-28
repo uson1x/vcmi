@@ -55,7 +55,6 @@ set(lib_SRCS
 set(lib_HDRS
 		StdInc.h
 		LuaCallWrapper.h
-		LuaFunctor.h
 		LuaReference.h
 		LuaModule.h
 		LuaScriptInstance.h
@@ -106,7 +105,13 @@ set(lib_HDRS
 
 assign_source_group(${lib_SRCS} ${lib_HDRS})
 
-add_library(vcmiLua SHARED ${lib_SRCS} ${lib_HDRS})
+if(ENABLE_STATIC_LIBS)
+	add_library(vcmiLua STATIC ${lib_SRCS} ${lib_HDRS})
+else()
+	add_library(vcmiLua SHARED ${lib_SRCS} ${lib_HDRS})
+	install(TARGETS vcmiLua RUNTIME DESTINATION ${SCRIPTING_LIB_DIR} LIBRARY DESTINATION ${SCRIPTING_LIB_DIR})
+endif()
+
 if(TARGET luajit::luajit)
 	target_link_libraries(vcmiLua Boost::boost luajit::luajit vcmi)
 else()
@@ -115,9 +120,3 @@ endif()
 
 vcmi_set_output_dir(vcmiLua "scripting")
 enable_pch(vcmiLua)
-
-if(IOS)
-	install(TARGETS vcmiLua LIBRARY DESTINATION ${SCRIPTING_LIB_DIR})
-else()
-	install(TARGETS vcmiLua DESTINATION ${SCRIPTING_LIB_DIR})
-endif()

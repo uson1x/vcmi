@@ -558,15 +558,14 @@ endif()
 
 if(NOT ENABLE_MINIMAL_LIB)
 	find_package(TBB REQUIRED)
-endif()
+	find_package(luajit)
 
-find_package(luajit)
-
-if(TARGET luajit::luajit)
-	message(STATUS "Using LuaJIT provided by system")
-else()
-	message(STATUS "Cannot find LuaJIT! Fallback to using usual Lua.")
-	find_package(Lua REQUIRED)
+	if(TARGET luajit::luajit)
+		message(STATUS "Using LuaJIT provided by system")
+	else()
+		message(STATUS "Cannot find LuaJIT! Fallback to using usual Lua.")
+		find_package(Lua REQUIRED)
+	endif()
 endif()
 
 ############################################
@@ -681,7 +680,9 @@ if (ENABLE_CLIENT OR ENABLE_SERVER)
 	add_subdirectory(server)
 endif()
 
-add_subdirectory(luascript)
+if(NOT ENABLE_MINIMAL_LIB)
+	add_subdirectory(luascript)
+endif()
 
 if(ENABLE_LAUNCHER OR ENABLE_EDITOR)
 	add_subdirectory(vcmiqt)

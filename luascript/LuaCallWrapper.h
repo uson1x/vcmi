@@ -109,13 +109,17 @@ public:
 	}
 };
 
+/// Wrapper to convert C++ method into a function with signature that can be called from Lua
+/// This version is indended to be used with classes that are passed as raw pointers
 template <typename ObjectType, typename MethodType, MethodType method>
 using LuaMethodWrapper = LuaMethodWrapperImpl<ObjectType, MethodType, method, false>;
 
+/// Wrapper to convert C++ method into a function with signature that can be called from Lua
+/// This version is indended to be used with classes that are passed as shared pointers
 template <typename ObjectType, typename MethodType, MethodType method>
 using LuaSharedMethodWrapper = LuaMethodWrapperImpl<ObjectType, MethodType, method, true>;
 
-// trait to decompose a free function pointer
+/// trait to decompose a free function pointer
 template<typename F> struct LuaFunctionTraits;
 
 template<typename R, typename... Args>
@@ -133,7 +137,7 @@ struct LuaFunctionTraits<R(&)(Args...)> : LuaFunctionTraits<R(*)(Args...)> {};
 template<typename R, typename... Args>
 struct LuaFunctionTraits<R(Args...)> : LuaFunctionTraits<R(*)(Args...)> {};
 
-// helper to decay callables to function pointer when possible (for function pointers only)
+/// Wrapper to convert C++ functioninto a function with signature that can be called from Lua
 template <auto func>
 class LuaFunctionWrapper
 {
@@ -185,7 +189,8 @@ public:
 		{
 			lua_pushstring(L, e.what());
 		}
-		// lua_error does a longjmp; avoid local destructors in this function
+		// WARNING: lua_error never returns and performs long jump
+		// this method must not have any local variables with non-trivial destructor to avoid leaks
 		return lua_error(L);
 	}
 };

@@ -862,6 +862,7 @@ endif()
 if(ENABLE_STATIC_LIBS AND ENABLE_CLIENT)
 	target_compile_definitions(vcmi PRIVATE STATIC_AI)
 	target_link_libraries(vcmi PRIVATE EmptyAI)
+	target_link_libraries(vcmi PRIVATE vcmiLua)
 
 	if(ENABLE_NULLKILLER2_AI)
 		target_link_libraries(vcmi PRIVATE Nullkiller2)

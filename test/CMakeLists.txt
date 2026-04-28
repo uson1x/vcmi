@@ -123,9 +123,7 @@ set(mock_HEADERS
 		mock/mock_Creature.h
 		mock/mock_CreatureService.h
 		mock/mock_IBattleInfoCallback.h
-		mock/mock_scripting_Context.h
-		mock/mock_scripting_Script.h
-		mock/mock_scripting_Service.h
+		mock/mock_scripting_Pool.h
 		mock/mock_spells_Mechanics.h
 		mock/mock_spells_Problem.h
 		mock/mock_spells_Spell.h
@@ -171,7 +169,6 @@ target_include_directories(vcmitest
 # slow global initialization.
 gtest_discover_tests(vcmitest
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
-
 
 vcmi_set_output_dir(vcmitest "")
 
