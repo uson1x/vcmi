@@ -986,7 +986,6 @@
 	"vcmi.spellResearch.pay": "Gusto mo bang palitan ang {%SPELL1} ng {%SPELL2}? O kaya'y itapon ang spell na ito at ipagpatuloy ang pananaliksik sa spell?",
 	"vcmi.spellResearch.research": "Saliksikin ang Spell na Ito",
 	"vcmi.spellResearch.skip": "Laktawan ang Spell na ito",
-	"vcmi.stackExperience.description": "\" Mga Detalye ng Karanasan \"\n\nUri ng Nilalang ............................ : %s\nRanggo ng Karanasan ........................ : %s (%i)\nMga Puntos ng Karanasan .................... : %i\nMga Puntos ng Karanasan sa Susunod na Ranggo : %i\nPinakamataas na Karanasan bawat Labanan .... : %i%% (%i)\nBilang ng mga Nilalang sa stack ............ : %i\nPinakamataas na Bagong Rekrut\nnang hindi nawawala ang kasalukuyang Ranggo  : %i\nPamparami ng Karanasan ..................... : %.2f\nPamparami ng Pag-upgrade ................... : %.2f\nKaranasan pagkatapos ng Ranggo 10 .......... : %i\nPinakamataas na Bagong Rekrut na mananatili sa\nRanggo 10 kung nasa Pinakamataas na Karanasan : %i",
 	"vcmi.stackExperience.rank.0": "Pangunahin",
 	"vcmi.stackExperience.rank.1": "Baguhan",
 	"vcmi.stackExperience.rank.10": "Alas",

@@ -1004,7 +1004,6 @@
 	"vcmi.spellResearch.pay": "Vill ni ersätta {%SPELL1} med {%SPELL2}? Eller ignorera denna trollformel och fortsätta trollformelforskningen?",
 	"vcmi.spellResearch.research": "Forska fram denna trollformel",
 	"vcmi.spellResearch.skip": "Forska vidare",
-	"vcmi.stackExperience.description": "» V a r e l s e f ö r b a n d s d e t a l j e r «\n\nVarelsetyp ................... : %s\nErfarenhetsrang ................. : %s (%i)\nErfarenhetspoäng ............... : %i\nErfarenhetspoäng för nästa rang .. : %i\nMaximal erfarenhet per strid ... : %i%% (%i)\nAntal varelser i förbandet .... : %i\nMaximalt antal nya rekryter\n utan att förlora nuvarande rang .... : %i\nErfarenhetsmultiplikator ........... : %.2f\nUppgraderingsmultiplikator .............. : %.2f\nErfarenhet efter rang 10 ........ : %i\nMaximalt antal nya rekryter som kan rekryteras\n för att behålla rang 10 med maximal erfarenhet : %i",
 	"vcmi.stackExperience.rank.0": "Grundläggande",
 	"vcmi.stackExperience.rank.1": "Novis",
 	"vcmi.stackExperience.rank.10": "Ess",

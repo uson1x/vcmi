@@ -28,6 +28,7 @@ class CTabbedInt;
 class CButton;
 class CMultiLineLabel;
 class CListBox;
+class CCreaturePic;
 class CArtPlace;
 class CCommanderArtPlace;
 class LRClickableArea;
@@ -146,7 +147,7 @@ class CStackWindow : public CWindowObject
 		std::vector<std::shared_ptr<CLabel>> stats;
 
 		std::shared_ptr<CAnimImage> expRankIcon;
-		std::shared_ptr<LRClickableAreaWText> expArea;
+		std::shared_ptr<CIntObject> expArea;
 		std::shared_ptr<CLabel> expLabel;
 
 		void addStatLabel(EStat index, int64_t value1, int64_t value2);
@@ -158,6 +159,41 @@ class CStackWindow : public CWindowObject
 		std::array<std::string, 8> statFormats;
 	public:
 		MainSection(CStackWindow * owner, int yOffset, bool showExp, bool showArt);
+	};
+
+	class StackExperienceDetailsWindow : public CWindowObject
+	{
+		struct TableVisibility
+		{
+			bool showShotsRow = false;
+			bool showManaRow = false;
+		};
+
+		struct NumericRow
+		{
+			std::string title;
+			std::function<int(const CStackInstance &)> valueGetter;
+			bool percent = false;
+		};
+
+		const CStackInstance * sourceStack;
+		const CCreature * creature;
+
+		std::shared_ptr<CLabel> title;
+		std::shared_ptr<CLabel> stackSummary;
+		std::shared_ptr<CCreaturePic> creatureAnimation;
+		std::shared_ptr<CButton> closeButton;
+		std::shared_ptr<GraphicalPrimitiveCanvas> currentRankFrame;
+		std::vector<std::shared_ptr<CIntObject>> labels;
+
+		// Stack experience has 11 rank columns (0..10), independent from creature level/tier.
+		static constexpr int MAX_RANKS = 11;
+
+	public:
+		static int getStackExperienceTierFromCreatureLevel(int creatureLevel);
+		static TableVisibility calculateTableVisibility(const CStackInstance * stack, const CCreature * creature);
+		static ImagePath getDialogBackground(int rowCount);
+		StackExperienceDetailsWindow(const CStackInstance * stack, const CCreature * creature, bool showShotsRow, bool showManaRow);
 	};
 
 	std::shared_ptr<CFilledTexture> background;
@@ -194,8 +230,8 @@ class CStackWindow : public CWindowObject
 
 	void init();
 	void close() override;
+	void showStackExperienceDetailsWindow();
 
-	std::string generateStackExpDescription();
 	std::string getCommanderSkillDescription(int skillIndex, int skillLevel);
 
 public:

@@ -986,7 +986,6 @@
 	"vcmi.spellResearch.pay": "Wil je {%SPELL1} vervangen door {%SPELL2}? Of deze spreuk negeren en verdergaan met spreukenonderzoek?",
 	"vcmi.spellResearch.research": "Onderzoek deze spreuk.",
 	"vcmi.spellResearch.skip": "Sla deze spreuk over.",
-	"vcmi.stackExperience.description": "\" Stapelervaring Details \"\n\nWezenstype ...................... : %s\nErvaringsrang ................... : %s (%i)\nErvaringspunten ................. : %i\nErvaringspunten tot volgende rang : %i\nMaximale ervaring per gevecht ... : %i%% (%i)\nAantal wezens in stapel ......... : %i\nMaximaal aantal nieuwe rekruten\n\nzonder verlies van huidige rang . : %i\nErvaringsvermenigvuldiger ....... : %.2f\nUpgradevermenigvuldiger ......... : %.2f\nErvaring na rang 10 ............. : %i\nMaximaal aantal nieuwe rekruten dat op\nrang 10 blijft als maximale ervaring is bereikt : %i",
 	"vcmi.stackExperience.rank.0": "Basis",
 	"vcmi.stackExperience.rank.1": "Beginner",
 	"vcmi.stackExperience.rank.10": "Ace",

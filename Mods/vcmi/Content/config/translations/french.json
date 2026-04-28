@@ -179,7 +179,6 @@
 	"vcmi.settingsMainWindow.battleTab.hover": "Bataille",
 	"vcmi.settingsMainWindow.generalTab.help": "Passe à l'onglet Options générales, qui contient des paramètres liés au comportement général du client de jeu",
 	"vcmi.settingsMainWindow.generalTab.hover": "Général",
-	"vcmi.stackExperience.description": "» D é t a i l s   d e   P i l e   d ' E x p é r i e n c e «\n\nType de créature ................ : %s\nRang d'expérience ............... : %s (%i)\nPoints d'expérience ............. : %i\nPoints d'XP au rang suivant ..... : %i\nExpérience maximum par bataille . : %i%% (%i)\nNb de créatures dans la pile .... : %i\nMaximum de nouvelles recrues\n sans perdre le rang actuel ..... : %i\nMultiplicateur d'expérience ..... : %.2f\nMultiplicateur d'amélioration ... : %.2f\nExpérience après le rang 10 ..... : %i\nMaximum de Nouvelles Recrues pour\n rester au Rang 10 si\n l'Expérience Maximum ........... : %i",
 	"vcmi.stackExperience.rank.0": "Basique",
 	"vcmi.stackExperience.rank.1": "Novice",
 	"vcmi.stackExperience.rank.10": "As",

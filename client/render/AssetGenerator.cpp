@@ -94,8 +94,11 @@ void AssetGenerator::initialize()
 	addUniversityConfirmBackground("UNIVRSC1", Point(466, 388), 1);
 	addUniversityConfirmBackground("UNIVRSC2", Point(466, 388), 2);
 	addSpellResearchBackground("spellResearchDialog", Point(328, 474));
+	imageFiles[ImagePath::builtin("stackExperienceDialogRows9")] = [this](){ return createStackExperienceDialogBackground(Point(800, 495), 9);};
+	imageFiles[ImagePath::builtin("stackExperienceDialogRows10")] = [this](){ return createStackExperienceDialogBackground(Point(800, 520), 10);};
+	imageFiles[ImagePath::builtin("stackExperienceDialogRows11")] = [this](){ return createStackExperienceDialogBackground(Point(800, 545), 11);};
 
-	addDialogBackgroundWithStatusBar("heroBackpackDialog", Point(426, 465));
+	addBackpackBackground("heroBackpackDialog", Point(426, 465));
 
 	imageFiles[ImagePath::builtin("questDialog.png")] = [this](){ return createQuestWindow();};
 	imageFiles[ImagePath::builtin("stackArtifactIndicatorSmall.png")] = [this](){ return createStackArtifactIndicator(Point(14, 14));};
@@ -156,14 +159,24 @@ void AssetGenerator::addAnimationFile(const AnimationPath & path, AnimationLayou
 	animationFiles[path] = anim;
 }
 
-void AssetGenerator::addDialogBackgroundWithStatusBar(const std::string & fileName, const Point & size)
+void AssetGenerator::addBackpackBackground(const std::string & fileName, const Point & size)
 {
-	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackgroundWithStatusBar(size);};
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createBackpackDialogBackground(size);};
+}
+
+void AssetGenerator::addDialogBackground(const std::string & fileName, const Point & size)
+{
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackground(size);};
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createBackpackDialogBackground(const Point & size) const
+{
+	return createDialogBackground(size, true);
 }
 
 void AssetGenerator::addSpellResearchBackground(const std::string & fileName, const Point & size)
 {
-	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackgroundWithStatusBar(size);};
+	imageFiles[ImagePath::builtin(fileName)] = [this, size](){ return createDialogBackground(size, true);};
 }
 
 void AssetGenerator::addRecruitmentBackground(const std::string & fileName, const Point & size)
@@ -1184,7 +1197,7 @@ AssetGenerator::CanvasPtr AssetGenerator::createStackArtifactIndicator(const Poi
 	return image;
 }
 
-AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(const Point & size) const
+AssetGenerator::CanvasPtr AssetGenerator::createDialogBackground(const Point & size, bool withStatusBar) const
 {
 	// Generic compositing helper:
 	// 1) tile DiBoxBck over full target size
@@ -1202,16 +1215,106 @@ AssetGenerator::CanvasPtr AssetGenerator::createDialogBackgroundWithStatusBar(co
 		}
 	}
 
-	// Status bar overlay: darken bottom strip to match original dialog style
-	const int statusBarOverlayHeight = 30;
-	canvas.drawColorBlended(Rect(0, size.y - statusBarOverlayHeight, size.x, statusBarOverlayHeight), ColorRGBA(0, 0, 0, 88));
+	if(withStatusBar)
+	{
+		// Status bar overlay: darken bottom strip to match original dialog style
+		const int statusBarOverlayHeight = 30;
+		canvas.drawColorBlended(Rect(0, size.y - statusBarOverlayHeight, size.x, statusBarOverlayHeight), ColorRGBA(0, 0, 0, 88));
+	}
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createStackExperienceDialogBackground(const Point & size, int rowCount) const
+{
+	auto image = createDialogBackground(size);
+	Canvas canvas = image->getCanvas();
+
+	const int sideMargin = 10;
+	const int headerTop = 1;
+	const int detailsTop = 68;
+	const int tableTop = 218;
+	const int rowNameWidth = 140;
+	constexpr int stackExpBaseRowHeight = 25;
+	const int tableHeight = stackExpBaseRowHeight * rowCount;
+	const int rankColumns = 11;
+	const int colWidth = (size.x - 2 * sideMargin - rowNameWidth) / rankColumns;
+	const int rowHeight = tableHeight / rowCount;
+	const int tableWidth = rowNameWidth + colWidth * rankColumns;
+	const int tableRenderedHeight = rowHeight * rowCount;
+
+	const ColorRGBA frameColor = ColorRGBA(128, 100, 75);
+	const ColorRGBA fillColor = ColorRGBA(0, 0, 0, 70);
+
+	// Header frame for "<unit> - <rank>" label
+	canvas.drawColorBlended(Rect(size.x / 2 - 190, headerTop + 34, 380, 24), fillColor);
+	canvas.drawBorder(Rect(size.x / 2 - 190, headerTop + 34, 380, 24), frameColor);
+
+
+	// Creature portrait frame
+	const Rect creatureFrame(sideMargin, detailsTop, 102, 132);
+	canvas.drawBorder(creatureFrame, Colors::YELLOW);
+
+	// Top info slots (short fields + multiline long fields)
+	const int infoLeftX = sideMargin + 126; // shifted 18px left relative to previous layout
+	const int infoColumnGap = 14;
+	const int infoLabelWidth = 221;
+	const int infoValueWidth = 86;
+	const int infoSectionGap = 10; // 2px visual gap between split blocks (+/-4px frame padding)
+	const int infoWidth = infoLabelWidth + infoSectionGap + infoValueWidth;
+	const int infoRightX = infoLeftX + infoWidth + infoColumnGap;
+	const int infoTop = detailsTop + 4;
+	const int infoFieldHeight = 22;
+	const int infoFieldGap = 2;
+	const int infoRowStep = infoFieldHeight + infoFieldGap;
+	const int infoLongFieldHeight = infoFieldHeight * 2 + infoFieldGap + 8;
+
+	auto drawSplitRow = [&](int baseX, int y, int height)
+	{
+		const Rect labelRect(baseX - 4, y, infoLabelWidth + 8, height);
+		const Rect valueRect(baseX + infoLabelWidth + infoSectionGap - 4, y, infoValueWidth + 8, height);
+		canvas.drawColorBlended(labelRect, fillColor);
+		canvas.drawBorder(labelRect, frameColor);
+		canvas.drawColorBlended(valueRect, fillColor);
+		canvas.drawBorder(valueRect, frameColor);
+	};
+
+	for(int row = 0; row < 3; ++row)
+	{
+		const int y = infoTop + row * infoRowStep;
+		drawSplitRow(infoLeftX, y, infoFieldHeight);
+		drawSplitRow(infoRightX, y, infoFieldHeight);
+	}
+
+	const int longY = infoTop + 3 * infoRowStep;
+	drawSplitRow(infoLeftX, longY, infoLongFieldHeight);
+	drawSplitRow(infoRightX, longY, infoLongFieldHeight);
+
+	// Table border with missing top-left header cell (first column in header is intentionally empty).
+	canvas.drawLine(Point(sideMargin + rowNameWidth, tableTop), Point(sideMargin + tableWidth - 1, tableTop), frameColor, frameColor);
+	canvas.drawLine(Point(sideMargin, tableTop + rowHeight), Point(sideMargin, tableTop + tableRenderedHeight - 1), frameColor, frameColor);
+	canvas.drawLine(Point(sideMargin + tableWidth - 1, tableTop), Point(sideMargin + tableWidth - 1, tableTop + tableRenderedHeight - 1), frameColor, frameColor);
+	canvas.drawLine(Point(sideMargin, tableTop + tableRenderedHeight - 1), Point(sideMargin + tableWidth - 1, tableTop + tableRenderedHeight - 1), frameColor, frameColor);
+
+	for(int line = 1; line < rowCount; ++line)
+		canvas.drawLine(Point(sideMargin, tableTop + rowHeight * line), Point(sideMargin + tableWidth - 1, tableTop + rowHeight * line), frameColor, frameColor);
+
+	// Header for first rank column ("basic") still needs its left border in header row.
+	canvas.drawLine(Point(sideMargin + rowNameWidth, tableTop), Point(sideMargin + rowNameWidth, tableTop + rowHeight), frameColor, frameColor);
+	// Skip first-column cell in header row - first row starts directly with rank headers.
+	canvas.drawLine(Point(sideMargin + rowNameWidth, tableTop + rowHeight), Point(sideMargin + rowNameWidth, tableTop + tableRenderedHeight - 1), frameColor, frameColor);
+	for(int column = 1; column < rankColumns; ++column)
+	{
+		const int x = sideMargin + rowNameWidth + column * colWidth;
+		canvas.drawLine(Point(x, tableTop), Point(x, tableTop + tableRenderedHeight - 1), frameColor, frameColor);
+	}
 
 	return image;
 }
 
 AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(const Point & size) const
 {
-	auto image = createDialogBackgroundWithStatusBar(size);
+	auto image = createDialogBackground(size, true);
 	Canvas canvas = image->getCanvas();
 
 	// Additional overlays used by original TPRCRT (semi-transparent plates and central black input area).
@@ -1254,7 +1357,7 @@ AssetGenerator::CanvasPtr AssetGenerator::createRecruitmentDialogBackground(cons
 
 AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const Point & size, int skillColumns) const
 {
-	auto image = createDialogBackgroundWithStatusBar(size);
+	auto image = createDialogBackground(size, true);
 	Canvas canvas = image->getCanvas();
 
 	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);
@@ -1312,7 +1415,7 @@ AssetGenerator::CanvasPtr AssetGenerator::createUniversityDialogBackground(const
 
 AssetGenerator::CanvasPtr AssetGenerator::createUniversityConfirmDialogBackground(const Point & size, int costElements) const
 {
-	auto image = createDialogBackgroundWithStatusBar(size);
+	auto image = createDialogBackground(size, true);
 	Canvas canvas = image->getCanvas();
 
 	const ColorRGBA rectangleColor = ColorRGBA(0, 0, 0, 75);

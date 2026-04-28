@@ -558,7 +558,6 @@
 	"vcmi.spellResearch.pay": "Vuoi sostituire {%SPELL1} con {%SPELL2}? Oppure scartare questo incantesimo e continuare la ricerca?",
 	"vcmi.spellResearch.research": "Ricerca questo Incantesimo",
 	"vcmi.spellResearch.skip": "Salta questo Incantesimo",
-	"vcmi.stackExperience.description": "» Dettagli esperienza truppa «\n\nTipo di creatura ................... : %s\nGrado esperienza ................. : %s (%i)\nPunti esperienza ............... : %i\nPunti esperienza al livello successivo .. : %i\nEsperienza massima per battaglia ... : %i%% (%i)\nNumero di creature nello stack .... : %i\nNumero massimo di nuove reclute\n senza perdere il grado attuale .... : %i\nMoltiplicatore esperienza ........... : %.2f\nMoltiplicatore miglioramento .............. : %.2f\nEsperienza dopo il livello 10 ........ : %i\nNumero massimo di nuove reclute per mantenere il\n grado 10 se a esperienza massima : %i",
 	"vcmi.stackExperience.rank.0": "Base",
 	"vcmi.stackExperience.rank.1": "Principiante",
 	"vcmi.stackExperience.rank.10": "Asso",

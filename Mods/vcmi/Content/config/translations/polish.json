@@ -1008,7 +1008,6 @@
 	"vcmi.spellResearch.pay": "Czy chcesz zastąpić {%SPELL1} zaklęciem {%SPELL2}? Czy odrzucić tą wymianę i kontynuować badania?",
 	"vcmi.spellResearch.research": "Wymień zaklęcie",
 	"vcmi.spellResearch.skip": "Odrzuć i kontynuuj badania",
-	"vcmi.stackExperience.description": "» SZCZEGÓŁY MODUŁU 'STACK EXPERIENCE' «\n\nTyp stworzenia: %s\nRanga: %s (%i)\nDoświadczenie: %i\nPunktów do awansu: %i\nMaks. dośw. na walkę: %i%% (%i)\nIlość stworzeń w grupie: %i\nMaks. ilość nowych rekrutów\n bez utraty rangi: %i\nMnożnik doświadczenia: %.2f\nMnożnik ulepszenia: %.2f\nDoświadczenie po 10 randze: %i\nMaks. ilość nowych rekrutów pozostających na\n 10 Randze, jeśli osiągnęli maksymalne dośw.: %i",
 	"vcmi.stackExperience.rank.0": "Podstawowy",
 	"vcmi.stackExperience.rank.1": "Nowicjusz",
 	"vcmi.stackExperience.rank.10": "As",

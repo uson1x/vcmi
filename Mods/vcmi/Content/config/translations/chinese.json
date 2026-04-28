@@ -998,7 +998,6 @@
 	"vcmi.spellResearch.pay": "你想将{%SPELL1}替换为{%SPELL2}吗？或者弃掉此法术，继续法术研究？",
 	"vcmi.spellResearch.research": "研究此法术",
 	"vcmi.spellResearch.skip": "跳过此法术",
-	"vcmi.stackExperience.description": "» 经 验 获 得 明 细 «\n\n生物类型 ................... : %s\n经验等级 ................. : %s (%i)\n经验点数 ............... : %i\n下一个等级所需经验 .. : %i\n每次战斗最大获得经验 ... : %i%% (%i)\n获得经验的生物数量 .... : %i\n最大招募数量\n不会丢失经验升级 .... : %i\n经验倍数 ........... : %.2f\n升级倍数 .............. : %.2f\n10级后经验值 ........ : %i\n最大招募数量下\n 升级到10级所需经验数量: %i",
 	"vcmi.stackExperience.rank.0": "新兵 1级",
 	"vcmi.stackExperience.rank.1": "列兵 2级",
 	"vcmi.stackExperience.rank.10": "上校 11级",

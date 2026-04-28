@@ -978,7 +978,6 @@
 	"vcmi.spellResearch.pay": "Bạn có muốn thay thế phép {%SPELL1} bằng {%SPELL2} không? Hoặc loại bỏ phép thuật này và nghiên cứu phép thuật khác?",
 	"vcmi.spellResearch.research": "Nghiên cứu phép thuật này",
 	"vcmi.spellResearch.skip": "Loại bỏ phép thuật này",
-	"vcmi.stackExperience.description": "» Kinh Nghiệm Của Đạo Quân «\n\nTên loại quân ................... : %s\nXếp hạng kinh nghiệm ................. : %s (%i)\nĐiểm kinh nghiệm ............... : %i\nĐiểm kinh nghiệm để lên hạng .. : %i\nKinh nghiệm tối đa mỗi trận đấu ... : %i%% (%i)\nSố quân hiện tại của đạo .... : %i\nChiêu mộ tối đa mới\n không bị giảm cấp .... : %i\nHệ số kinh nghiệm ........... : %.2f\nHệ số nâng cấp .............. : %.2f\nKinh nghiệm sau hạng 10 ........ : %i\nChiêu mộ mới tối đa còn lại ở hạng 10: %i",
 	"vcmi.stackExperience.rank.0": "Lính Mới",
 	"vcmi.stackExperience.rank.1": "Tập Sự",
 	"vcmi.stackExperience.rank.10": "Thiên Tài",

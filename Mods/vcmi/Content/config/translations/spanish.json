@@ -1006,7 +1006,6 @@
 	"vcmi.spellResearch.pay": "¿Le gustaría remplazar {%SPELL1} por {%SPELL2}? O descartar este hechizo y continuar con la investigación del hechizo?",
 	"vcmi.spellResearch.research": "Investigar este Hechizo",
 	"vcmi.spellResearch.skip": "Descartar este Hechizo",
-	"vcmi.stackExperience.description": "» D e t a l l e s  d e  E x p e r i e n c i a  d e l  G r u p o «\n\nTipo de Criatura ................ : %s\nRango de Experiencia ............ : %s (%i)\nPuntos de Experiencia (P.E.) ............ : %i\nP.E. para siguiente Rango ............... : %i\nExperiencia Máxima por Batalla .. : %i%% (%i)\nNúmero de Criaturas en el grupo .. : %i\nMáximo de Nuevos Reclutas sin\n perder Rango actual .................... : %i\nMultiplicador de Experiencia .... : %.2f\nMultiplicador de Mejora .. : %.2f\nExperiencia tras el Rango 10 : %i\nMáx. Reclutas nuevos para mantener el\n Rango 10 si están en la Experiencia Máxima : %i",
 	"vcmi.stackExperience.rank.0": "Básico",
 	"vcmi.stackExperience.rank.1": "Novato",
 	"vcmi.stackExperience.rank.10": "As",

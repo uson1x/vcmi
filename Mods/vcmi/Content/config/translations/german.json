@@ -1004,7 +1004,6 @@
 	"vcmi.spellResearch.pay": "Möchtet Ihr {%SPELL1} durch {%SPELL2} ersetzen? Oder diesen Zauberspruch verwerfen und die Zauberspruchforschung fortsetzen?",
 	"vcmi.spellResearch.research": "Erforsche diesen Zauberspruch",
 	"vcmi.spellResearch.skip": "Überspringe diesen Zauberspruch",
-	"vcmi.stackExperience.description": "» D e t a i l s   z u r   S t a p e l e r f a h r u n g «\n\nKreatur-Typ ................... : %s\nErfahrungsrang ................. : %s (%i)\nErfahrungspunkte ............... : %i\nErfahrungspunkte für den nächsten Rang .. : %i\nMaximale Erfahrung pro Kampf ... : %i%% (%i)\nAnzahl der Kreaturen im Stapel .... : %i\nMaximale Anzahl neuer Rekruten\n ohne Verlust von aktuellem Rang .... : %i\nErfahrungs-Multiplikator ........... : %.2f\nUpgrade-Multiplikator .............. : %.2f\nErfahrung nach Rang 10 ........ : %i\nMaximale Anzahl der neuen Rekruten, die bei\n Rang 10 bei maximaler Erfahrung übrig sind : %i",
 	"vcmi.stackExperience.rank.0": "Grundlagen",
 	"vcmi.stackExperience.rank.1": "Neuling",
 	"vcmi.stackExperience.rank.10": "Ass",
