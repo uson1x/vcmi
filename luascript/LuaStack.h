@@ -92,7 +92,7 @@ public:
 		using DataType = T;
 		using BaseType = DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, const BaseType *, BaseType *>;
-		static auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
+		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
 
 		if(value == nullptr)
 		{
@@ -100,12 +100,7 @@ public:
 			return;
 		}
 
-		void * raw = lua_newuserdata(L, sizeof(PtrType));
-		if(!raw)
-			throw LuaApiException("Failed to allocate new user data!");
-
-		auto * ptr = static_cast<PtrType *>(raw);
-		*ptr = value;
+		createLuaUserdata<PtrType>(value);
 
 		luaL_getmetatable(L, KEY);
 		if(lua_isnil(L, -1))
@@ -120,7 +115,7 @@ public:
 		using DataType = T;
 		using BaseType = DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, std::shared_ptr<const BaseType>, std::shared_ptr<BaseType>>;
-		static auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
+		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
 
 		if(value == nullptr)
 		{
@@ -128,12 +123,7 @@ public:
 			return;
 		}
 
-		void * raw = lua_newuserdata(L, sizeof(PtrType));
-
-		if(!raw)
-			throw LuaApiException("Failed to allocate new user data!");
-
-		new(raw) PtrType(value);
+		createLuaUserdata<PtrType>(value);
 
 		luaL_getmetatable(L, KEY);
 		if(lua_isnil(L, -1))
@@ -149,13 +139,9 @@ public:
 		using BaseType = typename DataType::ScriptingApiName;
 		static_assert(std::is_same_v<std::remove_const_t<DataType>, BaseType>, "Can not push derived class as copyable!");
 
-		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
-
-		void * raw = lua_newuserdata(L, sizeof(BaseType));
-		if(!raw)
-			throw LuaApiException("Failed to allocate new user data!");
-
-		new(raw) BaseType(value);
+		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		
+		createLuaUserdata<BaseType>(value);
 
 		luaL_getmetatable(L, KEY);
 		if(lua_isnil(L, -1))
@@ -408,7 +394,7 @@ public:
 			}
 		}
 
-		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
 
 		void * raw = lua_touserdata(L, position);
 
@@ -446,7 +432,7 @@ public:
 			return true;
 		}
 
-		static auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
 		static auto C_KEY = api::TypeRegistry::get()->getKey<BaseConstType>();
 
 		void * raw = lua_touserdata(L, position);
@@ -542,6 +528,18 @@ public:
 	}
 
 private:
+	/// Pushes copy of FinalType on top of Lua stack as userdata
+	template<typename DataType, typename FinalType>
+	DataType * createLuaUserdata(const FinalType & copySource)
+	{
+		void * raw = lua_newuserdata(L, sizeof(DataType));
+		if(!raw)
+			throw LuaApiException("Failed to allocate new user data!");
+
+		DataType * resultPtr = new (raw) DataType(copySource);
+		return resultPtr;
+	}
+
 	lua_State * L;
 	int initialTop;
 };

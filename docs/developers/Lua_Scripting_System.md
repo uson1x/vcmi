@@ -34,6 +34,8 @@ This page describes internal working of Lua scripting module. For usage of publi
   - error messages
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
 - implement concurrency for LuaContext calls. Mutex might be relatively slow, but should be sufficient for initial release.
+- consider wrapping Lua userdata into std::any for better type safety
+- decide how to handle MetaString in Lua API. Make it Lua serializeable?
 
 ## General rules
 

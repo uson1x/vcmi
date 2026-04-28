@@ -26,8 +26,6 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-static constexpr auto STATE_FIELD = "DATA";
-
 /// Custom text printing function for use in scripting
 /// based on luaB_print (part of Lua source code)
 /// adapted to C++ & VCMI logging facilities
@@ -155,10 +153,8 @@ void LuaContext::cleanupGlobals()
 	S.clear();
 }
 
-void LuaContext::run(const JsonNode & initialState)
+void LuaContext::run()
 {
-	setGlobal(STATE_FIELD, initialState);
-
 	int ret = luaL_loadbuffer(L, script->getSource().c_str(), script->getSource().size(), script->getJsonKey().c_str());
 
 	if(ret)
@@ -300,13 +296,6 @@ void LuaContext::setGlobal(const std::string & name, const JsonNode & value)
 	S.push(value);
 	lua_setglobal(L, name.c_str());
 	S.balance();
-}
-
-JsonNode LuaContext::saveState()
-{
-	JsonNode data;
-	getGlobal(STATE_FIELD, data);
-	return data;
 }
 
 void LuaContext::pop(JsonNode & value)

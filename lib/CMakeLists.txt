@@ -303,7 +303,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Obstacle.cpp
 	spells/effects/Registry.cpp
 	spells/effects/UnitEffect.cpp
-	spells/effects/Summon.cpp
 	spells/effects/Teleport.cpp
 	spells/effects/Timed.cpp
 	spells/effects/RemoveObstacle.cpp
@@ -783,7 +782,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Obstacle.h
 	spells/effects/Registry.h
 	spells/effects/UnitEffect.h
-	spells/effects/Summon.h
 	spells/effects/Teleport.h
 	spells/effects/Timed.h
 	spells/effects/RemoveObstacle.h

@@ -17,16 +17,10 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-static const std::vector<std::string> IMPLEMENTS_MAP =
-{
-	"ANYTHING",
-	"BATTLE_EFFECT"
-};
-
 namespace scripting
 {
 
-LuaScriptPool::LuaScriptPool(const LuaModule & module, const Environment * ENV)
+LuaScriptPool::LuaScriptPool(const LuaModule & luaModule, const Environment * ENV)
 	: env(ENV)
 {
 }
@@ -35,7 +29,7 @@ void LuaScriptPool::registerScript(const LuaScriptInstance * script)
 {
 	auto context = script->createContext(env);
 	cache[script] = context;
-	context->run({});
+	context->run();
 }
 
 std::shared_ptr<Context> LuaScriptPool::getContext(const Script * script) const

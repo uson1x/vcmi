@@ -26,20 +26,9 @@ VCMI_REGISTER_CORE_SCRIPT_API(BattleHexProxy, "battle.BattleHex")
 
 const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM =
 {
-//      {"isValid", LuaMethodWrapper<BattleHex, decltype(&BattleHex::isValid), &BattleHex::isValid>::invoke, false},
-		{"isValid", LuaFunctionWrapper<BattleHexProxy::isValid>::invoke, false},
-		{"toInteger", LuaFunctionWrapper<BattleHexProxy::toInteger>::invoke, false},
+	{"isValid", LuaMethodWrapper<BattleHex, decltype(&BattleHex::isValid), &BattleHex::isValid>::invoke, false},
+	{"toInteger", LuaMethodWrapper<BattleHex, decltype(&BattleHex::toInt), &BattleHex::toInt>::invoke, false},
 };
-
-bool BattleHexProxy::isValid(BattleHex & hex)
-{
-	return hex.isValid();
-}
-
-int BattleHexProxy::toInteger(BattleHex & hex)
-{
-	return hex.toInt();
-}
 
 }
 

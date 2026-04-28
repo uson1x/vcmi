@@ -40,16 +40,31 @@ struct LuaClassMemberTraits<R(C::*)(Args...) const>
 	static constexpr bool isConst = true;
 };
 
-template <typename ObjectType, typename MethodType, MethodType method, bool isSharedPtr>
-class LuaMethodWrapperImpl
+// const noexcept member function
+template<typename R, typename C, typename... Args>
+struct LuaClassMemberTraits<R(C::*)(Args...) const noexcept>
+{
+	using ReturnType = R;
+	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
+	static constexpr bool isConst = true;
+};
+
+/// Wrapper to convert C++ method into a function with signature that can be called from Lua
+template <typename ObjectType, typename MethodType, MethodType method>
+class LuaMethodWrapper
 {
 	using TraitsInfo = LuaClassMemberTraits<MethodType>;
 	using ReturnType = typename TraitsInfo::ReturnType;
 	using TupleType = typename TraitsInfo::TupleType;
 
+	static constexpr bool isSharedPtr = std::is_base_of_v<scripting::TagSharedPointer, ObjectType>;
+	static constexpr bool isRawPtr = std::is_base_of_v<scripting::TagRawPointer, ObjectType>;
+	static constexpr bool isCopyable = std::is_base_of_v<scripting::TagCopyable, ObjectType>;
+	static_assert(isSharedPtr + isRawPtr + isCopyable == 1, "Unsupported class passed into LuaMethodWrapper. Please inherit from scipting API tags");
+
 	using ObjectRawPtr = std::conditional_t<TraitsInfo::isConst, const ObjectType*, ObjectType*>;
 	using ObjectSharedPtr = std::conditional_t<TraitsInfo::isConst, std::shared_ptr<const ObjectType>, std::shared_ptr<ObjectType>>;
-	using ObjectPtr = std::conditional_t<isSharedPtr, ObjectSharedPtr, ObjectRawPtr>;
+	using ObjectPtr = std::conditional_t<isSharedPtr, ObjectSharedPtr, std::conditional_t<isCopyable, ObjectType, ObjectRawPtr>>;
 
 	template <std::size_t... I>
 	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...> i)
@@ -66,7 +81,7 @@ class LuaMethodWrapperImpl
 	static int invokeImpl(lua_State * L)
 	{
 		LuaStack S(L);
-		ObjectPtr obj = nullptr;
+		ObjectPtr obj{};
 		TupleType args;
 
 		S.getOrThrow(1,obj);
@@ -77,8 +92,11 @@ class LuaMethodWrapperImpl
 
 		if constexpr (isSharedPtr)
 			objPtr = obj.get();
+		else if constexpr (isCopyable)
+			objPtr = &obj;
 		else
 			objPtr = obj;
+
 
 		if constexpr (std::is_void_v<ReturnType>)
 		{
@@ -108,16 +126,6 @@ public:
 		return lua_error(L);
 	}
 };
-
-/// Wrapper to convert C++ method into a function with signature that can be called from Lua
-/// This version is indended to be used with classes that are passed as raw pointers
-template <typename ObjectType, typename MethodType, MethodType method>
-using LuaMethodWrapper = LuaMethodWrapperImpl<ObjectType, MethodType, method, false>;
-
-/// Wrapper to convert C++ method into a function with signature that can be called from Lua
-/// This version is indended to be used with classes that are passed as shared pointers
-template <typename ObjectType, typename MethodType, MethodType method>
-using LuaSharedMethodWrapper = LuaMethodWrapperImpl<ObjectType, MethodType, method, true>;
 
 /// trait to decompose a free function pointer
 template<typename F> struct LuaFunctionTraits;

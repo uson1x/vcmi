@@ -83,7 +83,7 @@ public:
 	const _ObjectBase * getByName(const std::string & name) const override
 	{
 		// TODO: provide actual scope? Perhaps pass it as json node?
-		auto index = resolveIdentifier(getScopeBuiltin(), getTypeNames().front(), name);
+		auto index = resolveIdentifier("game", getTypeNames().front(), name);
 		if (index)
 			return getByIndex(*index);
 		else

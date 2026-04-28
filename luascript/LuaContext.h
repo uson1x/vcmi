@@ -21,13 +21,13 @@ namespace scripting
 
 class LuaReference;
 
-class LuaContext : public Context
+class LuaContext final : public Context
 {
 public:
 	LuaContext(const Script * source, const Environment * env_);
-	virtual ~LuaContext();
+	~LuaContext();
 
-	void run(const JsonNode & initialState) override;
+	void run() override;
 
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
 
@@ -56,8 +56,6 @@ private:
 	void setGlobal(const std::string & name, const std::string & value) override;
 	void setGlobal(const std::string & name, double value) override;
 	void setGlobal(const std::string & name, const JsonNode & value) override;
-
-	JsonNode saveState() override;
 
 	void pop(JsonNode & value);
 

@@ -23,7 +23,7 @@ class LuaModule final : public Module
 {
 public:
 	LuaModule();
-	virtual ~LuaModule();
+	~LuaModule();
 
 	void loadObject(std::string scope, std::string name, const JsonNode & data) override;
 	void afterLoadFinalization() override;

@@ -25,7 +25,7 @@ class LuaScriptInstance;
 class LuaScriptPool : public Pool
 {
 public:
-	LuaScriptPool(const LuaModule & module, const Environment * ENV);
+	LuaScriptPool(const LuaModule & luaModule, const Environment * ENV);
 
 	std::shared_ptr<Context> getContext(const Script * script) const override;
 

@@ -37,8 +37,8 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
 	{"getPosition", LuaMethodWrapper<Unit, decltype(&Unit::getPosition), &Unit::getPosition>::invoke, false},
 
-	{"heal", LuaFunctionWrapper<UnitProxy::heal>::invoke, false},
-	{"getCreature", LuaFunctionWrapper<UnitProxy::getCreature>::invoke, false },
+	{"heal", LuaFunctionWrapper<&UnitProxy::heal>::invoke, false},
+	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false },
 };
 
 void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower power)

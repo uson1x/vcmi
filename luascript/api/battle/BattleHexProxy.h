@@ -28,9 +28,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 			public:
 				using Wrapper = CopyableWrapper<const BattleHex, BattleHexProxy>;
 				static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-
-				static bool isValid(BattleHex & hex);
-				static int toInteger(BattleHex & hex);
 			};
 
 		}

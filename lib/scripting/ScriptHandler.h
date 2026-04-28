@@ -27,7 +27,7 @@ class DLL_LINKAGE ScriptHandler final
 {
 public:
 	ScriptHandler();
-	virtual ~ScriptHandler();
+	~ScriptHandler();
 
 	std::vector<JsonNode> loadLegacyData() override;
 

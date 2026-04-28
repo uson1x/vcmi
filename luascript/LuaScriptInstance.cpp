@@ -17,12 +17,12 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-static const std::vector<std::string> IMPLEMENTS_MAP = {"ANYTHING", "BATTLE_EFFECT"};
+constexpr std::array IMPLEMENTS_MAP = {"ANYTHING", "BATTLE_EFFECT"};
 
 namespace scripting
 {
 
-LuaScriptInstance::LuaScriptInstance(LuaModule & host) : host(host), implements(Implements::ANYTHING) {}
+LuaScriptInstance::LuaScriptInstance(LuaModule & host) : implements(Implements::ANYTHING), host(host) {}
 
 LuaScriptInstance::~LuaScriptInstance() = default;
 

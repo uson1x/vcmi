@@ -37,12 +37,12 @@ VCMI_REGISTER_CORE_SCRIPT_API(ServicesProxy, "library.Services");
 
 const std::vector<ServicesProxy::CustomRegType> ServicesProxy::REGISTER_CUSTOM =
 {
-	{"getArtifactByName", LuaFunctionWrapper<ServicesProxy::getArtifactByName>::invoke, false},
-	{"getCreatureByName", LuaFunctionWrapper<ServicesProxy::getCreatureByName>::invoke, false},
-	{"getHeroClassByName", LuaFunctionWrapper<ServicesProxy::getHeroClassByName>::invoke, false},
-	{"getHeroTypeByName", LuaFunctionWrapper<ServicesProxy::getHeroTypeByName>::invoke, false},
-	{"getSpellByName", LuaFunctionWrapper<ServicesProxy::getSpellByName>::invoke, false},
-	{"getSecondarySkillByName", LuaFunctionWrapper<ServicesProxy::getSecondarySkillByName>::invoke, false},
+	{"getArtifactByName", LuaFunctionWrapper<&ServicesProxy::getArtifactByName>::invoke, false},
+	{"getCreatureByName", LuaFunctionWrapper<&ServicesProxy::getCreatureByName>::invoke, false},
+	{"getHeroClassByName", LuaFunctionWrapper<&ServicesProxy::getHeroClassByName>::invoke, false},
+	{"getHeroTypeByName", LuaFunctionWrapper<&ServicesProxy::getHeroTypeByName>::invoke, false},
+	{"getSpellByName", LuaFunctionWrapper<&ServicesProxy::getSpellByName>::invoke, false},
+	{"getSecondarySkillByName", LuaFunctionWrapper<&ServicesProxy::getSecondarySkillByName>::invoke, false},
 };
 
 const Artifact * ServicesProxy::getArtifactByName(const Services * services, const std::string & name)

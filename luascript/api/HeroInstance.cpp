@@ -29,8 +29,8 @@ const std::vector<HeroInstanceProxy::CustomRegType> HeroInstanceProxy::REGISTER_
 	{"getStack", LuaMethodWrapper<CGHeroInstance, decltype(&CCreatureSet::getStackPtr), &CCreatureSet::getStackPtr>::invoke, false},
 	{"getOwner", LuaMethodWrapper<CGHeroInstance, decltype(&CGObjectInstance::getOwner), &CGObjectInstance::getOwner>::invoke, false},
 	{"getNameTextID", LuaMethodWrapper<CGHeroInstance, decltype(&CGHeroInstance::getNameTextID), &CGHeroInstance::getNameTextID>::invoke, false},
-	{"isMale", LuaFunctionWrapper<HeroInstanceProxy::isMale>::invoke, false},
-	{"isFemale", LuaFunctionWrapper<HeroInstanceProxy::isFemale>::invoke, false},
+	{"isMale", LuaFunctionWrapper<&HeroInstanceProxy::isMale>::invoke, false},
+	{"isFemale", LuaFunctionWrapper<&HeroInstanceProxy::isFemale>::invoke, false},
 };
 
 bool HeroInstanceProxy::isMale(const CGHeroInstance * hero)

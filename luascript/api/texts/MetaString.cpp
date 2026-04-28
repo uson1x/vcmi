@@ -26,15 +26,15 @@ VCMI_LIB_NAMESPACE_BEGIN
 			{
 				{"new", &Wrapper::constructor, true},
 
-				{"appendTextID", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::appendTextID), &MetaString::appendTextID>::invoke, false},
-				{"appendRawString", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::appendRawString), &MetaString::appendRawString>::invoke, false},
-				{"appendNumber", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::appendNumber), &MetaString::appendNumber>::invoke, false},
+				{"appendTextID", LuaMethodWrapper<MetaString, decltype(&MetaString::appendTextID), &MetaString::appendTextID>::invoke, false},
+				{"appendRawString", LuaMethodWrapper<MetaString, decltype(&MetaString::appendRawString), &MetaString::appendRawString>::invoke, false},
+				{"appendNumber", LuaMethodWrapper<MetaString, decltype(&MetaString::appendNumber), &MetaString::appendNumber>::invoke, false},
 
-				{"replaceTextID", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::replaceTextID), &MetaString::replaceTextID>::invoke, false},
-				{"replaceRawString", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::replaceRawString), &MetaString::replaceRawString>::invoke, false},
-				{"replaceNumber", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::replaceNumber), &MetaString::replaceNumber>::invoke, false},
+				{"replaceTextID", LuaMethodWrapper<MetaString, decltype(&MetaString::replaceTextID), &MetaString::replaceTextID>::invoke, false},
+				{"replaceRawString", LuaMethodWrapper<MetaString, decltype(&MetaString::replaceRawString), &MetaString::replaceRawString>::invoke, false},
+				{"replaceNumber", LuaMethodWrapper<MetaString, decltype(&MetaString::replaceNumber), &MetaString::replaceNumber>::invoke, false},
 
-				{"replaceNamePlural", LuaSharedMethodWrapper<MetaString, decltype(&MetaString::replaceNamePlural), &MetaString::replaceNamePlural>::invoke, false},
+				{"replaceNamePlural", LuaMethodWrapper<MetaString, decltype(&MetaString::replaceNamePlural), &MetaString::replaceNamePlural>::invoke, false},
 			};
 	}
 }
