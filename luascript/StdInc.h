@@ -11,7 +11,13 @@
 
 #include "../Global.h"
 
-#include <lua.hpp>
+#if __has_include(<lua.hpp>)
+#  include <lua.hpp>
+#else
+#  include <lua.h>
+#  include <lauxlib.h>
+#  include <lualib.h>
+#endif
 
 // This header should be treated as a pre compiled header file(PCH) in the compiler building settings.
 

@@ -108,14 +108,10 @@ else()
 	install(TARGETS vcmiLua RUNTIME DESTINATION ${SCRIPTING_LIB_DIR} LIBRARY DESTINATION ${SCRIPTING_LIB_DIR})
 endif()
 
-if (LUA_INCLUDE_DIR)
-	target_include_directories(vcmiLua PRIVATE
-		${LUA_INCLUDE_DIR}
-	)
-endif()
-
 if(TARGET luajit::luajit)
 	target_link_libraries(vcmiLua Boost::boost luajit::luajit vcmi)
+elseif(TARGET lua::lua)
+	target_link_libraries(vcmiLua Boost::boost lua::lua vcmi)
 else()
 	target_link_libraries(vcmiLua Boost::boost Lua::Lua vcmi)
 endif()
