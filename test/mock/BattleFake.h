@@ -60,10 +60,8 @@ public:
 
 class BattleFake : public CBattleInfoCallback, public BattleStateMock
 {
-	scripting::Pool & pool;
-
 public:
-	BattleFake(scripting::Pool & pool_);
+	BattleFake();
 	virtual ~BattleFake();
 
 	void setUp();

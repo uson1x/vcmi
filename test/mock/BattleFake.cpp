@@ -76,10 +76,7 @@ void UnitsFake::setDefaultBonusExpectations()
 
 BattleFake::~BattleFake() = default;
 
-BattleFake::BattleFake(scripting::Pool & pool_):
-	pool(pool_)
-{
-}
+BattleFake::BattleFake() = default;
 
 void BattleFake::setUp()
 {

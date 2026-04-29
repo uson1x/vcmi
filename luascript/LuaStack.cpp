@@ -35,6 +35,33 @@ void LuaStack::clear()
 	lua_settop(L, 0);
 }
 
+void LuaStack::debugPrintStack()
+{
+	int top = lua_gettop(L);
+	logScript->error("Lua stack (top=%d):\n", top);
+	for (int i = 1; i <= top; ++i) {
+		int t = lua_type(L, i);
+		const char *tn = lua_typename(L, t);
+		switch (t) {
+			case LUA_TSTRING:
+				logScript->error("  %d: %s = '%s'", i, tn, lua_tostring(L, i));
+				break;
+			case LUA_TNUMBER:
+				logScript->error("  %d: %s = %g", i, tn, lua_tonumber(L, i));
+				break;
+			case LUA_TBOOLEAN:
+				logScript->error("  %d: %s = %s", i, tn, lua_toboolean(L, i) ? "true" : "false");
+				break;
+			case LUA_TNIL:
+				logScript->error("  %d: %s = (nil)", i, tn);
+				break;
+			default:
+				logScript->error("  %d: %s (%p)", i, tn, lua_topointer(L, i));
+				break;
+		}
+	}
+}
+
 int LuaStack::absindex(int idx)
 {
 	if (idx > 0)

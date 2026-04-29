@@ -33,11 +33,11 @@ const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
 	{ "getUnitById", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleGetUnitByID), &BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke, false },
 
-	{ "getAvailableHex", &BattleCbProxy::getAvailableHex, false },
-	{ "getBattlefieldType", &BattleCbProxy::getBattlefieldType, false },
-	{ "getTerrainType", &BattleCbProxy::getTerrainType, false },
-	{ "getUnitByPos", &BattleCbProxy::getUnitByPos, false },
-	{ "getAnyUnitIf", &BattleCbProxy::getAnyUnitIf, false },
+	{ "getAvailableHex", LuaCallWrapper<&BattleCbProxy::getAvailableHex>::invoke, false },
+	{ "getBattlefieldType", LuaCallWrapper<&BattleCbProxy::getBattlefieldType>::invoke, false },
+	{ "getTerrainType", LuaCallWrapper<&BattleCbProxy::getTerrainType>::invoke, false },
+	{ "getUnitByPos", LuaCallWrapper<&BattleCbProxy::getUnitByPos>::invoke, false },
+	{ "getAnyUnitIf", LuaCallWrapper<&BattleCbProxy::getAnyUnitIf>::invoke, false },
 };
 
 int BattleCbProxy::getBattlefieldType(lua_State * L)
@@ -123,17 +123,15 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 	if(!S.isFunction(2))
 		return S.retNil();
 
-	// bring function to top of stack
-	lua_pushvalue(L, 2);
-
 	battle::Units units = object->battleGetUnitsIf([&L](const battle::Unit * unit){
 		LuaStack S2(L);
+		lua_pushvalue(L, 2); // bring copy of the function to top of stack
 		S2.push(unit);
 
 		if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
 			std::string error = lua_tostring(L, S2.absindex(-1));
 			logGlobal->error("Lua getAnyUnitIf callback failed with message: %s", error);
-			S2.clear();
+			S2.balance();
 			return false;
 		}
 

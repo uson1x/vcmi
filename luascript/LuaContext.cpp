@@ -61,7 +61,7 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 {
 	static constexpr std::array<luaL_Reg, 4> STD_LIBS =
 	{{
-		{"", luaopen_base},
+		{"_G", luaopen_base},
 		{LUA_TABLIBNAME, luaopen_table},
 		{LUA_STRLIBNAME, luaopen_string},
 		{LUA_MATHLIBNAME, luaopen_math}
@@ -69,9 +69,8 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 
 	for(const luaL_Reg & lib : STD_LIBS)
 	{
-		lua_pushcfunction(L, lib.func);
-		lua_pushstring(L, lib.name);
-		lua_call(L, 1, 0);
+		lib.func(L);
+		lua_setglobal(L, lib.name);
 	}
 
 	popAll();
@@ -155,6 +154,7 @@ void LuaContext::cleanupGlobals()
 
 void LuaContext::run()
 {
+	std::lock_guard guard(mutex);
 	int ret = luaL_loadbuffer(L, script->getSource().c_str(), script->getSource().size(), script->getJsonKey().c_str());
 
 	if(ret)
@@ -186,6 +186,7 @@ int LuaContext::errorRetVoid(const std::string & message)
 
 JsonNode LuaContext::callGlobal(const std::string & name, const JsonNode & parameters)
 {
+	std::lock_guard guard(mutex);
 	LuaStack S(L);
 
 	lua_getglobal(L, name.c_str());

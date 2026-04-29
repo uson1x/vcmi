@@ -203,6 +203,26 @@ public:
 	}
 };
 
+/// Wrapper to convert C++ functioninto a function with signature that can be called from Lua
+template <auto func>
+class LuaCallWrapper
+{
+public:
+	static int invoke(lua_State * L)
+	{
+		try {
+			return func(L);
+		}
+		catch (const std::exception & e)
+		{
+			lua_pushstring(L, e.what());
+		}
+		// WARNING: lua_error never returns and performs long jump
+		// this method must not have any local variables with non-trivial destructor to avoid leaks
+		return lua_error(L);
+	}
+};
+
 
 }
 

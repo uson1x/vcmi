@@ -82,7 +82,7 @@ void EffectFixture::setUp()
 	EXPECT_CALL(environmentMock, services()).WillRepeatedly(Return(&servicesMock));
 
 	pool = LIBRARY->scripts()->createPoolInstance(&environmentMock);
-	battleFake = std::make_shared<battle::BattleFake>(*pool);
+	battleFake = std::make_shared<battle::BattleFake>();
 	battleFake->setUp();
 
 	EXPECT_CALL(mechanicsMock, game()).WillRepeatedly(Return(&gameMock));

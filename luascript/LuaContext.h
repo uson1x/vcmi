@@ -35,6 +35,7 @@ public:
 	ReturnType callGlobalWithParameters(const std::string & name, Args&& ... parameters);
 
 private:
+	std::mutex mutex;
 	lua_State * L;
 
 	const Script * script;
@@ -80,6 +81,7 @@ private:
 template<typename ReturnType, typename... Args>
 ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&& ... parameters)
 {
+	std::lock_guard guard(mutex);
 	LuaStack S(L);
 
 	lua_getglobal(L, name.c_str());

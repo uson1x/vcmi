@@ -36,6 +36,7 @@ public:
 	LuaStack(lua_State * L_);
 	void balance();
 	void clear();
+	void debugPrintStack();
 
 	void pushByIndex(lua_Integer index);
 
@@ -254,7 +255,11 @@ public:
 		if (!lua_istable(L, idx))
 			throw LuaApiException("value at index is not a table");
 
+#if LUA_VERSION_NUM < 503
 		size_t len = lua_objlen(L, idx);
+#else
+		size_t len = lua_rawlen(L, idx);
+#endif
 		out.resize(len);
 
 		for (size_t i = 0; i < len; ++i) {
