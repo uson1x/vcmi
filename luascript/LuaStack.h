@@ -90,7 +90,7 @@ public:
 	void push(T * value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, const BaseType *, BaseType *>;
 		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
 
@@ -113,7 +113,7 @@ public:
 	void push(std::shared_ptr<T> value)
 	{
 		using DataType = T;
-		using BaseType = DataType::ScriptingApiName;
+		using BaseType = typename DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, std::shared_ptr<const BaseType>, std::shared_ptr<BaseType>>;
 		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
 

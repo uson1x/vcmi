@@ -565,6 +565,13 @@ if(NOT ENABLE_MINIMAL_LIB)
 	else()
 		message(STATUS "Cannot find LuaJIT! Fallback to using usual Lua.")
 		find_package(Lua REQUIRED)
+		if(Lua_FOUND AND NOT TARGET Lua::Lua)
+			add_library(Lua::Lua INTERFACE IMPORTED)
+			set_target_properties(Lua::Lua PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}"
+				INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}"
+			)
+	    endif()
 	endif()
 endif()
 

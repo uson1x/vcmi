@@ -51,7 +51,7 @@ LuaModule::ScriptPtr LuaModule::loadFromJson(vstd::CLoggerBase * logger, const s
 	return ret;
 }
 
-void LuaModule::loadObject(std::string scope, std::string name, const JsonNode & data)
+void LuaModule::loadObject(const std::string & scope, const std::string & name, const JsonNode & data)
 {
 	auto object = loadFromJson(logMod, scope, data, name);
 	objects[object->getJsonKey()] = object;

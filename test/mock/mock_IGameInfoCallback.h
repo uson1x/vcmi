@@ -43,9 +43,9 @@ public:
 	MOCK_CONST_METHOD2(getVisitableObjs, std::vector<const CGObjectInstance*>(int3, bool));
 
 	const scripting::Pool & getScriptContextPool() const override { throw std::runtime_error("not implemented");}
-	CGameState & gameState() { throw std::runtime_error("not implemented");}
-	const CGameState & gameState() const { throw std::runtime_error("not implemented");}
-	const IGameSettings & getSettings() const { throw std::runtime_error("not implemented");}
+	CGameState & gameState() override { throw std::runtime_error("not implemented");}
+	const CGameState & gameState() const override { throw std::runtime_error("not implemented");}
+	const IGameSettings & getSettings() const override { throw std::runtime_error("not implemented");}
 
 	MOCK_CONST_METHOD2(isVisibleFor, bool(int3 pos, PlayerColor player));
 	MOCK_CONST_METHOD2(isVisibleFor, bool(const CGObjectInstance * obj, PlayerColor player));

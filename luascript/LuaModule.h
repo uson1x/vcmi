@@ -25,7 +25,7 @@ public:
 	LuaModule();
 	~LuaModule();
 
-	void loadObject(std::string scope, std::string name, const JsonNode & data) override;
+	void loadObject(const std::string & scope, const std::string & name, const JsonNode & data) override;
 	void afterLoadFinalization() override;
 
 	std::unique_ptr<Pool> createPoolInstance(const Environment * ENV) const override;

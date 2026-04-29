@@ -1,10 +1,6 @@
-include_directories(${Boost_INCLUDE_DIRS} ${LUA_INCLUDE_DIR} ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/include ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/lib)
+include_directories(${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/include ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/lib)
 
-if(NOT TARGET luajit::luajit)
-	include_directories(${LUA_INCLUDE_DIR})
-endif()
-
-set(lib_SRCS
+set(lualib_SRCS
 		StdInc.cpp
 		LuaReference.cpp
 		LuaModule.cpp
@@ -52,7 +48,7 @@ set(lib_SRCS
 		api/StackInstance.cpp
 )
 
-set(lib_HDRS
+set(lualib_HDRS
 		StdInc.h
 		LuaCallWrapper.h
 		LuaReference.h
@@ -103,19 +99,19 @@ set(lib_HDRS
 		api/StackInstance.h
 )
 
-assign_source_group(${lib_SRCS} ${lib_HDRS})
+assign_source_group(${lualib_SRCS} ${lualib_HDRS})
 
 if(ENABLE_STATIC_LIBS)
-	add_library(vcmiLua STATIC ${lib_SRCS} ${lib_HDRS})
+	add_library(vcmiLua STATIC ${lualib_SRCS} ${lualib_HDRS})
 else()
-	add_library(vcmiLua SHARED ${lib_SRCS} ${lib_HDRS})
+	add_library(vcmiLua SHARED ${lualib_SRCS} ${lualib_HDRS})
 	install(TARGETS vcmiLua RUNTIME DESTINATION ${SCRIPTING_LIB_DIR} LIBRARY DESTINATION ${SCRIPTING_LIB_DIR})
 endif()
 
 if(TARGET luajit::luajit)
 	target_link_libraries(vcmiLua Boost::boost luajit::luajit vcmi)
 else()
-	target_link_libraries(vcmiLua Boost::boost ${LUA_LIBRARIES} vcmi)
+	target_link_libraries(vcmiLua Boost::boost Lua::Lua vcmi)
 endif()
 
 vcmi_set_output_dir(vcmiLua "scripting")

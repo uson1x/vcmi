@@ -74,7 +74,7 @@ class DLL_LINKAGE Module
 public:
 	virtual ~Module() = default;
 
-	virtual void loadObject(std::string scope, std::string name, const JsonNode & data) = 0;
+	virtual void loadObject(const std::string & scope, const std::string & name, const JsonNode & data) = 0;
 	virtual void afterLoadFinalization() = 0;
 
 	virtual std::unique_ptr<Pool> createPoolInstance(const Environment * ENV) const = 0;
