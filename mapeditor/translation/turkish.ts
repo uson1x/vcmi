@@ -1893,7 +1893,7 @@ Bunu şimdi yapmak ister misiniz?</translation>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="14"/>
         <source>Portrait</source>
-        <translation type="unfinished">Portre</translation>
+        <translation>Portre</translation>
     </message>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="52"/>
@@ -1978,27 +1978,27 @@ Bunu şimdi yapmak ister misiniz?</translation>
     <message>
         <location filename="../inspector/inspector.cpp" line="298"/>
         <source>HERO TYPE</source>
-        <translation type="unfinished">KAHRAMAN TÜRÜ</translation>
+        <translation>KAHRAMAN TÜRÜ</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="321"/>
         <source>Hero class</source>
-        <translation type="unfinished">Kahraman sınıfı</translation>
+        <translation>Kahraman sınıfı</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="330"/>
         <source>Portrait</source>
-        <translation type="unfinished">Portre</translation>
+        <translation>Portre</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="333"/>
         <source>Skills</source>
-        <translation type="unfinished">Yetenekler</translation>
+        <translation>Yetenekler</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="335"/>
         <source>Artifacts</source>
-        <translation type="unfinished">Eşyalar</translation>
+        <translation>Eserler</translation>
     </message>
     <message numerus="yes">
         <location filename="../inspector/inspector.cpp" line="357"/>
@@ -2081,7 +2081,7 @@ Bunu şimdi yapmak ister misiniz?</translation>
         <location filename="../inspector/inspector.cpp" line="512"/>
         <location filename="../inspector/inspector.cpp" line="559"/>
         <source>Owner</source>
-        <translation type="unfinished">Sahibi</translation>
+        <translation>Sahibi</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="258"/>
@@ -2655,12 +2655,12 @@ Harita → Genel ayarlar kısmından gerekli modlar listesine ekleyin.</translat
     <message>
         <location filename="../inspector/rewardswidget.ui" line="107"/>
         <source>On select text</source>
-        <translation type="unfinished">Seçim sırasında metin</translation>
+        <translation>Seçili metin üzerinde</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="114"/>
         <source>Can refuse</source>
-        <translation type="unfinished">Reddedebilir</translation>
+        <translation>Reddedebilir</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="121"/>
@@ -2817,7 +2817,7 @@ Harita → Genel ayarlar kısmından gerekli modlar listesine ekleyin.</translat
         <location filename="../inspector/rewardswidget.ui" line="767"/>
         <location filename="../inspector/rewardswidget.ui" line="859"/>
         <source>Duration</source>
-        <translation type="unfinished">Süre</translation>
+        <translation>Süre</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="777"/>
@@ -3094,17 +3094,17 @@ Harita → Genel ayarlar kısmından gerekli modlar listesine ekleyin.</translat
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="475"/>
         <source>Starting</source>
-        <translation type="unfinished">Başlangıç</translation>
+        <translation>Başlangıç</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="481"/>
         <source>Starting options are</source>
-        <translation type="unfinished">Başlangıç seçenekleri</translation>
+        <translation>Başlangıç seçenekleri şunlardır:</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="488"/>
         <source>Starting bonus options</source>
-        <translation type="unfinished">Başlangıç bonusu seçenekleri</translation>
+        <translation>Başlangıç bonusu seçenekleri</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="495"/>

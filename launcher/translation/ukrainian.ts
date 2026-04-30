@@ -377,7 +377,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="870"/>
         <source>Extracting content.zip (%1/%2) for %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Видобуваємо content.zip (%1/%2) for %3</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="877"/>
@@ -725,7 +725,7 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="437"/>
         <source>Full mod extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Повне видобування модифікації</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="593"/>
@@ -870,7 +870,7 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="782"/>
         <source>empty = map name prefix</source>
-        <translation>(використовувати назву карти)</translation>
+        <translation>(використовувати назву мапи)</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="490"/>
@@ -1189,7 +1189,7 @@ Fullscreen Exclusive Mode - the game will cover the entirety of your screen and 
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="863"/>
         <source>Install mod that provides various interface improvements, such as a better interface for random maps and selectable actions in battles</source>
-        <translation>Встановити різноманітні покращення інтерфейсу, такі як покращений інтерфейс випадкових карт та вибір варіантів дій у боях</translation>
+        <translation>Встановити різноманітні покращення інтерфейсу, такі як покращений інтерфейс випадкових мап та вибір варіантів дій у боях</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="928"/>
@@ -2243,35 +2243,44 @@ WARNING: In some cases, updated versions of mods may not be compatible with your
         <location filename="../startGame/StartGameTab.cpp" line="346"/>
         <source>If you own Heroes Chronicles on gog.com, you can use offline backup installers provided by gog to import Heroes Chronicles data into VCMI as custom campaigns.
 To import Heroes Chronicles, download offline backup installer of each chronicle that you wish to install, select &apos;Import files&apos; option and select downloaded file. This will generate and install mod for VCMI that contains imported chronicles.</source>
-        <translation type="unfinished"></translation>
+        <translation>Якщо ви придбали Heroes Chronicles на gog.com, ви можете скористатися резервним офлайн-інсталятором наданими gog, щоб імпортувати дані Хронік Героїв у VCMI як користувацькі кампанії.
+Щоб імпортувати Хроніки Героїв, завантажте резервний офлайн-інсталятор кожної хроніки, яку ви хочете встановити, виберіть опцію «Імпортувати файли» та вкажіть завантажені файли. Це створить і встановить модифікацію для VCMI, яка міститиме імпортовані Хроніки.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="359"/>
         <source>VCMI has detected that Heroes III music files are missing from your installation. VCMI will run, but in-game music will not be available.
 
 To resolve this problem, please copy missing mp3 files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Виявлено, що у вашій інсталяції VCMI відсутні музичні файли Heroes III. VCMI буде працювати, але музика в грі не буде доступна.
+
+Щоб вирішити цю проблему, скопіюйте відсутні mp3-файли з Heroes III до каталогу даних VCMI вручну або переінсталюйте VCMI та повторно імпортуйте файли даних Heroes III.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="370"/>
         <source>VCMI has detected that Heroes III video files are missing from your installation. VCMI will run, but in-game cutscenes will not be available.
 
 To resolve this problem, please copy VIDEO.VID file from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Виявлено, що у вашій інсталяції VCMI відсутні відеофайли Heroes III. VCMI буде працювати, але ігрові відеоролики будуть недоступні.
+
+Щоб вирішити цю проблему, скопіюйте файл VIDEO.VID з папки Heroes III до каталогу даних VCMI вручну або переінсталюйте VCMI та повторно імпортуйте файли даних Heroes III.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="381"/>
         <source>VCMI has detected that some of Heroes III data files are missing from your installation. You may attempt to run VCMI, but game may not work as expected or crash.
 
 To resolve this problem, please reinstall game and reimport data files using supported version of Heroes III. VCMI requires Heroes III: Shadow of Death or Complete Edition to run, which you can get (for example) from gog.com.</source>
-        <translation type="unfinished"></translation>
+        <translation>Виявлено, що у вашій інсталяції відсутні деякі файли даних Heroes III. Ви можете спробувати запустити VCMI, але гра може працювати не так, як очікується, або вилітати.
+
+Щоб вирішити цю проблему, переінсталюйте гру та заново імпортуйте файли даних, використовуючи сумісну версію Heroes III. Для роботи VCMI потрібна Heroes III: Shadow of Death або Complete Edition, яку можна придбати, наприклад, на сайті gog.com.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="392"/>
         <source>VCMI has detected that some of Heroes III: Armageddon&apos;s Blade data files are missing from your installation. VCMI will work, but Armageddon&apos;s Blade campaigns will not be available.
 
 To resolve this problem, please copy missing data files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Виявлено, що у вашій інсталяції VCMI відсутні деякі файли даних з гри Heroes III: Armageddon&apos;s Blade. VCMI буде працювати, але кампанії Armageddon&apos;s Blade будуть недоступні.
+
+Щоб вирішити цю проблему, скопіюйте відсутні файли даних з Heroes III до каталогу даних VCMI вручну або переінсталюйте VCMI та повторно імпортуйте файли даних Heroes III.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="403"/>

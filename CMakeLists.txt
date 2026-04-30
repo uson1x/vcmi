@@ -897,8 +897,21 @@ elseif(MACOS AND NOT ENABLE_MONOLITHIC_INSTALL)
 
 	install(FILES "${CMAKE_SOURCE_DIR}/osx/vcmi.icns" DESTINATION ${APP_BUNDLE_RESOURCES_DIR})
 
-	configure_file("${CMAKE_SOURCE_DIR}/osx/Info.plist.in" "${CMAKE_BINARY_DIR}/Info.plist")
-	install(FILES "${CMAKE_BINARY_DIR}/Info.plist" DESTINATION ${APP_BUNDLE_CONTENTS_DIR})
+	set(infoPlist "${CMAKE_BINARY_DIR}/Info.plist")
+	configure_file("${CMAKE_SOURCE_DIR}/osx/Info.plist.in" ${infoPlist})
+	if(CMAKE_OSX_DEPLOYMENT_TARGET)
+		set(deploymentTargetPlistKey ":LSMinimumSystemVersion")
+		execute_process(COMMAND
+			/usr/libexec/PlistBuddy ${infoPlist} -c "Add ${deploymentTargetPlistKey} string ${CMAKE_OSX_DEPLOYMENT_TARGET}"
+			RESULT_VARIABLE addPlistEntryReturnCode
+		)
+		if(NOT addPlistEntryReturnCode EQUAL 0)
+			execute_process(COMMAND
+				/usr/libexec/PlistBuddy ${infoPlist} -c "Set ${deploymentTargetPlistKey} ${CMAKE_OSX_DEPLOYMENT_TARGET}"
+			)
+		endif()
+	endif()
+	install(FILES ${infoPlist} DESTINATION ${APP_BUNDLE_CONTENTS_DIR})
 
 	# Bundle fixing code must be in separate directory to be executed after all other install code
 	add_subdirectory(osx)

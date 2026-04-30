@@ -84,7 +84,7 @@ mkdir build
 cd build
 
 # configure Qt for building, also pass to the following command:
-# for Android: -shared -xplatform android-clang -android-sdk "$ANDROID_HOME" -android-ndk "$ANDROID_HOME/ndk/$ndkVersion" -android-ndk-platform android-$minSdkVersion -android-abis arm64-v8a
+# for Android: -shared -xplatform android-clang -android-sdk "$ANDROID_HOME" -android-ndk "$ANDROID_HOME/ndk/$ndkVersion" -android-ndk-platform android-$minSdkVersion -android-abis arm64-v8a. Also pass -android-ndk-host according to your desktop platform.
 # for iOS: -static -xplatform macx-ios-clang -no-framework
 "../$qtSrcDir/configure" -prefix "$qtInstallDir" -opensource -confirm-license -release -strip -appstore-compliant -make libs -no-compile-examples -no-dbus -system-zlib -no-openssl -opengl es2 -no-gif -no-ico -nomake examples -skip qt3d -skip qtactiveqt -skip qtandroidextras -skip qtcharts -skip qtconnectivity -skip qtdatavis3d -skip qtdeclarative -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtimageformats -skip qtlocation -skip qtlottie -skip qtmacextras -skip qtmultimedia -skip qtnetworkauth -skip qtpurchasing -skip qtquick3d -skip qtquickcontrols -skip qtquickcontrols2 -skip qtquicktimeline -skip qtremoteobjects -skip qtscript -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qtsvg -skip qttranslations -skip qtvirtualkeyboard -skip qtwayland -skip qtwebchannel -skip qtwebengine -skip qtwebglplugin -skip qtwebsockets -skip qtwebview -skip qtwinextras -skip qtx11extras -skip qtxmlpatterns
 

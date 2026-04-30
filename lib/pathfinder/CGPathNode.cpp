@@ -42,9 +42,14 @@ const CGPathNode & CGPath::lastNode() const
 	return nodes[0];
 }
 
+bool CGPath::hasNextNode() const
+{
+	return nodes.size() >= 2;
+}
+
 int3 CGPath::startPos() const
 {
-	return nodes[nodes.size()-1].coord;
+	return currNode().coord;
 }
 
 CGPath::ELayer CGPath::startLayer() const
@@ -54,7 +59,7 @@ CGPath::ELayer CGPath::startLayer() const
 
 int3 CGPath::endPos() const
 {
-	return nodes[0].coord;
+	return lastNode().coord;
 }
 
 CGPath::ELayer CGPath::endLayer() const

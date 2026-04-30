@@ -380,6 +380,24 @@ public:
 	void creaturesChangedEventHandler();
 };
 
+class CSpellResearchDialog : public CStatusbarWindow
+{
+	std::shared_ptr<CLabel> title;
+	std::shared_ptr<CTextBox> description;
+	std::shared_ptr<CComponentBox> components;
+	std::shared_ptr<CButton> acceptButton;
+	std::shared_ptr<CButton> rerollButton;
+	std::shared_ptr<CButton> closeButton;
+
+public:
+	CSpellResearchDialog(
+		const std::string & textToShow,
+		const std::vector<std::shared_ptr<CComponent>> & components,
+		const CGTownInstance * town,
+		SpellID oldSpell,
+		bool canAfford);
+};
+
 /// The mage guild screen where you can see which spells you have
 class CMageGuildScreen : public CStatusbarWindow
 {
@@ -433,5 +451,5 @@ class CBlacksmithDialog : public CStatusbarWindow
 	std::shared_ptr<CLabel> costValue;
 
 public:
-	CBlacksmithDialog(bool possible, CreatureID creMachineID, ArtifactID aid, ObjectInstanceID hid);
+	CBlacksmithDialog(bool possible, ArtifactID newArtifact, ArtifactID existingArtifact, ObjectInstanceID hid);
 };

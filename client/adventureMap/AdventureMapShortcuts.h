@@ -71,6 +71,7 @@ class AdventureMapShortcuts
 	void quickLoadGame();
 	void digGrail();
 	void viewPuzzleMap();
+	void replayTurn();
 	void restartGame();
 	void visitObject();
 	void openObject();

@@ -1213,7 +1213,13 @@ Before you can start playing, there are a few more steps to complete.
 Please remember that to use VCMI, you must own the original data files for Heroes® of Might and Magic® III: Complete or The Shadow of Death.
 
 Heroes® of Might and Magic® III HD is currently not supported!</source>
-        <translation type="unfinished">Bedankt voor het installeren van VCMI!\n\nVoordat je kunt beginnen met spelen, moet je nog een paar stappen doorlopen.\n\nHoud er rekening mee dat je de originele databestanden van Heroes® of Might and Magic® III: Complete of The Shadow of Death nodig hebt om VCMI te kunnen gebruiken.\n\nHeroes® of Might and Magic® III HD wordt momenteel niet ondersteund!</translation>
+        <translation>Bedankt voor het installeren van VCMI!
+
+Voordat je kunt beginnen met spelen, moet je nog een paar stappen doorlopen.
+
+Houd er rekening mee dat je de originele databestanden van Heroes® of Might and Magic® III: Complete of The Shadow of Death nodig hebt om VCMI te kunnen gebruiken.
+
+Heroes® of Might and Magic® III HD wordt momenteel niet ondersteund!</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="215"/>

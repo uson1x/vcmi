@@ -306,7 +306,9 @@
 			}
 		},
 		"flags" : {
-			"negative": true
+			"damage": true,
+			"negative": true,
+			"nonMagical": true
 		},
 		"targetCondition" : {
 			"noneOf" : {
@@ -470,5 +472,32 @@
 		},
 		"targetCondition" : {
 		}
-	}
+	},
+	"fireballAbility" : {
+		"type": "ability",
+		"targetType": "LOCATION",
+
+		"animation":{
+			"hit":["C13SPF"] //C13SPF0 ???
+		},
+		"sounds": {
+			"cast": "SPONTCOMB"
+		},
+		"level": 0,
+		"levels" : {
+			"none": {
+				"range" : "0-1",
+				"battleEffects":{
+					"damage":{
+						"type":"core:damage"
+					}
+				}
+			}
+		},
+		"flags" : {
+			"damage": true,
+			"negative": true,
+			"nonMagical": true
+		}
+	},
 }
