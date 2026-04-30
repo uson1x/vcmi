@@ -69,7 +69,7 @@ private:
 
 	void cleanupGlobals();
 
-	void registerCore();
+	void registerPublicTypes();
 
 	//require global function
 	static int require(lua_State * L);

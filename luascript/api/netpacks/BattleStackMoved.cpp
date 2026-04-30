@@ -24,7 +24,6 @@ namespace api
 namespace netpacks
 {
 
-VCMI_REGISTER_SCRIPT_API(BattleStackMovedProxy, "netpacks.BattleStackMoved");
 
 const std::vector<BattleStackMovedProxy::CustomRegType> BattleStackMovedProxy::REGISTER_CUSTOM =
 {

@@ -25,7 +25,6 @@ namespace api
 namespace netpacks
 {
 
-VCMI_REGISTER_SCRIPT_API(SetResourcesProxy, "netpacks.SetResources");
 
 const std::vector<SetResourcesProxy::CustomRegType> SetResourcesProxy::REGISTER_CUSTOM =
 {

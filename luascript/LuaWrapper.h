@@ -75,7 +75,7 @@ namespace detail
 
 		static int destructor(lua_State * L)
 		{
-			static const auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
+			static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
 
 			void * objPtr = luaL_checkudata(L, 1, KEY);
 			if(objPtr)
@@ -121,8 +121,8 @@ public:
 
 	void pushMetatable(lua_State * L) const override final
 	{
-		static const auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
-		static auto S_KEY = api::TypeRegistry::get()->getKey<CUDataType>();
+		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
+		static auto S_KEY = api::Registry::get()->getTypeName<CUDataType>();
 
 		LuaStack S(L);
 
@@ -171,7 +171,7 @@ public:
 
 	void pushMetatable(lua_State * L) const override final
 	{
-		static const auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
+		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
 
 		LuaStack S(L);
 
@@ -220,7 +220,7 @@ public:
 
 	void pushMetatable(lua_State * L) const override final
 	{
-		static const auto KEY = api::TypeRegistry::get()->getKey<UDataType>();
+		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
 
 		LuaStack S(L);
 

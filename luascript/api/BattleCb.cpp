@@ -24,7 +24,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-VCMI_REGISTER_CORE_SCRIPT_API(BattleCbProxy, "game.Battle");
 
 const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
 {

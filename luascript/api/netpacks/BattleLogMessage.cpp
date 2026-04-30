@@ -24,7 +24,6 @@ namespace api
 namespace netpacks
 {
 
-VCMI_REGISTER_SCRIPT_API(BattleLogMessageProxy, "netpacks.BattleLogMessage");
 
 const std::vector<BattleLogMessageProxy::CustomRegType> BattleLogMessageProxy::REGISTER_CUSTOM =
 {

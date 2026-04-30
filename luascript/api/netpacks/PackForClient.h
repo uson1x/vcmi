@@ -16,11 +16,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace netpacks
+namespace scripting::api::netpacks
 {
 
 template <typename Derived>
@@ -41,8 +37,6 @@ public:
 	}
 };
 
-}
-}
 }
 
 

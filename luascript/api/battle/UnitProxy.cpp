@@ -22,8 +22,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api::battle
 {
 
-VCMI_REGISTER_CORE_SCRIPT_API(UnitProxy, "battle.Unit")
-
 const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 {
 	{"getMinDamage", LuaMethodWrapper<Unit, decltype(&ACreature::getMinDamage), &ACreature::getMinDamage>::invoke, false},

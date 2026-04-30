@@ -23,8 +23,6 @@ namespace scripting
 namespace api
 {
 
-VCMI_REGISTER_CORE_SCRIPT_API(FactionProxy, "entity.Faction");
-
 const std::vector<FactionProxy::CustomRegType> FactionProxy::REGISTER_CUSTOM =
 {
 	{"getIconIndex", LuaMethodWrapper<Faction, decltype(&Entity::getIconIndex), &Entity::getIconIndex>::invoke, false},

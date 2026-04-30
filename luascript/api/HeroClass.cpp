@@ -22,8 +22,6 @@ namespace scripting
 {
 namespace api
 {
-VCMI_REGISTER_CORE_SCRIPT_API(HeroClassProxy, "entity.HeroClass");
-
 const std::vector<HeroClassProxy::CustomRegType> HeroClassProxy::REGISTER_CUSTOM =
 {
 	{"getIconIndex", LuaMethodWrapper<HeroClass, decltype(&Entity::getIconIndex), &Entity::getIconIndex>::invoke, false},

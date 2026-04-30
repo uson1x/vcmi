@@ -18,7 +18,6 @@ This page describes internal working of Lua scripting module. For usage of publi
   - Use [Lua Language Server format](https://luals.github.io/wiki/definition-files/) to make docs accessible from IDE
   - Both .md and Lua Language Server
   - Document everything in code and make exporter to both .md and Lua Language Server
-- Currently C++ bindings rely on undefined behavior, which previously was causing issues on Android. We need to remove `VCMI_REGISTER_CORE_SCRIPT_API` and `VCMI_REGISTER_CORE_SCRIPT_API` macro and perform these actions explicitly on initialization of scripting
 - Review existing API and ensure that it follows rules described here
   - replace `getAnyUnitIf` method with `getUnitsIf` that returns array
 - Document C++ classes

@@ -25,8 +25,6 @@ namespace scripting
 namespace api
 {
 
-VCMI_REGISTER_CORE_SCRIPT_API(CreatureProxy, "entity.Creature");
-
 const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 {
 	{"getIconIndex", LuaMethodWrapper<Creature, decltype(&Entity::getIconIndex), &Entity::getIconIndex>::invoke, false},

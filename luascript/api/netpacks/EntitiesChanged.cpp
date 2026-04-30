@@ -24,7 +24,6 @@ namespace api
 namespace netpacks
 {
 
-VCMI_REGISTER_SCRIPT_API(EntitiesChangedProxy, "netpacks.EntitiesChanged");
 
 const std::vector<EntitiesChangedProxy::CustomRegType> EntitiesChangedProxy::REGISTER_CUSTOM =
 {

@@ -20,7 +20,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 {
 	namespace api
 	{
-		VCMI_REGISTER_CORE_SCRIPT_API(MetaStringProxy, "texts.MetaString");
 
 		const std::vector<MetaStringProxy::CustomRegType> MetaStringProxy::REGISTER_CUSTOM =
 			{

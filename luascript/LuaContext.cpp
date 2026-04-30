@@ -83,7 +83,7 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 	modules = std::make_shared<LuaReference>(L);
 	popAll();
 
-	registerCore();
+	registerPublicTypes();
 
 	popAll();
 
@@ -388,14 +388,14 @@ std::string LuaContext::toStringRaw(int index)
 	return std::string(raw, len);
 }
 
-void LuaContext::registerCore()
+void LuaContext::registerPublicTypes()
 {
 	push(&LuaContext::require, this);
 	lua_setglobal(L, "require");
 
 	popAll();//just in case
 
-	for(const auto & registar : api::Registry::get()->getCoreData())
+	for(const auto & registar : api::Registry::get()->getAllTypes())
 	{
 		registar.second->pushMetatable(L); //table
 

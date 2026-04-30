@@ -21,8 +21,6 @@ namespace api
 {
 using ::spells::Problem;
 
-VCMI_REGISTER_CORE_SCRIPT_API(SpellProblemProxy, "battle.SpellProblem");
-
 const std::vector<SpellProblemProxy::CustomRegType> SpellProblemProxy::REGISTER_CUSTOM =
 {
 	{"add", &SpellProblemProxy::add, false},

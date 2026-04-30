@@ -18,9 +18,6 @@
 VCMI_LIB_NAMESPACE_BEGIN
 
 using scripting::api::netpacks::InfoWindowProxy;
-using scripting::api::RegisterAPI;
-
-VCMI_REGISTER_SCRIPT_API(InfoWindowProxy, "netpacks.InfoWindow")
 
 namespace scripting
 {

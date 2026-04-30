@@ -30,8 +30,6 @@ namespace api
 
 #if 0
 
-VCMI_REGISTER_SCRIPT_API(BonusProxy, "Bonus");
-
 const std::vector<BonusProxy::CustomRegType> BonusProxy::REGISTER_CUSTOM =
 {
 	{"getType", &BonusProxy::getType, false},
@@ -193,14 +191,10 @@ void BonusProxy::adjustStaticTable(lua_State * L) const
 	publishMap(L, bonusDurationMap);
 }
 
-VCMI_REGISTER_SCRIPT_API(BonusListProxy, "BonusList");
-
 const std::vector<BonusListProxy::CustomRegType> BonusListProxy::REGISTER_CUSTOM =
 {
 
 };
-
-VCMI_REGISTER_SCRIPT_API(BonusBearerProxy, "BonusBearer");
 
 const std::vector<BonusBearerProxy::CustomRegType> BonusBearerProxy::REGISTER_CUSTOM =
 {

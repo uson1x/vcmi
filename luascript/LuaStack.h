@@ -93,7 +93,7 @@ public:
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, const BaseType *, BaseType *>;
-		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
+		static const auto KEY = api::Registry::get()->getTypeName<PtrType>();
 
 		if(value == nullptr)
 		{
@@ -116,7 +116,7 @@ public:
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, std::shared_ptr<const BaseType>, std::shared_ptr<BaseType>>;
-		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
+		static const auto KEY = api::Registry::get()->getTypeName<PtrType>();
 
 		if(value == nullptr)
 		{
@@ -140,7 +140,7 @@ public:
 		using BaseType = typename DataType::ScriptingApiName;
 		static_assert(std::is_same_v<std::remove_const_t<DataType>, BaseType>, "Can not push derived class as copyable!");
 
-		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
 		
 		createLuaUserdata<BaseType>(value);
 
@@ -411,7 +411,7 @@ public:
 			}
 		}
 
-		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
 
 		void * raw = lua_touserdata(L, position);
 
@@ -449,8 +449,8 @@ public:
 			return true;
 		}
 
-		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
-		static auto C_KEY = api::TypeRegistry::get()->getKey<BaseConstType>();
+		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
+		static auto C_KEY = api::Registry::get()->getTypeName<BaseConstType>();
 
 		void * raw = lua_touserdata(L, position);
 
@@ -547,14 +547,13 @@ public:
 private:
 	/// Pushes copy of FinalType on top of Lua stack as userdata
 	template<typename DataType, typename FinalType>
-	DataType * createLuaUserdata(const FinalType & copySource)
+	void createLuaUserdata(const FinalType & copySource)
 	{
 		void * raw = lua_newuserdata(L, sizeof(DataType));
 		if(!raw)
 			throw LuaApiException("Failed to allocate new user data!");
 
-		DataType * resultPtr = new (raw) DataType(copySource);
-		return resultPtr;
+		new(raw) DataType(copySource);
 	}
 
 	lua_State * L;

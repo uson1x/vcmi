@@ -23,8 +23,6 @@ namespace scripting
 {
 namespace api
 {
-VCMI_REGISTER_CORE_SCRIPT_API(StackInstanceProxy, "adventure.StackInstance");
-
 const std::vector<StackInstanceProxy::CustomRegType> StackInstanceProxy::REGISTER_CUSTOM =
 {
 	{"getType", LuaMethodWrapper<CStackInstance, decltype(&CStackBasicDescriptor::getType), &CStackBasicDescriptor::getType>::invoke, false},

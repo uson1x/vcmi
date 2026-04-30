@@ -24,7 +24,6 @@ namespace api
 namespace netpacks
 {
 
-VCMI_REGISTER_SCRIPT_API(BattleUnitsChangedProxy, "netpacks.BattleUnitsChanged");
 
 const std::vector<BattleUnitsChangedProxy::CustomRegType> BattleUnitsChangedProxy::REGISTER_CUSTOM =
 {

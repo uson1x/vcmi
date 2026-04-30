@@ -24,8 +24,6 @@ namespace api
 {
 using ::spells::Spell;
 
-VCMI_REGISTER_CORE_SCRIPT_API(SpellProxy, "entity.Spell");
-
 //TODO:calculateDamage,forEachSchool
 
 const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =

@@ -27,7 +27,6 @@ namespace scripting
 	{
 		using ::spells::Mechanics;
 
-		VCMI_REGISTER_CORE_SCRIPT_API(SpellsMechanicsProxy, "battle.SpellMechanics");
 
 		const std::vector<SpellsMechanicsProxy::CustomRegType> SpellsMechanicsProxy::REGISTER_CUSTOM =
 		{
