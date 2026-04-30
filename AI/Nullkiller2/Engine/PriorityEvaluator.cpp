@@ -886,8 +886,8 @@ public:
 
 		if(defendTown.getTurn() > 0 && defendTown.isCounterAttack())
 		{
-			auto ourSpeed = defendTown.hero->movementPointsLimit(true);
-			auto enemySpeed = threat.heroPtr.get()->movementPointsLimit(true);
+			auto ourSpeed = defendTown.hero->movementPointsLimit();
+			auto enemySpeed = threat.heroPtr.get()->movementPointsLimit();
 
 			if(enemySpeed > ourSpeed) multiplier *= 0.7f;
 		}
@@ -1106,7 +1106,7 @@ public:
 		if(garrisonHero && swapCommand.getLockingReason() == HeroLockedReason::DEFENCE)
 		{
 			auto defenderRole = evaluationContext.evaluator.aiNk->heroManager->getHeroRoleOrDefaultInefficient(garrisonHero);
-			auto mpLeft = garrisonHero->movementPointsRemaining() / (float)garrisonHero->movementPointsLimit(true);
+			auto mpLeft = garrisonHero->movementPointsRemaining() / (float)garrisonHero->movementPointsLimit();
 
 			evaluationContext.movementCost += mpLeft;
 			evaluationContext.movementCostByRole[defenderRole] += mpLeft;
