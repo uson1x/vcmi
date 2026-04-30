@@ -1351,8 +1351,7 @@ void CCreaInfo::clickPressed(const Point & cursorPosition)
 
 			si32 amount = town->creatures[i].first;
 			auto creatureId = ENGINE->isKeyboardCtrlDown() ? town->creatures[i].second.back() : town->creatures[i].second.front();
-			auto creature = creatureId.toCreature();
-			si32 maxAmount = creature->maxAmount(GAME->interface()->cb->getResourceAmount());
+			si32 maxAmount = creatureId.toCreature()->maxAmount(GAME->interface()->cb->getResourceAmount());
 			vstd::amin(maxAmount, amount);
 
 			if(maxAmount > 0)

@@ -21,7 +21,7 @@
 #include "../Goals/ExecuteHeroChain.h"
 #include "../Goals/RecruitHero.h"
 #include "../Markers/DefendTown.h"
-#include "../../lib/IGameSettings.h"
+#include "../../../lib/IGameSettings.h"
 
 namespace NK2AI
 {

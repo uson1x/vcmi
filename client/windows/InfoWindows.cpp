@@ -402,7 +402,7 @@ void MinimapWithIcons::recreate()
 	}
 
 	iconsOverlay.clear();
-	for(auto & icon : icons)
+	for(const auto & icon : icons)
 	{
 		int positionX = 144 * icon.first.x / GAME->interface()->cb->getMapSize().x;
 		int positionY = 144 * icon.first.y / GAME->interface()->cb->getMapSize().y;
