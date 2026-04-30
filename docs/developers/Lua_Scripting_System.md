@@ -19,11 +19,13 @@ This page describes internal working of Lua scripting module. For usage of publi
   - Both .md and Lua Language Server
   - Document everything in code and make exporter to both .md and Lua Language Server
 - Currently C++ bindings rely on undefined behavior, which previously was causing issues on Android. We need to remove `VCMI_REGISTER_CORE_SCRIPT_API` and `VCMI_REGISTER_CORE_SCRIPT_API` macro and perform these actions explicitly on initialization of scripting
-- Review existing API and ensure that it follows rules described here,
+- Review existing API and ensure that it follows rules described here
+  - replace `getAnyUnitIf` method with `getUnitsIf` that returns array
 - Document C++ classes
 - Review class names and rename them where necessary. Same for file names.
 - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
 - Add error handling instead of returning nil values whenever something goes wrong. Lua already provides `luaL_error` for such cases. Make sure that Lua stack size is correct whenever error occurs
+  - For API calls, ensure that all use some wrapper, such as `LuaCallWrapper` and not a direct function call
 - Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
 - Consider config validation as part of the script. Options:
   - external json schema support
@@ -34,7 +36,6 @@ This page describes internal working of Lua scripting module. For usage of publi
   - assertions
   - error messages
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
-- implement concurrency for LuaContext calls. Mutex might be relatively slow, but should be sufficient for initial release.
 - consider wrapping Lua userdata into std::any for better type safety
 - decide how to handle MetaString in Lua API. Make it Lua serializeable?
 

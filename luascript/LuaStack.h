@@ -387,6 +387,18 @@ public:
 		}
 	}
 
+	template<typename T>
+	void getNonNullOrThrow(int position, T & value)
+	{
+		getOrThrow(position, value);
+		if (value == nullptr)
+		{
+			const char * expectedType = typeid(T).name();
+			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + " at position" + std::to_string(position) + ", but found nil value!";
+			throw LuaApiException( message );
+		}
+	}
+
 	template<typename BaseType>
 	bool tryGetUData(int position, BaseType & value)
 	{

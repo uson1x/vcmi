@@ -45,9 +45,7 @@ int BattleCbProxy::getBattlefieldType(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	if(!S.tryGet(1, object))
-		return S.retVoid();
-
+	S.getNonNullOrThrow(1, object);
 	auto ret = object->battleGetBattlefieldType();
 
 	return LuaStack::quickRetStr(L, ret.getInfo()->identifier);
@@ -58,8 +56,7 @@ int BattleCbProxy::getTerrainType(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	if(!S.tryGet(1, object))
-		return S.retVoid();
+	S.getNonNullOrThrow(1, object);
 
 	return LuaStack::quickRetInt(L, object->battleTerrainType().getNum());
 }
@@ -69,8 +66,7 @@ int BattleCbProxy::getAvailableHex(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	if(!S.tryGet(1, object))
-		return S.retVoid();
+	S.getNonNullOrThrow(1, object);
 
 	const Creature * creature;
 	BattleSide side;
@@ -92,8 +88,7 @@ int BattleCbProxy::getUnitByPos(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	if(!S.tryGet(1, object))
-		return S.retVoid();
+	S.getNonNullOrThrow(1, object);
 
 	si16 hexVal;
 
@@ -117,8 +112,7 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	if(!S.tryGet(1, object))
-		return S.retVoid();
+	S.getNonNullOrThrow(1, object);
 
 	if(!S.isFunction(2))
 		return S.retNil();
@@ -130,9 +124,7 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 
 		if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
 			std::string error = lua_tostring(L, S2.absindex(-1));
-			logGlobal->error("Lua getAnyUnitIf callback failed with message: %s", error);
-			S2.balance();
-			return false;
+			throw LuaApiException("Lua getAnyUnitIf callback failed with message: " + error);
 		}
 
 		bool result = false;
