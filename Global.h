@@ -216,10 +216,6 @@ typedef int32_t si32; //signed int 32 bits (4 bytes)
 typedef int16_t si16; //signed int 16 bits (2 bytes)
 typedef int8_t si8; //signed int 8 bits (1 byte)
 
-// Lock typedefs
-using TLockGuard = std::lock_guard<std::mutex>;
-using TLockGuardRec = std::lock_guard<std::recursive_mutex>;
-
 /* ---------------------------------------------------------------------------- */
 /* Macros */
 /* ---------------------------------------------------------------------------- */

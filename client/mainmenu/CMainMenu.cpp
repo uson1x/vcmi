@@ -540,7 +540,7 @@ void CMultiMode::onNameChange(std::string newText)
 	name->String() = newText;
 }
 
-JoinScreen::JoinScreen(ESelectionScreen ScreenType, std::vector<std::string> PlayerNames) :
+JoinScreen::JoinScreen(ESelectionScreen ScreenType, const std::vector<std::string> & PlayerNames) :
 	screenType(ScreenType), playerNames(PlayerNames)
 {
 	OBJECT_CONSTRUCTION;
@@ -686,7 +686,7 @@ void CMultiPlayers::enterSelectionScreen()
 	CMainMenu::openLobby(screenType, host, playerNames, loadMode, false);
 }
 
-CSimpleJoinScreen::CSimpleJoinScreen(bool host, std::string server, ui16 port)
+CSimpleJoinScreen::CSimpleJoinScreen(bool host, const std::string & server, ui16 port)
 {
 	OBJECT_CONSTRUCTION;
 	if(!ENGINE->isRoeData())

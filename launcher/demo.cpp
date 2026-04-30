@@ -21,8 +21,8 @@
 #include "../lib/VCMIDirs.h"
 #include "helper.h"
 
-QString DEMO_URL = "http://updates.lokigames.com/loki_demos/heroes3-demo.run";
-QString DEMO_URL_ALTERNATIVE = "https://web.archive.org/web/20150506062114if_/http://updates.lokigames.com/loki_demos/heroes3-demo.run"; // alternative if fails or HTTPS is required
+constexpr auto DEMO_URL = "http://updates.lokigames.com/loki_demos/heroes3-demo.run";
+constexpr auto DEMO_URL_ALTERNATIVE = "https://web.archive.org/web/20150506062114if_/http://updates.lokigames.com/loki_demos/heroes3-demo.run"; // alternative if fails or HTTPS is required
 
 DemoInstaller::DemoInstaller(IDemoInstallerCallback * callback) :
     callback(callback)
