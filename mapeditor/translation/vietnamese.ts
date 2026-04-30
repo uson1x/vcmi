@@ -651,7 +651,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="14"/>
-        <location filename="../mainwindow.cpp" line="415"/>
+        <location filename="../mainwindow.cpp" line="417"/>
         <source>VCMI Map Editor</source>
         <translation>Bộ tạo bản đồ VCMI</translation>
     </message>
@@ -957,15 +957,15 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
-        <location filename="../mainwindow.cpp" line="1413"/>
+        <location filename="../mainwindow.cpp" line="1415"/>
         <source>Select map layer type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
-        <location filename="../mainwindow.cpp" line="1322"/>
-        <location filename="../mainwindow.cpp" line="1326"/>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Update appearance</source>
         <translation>Cập nhật hiện thị</translation>
     </message>
@@ -1158,12 +1158,12 @@
         <translation type="unfinished">Ctrl+Shift+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Confirmation</source>
         <translation>Xác nhận</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation>Thay đổi chưa lưu sẽ bị mất, bạn có chắc chắn?</translation>
     </message>
@@ -1180,184 +1180,184 @@
         <translation type="obsolete">Tầng - %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="453"/>
-        <location filename="../mainwindow.cpp" line="1430"/>
+        <location filename="../mainwindow.cpp" line="455"/>
+        <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="481"/>
         <source>Mods are required</source>
         <translation type="unfinished">Cần có các mod</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="487"/>
-        <location filename="../mainwindow.cpp" line="493"/>
+        <location filename="../mainwindow.cpp" line="489"/>
+        <location filename="../mainwindow.cpp" line="495"/>
         <source>Failed to open map</source>
         <translation type="unfinished">Không mở được bản đồ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="524"/>
+        <location filename="../mainwindow.cpp" line="526"/>
         <source>Open map</source>
         <translation>Mở bản đồ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="528"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation>Tất cả bản đồ hỗ trợ (*.vmap *.h3m);;Bản đồ VCMI (*.vmap);;Bản đồ HoMM3 (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="580"/>
+        <location filename="../mainwindow.cpp" line="582"/>
         <source>Recently Opened Files</source>
         <translation type="unfinished">Tệp đã mở gần đây</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="633"/>
+        <location filename="../mainwindow.cpp" line="635"/>
         <source>Map validation</source>
         <translation type="unfinished">Xác minh bản đồ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">Bản đồ có lỗi nghiêm trọng và rất có thể sẽ không thể chơi được. Mở Trình xác minh từ menu Bản đồ để xem lỗi.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="637"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">Bản đồ có một số lỗi. Mở Trình xác minh từ menu Bản đồ để xem lỗi.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="664"/>
+        <location filename="../mainwindow.cpp" line="666"/>
         <source>Failed to save map</source>
         <translation type="unfinished">Lưu bản đồ thất bại</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>Save map</source>
         <translation>Lưu bản đồ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>VCMI maps (*.vmap)</source>
         <translation>Bản đồ VCMI (*.vmap)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="885"/>
+        <location filename="../mainwindow.cpp" line="887"/>
         <source>Type</source>
         <translation>Loại</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="898"/>
+        <location filename="../mainwindow.cpp" line="900"/>
         <source>Towns</source>
         <translation type="unfinished">Thành phố</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="899"/>
+        <location filename="../mainwindow.cpp" line="901"/>
         <source>Objects</source>
         <translation type="unfinished">Đối tượng</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="900"/>
+        <location filename="../mainwindow.cpp" line="902"/>
         <source>Heroes</source>
         <translation>Tướng</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="901"/>
+        <location filename="../mainwindow.cpp" line="903"/>
         <source>Artifacts</source>
         <translation>Vật phẩm</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="902"/>
+        <location filename="../mainwindow.cpp" line="904"/>
         <source>Resources</source>
         <translation type="unfinished">Tài nguyên</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="903"/>
+        <location filename="../mainwindow.cpp" line="905"/>
         <source>Banks</source>
         <translation type="unfinished">Ngân hàng</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="904"/>
+        <location filename="../mainwindow.cpp" line="906"/>
         <source>Dwellings</source>
         <translation type="unfinished">Nơi cư trú</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="905"/>
+        <location filename="../mainwindow.cpp" line="907"/>
         <source>Grounds</source>
         <translation type="unfinished">Địa hình</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="906"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>Teleports</source>
         <translation type="unfinished">Dịch chuyển</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="907"/>
+        <location filename="../mainwindow.cpp" line="909"/>
         <source>Mines</source>
         <translation type="unfinished">Mỏ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="908"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>Triggers</source>
         <translation type="unfinished">Kích hoạt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="911"/>
         <source>Monsters</source>
         <translation type="unfinished">Quái vật</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="910"/>
+        <location filename="../mainwindow.cpp" line="912"/>
         <source>Quests</source>
         <translation type="unfinished">Nhiệm vụ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="911"/>
+        <location filename="../mainwindow.cpp" line="913"/>
         <source>Wog Objects</source>
         <translation type="unfinished">Đối tượng WoG</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="912"/>
+        <location filename="../mainwindow.cpp" line="914"/>
         <source>Obstacles</source>
         <translation type="unfinished">Chướng ngại vật</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Other</source>
         <translation type="unfinished">Khác</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Mods loading problem</source>
         <translation type="unfinished">Lỗi tải mod</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
         <translation type="unfinished">Lỗi nghiêm trọng khi tải mod. Vô hiệu hóa các mod không hợp lệ và khởi động lại.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1056"/>
+        <location filename="../mainwindow.cpp" line="1058"/>
         <source>Undo clicked</source>
         <translation type="unfinished">Đã nhấn Hoàn tác</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1067"/>
+        <location filename="../mainwindow.cpp" line="1069"/>
         <source>Redo clicked</source>
         <translation type="unfinished">Đã nhấn Làm lại</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1078"/>
+        <location filename="../mainwindow.cpp" line="1080"/>
         <source>Passability clicked</source>
         <translation type="unfinished">Đã nhấn Khả năng đi qua</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1091"/>
+        <location filename="../mainwindow.cpp" line="1093"/>
         <source>Grid clicked</source>
         <translation type="unfinished">Đã nhấn Lưới</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1172"/>
+        <location filename="../mainwindow.cpp" line="1174"/>
         <source>Fill clicked</source>
         <translation type="unfinished">Đã nhấn Tô</translation>
     </message>
@@ -1366,77 +1366,77 @@
         <translation type="vanished">Xem bề mặt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1322"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Không mục tiêu được chọn</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1326"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>This operation is irreversible. Do you want to continue?</source>
         <translation>Thao tác này không thể đảo ngược. Bạn muốn tiếp tục?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Errors occurred. %1 objects were not updated</source>
         <translation>Xảy ra lỗi. %1 mục tiêu không được cập nhật</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1414"/>
+        <location filename="../mainwindow.cpp" line="1416"/>
         <source>Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1469"/>
+        <location filename="../mainwindow.cpp" line="1471"/>
         <source>Save to image</source>
         <translation>Lưu thành ảnh</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1501"/>
+        <location filename="../mainwindow.cpp" line="1503"/>
         <source>Select maps to convert</source>
         <translation type="unfinished">Chọn bản đồ để chuyển đổi</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1503"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>HoMM3 maps(*.h3m)</source>
         <translation type="unfinished">Bản đồ HoMM3 (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1507"/>
+        <location filename="../mainwindow.cpp" line="1509"/>
         <source>Choose directory to save converted maps</source>
         <translation type="unfinished">Chọn thư mục để lưu bản đồ đã chuyển đổi</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Operation completed</source>
         <translation type="unfinished">Hoàn tất thao tác</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Successfully converted %1 maps</source>
         <translation type="unfinished">Đã chuyển đổi thành công %1 bản đồ</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1525"/>
+        <location filename="../mainwindow.cpp" line="1527"/>
         <source>Failed to convert the map. Abort operation</source>
         <translation type="unfinished">Không thể chuyển đổi bản đồ. Huỷ thao tác</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1531"/>
+        <location filename="../mainwindow.cpp" line="1533"/>
         <source>Select campaign to convert</source>
         <translation type="unfinished">Chọn chiến dịch để chuyển đổi</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1533"/>
+        <location filename="../mainwindow.cpp" line="1535"/>
         <source>HoMM3 campaigns (*.h3c)</source>
         <translation type="unfinished">Chiến dịch HoMM3 (*.h3c)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1537"/>
+        <location filename="../mainwindow.cpp" line="1539"/>
         <source>Select destination file</source>
         <translation type="unfinished">Chọn tệp đích</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1539"/>
+        <location filename="../mainwindow.cpp" line="1541"/>
         <source>VCMI campaigns (*.vcmp)</source>
         <translation type="unfinished">Chiến dịch VCMI (*.vcmp)</translation>
     </message>
@@ -4094,8 +4094,12 @@ Lính gác: %3</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
+        <source>Too few templates!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>To few templates!</source>
-        <translation type="unfinished">Quá ít mẫu!</translation>
+        <translation type="obsolete">Quá ít mẫu!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>

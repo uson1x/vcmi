@@ -651,7 +651,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="14"/>
-        <location filename="../mainwindow.cpp" line="415"/>
+        <location filename="../mainwindow.cpp" line="417"/>
         <source>VCMI Map Editor</source>
         <translation>VCMI térképszerkesztő</translation>
     </message>
@@ -957,15 +957,15 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
-        <location filename="../mainwindow.cpp" line="1413"/>
+        <location filename="../mainwindow.cpp" line="1415"/>
         <source>Select map layer type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
-        <location filename="../mainwindow.cpp" line="1322"/>
-        <location filename="../mainwindow.cpp" line="1326"/>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Update appearance</source>
         <translation>Megjelenés frissítése</translation>
     </message>
@@ -1158,12 +1158,12 @@
         <translation>Ctrl+Shift+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Confirmation</source>
         <translation>Megerősítés</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation>Nem mentett változások el fognak veszni, biztos benne?</translation>
     </message>
@@ -1180,184 +1180,184 @@
         <translation type="obsolete">Szint - %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="453"/>
-        <location filename="../mainwindow.cpp" line="1430"/>
+        <location filename="../mainwindow.cpp" line="455"/>
+        <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="481"/>
         <source>Mods are required</source>
         <translation>Modok szükségesek</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="487"/>
-        <location filename="../mainwindow.cpp" line="493"/>
+        <location filename="../mainwindow.cpp" line="489"/>
+        <location filename="../mainwindow.cpp" line="495"/>
         <source>Failed to open map</source>
         <translation>Nem sikerült a térkép megnyitása</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="524"/>
+        <location filename="../mainwindow.cpp" line="526"/>
         <source>Open map</source>
         <translation>Térkép megnyitása</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="528"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation>Minden támogatott térkép (*.vmap *.h3m);;VCMI térképek (*.vmap);;HoMM3 térképek (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="580"/>
+        <location filename="../mainwindow.cpp" line="582"/>
         <source>Recently Opened Files</source>
         <translation>Legutóbb megnyitott fájlok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="633"/>
+        <location filename="../mainwindow.cpp" line="635"/>
         <source>Map validation</source>
         <translation>Térkép érvényesítése</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
         <translation>A térképen kritikus hibák vannak, és valószínűleg nem játszható. Nyissa meg az Ellenőrzőt a Térkép menüből, hogy megnézze a hibákat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="637"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
         <translation>A térképen hibák vannak. Nyissa meg az Ellenőrzőt a Térkép menüből, hogy megnézze a hibákat</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="664"/>
+        <location filename="../mainwindow.cpp" line="666"/>
         <source>Failed to save map</source>
         <translation>Nem sikerült a térkép mentése</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>Save map</source>
         <translation>Térkép mentése</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>VCMI maps (*.vmap)</source>
         <translation>VCMI térképek (*.vmap)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="885"/>
+        <location filename="../mainwindow.cpp" line="887"/>
         <source>Type</source>
         <translation>Típus</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="898"/>
+        <location filename="../mainwindow.cpp" line="900"/>
         <source>Towns</source>
         <translation>Városok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="899"/>
+        <location filename="../mainwindow.cpp" line="901"/>
         <source>Objects</source>
         <translation>Objektumok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="900"/>
+        <location filename="../mainwindow.cpp" line="902"/>
         <source>Heroes</source>
         <translation>Hősök</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="901"/>
+        <location filename="../mainwindow.cpp" line="903"/>
         <source>Artifacts</source>
         <translation>Tárgyak</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="902"/>
+        <location filename="../mainwindow.cpp" line="904"/>
         <source>Resources</source>
         <translation>Erőforrások</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="903"/>
+        <location filename="../mainwindow.cpp" line="905"/>
         <source>Banks</source>
         <translation>Bankok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="904"/>
+        <location filename="../mainwindow.cpp" line="906"/>
         <source>Dwellings</source>
         <translation>Lakhelyek</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="905"/>
+        <location filename="../mainwindow.cpp" line="907"/>
         <source>Grounds</source>
         <translation>Talajok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="906"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>Teleports</source>
         <translation>Teleportok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="907"/>
+        <location filename="../mainwindow.cpp" line="909"/>
         <source>Mines</source>
         <translation>Bányák</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="908"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>Triggers</source>
         <translation>Indítók</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="911"/>
         <source>Monsters</source>
         <translation>Szörnyek</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="910"/>
+        <location filename="../mainwindow.cpp" line="912"/>
         <source>Quests</source>
         <translation>Küldetések</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="911"/>
+        <location filename="../mainwindow.cpp" line="913"/>
         <source>Wog Objects</source>
         <translation>Wog Objektumok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="912"/>
+        <location filename="../mainwindow.cpp" line="914"/>
         <source>Obstacles</source>
         <translation>Akadályok</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Other</source>
         <translation>Egyéb</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Mods loading problem</source>
         <translation>Mod betöltési probléma</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
         <translation>Kritikus hiba történt a Modok betöltése során. Tiltsa le az érvénytelen modokat és indítsa újra.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1056"/>
+        <location filename="../mainwindow.cpp" line="1058"/>
         <source>Undo clicked</source>
         <translation type="unfinished">Visszavonás megnyomva</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1067"/>
+        <location filename="../mainwindow.cpp" line="1069"/>
         <source>Redo clicked</source>
         <translation type="unfinished">Mégis megnyomva</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1078"/>
+        <location filename="../mainwindow.cpp" line="1080"/>
         <source>Passability clicked</source>
         <translation type="unfinished">Járhatóság megnyomva</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1091"/>
+        <location filename="../mainwindow.cpp" line="1093"/>
         <source>Grid clicked</source>
         <translation type="unfinished">Rács megnyomva</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1172"/>
+        <location filename="../mainwindow.cpp" line="1174"/>
         <source>Fill clicked</source>
         <translation type="unfinished">Kitöltés megnyomva</translation>
     </message>
@@ -1366,77 +1366,77 @@
         <translation type="vanished">Felszín megtekintése</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1322"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Nincs kiválasztott objektum</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1326"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>This operation is irreversible. Do you want to continue?</source>
         <translation>Ez a művelet visszafordíthatatlan. Folytatja?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Errors occurred. %1 objects were not updated</source>
         <translation>Hibák történtek. %1 objektum nem lett frissítve</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1414"/>
+        <location filename="../mainwindow.cpp" line="1416"/>
         <source>Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1469"/>
+        <location filename="../mainwindow.cpp" line="1471"/>
         <source>Save to image</source>
         <translation>Mentés képként</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1501"/>
+        <location filename="../mainwindow.cpp" line="1503"/>
         <source>Select maps to convert</source>
         <translation>Térképek kiválasztása konvertáláshoz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1503"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>HoMM3 maps(*.h3m)</source>
         <translation>HoMM3 térképek (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1507"/>
+        <location filename="../mainwindow.cpp" line="1509"/>
         <source>Choose directory to save converted maps</source>
         <translation>Könyvtár kiválasztása a konvertált térképek mentéséhez</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Operation completed</source>
         <translation>Művelet befejezve</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Successfully converted %1 maps</source>
         <translation>Sikeresen konvertálva: %1 térkép</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1525"/>
+        <location filename="../mainwindow.cpp" line="1527"/>
         <source>Failed to convert the map. Abort operation</source>
         <translation>Nem sikerült a térkép konvertálása. Művelet megszakítva</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1531"/>
+        <location filename="../mainwindow.cpp" line="1533"/>
         <source>Select campaign to convert</source>
         <translation>Kampány kiválasztása konvertáláshoz</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1533"/>
+        <location filename="../mainwindow.cpp" line="1535"/>
         <source>HoMM3 campaigns (*.h3c)</source>
         <translation>HoMM3 kampányok (*.h3c)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1537"/>
+        <location filename="../mainwindow.cpp" line="1539"/>
         <source>Select destination file</source>
         <translation>Célfájl kiválasztása</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1539"/>
+        <location filename="../mainwindow.cpp" line="1541"/>
         <source>VCMI campaigns (*.vcmp)</source>
         <translation>VCMI kampányok (*.vcmp)</translation>
     </message>
@@ -4094,8 +4094,12 @@ B zóna: %2
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
+        <source>Too few templates!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>To few templates!</source>
-        <translation type="unfinished">Túl kevés sablon!</translation>
+        <translation type="obsolete">Túl kevés sablon!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
