@@ -256,7 +256,10 @@ void CModHandler::loadTranslation(const TModID & modName)
 		{
 			// Start with the fallback, then let the preferred-language strings
 			// overwrite any keys that have already been translated.
-			JsonUtils::merge(baseLangFallback, extraTranslation);
+			// Guard: merge(dest, null) would clear dest, so skip when there is
+			// nothing to overlay from the preferred language.
+			if(!extraTranslation.isNull())
+				JsonUtils::merge(baseLangFallback, extraTranslation);
 			extraTranslation = std::move(baseLangFallback);
 		}
 	}
