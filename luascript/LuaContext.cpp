@@ -153,7 +153,7 @@ void LuaContext::cleanupGlobals()
 	S.clear();
 }
 
-void LuaContext::run()
+void LuaContext::initialize()
 {
 	std::lock_guard guard(mutex);
 	int ret = luaL_loadbuffer(L, script->getSource().c_str(), script->getSource().size(), script->getJsonKey().c_str());

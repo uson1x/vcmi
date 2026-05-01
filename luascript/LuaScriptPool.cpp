@@ -29,7 +29,7 @@ void LuaScriptPool::registerScript(const LuaScriptInstance * script)
 {
 	auto context = script->createContext(env);
 	cache[script] = context;
-	context->run();
+	context->initialize();
 }
 
 std::shared_ptr<Context> LuaScriptPool::getContext(const Script * script) const

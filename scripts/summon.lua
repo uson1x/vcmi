@@ -1,6 +1,9 @@
+local Base = require("spellEffect")
+
 local Script = {}
+local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
-Script.type = "spellEffect"
+
 Script.spellEffectSchema = {
 	required = { "id" },
 	properties = {

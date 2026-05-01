@@ -28,10 +28,19 @@ public:
 	LuaContext(const Script * source, const Environment * env_);
 	~LuaContext();
 
-	void run();
+	/// Runs script once to perform its initialization
+	void initialize();
 
+	/// Runs specified function from class stored in script
+	/// parameters are converted to Lua and passed to script
+	///	return value (if any) converted from Lua and returned
+	/// for scripts that don't return values, use explicit specialization to void
 	template<typename ReturnType, typename... Args>
 	ReturnType call(const std::string & name, Args&& ... parameters);
+
+	/// Returns value of specified property from class stored in script
+	template<typename ReturnType>
+	ReturnType getProperty(const std::string & name);
 
 private:
 	std::mutex mutex;
@@ -107,9 +116,24 @@ ReturnType LuaContext::call(const std::string & name, Args&& ... parameters)
 	}
 	else
 	{
-		S.balance();
+		S.clear();
 		return;
 	}
+}
+
+template<typename ReturnType>
+ReturnType LuaContext::getProperty(const std::string & name)
+{
+	std::lock_guard guard(mutex);
+	LuaStack S(L);
+
+	scriptTable->push();			  // stack: (table)
+	lua_getfield(L, 1, name.c_str()); // stack: (table), (property)
+
+	ReturnType ret;
+	S.getOrThrow(2, ret);
+	S.balance();
+	return ret;
 }
 
 }
