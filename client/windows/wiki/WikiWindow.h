@@ -89,7 +89,8 @@ public:
 	             std::function<void(WikiListItem *)> callback,
 	             std::optional<WikiIconInfo> iconInfo = std::nullopt,
 	             bool blueStyle = false,
-	             int itemWidth = 100);
+	             int itemWidth = 100,
+	             bool hasSlider = false);
 
 	void clickPressed(const Point & cursorPosition) override;
 	void showPopupWindow(const Point & cursorPosition) override;
@@ -175,6 +176,10 @@ private:
 	std::vector<std::shared_ptr<CIntObject>> modContentWidgets;
 	std::string currentModId;
 
+	std::shared_ptr<CViewport> glossaryContentView; ///< scrollable viewport for Glossary (markdown renderer)
+	std::vector<std::shared_ptr<CIntObject>> glossaryContentWidgets;
+	std::string currentGlossaryEntryName; ///< identifier of the Glossary entry currently shown
+
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
 	std::shared_ptr<CButton> backButton;
@@ -211,6 +216,8 @@ private:
 	void rebuildArtifactViewport(const std::string & artKey);
 	/// Rebuilds the mod viewport content for the given mod ID.
 	void rebuildModViewport(const std::string & modId);
+	/// Rebuilds the glossary viewport by rendering the entry description as Markdown.
+	void rebuildGlossaryViewport(const std::string & entryName);
 
 	/// Inserts a mod-scope label as the first widget in a viewport when the
 	/// current entry belongs to a non-core mod.

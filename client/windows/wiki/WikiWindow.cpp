@@ -14,6 +14,7 @@
 #include "WikiHeroContent.h"
 #include "WikiArtifactContent.h"
 #include "WikiModContent.h"
+#include "WikiMarkdown.h"
 
 #include "../../gui/Shortcut.h"
 #include "../../gui/WindowHandler.h"
@@ -57,7 +58,8 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string i
 	std::function<void(WikiListItem *)> callback,
 	std::optional<WikiIconInfo> iconInfo,
 	bool blueStyle_,
-	int itemWidth)
+	int itemWidth,
+	bool hasSlider)
 	: onSelected(std::move(callback))
 	, text(std::move(itemText))
 	, index(itemIndex)
@@ -116,11 +118,14 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string i
 		}
 	}
 
-	// Alignment and anchor depend on whether an icon is present.
+	// itemWidth = full item pos.w (slider area included).
+	// For text centering/wrapping we use effectiveW = itemWidth minus slider when active.
+	static constexpr int SLIDER_W_LOCAL = 16;
+	const int effectiveW = (!iconInfo && hasSlider) ? itemWidth - SLIDER_W_LOCAL : itemWidth;
 	const ETextAlignment hAlign = iconInfo ? ETextAlignment::CENTERLEFT : ETextAlignment::CENTER;
 	const int labelRectX = iconInfo ? labelOffsetX : 0;
-	const int labelAnchorX = iconInfo ? labelOffsetX : (itemWidth / 2);
-	const int labelW = std::max(10, itemWidth - labelRectX - (iconInfo ? MARGIN_L : 0));
+	const int labelAnchorX = iconInfo ? labelOffsetX : (effectiveW / 2);
+	const int labelW = std::max(10, effectiveW - labelRectX - (iconInfo ? MARGIN_L : 0));
 
 	if(!itemSubtitle.empty())
 	{
@@ -385,9 +390,14 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			const JsonNode glossaryJson(JsonPath::builtin("config/wikiGlossary.json"));
 			for(const auto & e : glossaryJson["entries"].Vector())
 			{
-				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
+				const std::string nameKey = e["name"].String(); // e.g. "vcmi.wiki.glossary.mdtest.name"
+				const std::string name = LIBRARY->generaltexth->translate(nameKey);
 				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt, "", "" });
+				// Strip trailing .name so links can use the base key: wiki:glossary/vcmi.wiki.glossary.mdtest
+				std::string id = nameKey;
+				if(id.size() > 5 && id.substr(id.size() - 5) == ".name")
+					id = id.substr(0, id.size() - 5);
+				categoryEntries[iGlossary].push_back({ id, name, desc, std::nullopt, "", "" });
 			}
 		}
 		catch(const std::exception &) {} // file absent → empty glossary
@@ -648,6 +658,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			Point(VP_W, VP_H),
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 		modContentView->disable();
+
+		glossaryContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		glossaryContentView->disable();
 	}
 
 	// Mod-scope tag for non-viewport categories (artifact/spell/skill/terrain).
@@ -738,7 +754,8 @@ void WikiWindow::buildCategoryList()
 			},
 			std::nullopt,
 			style == Style::BLUE,
-			COL1_LIST_W + SLIDER_W);
+			COL1_LIST_W + SLIDER_W,
+			/*hasSlider=*/(categoryNames.size() > VISIBLE_ITEMS));
 		item->pos.w = COL1_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeCategoryIndex)
@@ -802,7 +819,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 	currentDisplayedEntries = entries;
 	size_t total = entries.size();
 
-	auto createElemItem = [this, entries](size_t idx) -> std::shared_ptr<CIntObject>
+	auto createElemItem = [this, entries, total](size_t idx) -> std::shared_ptr<CIntObject>
 	{
 		const std::string name = (idx < entries.size()) ? entries[idx].name : "";
 		const std::string subtitle = (idx < entries.size()) ? entries[idx].subtitle : "";
@@ -820,7 +837,8 @@ void WikiWindow::buildElementList(int categoryIndex)
 				}
 				clicked->setSelected(true);
 				onElementClicked((int)clicked->index);
-			}, icon, style == Style::BLUE, COL2_LIST_W);
+			}, icon, style == Style::BLUE, COL2_LIST_W + SLIDER_W,
+			/*hasSlider=*/(total > ELEM_VISIBLE_ITEMS));
 		item->pos.w = COL2_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
 		if((int)idx == activeElementIndex)
@@ -892,7 +910,10 @@ void WikiWindow::updateContent()
 	const bool useModViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::MOD))
 	                          && (activeElementIndex >= 0)
 	                          && modContentView;
-	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport;
+	const bool useGlossaryViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::GLOSSARY))
+	                               && (activeElementIndex >= 0)
+	                               && glossaryContentView;
+	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport || useGlossaryViewport;
 
 	// Toggle viewport / textbox visibility
 	if(townContentView)
@@ -905,6 +926,8 @@ void WikiWindow::updateContent()
 		artifactContentView->setEnabled(useArtifactViewport);
 	if(modContentView)
 		modContentView->setEnabled(useModViewport);
+	if(glossaryContentView)
+		glossaryContentView->setEnabled(useGlossaryViewport);
 	contentBox->setEnabled(!useCustomViewport);
 
 	// Standalone mod-scope label – only for non-viewport categories (textbox path).
@@ -960,6 +983,12 @@ void WikiWindow::updateContent()
 			const std::string & modId = currentDisplayedEntries[activeElementIndex].identifier;
 			if(modId != currentModId)
 				rebuildModViewport(modId);
+		}
+		else if(useGlossaryViewport)
+		{
+			const std::string & entryName = currentDisplayedEntries[activeElementIndex].identifier;
+			if(entryName != currentGlossaryEntryName)
+				rebuildGlossaryViewport(entryName);
 		}
 	}
 	else if(activeCategoryIndex < 0 || activeElementIndex < 0
@@ -1224,6 +1253,73 @@ void WikiWindow::rebuildModViewport(const std::string & modId)
 	applyScrollBounds();
 }
 
+void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
+{
+	currentGlossaryEntryName = entryName;
+	glossaryContentWidgets.clear();
+
+	if(!glossaryContentView)
+		return;
+
+	// Find the entry's description in the glossary list
+	const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
+	const auto & entries = categoryEntries[iGlossary];
+	const auto it = std::find_if(entries.begin(), entries.end(),
+		[&entryName](const WikiEntry & e){ return e.identifier == entryName; });
+	if(it == entries.end())
+		return;
+
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	glossaryContentView.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		glossaryContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	// Prepend the entry name as an H1 heading via markdown #, then the description
+	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
+
+	const bool isBlue = (style == Style::BLUE);
+	{
+		// Build a link callback that parses "wiki:category/id" and navigates.
+		auto linkCb = [this](const std::string & target)
+		{
+			static const std::string PREFIX = "wiki:";
+			if(target.size() <= PREFIX.size() || target.substr(0, PREFIX.size()) != PREFIX)
+				return;
+			const std::string rest = target.substr(PREFIX.size());
+			const auto slash = rest.find('/');
+			if(slash == std::string::npos) return;
+			const std::string catStr = rest.substr(0, slash);
+			const std::string id     = rest.substr(slash + 1);
+			WikiCategory cat = WikiCategory::GLOSSARY;
+			if     (catStr == "glossary") cat = WikiCategory::GLOSSARY;
+			else if(catStr == "town")     cat = WikiCategory::TOWN;
+			else if(catStr == "hero")     cat = WikiCategory::HERO;
+			else if(catStr == "creature") cat = WikiCategory::CREATURE;
+			else if(catStr == "artifact") cat = WikiCategory::ARTIFACT;
+			else if(catStr == "spell")    cat = WikiCategory::SPELL;
+			else if(catStr == "skill")    cat = WikiCategory::SKILL;
+			else if(catStr == "terrain")  cat = WikiCategory::TERRAIN;
+			else if(catStr == "mod")      cat = WikiCategory::MOD;
+			navigateTo(WikiEntryKey{cat, id});
+		};
+		auto moreWidgets = buildMarkdownContent(*glossaryContentView, markdownText,
+			VP_W - CViewport::SLIDER_W, isBlue, linkCb);
+		glossaryContentWidgets.insert(
+			glossaryContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
+	}
+	glossaryContentView->fitContentSize();
+
+	applyScrollBounds();
+	ENGINE->windows().totalRedraw();
+}
+
 // ============================================================================
 // WikiWindow – mod-scope helper
 // ============================================================================
@@ -1305,6 +1401,7 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		backButton->setEnabled(!navHistory.empty());
 
 	activeCategoryIndex = catIdx;
+	activeElementIndex = -1; // reset before rebuild to prevent stale pre-selection
 	buildElementList(activeCategoryIndex);
 
 	// Select the category item visually
@@ -1316,20 +1413,31 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		categoryList->scrollTo(activeCategoryIndex);
 	}
 
-	// Find the entry by identifier and select it
-	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+	// Find the entry by identifier and select it (exact match first, then scope-stripped fallback)
 	{
-		if(currentDisplayedEntries[i].identifier == key.entryName)
+		int foundIdx = -1;
+		for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+			if(currentDisplayedEntries[i].identifier == key.entryName)
+				{ foundIdx = i; break; }
+		// Fallback: "imp" matches "core:imp" (strip mod-scope prefix)
+		if(foundIdx < 0 && !key.entryName.empty())
+			for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+			{
+				const auto & id = currentDisplayedEntries[i].identifier;
+				const auto colon = id.find(':');
+				if(colon != std::string::npos && id.substr(colon + 1) == key.entryName)
+					{ foundIdx = i; break; }
+			}
+		if(foundIdx >= 0)
 		{
-			activeElementIndex = i;
+			activeElementIndex = foundIdx;
 			if(elementList)
 			{
-				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(i));
+				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(foundIdx));
 				if(elemItem)
 					elemItem->setSelected(true);
-				elementList->scrollTo(i);
+				elementList->scrollTo(foundIdx);
 			}
-			break;
 		}
 	}
 	updateContent();
@@ -1364,6 +1472,7 @@ void WikiWindow::navigateBack()
 	}
 
 	activeCategoryIndex = catIdx;
+	activeElementIndex = -1; // reset before rebuild to prevent stale pre-selection
 	buildElementList(activeCategoryIndex);
 
 	if(categoryList)
@@ -1374,19 +1483,30 @@ void WikiWindow::navigateBack()
 		categoryList->scrollTo(activeCategoryIndex);
 	}
 
-	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+	// Find the entry by identifier (exact match first, then scope-stripped fallback)
 	{
-		if(currentDisplayedEntries[i].identifier == prev.entryName)
+		int foundIdx = -1;
+		for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+			if(currentDisplayedEntries[i].identifier == prev.entryName)
+				{ foundIdx = i; break; }
+		if(foundIdx < 0 && !prev.entryName.empty())
+			for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+			{
+				const auto & id = currentDisplayedEntries[i].identifier;
+				const auto colon = id.find(':');
+				if(colon != std::string::npos && id.substr(colon + 1) == prev.entryName)
+					{ foundIdx = i; break; }
+			}
+		if(foundIdx >= 0)
 		{
-			activeElementIndex = i;
+			activeElementIndex = foundIdx;
 			if(elementList)
 			{
-				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(i));
+				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(foundIdx));
 				if(elemItem)
 					elemItem->setSelected(true);
-				elementList->scrollTo(i);
+				elementList->scrollTo(foundIdx);
 			}
-			break;
 		}
 	}
 	updateContent();

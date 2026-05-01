@@ -179,6 +179,7 @@ set(vcmiclientcommon_SRCS
 	windows/CTutorialWindow.cpp
 	windows/wiki/WikiCommon.cpp
 	windows/wiki/WikiWindow.cpp
+	windows/wiki/WikiMarkdown.cpp
 	windows/wiki/WikiCreatureContent.cpp
 	windows/wiki/WikiHeroContent.cpp
 	windows/wiki/WikiArtifactContent.cpp
@@ -421,6 +422,7 @@ set(vcmiclientcommon_HEADERS
 	windows/CTutorialWindow.h
 	windows/wiki/WikiCommon.h
 	windows/wiki/WikiWindow.h
+	windows/wiki/WikiMarkdown.h
 	windows/wiki/WikiCreatureContent.h
 	windows/wiki/WikiHeroContent.h
 	windows/wiki/WikiArtifactContent.h
