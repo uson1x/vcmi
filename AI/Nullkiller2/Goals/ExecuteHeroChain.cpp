@@ -154,6 +154,10 @@ void ExecuteHeroChain::accept(AIGateway * aiGw)
 
 						return;
 					}
+
+					// hero can be already on the target tile after move in specialAction->execute()
+					if(node->coord == heroPtr->visitablePos())
+						continue;
 				}
 				else if(i > 0 && aiGw->nullkiller->isObjectGraphAllowed())
 				{
