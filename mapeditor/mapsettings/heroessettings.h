@@ -48,15 +48,19 @@ private:
 		{QT_TR_NOOP("Exclusive heroes"), [this](const QListWidgetItem * item) -> bool { return getDisposedHero(item->data(Qt::UserRole).toInt()).has_value(); }},
 		{QT_TR_NOOP("Banned Heroes"), [](const QListWidgetItem * item) -> bool { return item->checkState() == Qt::Unchecked; }}
 	};
+	QGraphicsScene scene;
+	QPixmap pixmap;
 
 	void updatePlayersSelection();
 	void showPlayerSelection(bool show);
 	void filterHeroes();
+	void drawPortrait();
 	void setDisposedHero(int heroId, std::set<PlayerColor> players);
 	void removeDisposedHero(int heroId);
 	std::optional<const DisposedHero> getDisposedHero(int heroId);
 	std::set<PlayerColor> getSelectedPlayers();
 	int getSelectedHeroId();
+	int getSelectedHeroImageIndex();
 	bool allPlayersSelected();
 	bool isHeroBanned(int heroId);
 };
