@@ -443,10 +443,10 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			categoryEntries[targetIdx].push_back({ entryId, name, desc, std::nullopt, "", "" });
 		}
 	}
-	// Sort glossary and all custom categories alphabetically.
-	for(int ci = static_cast<int>(WikiCategory::GLOSSARY); ci < static_cast<int>(categoryNames.size()); ++ci)
+	// Sort the glossary alphabetically; custom categories keep their natural (JSON insertion) order.
 	{
-		std::sort(categoryEntries[ci].begin(), categoryEntries[ci].end(),
+		const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
+		std::sort(categoryEntries[iGlossary].begin(), categoryEntries[iGlossary].end(),
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
