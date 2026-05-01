@@ -1,19 +1,19 @@
-meta = {
-	type = spellEffect,
-	spellEffectSchema = {
-		required = { "id" },
-		properties = {
-			type = {},
-			indirect = {},
-			optional = {},
-			id = { type = "string" }, -- type of creature that can be summoned by the spell
-			permanent = { type = "boolean" }, -- if true, summoned units persists after combat
-			exclusive =  { type = "boolean" }, -- if true, spell can only be used if there are no summoned units of another typee
-			summonByHealth = { type = "boolean" }, -- if true, spell effect power represents summoned health, if not - summoned amount
-			summonSameUnit = { type = "boolean" } -- if true, spell will increase stack size of existing summon, if available, instead of summoning a separate stack 
-		},
-		additionalProperties = false
-	}
+local Script = {}
+Script.__index = Script
+Script.type = "spellEffect"
+Script.spellEffectSchema = {
+	required = { "id" },
+	properties = {
+		type = {},
+		indirect = {},
+		optional = {},
+		id = { type = "string" }, -- type of creature that can be summoned by the spell
+		permanent = { type = "boolean" }, -- if true, summoned units persists after combat
+		exclusive =  { type = "boolean" }, -- if true, spell can only be used if there are no summoned units of another typee
+		summonByHealth = { type = "boolean" }, -- if true, spell effect power represents summoned health, if not - summoned amount
+		summonSameUnit = { type = "boolean" } -- if true, spell will increase stack size of existing summon, if available, instead of summoning a separate stack 
+	},
+	additionalProperties = false
 }
 
 local function summonedEffectValue(parameters, mechanics)
@@ -47,7 +47,7 @@ end
 -- TODO
 -- initializes parameters of the script using spell effect json
 -- returns converted parameters that contain resolved identifiers
-initialize = function(parameters)
+function Script.initialize(parameters)
 	parameters.creature = LIBRARY:getCreatureByName(parameters.id)
 	return parameters
 end
@@ -55,14 +55,14 @@ end
 --- Returns true if specified target can be affected by the spell
 --- if target can not be affected, script needs to call `problem:add`
 --- to explain the reason to the player
-applicableTarget = function(parameters, mechanics, problem, target)
+function Script.applicableTarget(parameters, mechanics, problem, target)
     return true
 end
 
 --- Returns true if spell can be casted in general
 --- if no valid targets exist, script needs to call `problem:add`
 --- to explain the reason to the player
-applicable = function(parameters, mechanics, problem)
+function Script.applicable(parameters, mechanics, problem)
 	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then
@@ -110,7 +110,7 @@ end
 
 --- Actually casts the spells and applies all changes caused by spell
 --- use `server` parameter to apply changes on specified target(s)
-apply = function(parameters, mechanics, server, target)
+function Script.apply(parameters, mechanics, server, target)
 	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	for _, dest in ipairs(target) do
@@ -143,7 +143,7 @@ end
 --- converts specified range into actual list of affected targets
 --- for example, area damage spells should locate all units on affected hexes
 --- and return list of affected units
-transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
+function Script.transformTarget(parameters, mechanics, aimPoint, spellTarget)
 	local creature = LIBRARY:getCreatureByName(parameters.id)
 	local sameSummoned = mechanics:getBattle():getAnyUnitIf(function(unit)
 		return (unit:getOwner() == mechanics:getCasterColor())
@@ -175,4 +175,4 @@ transformTarget = function(parameters, mechanics, aimPoint, spellTarget)
 	end
 end
 
-
+return Script

@@ -106,6 +106,7 @@ LuaContext::~LuaContext()
 {
 	modules.reset();
 	scriptClosure.reset();
+	scriptTable.reset();
 	lua_close(L);
 }
 
@@ -168,13 +169,21 @@ void LuaContext::run()
 	popAll();
 	scriptClosure->push();
 
-	ret = lua_pcall(L, 0, 0, 0);
+	ret = lua_pcall(L, 0, 1, 0);
 
 	if(ret)
 	{
 		logScript->error("Script '%s' failed to run, error: '%s'", script->getJsonKey(), toStringRaw(-1));
 		popAll();
 	}
+
+	if (!lua_istable(L, -1)) {
+		logScript->error("Script '%s' did not return a table", script->getJsonKey());
+		popAll();
+		return;
+	}
+
+	scriptTable = std::make_shared<LuaReference>(L);
 }
 
 int LuaContext::errorRetVoid(const std::string & message)
@@ -182,187 +191,6 @@ int LuaContext::errorRetVoid(const std::string & message)
 	logGlobal->error(message);
 	popAll();
 	return 0;
-}
-
-JsonNode LuaContext::callGlobal(const std::string & name, const JsonNode & parameters)
-{
-	std::lock_guard guard(mutex);
-	LuaStack S(L);
-
-	lua_getglobal(L, name.c_str());
-
-	if(!S.isFunction(-1))
-	{
-		boost::format fmt("%s is not a function");
-		fmt % name;
-
-		logGlobal->error(fmt.str());
-
-		S.clear();
-
-		return JsonNode();
-	}
-
-	int argc = parameters.Vector().size();
-
-	for(int idx = 0; idx < argc; idx++)
-		S.push(parameters.Vector()[idx]);
-
-	if(lua_pcall(L, argc, 1, 0))
-	{
-		std::string error = lua_tostring(L, -1);
-		logGlobal->error("Lua function %s failed with message: %s", name, error);
-		S.clear();
-		return JsonNode();
-	}
-
-	JsonNode ret;
-
-	pop(ret);
-	S.balance();
-
-	return ret;
-}
-
-void LuaContext::getGlobal(const std::string & name, int & value)
-{
-	LuaStack S(L);
-
-	lua_getglobal(L, name.c_str());
-
-	lua_Integer temp;
-	if(S.tryGetInteger(-1, temp))
-		value = static_cast<int>(temp);
-	else
-		value = 0;
-	S.balance();
-}
-
-void LuaContext::getGlobal(const std::string & name, std::string & value)
-{
-	LuaStack S(L);
-
-	lua_getglobal(L, name.c_str());
-
-	if(!S.tryGet(-1, value))
-		value.clear();
-
-	S.balance();
-}
-
-void LuaContext::getGlobal(const std::string & name, double & value)
-{
-	LuaStack S(L);
-
-	lua_getglobal(L, name.c_str());
-
-	if(!S.tryGet(-1, value))
-		value = 0.0;
-
-	S.balance();
-}
-
-void LuaContext::getGlobal(const std::string & name, JsonNode & value)
-{
-	LuaStack S(L);
-
-	lua_getglobal(L, name.c_str());
-
-	pop(value);
-
-	S.balance();
-}
-
-void LuaContext::setGlobal(const std::string & name, int value)
-{
-	lua_pushinteger(L, static_cast<lua_Integer>(value));
-	lua_setglobal(L, name.c_str());
-}
-
-void LuaContext::setGlobal(const std::string & name, const std::string & value)
-{
-	lua_pushlstring(L, value.c_str(), value.size());
-	lua_setglobal(L, name.c_str());
-}
-
-void LuaContext::setGlobal(const std::string & name, double value)
-{
-	lua_pushnumber(L, value);
-	lua_setglobal(L, name.c_str());
-}
-
-void LuaContext::setGlobal(const std::string & name, const JsonNode & value)
-{
-	LuaStack S(L);
-	S.push(value);
-	lua_setglobal(L, name.c_str());
-	S.balance();
-}
-
-void LuaContext::pop(JsonNode & value)
-{
-	auto type = lua_type(L, -1);
-
-	switch(type)
-	{
-	case LUA_TNUMBER:
-		value.Float() = lua_tonumber(L, -1);
-		break;
-	case LUA_TBOOLEAN:
-		value.Bool() = (lua_toboolean(L, -1) != 0);
-		break;
-	case LUA_TSTRING:
-		value.String() = toStringRaw(-1);
-		break;
-	case LUA_TTABLE:
-		{
-			JsonNode asVector;
-			JsonNode asStruct;
-
-			lua_pushnil(L);  /* first key */
-
-			while(lua_next(L, -2) != 0)
-			{
-				/* 'key' (at index -2) and 'value' (at index -1) */
-
-				JsonNode fieldValue;
-				pop(fieldValue);
-
-				if(lua_type(L, -1) == LUA_TNUMBER)
-				{
-					auto key = lua_tointeger(L, -1);
-
-					if(key > 0)
-					{
-						if(asVector.Vector().size() < key)
-							asVector.Vector().resize(key);
-						--key;
-						asVector.Vector().at(key) = fieldValue;
-					}
-				}
-				else if(lua_isstring(L, -1))
-				{
-					auto key = toStringRaw(-1);
-					asStruct[key] = fieldValue;
-				}
-			}
-
-			if(!asVector.Vector().empty())
-			{
-				std::swap(value, asVector);
-			}
-			else
-			{
-				std::swap(value, asStruct);
-			}
-		}
-		break;
-	default:
-		value.clear();
-		break;
-	}
-
-	lua_pop(L, 1);
 }
 
 void LuaContext::push(const std::string & value)

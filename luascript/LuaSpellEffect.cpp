@@ -68,7 +68,7 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 
-	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_GENERAL, parameters, m, &problem);
+	bool result = context->call<bool>(APPLICABLE_GENERAL, parameters, m, &problem);
 
 	return result;
 }
@@ -80,7 +80,7 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const Ef
 	if(target.empty())
 		return false;
 
-	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_TARGET, parameters, m, target);
+	bool result = context->call<bool>(APPLICABLE_TARGET, parameters, m, target);
 
 	return result;
 }
@@ -89,7 +89,7 @@ void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const E
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	context->callGlobalWithParameters<void>(APPLY, parameters, m, server, target);
+	context->call<void>(APPLY, parameters, m, server, target);
 }
 
 EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
@@ -101,7 +101,7 @@ EffectTarget LuaSpellEffect::transformTarget(const Mechanics * m, const Target &
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
-	Target response = context->callGlobalWithParameters<Target>(TRANSFORM_TARGET, parameters, m, aimPoint, spellTarget);
+	Target response = context->call<Target>(TRANSFORM_TARGET, parameters, m, aimPoint, spellTarget);
 
 	return response;
 }

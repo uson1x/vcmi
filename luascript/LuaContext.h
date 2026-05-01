@@ -11,6 +11,7 @@
 #pragma once
 
 #include "LuaStack.h"
+#include "LuaReference.h"
 #include "../lib/json/JsonNode.h"
 #include <vcmi/scripting/Service.h>
 
@@ -27,12 +28,10 @@ public:
 	LuaContext(const Script * source, const Environment * env_);
 	~LuaContext();
 
-	void run() override;
-
-	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
+	void run();
 
 	template<typename ReturnType, typename... Args>
-	ReturnType callGlobalWithParameters(const std::string & name, Args&& ... parameters);
+	ReturnType call(const std::string & name, Args&& ... parameters);
 
 private:
 	std::mutex mutex;
@@ -44,21 +43,10 @@ private:
 
 	std::shared_ptr<LuaReference> modules;
 	std::shared_ptr<LuaReference> scriptClosure;
+	std::shared_ptr<LuaReference> scriptTable;
 
 	//log error and return nil from LuaCFunction
 	int errorRetVoid(const std::string & message);
-
-	void getGlobal(const std::string & name, int & value) override;
-	void getGlobal(const std::string & name, std::string & value) override;
-	void getGlobal(const std::string & name, double & value) override;
-	void getGlobal(const std::string & name, JsonNode & value) override;
-
-	void setGlobal(const std::string & name, int value) override;
-	void setGlobal(const std::string & name, const std::string & value) override;
-	void setGlobal(const std::string & name, double value) override;
-	void setGlobal(const std::string & name, const JsonNode & value) override;
-
-	void pop(JsonNode & value);
 
 	void popAll();
 
@@ -79,12 +67,14 @@ private:
 };
 
 template<typename ReturnType, typename... Args>
-ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&& ... parameters)
+ReturnType LuaContext::call(const std::string & name, Args&& ... parameters)
 {
 	std::lock_guard guard(mutex);
 	LuaStack S(L);
 
-	lua_getglobal(L, name.c_str());
+	scriptTable->push(); 	           // stack: (table)
+	lua_getfield(L, -1, name.c_str()); // stack: (table), (function)
+	lua_replace(L, 1);                 // stack: (function)
 
 	if(!S.isFunction(-1))
 	{

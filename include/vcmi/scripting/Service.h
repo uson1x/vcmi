@@ -28,20 +28,6 @@ class DLL_LINKAGE Context
 {
 public:
 	virtual ~Context() = default;
-
-	virtual void run() = 0;
-
-	virtual JsonNode callGlobal(const std::string & name, const JsonNode & parameters) = 0;
-
-	virtual void setGlobal(const std::string & name, int value) = 0;
-	virtual void setGlobal(const std::string & name, const std::string & value) = 0;
-	virtual void setGlobal(const std::string & name, double value) = 0;
-	virtual void setGlobal(const std::string & name, const JsonNode & value) = 0;
-
-	virtual void getGlobal(const std::string & name, int & value) = 0;
-	virtual void getGlobal(const std::string & name, std::string & value) = 0;
-	virtual void getGlobal(const std::string & name, double & value) = 0;
-	virtual void getGlobal(const std::string & name, JsonNode & value) = 0;
 };
 
 class DLL_LINKAGE Script
