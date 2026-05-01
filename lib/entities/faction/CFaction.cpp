@@ -111,14 +111,4 @@ TerrainId CFaction::getNativeTerrain() const
 	return nativeTerrain;
 }
 
-void CFaction::updateFrom(const JsonNode & data)
-{
-
-}
-
-void CFaction::serializeJson(JsonSerializeFormat & handler)
-{
-
-}
-
 VCMI_LIB_NAMESPACE_END

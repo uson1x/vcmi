@@ -334,37 +334,37 @@ class DefaultTargetConditionItemFactory : public TargetConditionItemFactory
 public:
 	Object createAbsoluteLevel() const override
 	{
-		static auto antimagicCondition = std::make_shared<AbsoluteLevelCondition>();
+		static const auto antimagicCondition = std::make_shared<AbsoluteLevelCondition>();
         return antimagicCondition;
 	}
 
 	Object createAbsoluteSpell() const override
 	{
-		static auto alCondition = std::make_shared<AbsoluteSpellCondition>();
+		static const auto alCondition = std::make_shared<AbsoluteSpellCondition>();
 		return alCondition;
 	}
 
 	Object createElemental() const override
 	{
-		static auto elementalCondition = std::make_shared<ElementalCondition>();
+		static const auto elementalCondition = std::make_shared<ElementalCondition>();
 		return elementalCondition;
 	}
 
 	Object createResistance() const override
 	{
-		static auto elementalCondition = std::make_shared<ResistanceCondition>();
+		static const auto elementalCondition = std::make_shared<ResistanceCondition>();
 		return elementalCondition;
 	}
 
 	Object createNormalLevel() const override
 	{
-		static auto nlCondition = std::make_shared<NormalLevelCondition>();
+		static const auto nlCondition = std::make_shared<NormalLevelCondition>();
 		return nlCondition;
 	}
 
 	Object createNormalSpell() const override
 	{
-		static auto nsCondition = std::make_shared<NormalSpellCondition>();
+		static const auto nsCondition = std::make_shared<NormalSpellCondition>();
 		return nsCondition;
 	}
 
@@ -430,23 +430,20 @@ public:
 
 	Object createReceptiveFeature() const override
 	{
-		static auto condition = std::make_shared<ReceptiveFeatureCondition>();
+		static const auto condition = std::make_shared<ReceptiveFeatureCondition>();
 		return condition;
 	}
 
 	Object createImmunityNegation() const override
 	{
-		static auto condition = std::make_shared<ImmunityNegationCondition>();
+		static const auto condition = std::make_shared<ImmunityNegationCondition>();
 		return condition;
 	}
 };
 
 const TargetConditionItemFactory * TargetConditionItemFactory::getDefault()
 {
-	static std::unique_ptr<TargetConditionItemFactory> singleton;
-
-	if(!singleton)
-		singleton = std::make_unique<DefaultTargetConditionItemFactory>();
+	static const std::unique_ptr<TargetConditionItemFactory> singleton = std::make_unique<DefaultTargetConditionItemFactory>();
 	return singleton.get();
 }
 

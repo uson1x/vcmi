@@ -170,16 +170,6 @@ std::string CSkill::toString() const
 	return ss.str();
 }
 
-void CSkill::updateFrom(const JsonNode & data)
-{
-
-}
-
-void CSkill::serializeJson(JsonSerializeFormat & handler)
-{
-
-}
-
 ///CSkillHandler
 std::vector<JsonNode> CSkillHandler::loadLegacyData()
 {

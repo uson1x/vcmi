@@ -138,7 +138,6 @@ public:
 	const std::map<ArtBearer, std::vector<ArtifactPosition>> & getPossibleSlots() const;
 
 	virtual bool canBePutAt(const CArtifactSet * artSet, ArtifactPosition slot = ArtifactPosition::FIRST_AVAILABLE, bool assumeDestRemoved = false) const;
-	void updateFrom(const JsonNode & data);
 	// Is used for testing purposes only
 	void setImage(int32_t iconIndex, const std::string & image, const std::string & large);
 

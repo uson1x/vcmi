@@ -26,63 +26,11 @@ namespace api
 
 const std::vector<ServerCbProxy::CustomRegType> ServerCbProxy::REGISTER_CUSTOM =
 {
-		{ "createUnit", &ServerCbProxy::createUnit, false },
-		{ "updateUnit", &ServerCbProxy::updateUnit, false },
-		{ "healUnit", &ServerCbProxy::healUnit, false },
-		{ "removeUnit", &ServerCbProxy::removeUnit, false },
+	{ "createUnit", LuaCallWrapper<&ServerCbProxy::createUnit>::invoke, false },
+	{ "updateUnit", LuaCallWrapper<&ServerCbProxy::updateUnit>::invoke, false },
+	{ "healUnit", LuaCallWrapper<&ServerCbProxy::healUnit>::invoke, false },
+	{ "removeUnit", LuaCallWrapper<&ServerCbProxy::removeUnit>::invoke, false },
 };
-
-int ServerCbProxy::commitPackage(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
-
-	if(!S.tryGet(1, object))
-		return S.retNil();
-
-	lua_remove(L, 1);
-
-	if(lua_isuserdata(L, 1) != 1)
-		return S.retVoid();
-
-	lua_getfield(L, 1, "toNetpackLight");
-	lua_insert(L, 1);
-
-	int ret = lua_pcall(L, 1, 1, 0);
-
-	if(ret != 0 || !lua_islightuserdata(L, 1))
-		return S.retVoid();
-
-
-	auto * pack = static_cast<CPackForClient *>(lua_touserdata(L, 1));
-
-	object->apply(*pack);
-
-	return S.retVoid();
-}
-
-template<typename NetPack>
-int ServerCbProxy::apply(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
-
-	if(!S.tryGet(1, object))
-		return S.retNil();
-
-	lua_remove(L, 1);
-
-	std::shared_ptr<NetPack> pack;
-
-	if(!S.tryGet(1, pack))
-		return S.retVoid();
-
-	object->apply(*pack);
-
-	return S.retVoid();
-}
 
 int ServerCbProxy::createUnit(lua_State * L)
 {
@@ -94,7 +42,7 @@ int ServerCbProxy::createUnit(lua_State * L)
 	uc.operation = UnitChanges::EOperation::ADD;
 
 	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data))
-		return S.retVoid();
+		throw LuaApiException("Invalid parameters passed into createUnit!");
 
 	buc.changedStacks.push_back(uc);
 
@@ -114,7 +62,7 @@ int ServerCbProxy::healUnit(lua_State * L)
 	EHealLevel healLevel;
 
 	if (!S.tryGetAll(1, object, battleID, unit, healthDelta, healLevel, healPower))
-		return S.retVoid();
+		throw LuaApiException("Invalid parameters passed into healUnit!");
 
 	auto changedUnit = unit->acquire();
 	changedUnit->heal(healthDelta, healLevel, healPower);
@@ -142,7 +90,7 @@ int ServerCbProxy::updateUnit(lua_State * L)
 	uc.operation = UnitChanges::EOperation::UPDATE;
 
 	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data, uc.healthDelta))
-		return S.retVoid();
+		throw LuaApiException("Invalid parameters passed into updateUnit!");
 
 	buc.changedStacks.push_back(uc);
 
@@ -160,7 +108,7 @@ int ServerCbProxy::removeUnit(lua_State * L)
 	uc.operation = UnitChanges::EOperation::REMOVE;
 
 	if (!S.tryGetAll(1, object, buc.battleID, uc.id))
-		return S.retVoid();
+		throw LuaApiException("Invalid parameters passed into removeUnit!");
 
 	buc.changedStacks.push_back(uc);
 

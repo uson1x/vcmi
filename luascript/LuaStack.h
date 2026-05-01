@@ -195,8 +195,6 @@ public:
 		nonConstValue.serializeScript(luaSerializer);
 	}
 
-	bool tryGetInteger(int position, lua_Integer & value);
-
 	bool tryGet(int position, bool & value);
 
 	template<typename T, typename std::enable_if_t< std::is_integral_v<T> && !std::is_same_v<T, bool>, int> = 0>
@@ -399,6 +397,29 @@ public:
 		}
 	}
 
+	bool tryGet(int position, JsonNode & value);
+
+	int retVoid();
+
+	STRONG_INLINE
+	int retPushed()
+	{
+		return lua_gettop(L);
+	}
+
+	inline bool isFunction(int position)
+	{
+		return lua_isfunction(L, position);
+	}
+
+	inline bool isNumber(int position)
+	{
+		return lua_isnumber(L, position);
+	}
+
+private:
+	bool tryGetInteger(int position, lua_Integer & value);
+
 	template<typename BaseType>
 	bool tryGetUData(int position, BaseType & value)
 	{
@@ -493,58 +514,6 @@ public:
 		throw LuaApiException( "Failed to retrieve class " + std::string(typeid(BaseType).name()) + " from stack!");
 	}
 
-	bool tryGet(int position, JsonNode & value);
-
-	int retNil();
-	int retVoid();
-
-	STRONG_INLINE
-	int retPushed()
-	{
-		return lua_gettop(L);
-	}
-
-	inline bool isFunction(int position)
-	{
-		return lua_isfunction(L, position);
-	}
-
-	inline bool isNumber(int position)
-	{
-		return lua_isnumber(L, position);
-	}
-
-	static int quickRetBool(lua_State * L, bool value)
-	{
-		lua_settop(L, 0);
-		lua_pushboolean(L, value);
-		return 1;
-	}
-
-	template<typename T>
-	static int quickRetInt(lua_State * L, const T & value)
-	{
-		lua_settop(L, 0);
-		lua_pushinteger(L, static_cast<int32_t>(value));
-		return 1;
-	}
-
-	template<std::size_t T>
-	static int quickRetInt(lua_State * L, const std::bitset<T> & value)
-	{
-		lua_settop(L, 0);
-		lua_pushinteger(L, static_cast<int32_t>(value.to_ulong()));
-		return 1;
-	}
-
-	static int quickRetStr(lua_State * L, const std::string & value)
-	{
-		lua_settop(L, 0);
-		lua_pushlstring(L, value.c_str(), value.size());
-		return 1;
-	}
-
-private:
 	/// Pushes copy of FinalType on top of Lua stack as userdata
 	template<typename DataType, typename FinalType>
 	void createLuaUserdata(const FinalType & copySource)

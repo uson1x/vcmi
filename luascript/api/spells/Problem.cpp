@@ -23,7 +23,7 @@ using ::spells::Problem;
 
 const std::vector<SpellProblemProxy::CustomRegType> SpellProblemProxy::REGISTER_CUSTOM =
 {
-	{"add", &SpellProblemProxy::add, false},
+	{"add", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
 };
 
 int SpellProblemProxy::add(lua_State * L)
@@ -33,8 +33,8 @@ int SpellProblemProxy::add(lua_State * L)
 	Problem * object = nullptr;
 	JsonNode metaStringConfig;
 
-	if (!S.tryGetAll(1, object, metaStringConfig))
-		return S.retVoid();
+	S.getNonNullOrThrow(1, object);
+	S.getOrThrow(2, metaStringConfig);
 
 	MetaString metaString;
 	for (const auto & entry : metaStringConfig["append"].Vector())

@@ -274,13 +274,6 @@ bool LuaStack::tryGet(int position, JsonNode & value)
 	}
 }
 
-int LuaStack::retNil()
-{
-	clear();
-	pushNil();
-	return 1;
-}
-
 int LuaStack::retVoid()
 {
 	clear();

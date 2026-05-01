@@ -79,9 +79,6 @@ public:
 	/// Bonuses that should be given to hero that specializes in this skill
 	std::vector<std::shared_ptr<const Bonus>> specialtyTargetBonuses;
 
-	void updateFrom(const JsonNode & data);
-	void serializeJson(JsonSerializeFormat & handler);
-
 	friend class CSkillHandler;
 	friend DLL_LINKAGE std::ostream & operator<<(std::ostream & out, const CSkill & skill);
 	friend DLL_LINKAGE std::ostream & operator<<(std::ostream & out, const CSkill::LevelInfo & info);

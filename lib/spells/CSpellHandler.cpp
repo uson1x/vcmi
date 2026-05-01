@@ -496,11 +496,6 @@ void CSpell::registerIcons(const IconRegistar & cb) const
 	cb(getIndex(), 0, "SPELLSCR", iconScroll);
 }
 
-void CSpell::updateFrom(const JsonNode & data)
-{
-	//todo:CSpell::updateFrom
-}
-
 void CSpell::serializeJson(JsonSerializeFormat & handler)
 {
 

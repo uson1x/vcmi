@@ -217,7 +217,6 @@ public:
 
 	const AudioPath & getCastSound() const;
 
-	void updateFrom(const JsonNode & data);
 	void serializeJson(JsonSerializeFormat & handler);
 
 	friend class CSpellHandler;
