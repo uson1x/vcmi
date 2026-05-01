@@ -6,8 +6,8 @@ VCMI's in-game Wiki window has a **Glossary** category that shows free-form ency
 
 Glossary entries are declared in
 
-```
-<mod_root>/config/wikiGlossary.json
+```text
+<mod_root>/Content/config/wikiGlossary.json
 ```
 
 Each entry references two translation keys that must be present in the mod's translation file (e.g. `config/translations/english.json`).
@@ -28,7 +28,7 @@ Each entry references two translation keys that must be present in the mod's tra
 ```
 
 | Field | Required | Description |
-|-------|----------|-------------|
+|---|---|---|
 | `name` | yes | Translation key for the list title shown in the left panel. |
 | `description` | yes | Translation key for the full article body shown on the right. The value supports the Markdown syntax described below. |
 
@@ -42,7 +42,7 @@ The description value is a JSON string.  Use `\n` for newlines.  The renderer su
 
 ### Headings
 
-```
+```text
 # Heading level 1
 ## Heading level 2
 ### Heading level 3
@@ -52,7 +52,7 @@ Headings are left-aligned by default.  Wrap a heading in alignment tags (see bel
 
 ### Horizontal rule
 
-```
+```text
 ---
 ```
 
@@ -62,28 +62,28 @@ Three or more `-`, `_`, or `*` characters on their own line.
 
 A blank line (`\n\n`) ends the current paragraph and starts a new one.  Alternatively, use the explicit `<p>` tag.
 
-```
+```text
 First paragraph.\n\n<p>\nSecond paragraph (also starts after a p-tag).
 ```
 
 ### Line breaks
 
 | Syntax | Effect |
-|--------|--------|
+|---|---|
 | `<br>` inline inside a paragraph line | Inserts a line-break inside the rendered label without starting a new paragraph. |
 | `<br>` on its own line | Flushes the current paragraph to screen without adding extra vertical space. |
 
 ### Lists
 
-**Unordered** – begin a line with `- ` or `* `:
+**Unordered** – begin a line with `-` or `*` followed by a space:
 
-```
+```text
 - First item\n- Second item
 ```
 
-**Ordered** – begin a line with `N. ` (any integer):
+**Ordered** – begin a line with an integer, a period, and a space (e.g. `1.`):
 
-```
+```text
 1. First step\n2. Second step
 ```
 
@@ -92,7 +92,7 @@ First paragraph.\n\n<p>\nSecond paragraph (also starts after a p-tag).
 Wrap one or more block elements (headings, images, animations, videos) between an opening and a matching closing tag to control their alignment:
 
 | Opening tag | Closing tag | Effect |
-|-------------|-------------|--------|
+|---|---|---|
 | `<left>` | `</left>` | Align to the left. |
 | `<center>` | `</center>` | Align to the centre. |
 | `<right>` | `</right>` | Align to the right. |
@@ -103,14 +103,14 @@ Headings default to **left**; images, animations, and videos default to **left**
 
 ### Images
 
-```
+```text
 ![alt text](filename.ext)
 ```
 
 The file extension determines how the resource is loaded.
 
 | Extension | Rendering |
-|-----------|-----------|
+|---|---|
 | `.png` `.pcx` `.bmp` (or any non-animation image) | Static image.  Downscaled to fit the viewport width if wider. |
 | `.def` `.json` (no `#N` suffix) | Animation; all frames played as a looping ~6 fps animation. |
 | `.def` `.json#N` | Single static frame `N` from the animation. |
@@ -122,7 +122,7 @@ If the `alt text` field is non-empty, right-clicking the image, animation, or vi
 
 #### Examples
 
-```
+```text
 Static image:
 ![Background](DIBOXBCK.PCX)
 
@@ -148,7 +148,7 @@ Animation with right-click tooltip:
 
 GFM-style pipe tables are supported.  The first row is automatically rendered as a header (yellow, dark background).  The second row **must** be a separator row (`|---|---|`).
 
-```
+```text
 | Column A | Column B |
 |----------|----------|
 | Cell text | More text |
@@ -156,7 +156,7 @@ GFM-style pipe tables are supported.  The first row is automatically rendered as
 
 Cell content may be any media syntax:
 
-```
+```text
 | Creature | Icon |
 |----------|------|
 | Frame 0  | ![f0](CPRSMALL.DEF#0) |
@@ -169,7 +169,7 @@ Column widths are distributed equally.  Text cells wrap automatically.
 
 All text (paragraphs, lists, table cells, headings) passes through the VCMI label renderer, so `{highlighted text}` colour tags work everywhere:
 
-```
+```text
 The {Fire Wall} spell deals {direct damage}.
 ```
 
@@ -179,7 +179,7 @@ Wiki links navigate to another entry when clicked.  They are shown underlined in
 
 #### Text link
 
-```
+```text
 [display text](wiki:category/identifier)
 ```
 
@@ -189,7 +189,7 @@ Placed on its own line or inline within a paragraph.
 
 An image, animation, or video wrapped in a link navigates on left-click:
 
-```
+```text
 [![alt text](media.def)](wiki:category/identifier)
 ```
 
@@ -198,7 +198,7 @@ Right-clicking a linked image still shows the alt-text tooltip as normal.
 #### Categories and identifiers
 
 | Category string | Content |
-|-----------------|---------|
+|---|---|
 | `glossary` | Manual glossary entries |
 | `creature` | Creature list |
 | `spell` | Spell list |
@@ -211,19 +211,54 @@ Right-clicking a linked image still shows the alt-text tooltip as normal.
 
 **Glossary identifier** – the translation key of the entry's `name` field, with the trailing `.name` stripped:
 
-```
+```text
 "name": "mymod.wiki.myfeature.name"   →   wiki:glossary/mymod.wiki.myfeature
 ```
 
 **Game-entity identifier** – the JSON key of the entity as returned by `getJsonKey()`.  For core content this is typically just the unscoped name:
 
-```
+```text
 wiki:creature/imp        (matches "core:imp")
 wiki:spell/fireball
 wiki:skill/eagleEye
 ```
 
 Both the scoped form (`core:imp`) and the unscoped form (`imp`) are accepted.
+
+### Anchors
+
+Invisible anchors mark a position inside a page so that a link can jump directly to that position.  They are never rendered; only their Y offset is recorded.
+
+#### Standalone anchor
+
+Place the tag on its own line (nothing else on that line):
+
+```text
+<a id="my-anchor" />
+```
+
+Both `id` and `name` attributes are accepted.  Anchor names are case-sensitive; lowercase letters, digits, and hyphens are recommended.
+
+#### Anchor embedded in a heading
+
+Prefix or suffix the heading line with an anchor tag on the same Markdown line:
+
+```text
+## <a id="my-section" />Section Title
+## Section Title<a id="my-section" />
+```
+
+The anchor tag is stripped before the heading is rendered; the visible heading text is not affected.
+
+#### Linking to an anchor
+
+Append `#anchorname` to the entry identifier in any wiki link:
+
+```text
+[Jump to my section](wiki:glossary/mymod.wiki.mypage#my-section)
+```
+
+Navigation first loads the target entry, then scrolls the page to the anchor position.
 
 ---
 

@@ -989,6 +989,14 @@ void WikiWindow::updateContent()
 			const std::string & entryName = currentDisplayedEntries[activeElementIndex].identifier;
 			if(entryName != currentGlossaryEntryName)
 				rebuildGlossaryViewport(entryName);
+			else if(!pendingAnchor.empty())
+			{
+				// Same page, just scroll to the anchor without a full rebuild.
+				const auto anchorIt = glossaryAnchorMap.find(pendingAnchor);
+				if(anchorIt != glossaryAnchorMap.end())
+					glossaryContentView->scrollToY(anchorIt->second);
+				pendingAnchor.clear();
+			}
 		}
 	}
 	else if(activeCategoryIndex < 0 || activeElementIndex < 0
@@ -1285,6 +1293,7 @@ void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
 	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
 
 	const bool isBlue = (style == Style::BLUE);
+	glossaryAnchorMap.clear();
 	{
 		// Build a link callback that parses "wiki:category/id" and navigates.
 		auto linkCb = [this](const std::string & target)
@@ -1296,7 +1305,10 @@ void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
 			const auto slash = rest.find('/');
 			if(slash == std::string::npos) return;
 			const std::string catStr = rest.substr(0, slash);
-			const std::string id     = rest.substr(slash + 1);
+			const std::string idFull = rest.substr(slash + 1);
+			const auto hashPos       = idFull.find('#');
+			const std::string id     = (hashPos == std::string::npos) ? idFull : idFull.substr(0, hashPos);
+			const std::string anchor = (hashPos == std::string::npos) ? std::string{} : idFull.substr(hashPos + 1);
 			WikiCategory cat = WikiCategory::GLOSSARY;
 			if     (catStr == "glossary") cat = WikiCategory::GLOSSARY;
 			else if(catStr == "town")     cat = WikiCategory::TOWN;
@@ -1307,14 +1319,23 @@ void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
 			else if(catStr == "skill")    cat = WikiCategory::SKILL;
 			else if(catStr == "terrain")  cat = WikiCategory::TERRAIN;
 			else if(catStr == "mod")      cat = WikiCategory::MOD;
-			navigateTo(WikiEntryKey{cat, id});
+			navigateTo(WikiEntryKey{cat, id, anchor});
 		};
 		auto moreWidgets = buildMarkdownContent(*glossaryContentView, markdownText,
-			VP_W - CViewport::SLIDER_W, isBlue, linkCb);
+			VP_W - CViewport::SLIDER_W, isBlue, linkCb, &glossaryAnchorMap);
 		glossaryContentWidgets.insert(
 			glossaryContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
 	}
 	glossaryContentView->fitContentSize();
+
+	// Scroll to the requested anchor if one was set before this rebuild.
+	if(!pendingAnchor.empty())
+	{
+		const auto anchorIt = glossaryAnchorMap.find(pendingAnchor);
+		if(anchorIt != glossaryAnchorMap.end())
+			glossaryContentView->scrollToY(anchorIt->second);
+		pendingAnchor.clear();
+	}
 
 	applyScrollBounds();
 	ENGINE->windows().totalRedraw();
@@ -1377,6 +1398,9 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 	const int catIdx = static_cast<int>(key.category);
 	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
 		return;
+
+	// Store the anchor to be consumed by rebuildGlossaryViewport().
+	pendingAnchor = key.anchor;
 
 	// Deselect old highlighting before changing category/element
 	if(categoryList && activeCategoryIndex >= 0)

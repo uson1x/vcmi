@@ -297,6 +297,27 @@ static std::optional<MDAlignTag> parseAlignTag(const std::string & line)
 	return std::nullopt;
 }
 
+// Parses an <a id="name" /> or <a name="name" /> HTML anchor tag anywhere in
+// a string and returns the first captured name/id value (lower-cased).
+// Returns an empty string if no tag is found.
+static std::string parseAnchorTag(const std::string & s)
+{
+	static const std::regex RE(R"re(<a\s+(?:id|name)\s*=\s*"([^"]*?)"\s*/>)re",
+	                            std::regex::icase);
+	std::smatch m;
+	if(std::regex_search(s, m, RE))
+		return m[1].str();
+	return {};
+}
+
+// Removes all <a id="..."/> / <a name="..."/> tags from a string.
+static std::string stripAnchorTags(const std::string & s)
+{
+	static const std::regex RE(R"re(<a\s+(?:id|name)\s*=\s*"[^"]*?"\s*/>)re",
+	                            std::regex::icase);
+	return std::regex_replace(s, RE, "");
+}
+
 struct ParsedMedia
 {
 	std::string path;
@@ -426,7 +447,8 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 	const std::string & markdownText,
 	int viewportWidth,
 	bool blueStyle,
-	std::function<void(const std::string &)> onWikiLink)
+	std::function<void(const std::string &)> onWikiLink,
+	std::map<std::string, int> * anchors)
 {
 	std::vector<std::shared_ptr<CIntObject>> widgets;
 	OBJECT_CONSTRUCTION_TARGETED(viewport.content());
@@ -874,6 +896,29 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			}
 		}
 
+		// Invisible named anchor: <a id="name" /> or <a name="name" />
+		// Records the current Y position in the anchors map and emits no widget.
+		// Anchor tags may also appear inside heading lines (handled in the heading
+		// branch below); this branch catches standalone anchor-only lines.
+		{
+			const std::string anchorId = parseAnchorTag(t);
+			if(!anchorId.empty())
+			{
+				// Only treat as a standalone anchor if the whole line reduces to
+				// nothing after stripping the tag (no other content).
+				const std::string stripped = stripAnchorTags(t);
+				std::string rest = stripped;
+				while(!rest.empty() && (rest.front() == ' ' || rest.front() == '\t')) rest.erase(rest.begin());
+				while(!rest.empty() && (rest.back()  == ' ' || rest.back()  == '\t')) rest.pop_back();
+				if(rest.empty())
+				{
+					if(anchors) (*anchors)[anchorId] = curY;
+					continue;
+				}
+				// Otherwise fall through – line has content beyond the anchor tag.
+			}
+		}
+
 		// <p> – explicit paragraph break with gap.
 		if(t == "<p>" || t == "<P>")
 		{
@@ -896,6 +941,18 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			if(level > 0)
 			{
 				flushPara();
+				// Record any embedded anchor at the heading's current Y.
+				if(anchors)
+				{
+					const std::string anchorId = parseAnchorTag(headText);
+					if(!anchorId.empty())
+						(*anchors)[anchorId] = curY;
+				}
+				// Strip anchor tags so they don't appear in the rendered text.
+				headText = stripAnchorTags(headText);
+				while(!headText.empty() && (headText.front() == ' ' || headText.front() == '\t')) headText.erase(headText.begin());
+				while(!headText.empty() && (headText.back()  == ' ' || headText.back()  == '\t')) headText.pop_back();
+
 				const EFonts fnt    = (level == 1) ? FONT_BIG : (level == 2) ? FONT_MEDIUM : FONT_SMALL;
 				const int    topPad = (level == 1) ? MD_H1_PAD_TOP : (level == 2) ? MD_H2_PAD_TOP : MD_H3_PAD_TOP;
 				const int    lineH  = (level == 1) ? 22 : (level == 2) ? 16 : 12;

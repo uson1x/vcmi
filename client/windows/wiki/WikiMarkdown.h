@@ -9,11 +9,6 @@
  */
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <string>
-#include <vector>
-
 class CIntObject;
 class CViewport;
 
@@ -52,11 +47,21 @@ class CViewport;
 ///                         The id for glossary entries is the translation-key
 ///                         base without the trailing .name suffix, e.g.:
 ///                         wiki:glossary/vcmi.wiki.glossary.mdtest
+///                         Append #anchorname to scroll the target page to a
+///                         named anchor:
+///                         wiki:glossary/vcmi.wiki.glossary.mdtest#mysection
 ///                         Requires onWikiLink callback to be non-null.
 ///   [![alt](media)](wiki:id) Clickable image/animation/video link.
 ///                         Wrapping any media line in [...](...) makes the
 ///                         whole media widget navigate on left-click.
 ///                         Right-click still shows the alt-text popup.
+///   <a id="name" />       Invisible named anchor.  Use <a id="name" /> or
+///                         <a name="name" /> on its own line or embedded in a
+///                         heading (e.g. "## <a id="top" />Heading").
+///                         Anchor names should be lowercase without spaces.
+///                         If @p anchors is non-null the map is populated with
+///                         name → content Y-offset (pixels) pairs so callers
+///                         can scroll a CViewport to a specific section.
 ///   {VCMI color tags}     Passed through unchanged to all text labels.
 ///   regular paragraphs   Auto-wrapped CMultiLineLabel; blank line = gap.
 ///
@@ -68,10 +73,13 @@ class CViewport;
 /// @param blueStyle      True → blue wiki theme; false → brown theme.
 /// @param onWikiLink     Optional callback invoked when a wiki link is clicked.
 ///                       Argument is the raw URI string, e.g. "wiki:creature/imp".
+/// @param anchors        Optional output map populated with anchor name → content
+///                       Y-offset (px) pairs for every <a id="..."/> tag found.
 /// @return               Flat list of created widgets (parented to viewport).
 std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 	CViewport & viewport,
 	const std::string & markdownText,
 	int viewportWidth,
 	bool blueStyle,
-	std::function<void(const std::string &)> onWikiLink = nullptr);
+	std::function<void(const std::string &)> onWikiLink = nullptr,
+	std::map<std::string, int> * anchors = nullptr);

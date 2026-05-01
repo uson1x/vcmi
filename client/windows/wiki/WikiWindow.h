@@ -105,6 +105,9 @@ struct WikiEntryKey
 {
 	WikiCategory category; ///< Which category tab to open
 	std::string entryName; ///< Entity identifier / JSON key (used for lookup, not a translated string)
+	/// Optional anchor to scroll to after the entry is displayed.
+	/// Corresponds to the id/name attribute of an <a id="name" /> tag in the entry's Markdown.
+	std::string anchor = {};
 };
 
 /// In-game Glossary / Wiki - 800x600 stub window
@@ -179,6 +182,8 @@ private:
 	std::shared_ptr<CViewport> glossaryContentView; ///< scrollable viewport for Glossary (markdown renderer)
 	std::vector<std::shared_ptr<CIntObject>> glossaryContentWidgets;
 	std::string currentGlossaryEntryName; ///< identifier of the Glossary entry currently shown
+	std::map<std::string, int> glossaryAnchorMap; ///< anchor name -> Y offset for the current glossary entry
+	std::string pendingAnchor; ///< anchor to scroll to on the next rebuildGlossaryViewport() call
 
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
