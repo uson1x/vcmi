@@ -205,6 +205,18 @@ void Canvas::drawText(const Point & position, const EFonts & font, const ColorRG
 	}
 }
 
+void Canvas::drawTextBold(const Point & position, const EFonts & font, const ColorRGBA & colorDest, const std::string & text)
+{
+	const auto & fontPtr = ENGINE->renderHandler().loadFont(font);
+	fontPtr->renderTextBold(surface, text, colorDest, transformPos(position));
+}
+
+void Canvas::drawTextItalic(const Point & position, const EFonts & font, const ColorRGBA & colorDest, const std::string & text)
+{
+	const auto & fontPtr = ENGINE->renderHandler().loadFont(font);
+	fontPtr->renderTextItalic(surface, text, colorDest, transformPos(position));
+}
+
 void Canvas::drawColor(const Rect & target, const ColorRGBA & color)
 {
 	Rect realTarget = target * getScalingFactor() + renderArea.topLeft();

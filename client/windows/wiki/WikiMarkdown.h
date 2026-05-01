@@ -62,6 +62,22 @@ class CViewport;
 ///                         If @p anchors is non-null the map is populated with
 ///                         name → content Y-offset (pixels) pairs so callers
 ///                         can scroll a CViewport to a specific section.
+///   **text**              Bold inline span.  On scalable (TrueType) fonts the
+///                         text is drawn twice with a 1 px horizontal offset
+///                         (pseudo-bold).  On bitmap fonts the markers are
+///                         stripped and the text is rendered plain.
+///   *text*                Italic inline span.  On scalable fonts the SDL_TTF
+///                         italic style is applied temporarily while drawing.
+///                         On bitmap fonts the text is rendered plain.
+///   `code`                Inline code span.  Text is drawn with a semi-
+///                         transparent dark background rectangle.  Works on
+///                         all font types.
+///   ```                   Fenced code block.  Lines between a pair of ``` are
+///                         rendered verbatim inside a semi-transparent dark
+///                         background rectangle.  An optional language tag on
+///                         the opening fence (e.g. ```cpp) is accepted but
+///                         ignored (no syntax highlighting).  Works on all
+///                         font types.
 ///   {VCMI color tags}     Passed through unchanged to all text labels.
 ///   regular paragraphs   Auto-wrapped CMultiLineLabel; blank line = gap.
 ///

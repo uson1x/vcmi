@@ -109,6 +109,12 @@ public:
 	/// renders multiple lines of text with specified parameters
 	void drawText(const Point & position, const EFonts & font, const ColorRGBA & colorDest, ETextAlignment alignment, const std::vector<std::string> & text );
 
+	/// renders single line of text with bold styling (TTF only; falls back to plain on bitmap fonts)
+	void drawTextBold(const Point & position, const EFonts & font, const ColorRGBA & colorDest, const std::string & text);
+
+	/// renders single line of text with italic styling (TTF only; falls back to plain on bitmap fonts)
+	void drawTextItalic(const Point & position, const EFonts & font, const ColorRGBA & colorDest, const std::string & text);
+
 	/// fills selected area with solid color
 	void drawColor(const Rect & target, const ColorRGBA & color);
 

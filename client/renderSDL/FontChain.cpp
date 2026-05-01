@@ -35,6 +35,61 @@ void FontChain::renderText(SDL_Surface * surface, const std::string & data, cons
 	}
 }
 
+bool FontChain::isScalable() const
+{
+	for(const auto & font : chain)
+		if(font->isScalable()) return true;
+	return false;
+}
+
+void FontChain::renderTextItalic(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const
+{
+	auto chunks = splitTextToChunks(data);
+	int maxAscent = getFontAscentScaled();
+	Point currentPos = pos;
+	for(auto const & chunk : chunks)
+	{
+		Point chunkPos = currentPos;
+		int currAscent = chunk.font->getFontAscentScaled();
+		chunkPos.y += maxAscent - currAscent;
+		chunk.font->renderTextItalic(surface, chunk.text, color, chunkPos);
+		currentPos.x += chunk.font->getStringWidthItalicScaled(chunk.text);
+	}
+}
+
+void FontChain::renderTextBold(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const
+{
+	auto chunks = splitTextToChunks(data);
+	int maxAscent = getFontAscentScaled();
+	Point currentPos = pos;
+	for(auto const & chunk : chunks)
+	{
+		Point chunkPos = currentPos;
+		int currAscent = chunk.font->getFontAscentScaled();
+		chunkPos.y += maxAscent - currAscent;
+		chunk.font->renderTextBold(surface, chunk.text, color, chunkPos);
+		currentPos.x += chunk.font->getStringWidthBoldScaled(chunk.text);
+	}
+}
+
+size_t FontChain::getStringWidthBoldScaled(const std::string & data) const
+{
+	auto chunks = splitTextToChunks(data);
+	size_t total = 0;
+	for(auto const & chunk : chunks)
+		total += chunk.font->getStringWidthBoldScaled(chunk.text);
+	return total;
+}
+
+size_t FontChain::getStringWidthItalicScaled(const std::string & data) const
+{
+	auto chunks = splitTextToChunks(data);
+	size_t total = 0;
+	for(auto const & chunk : chunks)
+		total += chunk.font->getStringWidthItalicScaled(chunk.text);
+	return total;
+}
+
 size_t FontChain::getFontAscentScaled() const
 {
 	size_t maxHeight = 0;

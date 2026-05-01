@@ -83,6 +83,48 @@ CTrueTypeFont::CTrueTypeFont(const JsonNode & fontConfig):
 
 CTrueTypeFont::~CTrueTypeFont() = default;
 
+void CTrueTypeFont::renderTextItalic(SDL_Surface * surface, const std::string & data,
+                                     const ColorRGBA & color, const Point & pos) const
+{
+	const int origStyle = TTF_GetFontStyle(font.get());
+	TTF_SetFontStyle(font.get(), origStyle | TTF_STYLE_ITALIC);
+	renderText(surface, data, color, pos);
+	TTF_SetFontStyle(font.get(), origStyle);
+}
+
+void CTrueTypeFont::renderTextBold(SDL_Surface * surface, const std::string & data,
+                                   const ColorRGBA & color, const Point & pos) const
+{
+	const int origStyle = TTF_GetFontStyle(font.get());
+	TTF_SetFontStyle(font.get(), origStyle | TTF_STYLE_BOLD);
+	renderText(surface, data, color, pos);
+	TTF_SetFontStyle(font.get(), origStyle);
+}
+
+size_t CTrueTypeFont::getStringWidthBoldScaled(const std::string & text) const
+{
+	const int origStyle = TTF_GetFontStyle(font.get());
+	TTF_SetFontStyle(font.get(), origStyle | TTF_STYLE_BOLD);
+	int width = 0;
+	TTF_SizeUTF8(font.get(), text.c_str(), &width, nullptr);
+	TTF_SetFontStyle(font.get(), origStyle);
+	if(outline)      width += getScalingFactor();
+	if(dropShadow || outline) width += getScalingFactor();
+	return static_cast<size_t>(width);
+}
+
+size_t CTrueTypeFont::getStringWidthItalicScaled(const std::string & text) const
+{
+	const int origStyle = TTF_GetFontStyle(font.get());
+	TTF_SetFontStyle(font.get(), origStyle | TTF_STYLE_ITALIC);
+	int width = 0;
+	TTF_SizeUTF8(font.get(), text.c_str(), &width, nullptr);
+	TTF_SetFontStyle(font.get(), origStyle);
+	if(outline)      width += getScalingFactor();
+	if(dropShadow || outline) width += getScalingFactor();
+	return static_cast<size_t>(width);
+}
+
 size_t CTrueTypeFont::getFontAscentScaled() const
 {
 	return TTF_FontAscent(font.get());

@@ -45,4 +45,15 @@ public:
 	size_t getLineHeightScaled() const override;
 	size_t getGlyphWidthScaled(const char * data) const override;
 	size_t getStringWidthScaled(const std::string & data) const override;
+
+	/// Returns true – CTrueTypeFont is a scalable font with full style support.
+	bool isScalable() const override { return true; }
+
+	/// Renders text with TTF_STYLE_ITALIC applied temporarily, then restores the original style.
+	void renderTextItalic(SDL_Surface * surface, const std::string & data,
+	                     const ColorRGBA & color, const Point & pos) const override;
+	void renderTextBold(SDL_Surface * surface, const std::string & data,
+                     const ColorRGBA & color, const Point & pos) const override;
+	size_t getStringWidthBoldScaled(const std::string & data) const override;
+	size_t getStringWidthItalicScaled(const std::string & data) const override;
 };

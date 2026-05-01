@@ -135,6 +135,60 @@ First paragraph.\n\n<p>\nSecond paragraph (also starts after a p-tag).
 1. First step\n2. Second step
 ```
 
+### Blockquotes
+
+Begin a line with `>` followed by an optional space to render it as a blockquote —
+a left-aligned accent bar with slightly dimmed text:
+
+```text
+> This is a blockquote.
+> It can span multiple consecutive lines.
+```
+
+Consecutive `>` lines are merged into a single indented block.  An empty line or
+any other block element (heading, list item, code fence, …) ends the blockquote.
+Nested blockquotes (`>>`) are not supported; the extra `>` is treated as literal text.
+
+VCMI colour tags (`{text}`) work inside blockquotes.  Bold/italic inline spans
+(`**`, `*`) and inline code (`` ` ``) are rendered as plain text inside blockquotes.
+
+### Inline text styles
+
+VCMI supports bold and italic inline spans when the game is running with a scalable (TrueType) font.  On bitmap fonts the markers are accepted and stripped, but no visual change is applied.
+
+| Syntax | Effect |
+| --- | --- |
+| `**bold text**` | Pseudo-bold (text drawn twice with a 1 px horizontal offset). Scalable fonts only. |
+| `*italic text*` | Italic via SDL_TTF style. Scalable fonts only. |
+| `` `code` `` | Inline code span with a semi-transparent dark background. All fonts. |
+
+Inline spans can be mixed with plain text, wiki links (`[text](uri)`), and VCMI colour tags:
+
+```text
+Normal text **bold** and *italic* and `code` in one paragraph.\n\n[A link](wiki:glossary/mymod.wiki.myfeature) alongside **bold** text.
+```
+
+> **Note:** Inline styles do not nest.  `**bold *italic* text**` is not supported; the inner
+> `*...*` is treated as plain asterisks if it overlaps with an outer span.
+
+### Code blocks
+
+Triple-backtick fences delimit a preformatted code block with a semi-transparent background:
+
+```text
+```\nLine one of code\nLine two of code\n```
+```
+
+An optional language identifier on the opening fence is accepted (for documentation clarity)
+but has no effect (there is no syntax highlighting):
+
+```text
+```lua\n-- Lua comment\nlocal x = 1\n```
+```
+
+Code block lines are displayed verbatim using the regular `FONT_SMALL` font.  Word wrap is
+disabled; long lines may overflow the viewport.  Code blocks work with all font types.
+
 ### Alignment
 
 Wrap one or more block elements (headings, images, animations, videos) between an opening and a matching closing tag to control their alignment:

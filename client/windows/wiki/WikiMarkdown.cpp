@@ -37,6 +37,19 @@ static constexpr int MD_H1_PAD_TOP  = 12;
 static constexpr int MD_H2_PAD_TOP  = 8;
 static constexpr int MD_H3_PAD_TOP  = 4;
 
+// Padding around inline / block code spans
+static constexpr int MD_CODE_PAD_X  = 5;   ///< horizontal padding per side
+static constexpr int MD_CODE_PAD_Y  = 1;   ///< vertical padding per side (inline only)
+
+// Semi-transparent background colour for code (used for both inline and block)
+static constexpr ColorRGBA MD_CODE_BLOCK_BG = {20, 20, 20, 170};
+
+// Blockquote left accent bar and text
+static constexpr int       MD_BQ_BAR_W     = 3;              ///< left bar width in pixels
+static constexpr int       MD_BQ_TXT       = MD_MARGIN + 10; ///< text start x (after bar + gap)
+static constexpr ColorRGBA MD_BQ_BAR_COLOR  = {100, 150, 200, 210};
+static constexpr ColorRGBA MD_BQ_TEXT_COLOR = {200, 200, 200, 255};
+
 enum class MDAlign { LEFT, CENTER, RIGHT };
 
 static ETextAlignment toTextAlign(MDAlign a)
@@ -232,6 +245,83 @@ public:
 		pos.x += area.x; pos.y += area.y; pos.w = area.w; pos.h = area.h;
 	}
 	void clickPressed(const Point &) override { if(onLink) onLink(target); }
+};
+
+// WikiBoldSpan – renders a text span in bold using TTF style change.
+// Delegates to IFont::renderTextBold; falls back to plain for bitmap fonts.
+class WikiBoldSpan : public CIntObject
+{
+	std::string text;
+public:
+	WikiBoldSpan(int x, int y, int w, int h, std::string t)
+		: CIntObject(0, Point(x, y))
+		, text(std::move(t))
+	{ pos.w = w; pos.h = h; }
+
+	void showAll(Canvas & to) override
+	{
+		to.drawTextBold(pos.topLeft(), FONT_SMALL, Colors::WHITE, text);
+	}
+};
+
+// WikiItalicSpan – renders a text span in italic using TTF style change.
+// Delegates to IFont::renderTextItalic; falls back to plain for bitmap fonts.
+class WikiItalicSpan : public CIntObject
+{
+	std::string text;
+public:
+	WikiItalicSpan(int x, int y, int w, int h, std::string t)
+		: CIntObject(0, Point(x, y))
+		, text(std::move(t))
+	{ pos.w = w; pos.h = h; }
+
+	void showAll(Canvas & to) override
+	{
+		to.drawTextItalic(pos.topLeft(), FONT_SMALL, Colors::WHITE, text);
+	}
+};
+
+// WikiCodeSpan – renders an inline code snippet with a semi-transparent background rect.
+class WikiCodeSpan : public CIntObject
+{
+	std::string text;
+public:
+	WikiCodeSpan(int x, int y, std::string t, int totalW, int lineH)
+		: CIntObject(0, Point(x, y))
+		, text(std::move(t))
+	{ pos.w = totalW; pos.h = lineH; }
+
+	void showAll(Canvas & to) override
+	{
+		// Shift background 1px down so it doesn't overlap the descenders of the line above.
+		to.drawColorBlended(Rect(Point(pos.x, pos.y + 1), Point(pos.w, pos.h - 1)), MD_CODE_BLOCK_BG);
+		to.drawText(Point(pos.x + MD_CODE_PAD_X, pos.y + MD_CODE_PAD_Y),
+		            FONT_SMALL, Colors::WHITE, ETextAlignment::TOPLEFT, text);
+	}
+};
+
+// WikiCodeBlockWidget – fenced code block (``` ... ```) with a semi-transparent background.
+class WikiCodeBlockWidget : public CIntObject
+{
+	std::vector<std::string> lines;
+	int lineH;
+public:
+	WikiCodeBlockWidget(int x, int y, int w, std::vector<std::string> ls, int lh)
+		: CIntObject(0, Point(x, y))
+		, lines(std::move(ls))
+		, lineH(lh)
+	{
+		pos.w = w;
+		pos.h = MD_CODE_PAD_X * 2 + (int)lines.size() * lineH;  // same padding on all sides
+	}
+
+	void showAll(Canvas & to) override
+	{
+		to.drawColorBlended(Rect(pos.topLeft(), Point(pos.w, pos.h)), MD_CODE_BLOCK_BG);
+		for(int i = 0; i < (int)lines.size(); ++i)
+			to.drawText(Point(pos.x + MD_CODE_PAD_X, pos.y + MD_CODE_PAD_X + i * lineH),
+			            FONT_SMALL, Colors::WHITE, ETextAlignment::TOPLEFT, lines[i]);
+	}
 };
 
 static int parseHeading(const std::string & line, std::string & outText)
@@ -431,6 +521,33 @@ static std::vector<std::string> splitTableRow(const std::string & row)
 	return cells;
 }
 
+// Strips VCMI color tags ({text} and {color|text}) from a string, returning only
+// the visible characters.  Used for pixel-width measurement of plain-text tokens
+// that may contain color markup (e.g. "{highlighted} alongside").
+static std::string stripColorTags(const std::string & s)
+{
+	std::string out;
+	out.reserve(s.size());
+	size_t i = 0;
+	while(i < s.size())
+	{
+		if(s[i] == '{')
+		{
+			++i;
+			const size_t close = s.find('}', i);
+			if(close == std::string::npos) { out += '{'; continue; }
+			// skip optional "color|" prefix
+			const size_t pipe = s.find('|', i);
+			const size_t textStart = (pipe != std::string::npos && pipe < close) ? pipe + 1 : i;
+			out += s.substr(textStart, close - textStart);
+			i = close + 1;
+		}
+		else
+			out += s[i++];
+	}
+	return out;
+}
+
 static std::string replaceAll(std::string str, const std::string & from, const std::string & to)
 {
 	size_t pos = 0;
@@ -440,6 +557,99 @@ static std::string replaceAll(std::string str, const std::string & from, const s
 		pos += to.size();
 	}
 	return str;
+}
+
+// ---------------------------------------------------------------------------
+// Inline token types and tokenizer
+// ---------------------------------------------------------------------------
+
+enum class MDInlineType { PLAIN, LINK, BOLD, ITALIC, CODE };
+
+struct MDInlineToken
+{
+	std::string   text;
+	MDInlineType  type   = MDInlineType::PLAIN;
+	std::string   target; ///< only for LINK
+};
+
+/// Tokenises a single line (no embedded newlines) into inline spans.
+/// Handles: `` `code` ``, **bold**, *italic*, [text](uri).
+/// All other characters are plain.
+static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
+{
+	std::vector<MDInlineToken> result;
+	std::string plainAcc;
+
+	auto flushPlain = [&]()
+	{
+		if(!plainAcc.empty())
+		{
+			result.push_back({std::move(plainAcc), MDInlineType::PLAIN, {}});
+			plainAcc.clear();
+		}
+	};
+
+	size_t i = 0;
+	while(i < line.size())
+	{
+		// Inline code: `...`
+		if(line[i] == '`')
+		{
+			const size_t end = line.find('`', i + 1);
+			if(end == std::string::npos) { plainAcc += line[i++]; continue; }
+			flushPlain();
+			result.push_back({line.substr(i + 1, end - i - 1), MDInlineType::CODE, {}});
+			i = end + 1;
+			continue;
+		}
+
+		// Bold: **text**
+		if(i + 1 < line.size() && line[i] == '*' && line[i + 1] == '*')
+		{
+			const size_t end = line.find("**", i + 2);
+			if(end == std::string::npos) { plainAcc += line[i++]; continue; }
+			flushPlain();
+			result.push_back({line.substr(i + 2, end - i - 2), MDInlineType::BOLD, {}});
+			i = end + 2;
+			continue;
+		}
+
+		// Italic: *text*
+		if(line[i] == '*')
+		{
+			const size_t end = line.find('*', i + 1);
+			if(end == std::string::npos) { plainAcc += line[i++]; continue; }
+			flushPlain();
+			result.push_back({line.substr(i + 1, end - i - 1), MDInlineType::ITALIC, {}});
+			i = end + 1;
+			continue;
+		}
+
+		// Link: [text](uri)
+		if(line[i] == '[')
+		{
+			const size_t cb = line.find(']', i + 1);
+			if(cb == std::string::npos || cb + 1 >= line.size() || line[cb + 1] != '(')
+			{
+				plainAcc += line[i++];
+				continue;
+			}
+			const size_t cp = line.find(')', cb + 2);
+			if(cp == std::string::npos) { plainAcc += line[i++]; continue; }
+			flushPlain();
+			result.push_back({
+				line.substr(i + 1, cb - i - 1),
+				MDInlineType::LINK,
+				line.substr(cb + 2, cp - cb - 2)
+			});
+			i = cp + 1;
+			continue;
+		}
+
+		plainAcc += line[i++];
+	}
+	flushPlain();
+	return result;
 }
 
 std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
@@ -492,6 +702,50 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 	std::vector<std::string> paraBuffer;
 	std::vector<std::string> tableBuffer;
 
+	// Fenced code block state
+	bool                     inCodeBlock = false;
+	std::vector<std::string> codeBuffer;
+
+	auto flushCodeBlock = [&]()
+	{
+		if(codeBuffer.empty()) return;
+		const auto & font2 = ENGINE->renderHandler().loadFont(FONT_SMALL);
+		const int lh = (int)font2->getLineHeight();
+		auto block = std::make_shared<WikiCodeBlockWidget>(
+			MD_MARGIN, curY, textW, std::move(codeBuffer), lh);
+		curY += block->pos.h + MD_GAP;
+		widgets.push_back(std::move(block));
+		codeBuffer.clear();
+	};
+
+	// Blockquote accumulation buffer
+	std::vector<std::string> bqBuffer;
+
+	auto flushBlockquote = [&]()
+	{
+		if(bqBuffer.empty()) return;
+		std::string joined;
+		for(const auto & l : bqBuffer)
+		{
+			if(!joined.empty()) joined += '\n';
+			joined += l;
+		}
+		bqBuffer.clear();
+
+		const int bqW = textW - (MD_BQ_TXT - MD_MARGIN);
+		auto lbl = std::make_shared<CMultiLineLabel>(
+			Rect(MD_BQ_TXT, curY, bqW, 4000),
+			FONT_SMALL, ETextAlignment::TOPLEFT, MD_BQ_TEXT_COLOR, joined);
+		lbl->pos.h = lbl->textSize.y;
+		const int barH = lbl->pos.h;
+		auto bar = std::make_shared<GraphicalPrimitiveCanvas>(
+			Rect(MD_MARGIN, curY, MD_BQ_BAR_W, barH));
+		bar->addBox(Point(0, 0), Point(MD_BQ_BAR_W, barH), MD_BQ_BAR_COLOR);
+		widgets.push_back(std::move(bar));
+		widgets.push_back(std::move(lbl));
+		curY += barH + MD_PARA_GAP;
+	};
+
 	auto flushPara = [&]()
 	{
 		if(paraBuffer.empty()) return;
@@ -507,23 +761,27 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		const MDAlign a = consumeAlign(MDAlign::LEFT);
 		const ETextAlignment ta = toTextAlign(a);
 
-		// Detect inline wiki-links: [text](uri)
-		static const std::regex LINK_RE(R"(\[([^\]\r\n]*)\]\(([^)\r\n]*)\))");
-		if(!onWikiLink || !std::regex_search(joined, LINK_RE))
+		// Fast path: no inline markup characters → use word-wrapping CMultiLineLabel.
+		// Also use fast path for non-LEFT alignment (inline layout only supports LEFT).
+		const bool hasMarkup = (joined.find('*') != std::string::npos)
+		                    || (joined.find('`') != std::string::npos)
+		                    || (joined.find('[') != std::string::npos);
+		if(!hasMarkup || a != MDAlign::LEFT)
 		{
 			addParagraph(joined, MD_MARGIN, textW, MD_PARA_GAP, FONT_SMALL, Colors::WHITE, ta);
 			return;
 		}
 
-		// Has inline links: process line by line, splitting each line at link positions.
+		// Inline layout: tokenise each <br>-split logical line and perform
+		// word-wrap-aware per-token layout with proper widget types.
 		const auto & fontPtr = ENGINE->renderHandler().loadFont(FONT_SMALL);
-		const int lineH = (int)fontPtr->getLineHeight();
+		const int    lineH   = (int)fontPtr->getLineHeight();
 
-		std::vector<std::string> splitLines;
+		std::vector<std::string> brLines;
 		{
 			std::istringstream ss(joined);
 			std::string ln2;
-			while(std::getline(ss, ln2)) splitLines.push_back(ln2);
+			while(std::getline(ss, ln2)) brLines.push_back(ln2);
 		}
 
 		// Accumulate plain-only lines for CMultiLineLabel batching.
@@ -539,92 +797,118 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			plainAcc.clear();
 		};
 
-		for(const std::string & ln : splitLines)
+		for(const std::string & ln : brLines)
 		{
-			std::smatch m2;
-			if(!std::regex_search(ln, m2, LINK_RE))
+			const auto tokens = tokenizeInline(ln);
+
+			// Check if this line actually has styled tokens.
+			const bool lineHasStyle = std::any_of(tokens.begin(), tokens.end(),
+				[](const MDInlineToken & t){ return t.type != MDInlineType::PLAIN; });
+
+			if(!lineHasStyle)
 			{
+				// Batch into CMultiLineLabel.
 				if(!plainAcc.empty()) plainAcc += '\n';
 				plainAcc += ln;
 				continue;
 			}
 			flushPlain();
 
-			// Word-wrap-aware inline segment layout.
-			// Tokenise: split line at link boundaries, further split plain spans at spaces.
-			struct InlineToken { std::string text; bool isLink = false; std::string target; };
-			std::vector<InlineToken> tokens;
+			// Build word-level layout tokens:
+			//   PLAIN  → split at spaces (word + trailing space is one token)
+			//   others → atomic (wrap as whole unit)
+			struct LayoutToken
 			{
-				size_t pos2 = 0;
-				for(std::sregex_iterator rit(ln.begin(), ln.end(), LINK_RE), rend2; rit != rend2; ++rit)
+				std::string   text;
+				MDInlineType  type;
+				std::string   target; // LINK only
+				int           width;  // pre-computed pixel width
+			};
+			std::vector<LayoutToken> ltoks;
+
+			for(const auto & tok : tokens)
+			{
+				if(tok.type == MDInlineType::PLAIN)
 				{
-					const auto & m = *rit;
-					const size_t mstart = static_cast<size_t>(m.position());
-					// Plain text before this link – split at space boundaries.
-					if(mstart > pos2)
-					{
-						const std::string plain = ln.substr(pos2, mstart - pos2);
-						size_t wp = 0;
-						while(wp < plain.size())
-						{
-							const size_t sp = plain.find(' ', wp);
-							if(sp == std::string::npos)
-							{
-								tokens.push_back({plain.substr(wp), false, ""});
-								break;
-							}
-							tokens.push_back({plain.substr(wp, sp - wp + 1), false, ""}); // word + space
-							wp = sp + 1;
-						}
-					}
-					// Link token.
-					tokens.push_back({m[1].str(), true, m[2].str()});
-					pos2 = mstart + m.length();
-				}
-				// Trailing plain text.
-				if(pos2 < ln.size())
-				{
-					const std::string plain = ln.substr(pos2);
 					size_t wp = 0;
-					while(wp < plain.size())
+					while(wp < tok.text.size())
 					{
-						const size_t sp = plain.find(' ', wp);
+						const size_t sp = tok.text.find(' ', wp);
 						if(sp == std::string::npos)
 						{
-							tokens.push_back({plain.substr(wp), false, ""});
+							const std::string word = tok.text.substr(wp);
+							// Strip color tags before measuring: {} characters don't render
+							ltoks.push_back({word, MDInlineType::PLAIN, {}, (int)fontPtr->getStringWidth(stripColorTags(word))});
 							break;
 						}
-						tokens.push_back({plain.substr(wp, sp - wp + 1), false, ""});
+						const std::string word = tok.text.substr(wp, sp - wp + 1); // word + space
+						ltoks.push_back({word, MDInlineType::PLAIN, {}, (int)fontPtr->getStringWidth(stripColorTags(word))});
 						wp = sp + 1;
 					}
 				}
+				else
+				{
+					int tw;
+					if(tok.type == MDInlineType::BOLD)
+						tw = (int)fontPtr->getStringWidthBold(tok.text);
+					else if(tok.type == MDInlineType::ITALIC)
+						tw = (int)fontPtr->getStringWidthItalic(tok.text);
+					else
+						tw = (int)fontPtr->getStringWidth(tok.text);
+					if(tok.type == MDInlineType::CODE) tw += 2 * MD_CODE_PAD_X;
+					ltoks.push_back({tok.text, tok.type, tok.target, tw});
+				}
 			}
 
-			// Lay out tokens with word wrapping.
-			int curX = MD_MARGIN;
+			// Word-wrap layout.
+			int curX      = MD_MARGIN;
 			const int maxX = MD_MARGIN + textW;
-			for(const auto & tok : tokens)
+
+			for(const auto & lt : ltoks)
 			{
-				if(tok.text.empty()) continue;
-				const int tw = (int)fontPtr->getStringWidth(tok.text);
-				// Wrap if token doesn't fit (allow at least one token per row).
-				if(curX > MD_MARGIN && curX + tw > maxX)
+				if(lt.text.empty()) continue;
+				// Wrap if token doesn't fit (but always allow the first token on a line).
+				if(curX > MD_MARGIN && curX + lt.width > maxX)
 				{
 					curY += lineH;
 					curX = MD_MARGIN;
 				}
-				if(tok.isLink)
+				switch(lt.type)
 				{
-					widgets.push_back(std::make_shared<WikiLinkLabel>(
-						curX, curY, tw, lineH, tok.text, tok.target, onWikiLink));
-				}
-				else
+				case MDInlineType::PLAIN:
 				{
-					auto seg = std::make_shared<CLabel>(
-						curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, tok.text);
-					widgets.push_back(std::move(seg));
+					// Strip trailing space from rendered text – the space width is already
+					// accounted for in lt.width so cursor advancement is correct.
+					const std::string rendered = (!lt.text.empty() && lt.text.back() == ' ')
+					                             ? lt.text.substr(0, lt.text.size() - 1)
+					                             : lt.text;
+					if(!rendered.empty())
+						widgets.push_back(std::make_shared<CLabel>(
+							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, rendered));
+					break;
 				}
-				curX += tw;
+				case MDInlineType::LINK:
+					if(onWikiLink)
+						widgets.push_back(std::make_shared<WikiLinkLabel>(
+							curX, curY, lt.width, lineH, lt.text, lt.target, onWikiLink));
+					else
+						widgets.push_back(std::make_shared<CLabel>(
+							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, lt.text));
+					break;
+				case MDInlineType::BOLD:
+					widgets.push_back(std::make_shared<WikiBoldSpan>(
+						curX, curY, lt.width, lineH, lt.text));
+					break;
+				case MDInlineType::ITALIC:
+					widgets.push_back(std::make_shared<WikiItalicSpan>(
+						curX, curY, lt.width, lineH, lt.text));
+					break;
+				case MDInlineType::CODE:
+					widgets.push_back(std::make_shared<WikiCodeSpan>(
+						curX, curY, lt.text, lt.width, lineH));
+					break;
+				}
+				curX += lt.width;
 			}
 			curY += lineH + MD_PARA_GAP;
 		}
@@ -636,6 +920,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		if(tableBuffer.empty()) return;
 
 		// Filter out separator rows (|---|---| style).
+
 		std::vector<std::string> rawRows;
 		for(const auto & row : tableBuffer)
 			if(!isTableSeparator(row))
@@ -865,10 +1150,35 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		std::string t = rawLine;
 		while(!t.empty() && (t.back() == ' ' || t.back() == '\t')) t.pop_back();
 
+		// Fenced code block: lines starting with ``` open or close the block.
+		if(t.size() >= 3 && t[0] == '`' && t[1] == '`' && t[2] == '`')
+		{
+			if(!inCodeBlock)
+			{
+				flushPara();
+				flushBlockquote();
+				inCodeBlock = true;
+				codeBuffer.clear();
+				// Optional language tag after the opening ``` is ignored (no highlighting).
+			}
+			else
+			{
+				inCodeBlock = false;
+				flushCodeBlock();
+			}
+			continue;
+		}
+		if(inCodeBlock)
+		{
+			codeBuffer.push_back(t); // raw line – no further processing
+			continue;
+		}
+
 		// Table row accumulation – collect consecutive | rows.
 		if(isTableRow(t))
 		{
 			if(!paraBuffer.empty()) flushPara();
+			flushBlockquote();
 			tableBuffer.push_back(t);
 			continue;
 		}
@@ -879,6 +1189,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		if(t.empty())
 		{
 			flushPara();
+			flushBlockquote();
 			curY += MD_GAP;
 			continue;
 		}
@@ -923,6 +1234,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		if(t == "<p>" || t == "<P>")
 		{
 			flushPara();
+			flushBlockquote();
 			curY += MD_GAP;
 			continue;
 		}
@@ -931,6 +1243,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		if(t == "<br>" || t == "<BR>")
 		{
 			flushPara();
+			flushBlockquote();
 			continue;
 		}
 
@@ -941,6 +1254,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			if(level > 0)
 			{
 				flushPara();
+				flushBlockquote();
 				// Record any embedded anchor at the heading's current Y.
 				if(anchors)
 				{
@@ -999,6 +1313,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 		if(isHRule(t))
 		{
 			flushPara();
+			flushBlockquote();
 			curY += MD_GAP / 2;
 			auto rule = std::make_shared<GraphicalPrimitiveCanvas>(
 				Rect(MD_MARGIN, curY, textW, 2));
@@ -1014,6 +1329,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			if(parseMediaLine(t, pm))
 			{
 				flushPara();
+				flushBlockquote();
 				if(pm.isVideo)
 				{
 					const MDAlign a = consumeAlign(MDAlign::LEFT);
@@ -1118,6 +1434,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			if(parseBullet(t, bText))
 			{
 				flushPara();
+				flushBlockquote();
 				auto dot = std::make_shared<GraphicalPrimitiveCanvas>(
 					Rect(MD_BULLET_X, curY + 5, MD_BULLET_SZ, MD_BULLET_SZ));
 				dot->addBox(Point(0, 0), Point(MD_BULLET_SZ, MD_BULLET_SZ), Colors::WHITE);
@@ -1140,6 +1457,7 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			if(num >= 0)
 			{
 				flushPara();
+				flushBlockquote();
 				const std::string numStr = std::to_string(num) + ".";
 				widgets.push_back(std::make_shared<CLabel>(
 					MD_MARGIN + 2, curY,
@@ -1155,13 +1473,25 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			}
 		}
 
+		// Blockquote line: starts with '>' optionally followed by a space.
+		if(!t.empty() && t[0] == '>')
+		{
+			flushPara();
+			const std::string bqText = (t.size() > 1 && t[1] == ' ') ? t.substr(2) : t.substr(1);
+			bqBuffer.push_back(bqText);
+			continue;
+		}
+
 		// Anything else: accumulate into paragraph buffer.
 		// Inline <br> tags are expanded to newlines in flushPara().
+		flushBlockquote();
 		paraBuffer.push_back(t);
 	}
 
 	flushPara();
 	flushTable();
+	flushBlockquote();
+	if(inCodeBlock) flushCodeBlock(); // unclosed ``` fence
 	curY += MD_MARGIN;
 
 	return widgets;

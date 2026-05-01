@@ -40,4 +40,11 @@ public:
 	size_t getGlyphWidthScaled(const char * data) const override;
 	size_t getStringWidthScaled(const std::string & data) const override;
 	bool canRepresentCharacter(const char * data) const override;
+	bool isScalable() const override;
+	void renderTextItalic(SDL_Surface * surface, const std::string & data,
+	                      const ColorRGBA & color, const Point & pos) const override;
+	void renderTextBold(SDL_Surface * surface, const std::string & data,
+	                    const ColorRGBA & color, const Point & pos) const override;
+	size_t getStringWidthBoldScaled(const std::string & data) const override;
+	size_t getStringWidthItalicScaled(const std::string & data) const override;
 };
