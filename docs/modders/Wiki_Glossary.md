@@ -18,23 +18,54 @@ Each entry references two translation keys that must be present in the mod's tra
 
 ```json
 {
+    "categories": {
+        "mymod.mycategory": {
+            "name": "mymod.mycategory.name"
+        }
+    },
     "entries": {
         "mymod.wiki.myentry": {
             "name":        "mymod.wiki.myentry.name",
             "description": "mymod.wiki.myentry.description"
+        },
+        "mymod.wiki.myentry.custom": {
+            "name":        "mymod.wiki.myentry.custom.name",
+            "description": "mymod.wiki.myentry.custom.description",
+            "category":    "mymod.mycategory"
         }
     }
 }
 ```
 
-`"entries"` is a **JSON object** (not an array).  Each key is the unique identifier for the entry, used in wiki links (`wiki:glossary/<key>`).  Values are objects with the following fields:
+### `"categories"` block (optional)
+
+Declares additional wiki tabs that appear in the category column alongside the built-in tabs.  Each key is a **unique string ID** for the category.  The ID is used in wiki links and must not conflict with the built-in reserved IDs: `glossary`, `town`, `hero`, `creature`, `artifact`, `spell`, `skill`, `terrain`, `mod`.  Conflicting keys are logged as errors and skipped at runtime.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | yes | Translation key for the tab label shown in the category list. |
+
+Custom categories always render their entries as Markdown (same renderer as the Glossary).
+
+### `"entries"` block
+
+`"entries"` is a **JSON object** (not an array).  Each key is the unique identifier for the entry, used in wiki links.  Values are objects with the following fields:
 
 | Field | Required | Description |
 | --- | --- | --- |
 | `name` | yes | Translation key for the list title shown in the left panel. |
 | `description` | yes | Translation key for the full article body shown on the right. The value supports the Markdown syntax described below. |
+| `category` | no | String ID of the category this entry belongs to.  Defaults to `"glossary"` when omitted.  Must match a key in `"categories"` or `"glossary"`. |
 
-Because `"entries"` is a JSON object, `assembleFromFiles` correctly **merges** all entries from all active mods at runtime – each mod's keys are combined into one sorted list.
+Because both `"categories"` and `"entries"` are JSON objects, `assembleFromFiles` correctly **merges** contributions from all active mods.
+
+### Linking to a custom-category entry
+
+```text
+[display text](wiki:mymod.mycategory/mymod.wiki.myentry.custom)
+```
+
+The category part of the URI is the custom category's string ID.
 
 ---
 

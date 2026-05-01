@@ -185,6 +185,17 @@ private:
 	std::map<std::string, int> glossaryAnchorMap; ///< anchor name -> Y offset for the current glossary entry
 	std::string pendingAnchor; ///< anchor to scroll to on the next rebuildGlossaryViewport() call
 
+	/// Custom mod-defined categories: string id -> index in categoryNames / categoryEntries
+	std::map<std::string, int> customCategoryIds;
+	/// Per-custom-category viewport, keyed by category index
+	std::map<int, std::shared_ptr<CViewport>> customCategoryViews;
+	/// Per-custom-category content widgets, keyed by category index
+	std::map<int, std::vector<std::shared_ptr<CIntObject>>> customCategoryWidgets;
+	/// Per-custom-category anchor maps, keyed by category index
+	std::map<int, std::map<std::string, int>> customCategoryAnchorMaps;
+	/// Identifier of the entry currently shown for each custom category
+	std::map<int, std::string> customCategoryCurrentEntry;
+
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
 	std::shared_ptr<CButton> backButton;
@@ -223,6 +234,19 @@ private:
 	void rebuildModViewport(const std::string & modId);
 	/// Rebuilds the glossary viewport by rendering the entry description as Markdown.
 	void rebuildGlossaryViewport(const std::string & entryName);
+	/// Rebuilds a custom-category viewport for the given category index and entry.
+	void rebuildCustomCategoryViewport(int catIdx, const std::string & entryName);
+
+	/// Shared core: (re-)creates a CViewport, renders markdownText into it, handles
+	/// pendingAnchor, calls applyScrollBounds + totalRedraw.
+	void rebuildMarkdownViewport(std::shared_ptr<CViewport> & view,
+	                             std::vector<std::shared_ptr<CIntObject>> & widgets,
+	                             std::map<std::string, int> & anchorMap,
+	                             const std::string & markdownText);
+
+	/// Returns a link callback suitable for buildMarkdownContent that resolves
+	/// "wiki:category/entry[#anchor]" links using BUILTIN_CATEGORY_MAP and customCategoryIds.
+	std::function<void(const std::string &)> makeLinkCallback();
 
 	/// Inserts a mod-scope label as the first widget in a viewport when the
 	/// current entry belongs to a non-core mod.

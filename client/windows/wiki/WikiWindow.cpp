@@ -52,6 +52,24 @@
 #include "../../../lib/json/JsonUtils.h"
 
 // ============================================================================
+// Built-in category string-id → WikiCategory mapping
+// Used for both validation (reserved names) and link-callback resolution.
+// ============================================================================
+
+static const std::map<std::string, WikiCategory> BUILTIN_CATEGORY_MAP =
+{
+	{"glossary", WikiCategory::GLOSSARY},
+	{"town",     WikiCategory::TOWN},
+	{"hero",     WikiCategory::HERO},
+	{"creature", WikiCategory::CREATURE},
+	{"artifact", WikiCategory::ARTIFACT},
+	{"spell",    WikiCategory::SPELL},
+	{"skill",    WikiCategory::SKILL},
+	{"terrain",  WikiCategory::TERRAIN},
+	{"mod",      WikiCategory::MOD},
+};
+
+// ============================================================================
 // WikiListItem
 // ============================================================================
 
@@ -383,21 +401,54 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	categoryNames[static_cast<int>(WikiCategory::MOD)]       = LIBRARY->generaltexth->translate("vcmi.wiki.category.mod");
 	categoryEntries.resize(static_cast<int>(WikiCategory::COUNT));
 
-	// Glossary – loaded from all active mods via assembleFromFiles (struct keys are merged across mods)
+	// Glossary + custom categories – loaded from all active mods via assembleFromFiles.
+	// "entries"    -> goes into the built-in GLOSSARY category (default when no "category" key).
+	// "categories" -> defines additional mod-specific categories, each rendered as Markdown.
 	{
-		const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
 		const JsonNode glossaryJson = JsonUtils::assembleFromFiles("config/wikiGlossary.json");
+
+		// 1. Register custom categories declared by mods.
+		for(const auto & [catId, catNode] : glossaryJson["categories"].Struct())
+		{
+			if(BUILTIN_CATEGORY_MAP.count(catId))
+			{
+				logGlobal->error("WikiWindow: mod-defined category '{}' conflicts with a built-in category – skipped.", catId);
+				continue;
+			}
+			if(customCategoryIds.count(catId))
+				continue; // already registered by an earlier mod
+
+			const int idx = static_cast<int>(categoryNames.size());
+			const std::string name = LIBRARY->generaltexth->translate(catNode["name"].String());
+			categoryNames.push_back(name);
+			categoryEntries.emplace_back();
+			customCategoryIds[catId] = idx;
+		}
+
+		// 2. Load entries; route each to its category (default: GLOSSARY).
 		for(const auto & [entryId, e] : glossaryJson["entries"].Struct())
 		{
+			const std::string catStr = e["category"].isNull() ? std::string("glossary") : e["category"].String();
+			int targetIdx = static_cast<int>(WikiCategory::GLOSSARY);
+			if(catStr != "glossary")
+			{
+				const auto it = customCategoryIds.find(catStr);
+				if(it != customCategoryIds.end())
+					targetIdx = it->second;
+				else
+					logGlobal->warn("WikiWindow: entry '{}' references unknown category '{}' – placed in Glossary.", entryId, catStr);
+			}
 			const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
 			const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-			categoryEntries[iGlossary].push_back({ entryId, name, desc, std::nullopt, "", "" });
+			categoryEntries[targetIdx].push_back({ entryId, name, desc, std::nullopt, "", "" });
 		}
 	}
-	// Sort glossary alphabetically
-	std::sort(categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].begin(),
-	          categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	// Sort glossary and all custom categories alphabetically.
+	for(int ci = static_cast<int>(WikiCategory::GLOSSARY); ci < static_cast<int>(categoryNames.size()); ++ci)
+	{
+		std::sort(categoryEntries[ci].begin(), categoryEntries[ci].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
 
 	// Towns – playable factions that have a town (skip neutral / special)
 	{
@@ -905,7 +956,10 @@ void WikiWindow::updateContent()
 	const bool useGlossaryViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::GLOSSARY))
 	                               && (activeElementIndex >= 0)
 	                               && glossaryContentView;
-	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport || useGlossaryViewport;
+	// A "mod-custom" category uses its own per-category viewport (rendered as Markdown).
+	const bool isModCustomCategory = (activeCategoryIndex >= static_cast<int>(WikiCategory::COUNT));
+	const bool useModCustomViewport = isModCustomCategory && (activeElementIndex >= 0);
+	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport || useGlossaryViewport || useModCustomViewport;
 
 	// Toggle viewport / textbox visibility
 	if(townContentView)
@@ -920,6 +974,9 @@ void WikiWindow::updateContent()
 		modContentView->setEnabled(useModViewport);
 	if(glossaryContentView)
 		glossaryContentView->setEnabled(useGlossaryViewport);
+	// Hide all custom-category viewports; the active one is shown below.
+	for(auto & [ci, view] : customCategoryViews)
+		if(view) view->setEnabled(false);
 	contentBox->setEnabled(!useCustomViewport);
 
 	// Standalone mod-scope label – only for non-viewport categories (textbox path).
@@ -989,6 +1046,24 @@ void WikiWindow::updateContent()
 					glossaryContentView->scrollToY(anchorIt->second);
 				pendingAnchor.clear();
 			}
+		}
+		else if(useModCustomViewport)
+		{
+			const int ci = activeCategoryIndex;
+			const std::string & entryName = currentDisplayedEntries[activeElementIndex].identifier;
+			const std::string & currentEntry = customCategoryCurrentEntry[ci];
+			if(entryName != currentEntry)
+				rebuildCustomCategoryViewport(ci, entryName);
+			else if(!pendingAnchor.empty())
+			{
+				const auto anchorIt = customCategoryAnchorMaps[ci].find(pendingAnchor);
+				if(anchorIt != customCategoryAnchorMaps[ci].end())
+					customCategoryViews[ci]->scrollToY(anchorIt->second);
+				pendingAnchor.clear();
+			}
+			// Ensure this viewport is visible.
+			if(customCategoryViews.count(ci) && customCategoryViews[ci])
+				customCategoryViews[ci]->setEnabled(true);
 		}
 	}
 	else if(activeCategoryIndex < 0 || activeElementIndex < 0
@@ -1257,11 +1332,8 @@ void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
 {
 	currentGlossaryEntryName = entryName;
 	glossaryContentWidgets.clear();
+	glossaryAnchorMap.clear();
 
-	if(!glossaryContentView)
-		return;
-
-	// Find the entry's description in the glossary list
 	const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
 	const auto & entries = categoryEntries[iGlossary];
 	const auto it = std::find_if(entries.begin(), entries.end(),
@@ -1269,63 +1341,99 @@ void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
 	if(it == entries.end())
 		return;
 
+	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
+	rebuildMarkdownViewport(glossaryContentView, glossaryContentWidgets, glossaryAnchorMap, markdownText);
+}
+
+// ============================================================================
+// WikiWindow – custom (mod-defined) category viewport
+// ============================================================================
+
+void WikiWindow::rebuildCustomCategoryViewport(int catIdx, const std::string & entryName)
+{
+	customCategoryCurrentEntry[catIdx] = entryName;
+	customCategoryWidgets[catIdx].clear();
+	customCategoryAnchorMaps[catIdx].clear();
+
+	if(catIdx < 0 || catIdx >= static_cast<int>(categoryEntries.size()))
+		return;
+	const auto & entries = categoryEntries[catIdx];
+	const auto it = std::find_if(entries.begin(), entries.end(),
+		[&entryName](const WikiEntry & e){ return e.identifier == entryName; });
+	if(it == entries.end())
+		return;
+
+	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
+	rebuildMarkdownViewport(customCategoryViews[catIdx], customCategoryWidgets[catIdx],
+		customCategoryAnchorMaps[catIdx], markdownText);
+	customCategoryViews[catIdx]->setEnabled(true);
+}
+
+// ============================================================================
+// WikiWindow – shared Markdown viewport helpers
+// ============================================================================
+
+std::function<void(const std::string &)> WikiWindow::makeLinkCallback()
+{
+	return [this](const std::string & target)
+	{
+		static const std::string PREFIX = "wiki:";
+		if(target.size() <= PREFIX.size() || target.substr(0, PREFIX.size()) != PREFIX)
+			return;
+		const std::string rest = target.substr(PREFIX.size());
+		const auto slash = rest.find('/');
+		if(slash == std::string::npos) return;
+		const std::string catStr = rest.substr(0, slash);
+		const std::string idFull = rest.substr(slash + 1);
+		const auto hashPos       = idFull.find('#');
+		const std::string id     = (hashPos == std::string::npos) ? idFull : idFull.substr(0, hashPos);
+		const std::string anchor = (hashPos == std::string::npos) ? std::string{} : idFull.substr(hashPos + 1);
+
+		// Built-in categories
+		const auto builtinIt = BUILTIN_CATEGORY_MAP.find(catStr);
+		if(builtinIt != BUILTIN_CATEGORY_MAP.end())
+		{
+			navigateTo(WikiEntryKey{builtinIt->second, id, anchor});
+			return;
+		}
+		// Mod-defined custom categories
+		const auto ccIt = customCategoryIds.find(catStr);
+		if(ccIt != customCategoryIds.end())
+		{
+			navigateTo(WikiEntryKey{static_cast<WikiCategory>(ccIt->second), id, anchor});
+			return;
+		}
+	};
+}
+
+void WikiWindow::rebuildMarkdownViewport(
+	std::shared_ptr<CViewport> & view,
+	std::vector<std::shared_ptr<CIntObject>> & widgets,
+	std::map<std::string, int> & anchorMap,
+	const std::string & markdownText)
+{
 	static constexpr int VP_W = COL3_W - 6;
 	static constexpr int VP_H = CONTENT_H - 6;
 
-	glossaryContentView.reset();
+	view.reset();
 	{
 		OBJECT_CONSTRUCTION;
-		glossaryContentView = std::make_shared<CViewport>(
+		view = std::make_shared<CViewport>(
 			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
 			Point(VP_W, VP_H),
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 	}
 
-	// Prepend the entry name as an H1 heading via markdown #, then the description
-	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
+	auto moreWidgets = buildMarkdownContent(*view, markdownText,
+		VP_W - CViewport::SLIDER_W, (style == Style::BLUE), makeLinkCallback(), &anchorMap);
+	widgets.insert(widgets.end(), moreWidgets.begin(), moreWidgets.end());
+	view->fitContentSize();
 
-	const bool isBlue = (style == Style::BLUE);
-	glossaryAnchorMap.clear();
-	{
-		// Build a link callback that parses "wiki:category/id" and navigates.
-		auto linkCb = [this](const std::string & target)
-		{
-			static const std::string PREFIX = "wiki:";
-			if(target.size() <= PREFIX.size() || target.substr(0, PREFIX.size()) != PREFIX)
-				return;
-			const std::string rest = target.substr(PREFIX.size());
-			const auto slash = rest.find('/');
-			if(slash == std::string::npos) return;
-			const std::string catStr = rest.substr(0, slash);
-			const std::string idFull = rest.substr(slash + 1);
-			const auto hashPos       = idFull.find('#');
-			const std::string id     = (hashPos == std::string::npos) ? idFull : idFull.substr(0, hashPos);
-			const std::string anchor = (hashPos == std::string::npos) ? std::string{} : idFull.substr(hashPos + 1);
-			WikiCategory cat = WikiCategory::GLOSSARY;
-			if     (catStr == "glossary") cat = WikiCategory::GLOSSARY;
-			else if(catStr == "town")     cat = WikiCategory::TOWN;
-			else if(catStr == "hero")     cat = WikiCategory::HERO;
-			else if(catStr == "creature") cat = WikiCategory::CREATURE;
-			else if(catStr == "artifact") cat = WikiCategory::ARTIFACT;
-			else if(catStr == "spell")    cat = WikiCategory::SPELL;
-			else if(catStr == "skill")    cat = WikiCategory::SKILL;
-			else if(catStr == "terrain")  cat = WikiCategory::TERRAIN;
-			else if(catStr == "mod")      cat = WikiCategory::MOD;
-			navigateTo(WikiEntryKey{cat, id, anchor});
-		};
-		auto moreWidgets = buildMarkdownContent(*glossaryContentView, markdownText,
-			VP_W - CViewport::SLIDER_W, isBlue, linkCb, &glossaryAnchorMap);
-		glossaryContentWidgets.insert(
-			glossaryContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
-	}
-	glossaryContentView->fitContentSize();
-
-	// Scroll to the requested anchor if one was set before this rebuild.
 	if(!pendingAnchor.empty())
 	{
-		const auto anchorIt = glossaryAnchorMap.find(pendingAnchor);
-		if(anchorIt != glossaryAnchorMap.end())
-			glossaryContentView->scrollToY(anchorIt->second);
+		const auto anchorIt = anchorMap.find(pendingAnchor);
+		if(anchorIt != anchorMap.end())
+			view->scrollToY(anchorIt->second);
 		pendingAnchor.clear();
 	}
 
