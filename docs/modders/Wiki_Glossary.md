@@ -68,6 +68,7 @@ Custom categories always render their entries as Markdown (same renderer as the 
 Because both `"categories"` and `"entries"` are JSON objects, `assembleFromFiles` correctly **merges** contributions from all active mods.
 
 > **Entry ordering:**
+>
 > - **Glossary** entries are sorted alphabetically by display name.  The `order` field is ignored for the built-in Glossary category.
 > - **Custom category** entries are sorted by the `order` integer.  Entries that omit `order` are treated as if `order` is `999999` and appear last (alphabetically among themselves).
 >
