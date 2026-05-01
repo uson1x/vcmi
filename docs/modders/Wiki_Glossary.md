@@ -18,21 +18,23 @@ Each entry references two translation keys that must be present in the mod's tra
 
 ```json
 {
-    "entries": [
-        {
+    "entries": {
+        "mymod.wiki.myentry": {
             "name":        "mymod.wiki.myentry.name",
             "description": "mymod.wiki.myentry.description"
         }
-    ]
+    }
 }
 ```
+
+`"entries"` is a **JSON object** (not an array).  Each key is the unique identifier for the entry, used in wiki links (`wiki:glossary/<key>`).  Values are objects with the following fields:
 
 | Field | Required | Description |
 | --- | --- | --- |
 | `name` | yes | Translation key for the list title shown in the left panel. |
 | `description` | yes | Translation key for the full article body shown on the right. The value supports the Markdown syntax described below. |
 
-The `"entries"` array may contain any number of entries.  Entries from all active mods are merged and sorted alphabetically at runtime.
+Because `"entries"` is a JSON object, `assembleFromFiles` correctly **merges** all entries from all active mods at runtime – each mod's keys are combined into one sorted list.
 
 ---
 
@@ -209,10 +211,10 @@ Right-clicking a linked image still shows the alt-text tooltip as normal.
 | `terrain` | Terrain type list |
 | `mod` | Installed mods |
 
-**Glossary identifier** – the translation key of the entry's `name` field, with the trailing `.name` stripped:
+**Glossary identifier** – the key of the entry in the `"entries"` object of `wikiGlossary.json`:
 
 ```text
-"name": "mymod.wiki.myfeature.name"   →   wiki:glossary/mymod.wiki.myfeature
+"entries": { "mymod.wiki.myfeature": { ... } }   →   wiki:glossary/mymod.wiki.myfeature
 ```
 
 **Game-entity identifier** – the JSON key of the entity as returned by `getJsonKey()`.  For core content this is typically just the unscoped name:
@@ -268,12 +270,12 @@ Navigation first loads the target entry, then scrolls the page to the anchor pos
 
 ```json
 {
-    "entries": [
-        {
+    "entries": {
+        "mymod.wiki.myfeature": {
             "name":        "mymod.wiki.myfeature.name",
             "description": "mymod.wiki.myfeature.description"
         }
-    ]
+    }
 }
 ```
 

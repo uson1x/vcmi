@@ -49,6 +49,7 @@
 #include "../../../lib/texts/TextOperations.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "../../../lib/json/JsonNode.h"
+#include "../../../lib/json/JsonUtils.h"
 
 // ============================================================================
 // WikiListItem
@@ -382,25 +383,16 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	categoryNames[static_cast<int>(WikiCategory::MOD)]       = LIBRARY->generaltexth->translate("vcmi.wiki.category.mod");
 	categoryEntries.resize(static_cast<int>(WikiCategory::COUNT));
 
-	// Glossary – loaded from a moddable JSON file
+	// Glossary – loaded from all active mods via assembleFromFiles (struct keys are merged across mods)
 	{
 		const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
-		try
+		const JsonNode glossaryJson = JsonUtils::assembleFromFiles("config/wikiGlossary.json");
+		for(const auto & [entryId, e] : glossaryJson["entries"].Struct())
 		{
-			const JsonNode glossaryJson(JsonPath::builtin("config/wikiGlossary.json"));
-			for(const auto & e : glossaryJson["entries"].Vector())
-			{
-				const std::string nameKey = e["name"].String(); // e.g. "vcmi.wiki.glossary.mdtest.name"
-				const std::string name = LIBRARY->generaltexth->translate(nameKey);
-				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				// Strip trailing .name so links can use the base key: wiki:glossary/vcmi.wiki.glossary.mdtest
-				std::string id = nameKey;
-				if(id.size() > 5 && id.substr(id.size() - 5) == ".name")
-					id = id.substr(0, id.size() - 5);
-				categoryEntries[iGlossary].push_back({ id, name, desc, std::nullopt, "", "" });
-			}
+			const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
+			const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
+			categoryEntries[iGlossary].push_back({ entryId, name, desc, std::nullopt, "", "" });
 		}
-		catch(const std::exception &) {} // file absent → empty glossary
 	}
 	// Sort glossary alphabetically
 	std::sort(categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].begin(),
