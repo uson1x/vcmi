@@ -24,6 +24,7 @@ protected:
 	void registerObject(const std::string & scope, const std::string & typeName, const std::string & name, const JsonNode & data, si32 index);
 	void registerObject(const std::string & scope, const std::vector<std::string> & typeNames, const std::string & name, const JsonNode & data, si32 index);
 
+	std::optional<int32_t> resolveIdentifier(const std::string & scope, const std::string & typeName, const std::string & name) const;
 public:
 	/// loads all original game data in vector of json nodes
 	/// dataSize - is number of items that must be loaded (normally - constant from GameConstants)
@@ -77,6 +78,16 @@ public:
 	const _ObjectBase * getByIndex(const int32_t index) const override
 	{
 		return getObjectImpl(index);
+	}
+
+	const _ObjectBase * getByName(const std::string & name) const override
+	{
+		// TODO: provide actual scope? Perhaps pass it as json node?
+		auto index = resolveIdentifier("game", getTypeNames().front(), name);
+		if (index)
+			return getByIndex(*index);
+		else
+			return nullptr;
 	}
 
 	void forEachBase(const std::function<void(const Entity * entity, bool & stop)> & cb) const override

@@ -40,8 +40,6 @@ endif()
 # Platform-independent options
 
 option(ENABLE_CLIENT "Enable compilation of game client" ON)
-option(ENABLE_ERM "Enable compilation of ERM scripting module" OFF)
-option(ENABLE_LUA "Enable compilation of LUA scripting module" OFF)
 option(ENABLE_VIDEO "Enable video support using ffmpeg" ON)
 option(ENABLE_TRANSLATIONS "Enable generation of translations for launcher and editor" ON)
 option(ENABLE_MINIMAL_LIB "Build only core parts of vcmi library that are required for game lobby" OFF)
@@ -124,11 +122,6 @@ else()
 	)
 		set(DISCORD_RPC_NO_GLAZE ON)
 	endif()
-endif()
-
-# ERM depends on LUA implicitly
-if(ENABLE_ERM AND NOT ENABLE_LUA)
-	set(ENABLE_LUA ON)
 endif()
 
 include(CMakeDependentOption)
@@ -481,10 +474,6 @@ if(HAIKU)
 	set(SYSTEM_LIBS ${SYSTEM_LIBS} network)
 endif()
 
-if(ENABLE_LUA)
-	add_definitions(-DSCRIPTING_ENABLED=1)
-endif()
-
 ############################################
 #        Finding packages                  #
 ############################################
@@ -569,9 +558,6 @@ endif()
 
 if(NOT ENABLE_MINIMAL_LIB)
 	find_package(TBB REQUIRED)
-endif()
-
-if(ENABLE_LUA)
 	find_package(luajit)
 
 	if(TARGET luajit::luajit)
@@ -579,13 +565,13 @@ if(ENABLE_LUA)
 	else()
 		message(STATUS "Cannot find LuaJIT! Fallback to using usual Lua.")
 		find_package(Lua REQUIRED)
-		if(Lua_FOUND)
-			add_library(luajit::luajit UNKNOWN IMPORTED)
-			set_target_properties(luajit::luajit PROPERTIES
-				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}")
-			set_target_properties(luajit::luajit PROPERTIES
-				IMPORTED_LOCATION "${LUA_LIBRARIES}")
-		endif()
+		if(Lua_FOUND AND NOT TARGET Lua::Lua)
+			add_library(Lua::Lua INTERFACE IMPORTED)
+			set_target_properties(Lua::Lua PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}"
+				INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}"
+			)
+	    endif()
 	endif()
 endif()
 
@@ -701,12 +687,8 @@ if (ENABLE_CLIENT OR ENABLE_SERVER)
 	add_subdirectory(server)
 endif()
 
-if(ENABLE_ERM)
-	add_subdirectory(scripting/erm)
-endif()
-
-if(ENABLE_LUA)
-	add_subdirectory(scripting/lua)
+if(NOT ENABLE_MINIMAL_LIB)
+	add_subdirectory(luascript)
 endif()
 
 if(ENABLE_LAUNCHER OR ENABLE_EDITOR)
@@ -754,13 +736,11 @@ if(ANDROID)
 		vcmi_install_libs_symlink("${CMAKE_SYSROOT}/usr/lib/${ANDROID_SYSROOT_LIB_SUBDIR}/${stlLibName}")
 	endif()
 else()
+	install(DIRECTORY scripts DESTINATION ${DATA_DIR})
 	install(DIRECTORY config DESTINATION ${DATA_DIR})
 	if (ENABLE_CLIENT OR ENABLE_SERVER)
 		install(DIRECTORY Mods DESTINATION ${DATA_DIR})
 	endif()
-endif()
-if(ENABLE_LUA)
-	install(DIRECTORY scripts DESTINATION ${DATA_DIR})
 endif()
 
 # that script is useless for Windows / iOS / Android

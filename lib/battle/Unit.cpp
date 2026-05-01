@@ -59,6 +59,11 @@ bool Unit::isAmmoCart() const
 	return unitType()->warMachine == ArtifactID::AMMO_CART;
 }
 
+bool Unit::isSummoned() const
+{
+	return unitSlot() == SlotID::SUMMONED_SLOT_PLACEHOLDER;
+}
+
 bool Unit::isMeleeAttacker() const
 {
 	//exclude war machines
@@ -281,14 +286,14 @@ void UnitInfo::save(JsonNode & data)
 {
 	data.clear();
 	JsonSerializer ser(nullptr, data);
-	ser.serializeStruct("newUnitInfo", *this);
+	serializeJson(ser);
 }
 
 void UnitInfo::load(uint32_t id_, const JsonNode & data)
 {
 	id = id_;
 	JsonDeserializer deser(nullptr, data);
-	deser.serializeStruct("newUnitInfo", *this);
+	serializeJson(deser);
 }
 
 }

@@ -541,6 +541,11 @@ PlayerColor BaseMechanics::getCasterColor() const
 	return caster->getCasterOwner();
 }
 
+const CGHeroInstance * BaseMechanics::getHeroCaster() const
+{
+	return caster->getHeroCaster();
+}
+
 std::vector<AimType> BaseMechanics::getTargetTypes() const
 {
 	std::vector<AimType> ret;
@@ -566,12 +571,10 @@ const CreatureService * BaseMechanics::creatures() const
 	return LIBRARY->creatures(); //todo: redirect
 }
 
-#if SCRIPTING_ENABLED
 const scripting::Service * BaseMechanics::scripts() const
 {
 	return LIBRARY->scripts(); //todo: redirect
 }
-#endif
 
 const Service * BaseMechanics::spells() const
 {
@@ -583,6 +586,10 @@ const CBattleInfoCallback * BaseMechanics::battle() const
 	return cb;
 }
 
+BattleID BaseMechanics::getBattleID() const
+{
+	return cb->getBattle()->getBattleID();
+}
 
 } //namespace spells
 

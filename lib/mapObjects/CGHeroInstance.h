@@ -54,7 +54,7 @@ protected:
 };
 
 
-class DLL_LINKAGE CGHeroInstance : public CArmedInstance, public IBoatGenerator, public CArtifactSet, public spells::Caster, public AFactionMember, public ICreatureUpgrader, public IOwnableObject
+class DLL_LINKAGE CGHeroInstance : public CArmedInstance, public IBoatGenerator, public CArtifactSet, public spells::Caster, public AFactionMember, public ICreatureUpgrader, public IOwnableObject, public scripting::ApiRawPointer<CGHeroInstance>
 {
 	// We serialize heroes into JSON for crossover
 	friend class CampaignState;

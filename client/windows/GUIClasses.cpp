@@ -67,8 +67,8 @@
 #include "../../lib/CRandomGenerator.h"
 #include "../../lib/CSkillHandler.h"
 #include "../../lib/CSoundBase.h"
-#include "../lib/constants/EntityIdentifiers.h"
-#include "../lib/spells/CSpellHandler.h"
+#include "../../lib/constants/EntityIdentifiers.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 #include <boost/lexical_cast.hpp>
 

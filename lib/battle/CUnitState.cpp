@@ -852,12 +852,13 @@ void CUnitState::reset()
 	position = BattleHex::INVALID;
 }
 
-void CUnitState::save(JsonNode & data)
+JsonNode CUnitState::save()
 {
+	JsonNode data;
 	//TODO: use instance resolver
-	data.clear();
 	JsonSerializer ser(nullptr, data);
 	ser.serializeStruct("state", *this);
+	return data;
 }
 
 void CUnitState::load(const JsonNode & data)

@@ -49,8 +49,7 @@
             "hidden": true,
             "cacheVariables": {
                 "ENABLE_LOBBY": "ON",
-                "ENABLE_TEST": "ON",
-                "ENABLE_LUA": "ON"
+				"ENABLE_TEST": "ON"
             }
         },
         {
@@ -80,7 +79,6 @@
             "description": "VCMI Linux GCC",
             "inherits": "linux-release",
             "cacheVariables": {
-                "ENABLE_LUA" : "ON",
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++"
             }
@@ -142,7 +140,6 @@
             "inherits": "linux-test",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "ENABLE_LUA" : "ON",
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++"
             }
@@ -154,7 +151,6 @@
             "inherits": "linux-test",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "ENABLE_LUA" : "ON",
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++",
                 "ENABLE_DISCORD": "OFF"
@@ -177,7 +173,6 @@
             "description": "VCMI Linux GCC",
             "inherits": "linux-test",
             "cacheVariables": {
-                "ENABLE_LUA" : "OFF",
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++"
             }

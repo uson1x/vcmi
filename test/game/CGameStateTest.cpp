@@ -269,7 +269,7 @@ TEST_F(CGameStateTest, issue2765)
 		info.count = 1;
 		info.type = CreatureID(69);
 		info.side = BattleSide::ATTACKER;
-		info.position = gameState->currentBattles.front()->getAvailableHex(info.type, info.side);
+		info.position = gameState->currentBattles.front()->getAvailableHex(info.type.toEntity(LIBRARY), info.side);
 		info.summoned = false;
 
 		BattleUnitsChanged pack;
@@ -361,7 +361,7 @@ TEST_F(CGameStateTest, battleResurrection)
 		info.count = 10;
 		info.type = CreatureID(13);
 		info.side = BattleSide::ATTACKER;
-		info.position = gameState->currentBattles.front()->getAvailableHex(info.type, info.side);
+		info.position = gameState->currentBattles.front()->getAvailableHex(info.type.toEntity(LIBRARY), info.side);
 		info.summoned = false;
 
 		BattleUnitsChanged pack;
@@ -377,7 +377,7 @@ TEST_F(CGameStateTest, battleResurrection)
 		info.count = 10;
 		info.type = CreatureID(13);
 		info.side = BattleSide::DEFENDER;
-		info.position = gameState->currentBattles.front()->getAvailableHex(info.type, info.side);
+		info.position = gameState->currentBattles.front()->getAvailableHex(info.type.toEntity(LIBRARY), info.side);
 		info.summoned = false;
 
 		BattleUnitsChanged pack;

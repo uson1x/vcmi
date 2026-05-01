@@ -1619,12 +1619,12 @@ ForcedAction CBattleInfoCallback::getBerserkForcedAction(const battle::Unit * be
 	}
 }
 
-BattleHex CBattleInfoCallback::getAvailableHex(const CreatureID & creID, BattleSide side, int initialPos) const
+BattleHex CBattleInfoCallback::getAvailableHex(const Creature * creature, BattleSide side, BattleHex initialPos) const
 {
-	bool twoHex = LIBRARY->creatures()->getById(creID)->isDoubleWide();
+	bool twoHex = creature->isDoubleWide();
 
-	int pos;
-	if (initialPos > -1)
+	BattleHex pos;
+	if (initialPos.isValid())
 		pos = initialPos;
 	else //summon elementals depending on player side
 	{
@@ -2436,6 +2436,11 @@ std::optional<BattleSide> CBattleInfoCallback::battleIsFinished() const
 		return BattleSide::ATTACKER;
 	else
 		return BattleSide::DEFENDER;
+}
+
+const scripting::Pool & CBattleInfoCallback::getScriptContextPool() const
+{
+	return getBattle()->getScriptContextPool();
 }
 
 VCMI_LIB_NAMESPACE_END
