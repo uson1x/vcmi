@@ -11,10 +11,10 @@
 
 #include "HeroInstance.h"
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

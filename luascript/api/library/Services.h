@@ -11,7 +11,6 @@
 #pragma once
 
 #include <vcmi/Services.h>
-
 #include <vcmi/ArtifactService.h>
 #include <vcmi/CreatureService.h>
 #include <vcmi/FactionService.h>
@@ -20,13 +19,11 @@
 #include <vcmi/SkillService.h>
 #include <vcmi/spells/Service.h>
 
-#include "../LuaWrapper.h"
+#include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
 class ServicesProxy : public RawPointerWrapper<const Services, ServicesProxy>
@@ -47,8 +44,5 @@ public:
 };
 
 }
-}
-
-
 
 VCMI_LIB_NAMESPACE_END

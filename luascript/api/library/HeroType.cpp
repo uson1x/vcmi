@@ -11,16 +11,14 @@
 
 #include "HeroType.h"
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
 const std::vector<HeroTypeProxy::CustomRegType> HeroTypeProxy::REGISTER_CUSTOM =
@@ -31,8 +29,6 @@ const std::vector<HeroTypeProxy::CustomRegType> HeroTypeProxy::REGISTER_CUSTOM =
 	{"getName", LuaMethodWrapper<HeroType, decltype(&Entity::getNameTranslated), &Entity::getNameTranslated>::invoke, false},
 };
 
-
-}
 }
 
 VCMI_LIB_NAMESPACE_END

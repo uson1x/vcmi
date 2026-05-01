@@ -11,20 +11,16 @@
 
 #include "Spell.h"
 
-#include "Registry.h"
-
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
+#include "../Registry.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
+namespace scripting::api::library
 {
-namespace api
-{
-using ::spells::Spell;
 
-//TODO:calculateDamage,forEachSchool
+using ::spells::Spell;
 
 const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 {
@@ -49,7 +45,6 @@ const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 	{"getLevelDescription", LuaMethodWrapper<Spell, decltype(&Spell::getDescriptionTranslated), &Spell::getDescriptionTranslated>::invoke, false},
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

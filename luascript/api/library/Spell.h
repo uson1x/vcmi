@@ -1,5 +1,5 @@
 /*
- * api/Artifact.h, part of VCMI engine
+ * api/Spell.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,26 +10,22 @@
 
 #pragma once
 
-#include <vcmi/Artifact.h>
+#include <vcmi/spells/Spell.h>
 
-#include "../LuaWrapper.h"
+#include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
-class ArtifactProxy : public RawPointerWrapper<const Artifact, ArtifactProxy>
+class SpellProxy : public RawPointerWrapper<const ::spells::Spell, SpellProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const Artifact, ArtifactProxy>;
-
+	using Wrapper = RawPointerWrapper<const ::spells::Spell, SpellProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -10,6 +10,9 @@ set(lualib_SRCS
 		LuaSpellEffect.cpp
 		LuaStack.cpp
 
+		api/adventure/HeroInstance.cpp
+		api/adventure/StackInstance.cpp
+
 		api/battle/UnitProxy.cpp
 		api/battle/BattleHexProxy.cpp
 
@@ -18,34 +21,23 @@ set(lualib_SRCS
 		api/events/GenericEvents.cpp
 		api/events/SubscriptionRegistryProxy.cpp
 
-		api/netpacks/BattleLogMessage.cpp
-		api/netpacks/BattleStackMoved.cpp
-		api/netpacks/BattleUnitsChanged.cpp
-		api/netpacks/EntitiesChanged.cpp
-		api/netpacks/InfoWindow.cpp
-		api/netpacks/SetResources.cpp
-
 		api/spells/Mechanics.cpp
 		api/spells/Problem.cpp
 
-		api/texts/MetaString.cpp
+		api/library/Artifact.cpp
+		api/library/Creature.cpp
+		api/library/Faction.cpp
+		api/library/HeroClass.cpp
+		api/library/HeroType.cpp
+		api/library/Services.cpp
+		api/library/Skill.cpp
+		api/library/Spell.cpp
 
-		api/Artifact.cpp
 		api/BattleCb.cpp
-		api/BonusSystem.cpp
-		api/Creature.cpp
 		api/Enums.cpp
-		api/Faction.cpp
 		api/GameCb.cpp
-		api/HeroClass.cpp
-		api/HeroInstance.cpp
-		api/HeroType.cpp
 		api/Registry.cpp
 		api/ServerCb.cpp
-		api/Services.cpp
-		api/Skill.cpp
-		api/Spell.cpp
-		api/StackInstance.cpp
 )
 
 set(lualib_HDRS
@@ -60,6 +52,9 @@ set(lualib_HDRS
 		LuaStack.h
 		LuaWrapper.h
 
+		api/adventure/HeroInstance.h
+		api/adventure/StackInstance.h
+
 		api/battle/UnitProxy.h
 		api/battle/BattleHexProxy.h
 
@@ -68,35 +63,23 @@ set(lualib_HDRS
 		api/events/GenericEvents.h
 		api/events/SubscriptionRegistryProxy.h
 
-		api/netpacks/BattleLogMessage.h
-		api/netpacks/BattleStackMoved.h
-		api/netpacks/BattleUnitsChanged.h
-		api/netpacks/EntitiesChanged.h
-		api/netpacks/InfoWindow.h
-		api/netpacks/PackForClient.h
-		api/netpacks/SetResources.h
+		api/library/Artifact.h
+		api/library/Creature.h
+		api/library/Faction.h
+		api/library/HeroClass.h
+		api/library/HeroType.h
+		api/library/Services.h
+		api/library/Skill.h
+		api/library/Spell.h
 
 		api/spells/Mechanics.h
 		api/spells/Problem.h
 
-		api/texts/MetaString.h
-
-		api/Artifact.h
 		api/BattleCb.h
-		api/BonusSystem.h
-		api/Creature.h
 		api/Enums.h
-		api/Faction.h
 		api/GameCb.h
-		api/HeroClass.h
-		api/HeroInstance.h
-		api/HeroType.h
 		api/Registry.h
 		api/ServerCb.h
-		api/Services.h
-		api/Skill.h
-		api/Spell.h
-		api/StackInstance.h
 )
 
 assign_source_group(${lualib_SRCS} ${lualib_HDRS})

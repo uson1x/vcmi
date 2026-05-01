@@ -11,18 +11,16 @@
 
 #include "Creature.h"
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
-#include "../../lib/bonuses/Bonus.h"
-#include "../../lib/bonuses/IBonusBearer.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
+#include "../../../lib/bonuses/Bonus.h"
+#include "../../../lib/bonuses/IBonusBearer.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
 const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
@@ -59,7 +57,6 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"isDoubleWide", LuaMethodWrapper<Creature, decltype(&Creature::isDoubleWide), &Creature::isDoubleWide>::invoke, false},
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

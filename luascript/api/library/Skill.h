@@ -1,5 +1,5 @@
 /*
- * api/Faction.h, part of VCMI engine
+ * api/Skill.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,25 +10,22 @@
 
 #pragma once
 
-#include <vcmi/Faction.h>
+#include <vcmi/Skill.h>
 
-#include "../LuaWrapper.h"
+#include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
-class FactionProxy : public RawPointerWrapper<const Faction, FactionProxy>
+class SkillProxy : public RawPointerWrapper<const Skill, SkillProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const Faction, FactionProxy>;
+	using Wrapper = RawPointerWrapper<const Skill, SkillProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

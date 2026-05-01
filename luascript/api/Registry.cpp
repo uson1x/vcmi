@@ -17,29 +17,22 @@
 #include "events/EventBusProxy.h"
 #include "events/GenericEvents.h"
 #include "events/SubscriptionRegistryProxy.h"
-#include "netpacks/BattleLogMessage.h"
-#include "netpacks/BattleStackMoved.h"
-#include "netpacks/BattleUnitsChanged.h"
-#include "netpacks/EntitiesChanged.h"
-#include "netpacks/InfoWindow.h"
-#include "netpacks/SetResources.h"
 #include "spells/Mechanics.h"
 #include "spells/Problem.h"
-#include "texts/MetaString.h"
-#include "Artifact.h"
+#include "library/Artifact.h"
 #include "BattleCb.h"
-#include "Creature.h"
-#include "Faction.h"
+#include "library/Creature.h"
+#include "library/Faction.h"
 #include "GameCb.h"
-#include "HeroClass.h"
-#include "HeroInstance.h"
-#include "HeroType.h"
+#include "library/HeroClass.h"
+#include "adventure/HeroInstance.h"
+#include "library/HeroType.h"
 #include "Registry.h"
 #include "ServerCb.h"
-#include "Services.h"
-#include "Skill.h"
-#include "Spell.h"
-#include "StackInstance.h"
+#include "library/Services.h"
+#include "library/Skill.h"
+#include "library/Spell.h"
+#include "adventure/StackInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -48,19 +41,14 @@ namespace scripting::api
 
 Registry::Registry()
 {
-	registerPrivate<ServicesProxy>("library.Services");
-
-	registerPrivate<ArtifactProxy>("entity.Artifact");
-	registerPrivate<CreatureProxy>("entity.Creature");
-	registerPrivate<FactionProxy>("entity.Faction");
-	registerPrivate<HeroClassProxy>("entity.HeroClass");
-	registerPrivate<HeroTypeProxy>("entity.HeroType");
-	registerPrivate<SkillProxy>("entity.Skill");
-	registerPrivate<SpellProxy>("entity.Spell");
-
-//	registerPrivate<BonusProxy>("Bonus");
-//	registerPrivate<BonusListProxy>("BonusList");
-//	registerPrivate<BonusBearerProxy>("BonusBearer");
+	registerPrivate<library::ServicesProxy>("library.Services");
+	registerPrivate<library::ArtifactProxy>("library.Artifact");
+	registerPrivate<library::CreatureProxy>("library.Creature");
+	registerPrivate<library::FactionProxy>("library.Faction");
+	registerPrivate<library::HeroClassProxy>("library.HeroClass");
+	registerPrivate<library::HeroTypeProxy>("library.HeroType");
+	registerPrivate<library::SkillProxy>("library.Skill");
+	registerPrivate<library::SpellProxy>("library.Spell");
 
 	registerPrivate<HeroInstanceProxy>("adventure.HeroInstance");
 	registerPrivate<StackInstanceProxy>("adventure.StackInstance");
@@ -75,20 +63,11 @@ Registry::Registry()
 	registerPrivate<events::PlayerGotTurnProxy>("events.PlayerGotTurn");
 	registerPrivate<events::TurnStartedProxy>("events.TurnStarted");
 
-	registerPrivate<netpacks::BattleLogMessageProxy>("netpacks.BattleLogMessage");
-	registerPrivate<netpacks::BattleStackMovedProxy>("netpacks.BattleStackMoved");
-	registerPrivate<netpacks::SetResourcesProxy>("netpacks.SetResources");
-	registerPrivate<netpacks::InfoWindowProxy>("netpacks.InfoWindow");
-	registerPrivate<netpacks::EntitiesChangedProxy>("netpacks.EntitiesChanged");
-	registerPrivate<netpacks::BattleUnitsChangedProxy>("netpacks.BattleUnitsChanged");
-
 	registerPrivate<BattleCbProxy>("game.Battle");
 	registerPrivate<GameCbProxy>("game.Game");
 	registerPrivate<ServerCbProxy>("game.Server");
 	registerPrivate<events::EventBusProxy>("game.EventBus");
 	registerPrivate<events::EventSubscriptionProxy>("game.EventSubscription");
-
-	registerPrivate<MetaStringProxy>("texts.MetaString");
 }
 
 const Registry * Registry::get()

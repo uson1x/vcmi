@@ -11,16 +11,14 @@
 
 #include "Faction.h"
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
 const std::vector<FactionProxy::CustomRegType> FactionProxy::REGISTER_CUSTOM =
@@ -32,7 +30,6 @@ const std::vector<FactionProxy::CustomRegType> FactionProxy::REGISTER_CUSTOM =
 	{"hasTown", LuaMethodWrapper<Faction, decltype(&Faction::hasTown), &Faction::hasTown>::invoke, false},
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

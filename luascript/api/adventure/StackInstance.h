@@ -1,5 +1,5 @@
 /*
- * HeroInstance.h, part of VCMI engine
+ * StackInstance.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -12,9 +12,9 @@
 
 #include <vcmi/HeroClass.h>
 
-#include "../LuaWrapper.h"
+#include "../../LuaWrapper.h"
 
-#include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../../lib/mapObjects/army/CStackInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -23,13 +23,10 @@ namespace scripting
 namespace api
 {
 
-class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>
+class StackInstanceProxy : public RawPointerWrapper<const CStackInstance, StackInstanceProxy>
 {
-	static bool isMale(const CGHeroInstance * hero);
-	static bool isFemale(const CGHeroInstance * hero);
-
 public:
-	using Wrapper = RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>;
+	using Wrapper = RawPointerWrapper<const CStackInstance, StackInstanceProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 

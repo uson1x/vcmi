@@ -11,20 +11,17 @@
 
 #include "Artifact.h"
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
-#include "../../lib/bonuses/Bonus.h"
-#include "../../lib/bonuses/IBonusBearer.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
+#include "../../../lib/bonuses/Bonus.h"
+#include "../../../lib/bonuses/IBonusBearer.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
+namespace scripting::api::library
 {
-namespace api
-{
-
 
 const std::vector<ArtifactProxy::CustomRegType> ArtifactProxy::REGISTER_CUSTOM =
 {
@@ -43,8 +40,6 @@ const std::vector<ArtifactProxy::CustomRegType> ArtifactProxy::REGISTER_CUSTOM =
 	{"getPrice", LuaMethodWrapper<Artifact, decltype(&Artifact::getPrice), &Artifact::getPrice>::invoke, false},
 };
 
-
-}
 }
 
 VCMI_LIB_NAMESPACE_END

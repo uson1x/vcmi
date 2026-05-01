@@ -20,17 +20,15 @@
 #include <vcmi/Skill.h>
 #include <vcmi/spells/Spell.h>
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
 
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api::library
 {
 
 const std::vector<ServicesProxy::CustomRegType> ServicesProxy::REGISTER_CUSTOM =
@@ -79,7 +77,6 @@ const Skill * ServicesProxy::getSecondarySkillByName(const Services * services, 
 	return services->skills()->getByName(name);
 }
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END
