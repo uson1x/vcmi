@@ -245,7 +245,7 @@ void ExecuteHeroChain::accept(AIGateway * aiGw)
 							CGPath path;
 							bool isOk = aiGw->nullkiller->getPathsInfo(hero)->getPath(path, node->coord);
 
-							if(isOk && path.nodes.back().turns > 0)
+							if(isOk && path.nodes.front().turns > 0)
 							{
 								logAi->warn("Hero %s has %d mp which is not enough to continue his way towards %s.", hero->getNameTranslated(), hero->movementPointsRemaining(), node->coord.toString());
 
