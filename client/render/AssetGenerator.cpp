@@ -1207,8 +1207,14 @@ AssetGenerator::AnimationLayoutMap AssetGenerator::createAdventureOptionsButton(
 
                 for(int y = startY; y < startY + height; ++y)
                 {
-                    bool isScratchRow = ((y * 2147483647) % 13) > 8;
-                    int rowBaseBias = ((y * 1103515245) % 11) - 5;
+                    // 2147483647 is the Mersenne prime 2^31-1, used as a hash multiplier to scatter
+                    // the row index across the modulus 13, producing an irregular scratch pattern
+                    // instead of a visually obvious repeating stripe every 13 rows.
+                    bool isScratchRow = ((static_cast<unsigned>(y) * 2147483647u) % 13u) > 8u;
+                    // 1103515245 is the LCG multiplier from the glibc rand() implementation.
+                    // Multiplying by it before taking mod 11 distributes the per-row brightness
+                    // bias pseudo-randomly rather than cycling predictably every 11 rows.
+                    int rowBaseBias = static_cast<int>((static_cast<unsigned>(y) * 1103515245u) % 11u) - 5;
 
                     for(int x = startX; x < startX + width; ++x)
                     {
