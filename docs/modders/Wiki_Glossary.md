@@ -31,7 +31,14 @@ Each entry references two translation keys that must be present in the mod's tra
         "mymod.wiki.myentry.custom": {
             "name":        "mymod.wiki.myentry.custom.name",
             "description": "mymod.wiki.myentry.custom.description",
-            "category":    "mymod.mycategory"
+            "category":    "mymod.mycategory",
+            "order":       1
+        },
+        "mymod.wiki.myentry.custom2": {
+            "name":        "mymod.wiki.myentry.custom2.name",
+            "description": "mymod.wiki.myentry.custom2.description",
+            "category":    "mymod.mycategory",
+            "order":       2
         }
     }
 }
@@ -56,10 +63,15 @@ Custom categories always render their entries as Markdown (same renderer as the 
 | `name` | yes | Translation key for the list title shown in the left panel. |
 | `description` | yes | Translation key for the full article body shown on the right. The value supports the Markdown syntax described below. |
 | `category` | no | String ID of the category this entry belongs to.  Defaults to `"glossary"` when omitted.  Must match a key in `"categories"` or `"glossary"`. |
+| `order` | no | Integer that controls the position of this entry within its category's list.  Entries are sorted by ascending `order` value; entries without an `order` field are placed after all ordered entries, in alphabetical order among themselves. |
 
 Because both `"categories"` and `"entries"` are JSON objects, `assembleFromFiles` correctly **merges** contributions from all active mods.
 
-> **Entry ordering:** Glossary entries are sorted alphabetically by display name.  Entries in mod-defined custom categories keep the order they appear in the JSON file (natural / declaration order).
+> **Entry ordering:**
+> - **Glossary** entries are sorted alphabetically by display name.  The `order` field is ignored for the built-in Glossary category.
+> - **Custom category** entries are sorted by the `order` integer.  Entries that omit `order` are treated as if `order` is `999999` and appear last (alphabetically among themselves).
+>
+> Using explicit `order` values is strongly recommended whenever a category contains more than one entry, because JSON objects do not guarantee a stable iteration order across platforms.
 
 ### Linking to a custom-category entry
 

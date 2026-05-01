@@ -426,6 +426,11 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		}
 
 		// 2. Load entries; route each to its category (default: GLOSSARY).
+		// Custom-category entries are collected with their optional "order" field so they
+		// can be reordered after the loop (JsonMap iterates alphabetically by key).
+		// key = category index, value = list of (order, entry)
+		std::map<int, std::vector<std::pair<int, WikiEntry>>> customOrderedEntries;
+
 		for(const auto & [entryId, e] : glossaryJson["entries"].Struct())
 		{
 			const std::string catStr = e["category"].isNull() ? std::string("glossary") : e["category"].String();
@@ -440,10 +445,30 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			}
 			const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
 			const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-			categoryEntries[targetIdx].push_back({ entryId, name, desc, std::nullopt, "", "" });
+			WikiEntry entry{ entryId, name, desc, std::nullopt, "", "" };
+
+			if(targetIdx == static_cast<int>(WikiCategory::GLOSSARY))
+			{
+				categoryEntries[targetIdx].push_back(std::move(entry));
+			}
+			else
+			{
+				// Custom category: collect with order value (default INT_MAX keeps alphabetical fallback)
+				const int order = e["order"].isNull() ? 999999 : (int)e["order"].Integer();
+				customOrderedEntries[targetIdx].emplace_back(order, std::move(entry));
+			}
+		}
+
+		// Insert custom-category entries sorted by their "order" field
+		for(auto & [catIdx, orderedList] : customOrderedEntries)
+		{
+			std::stable_sort(orderedList.begin(), orderedList.end(),
+			                 [](const auto & a, const auto & b){ return a.first < b.first; });
+			for(auto & [ord, entry] : orderedList)
+				categoryEntries[catIdx].push_back(std::move(entry));
 		}
 	}
-	// Sort the glossary alphabetically; custom categories keep their natural (JSON insertion) order.
+	// Sort the glossary alphabetically; custom categories keep their "order" field sequence.
 	{
 		const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
 		std::sort(categoryEntries[iGlossary].begin(), categoryEntries[iGlossary].end(),
