@@ -28,7 +28,7 @@ Each entry references two translation keys that must be present in the mod's tra
 ```
 
 | Field | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `name` | yes | Translation key for the list title shown in the left panel. |
 | `description` | yes | Translation key for the full article body shown on the right. The value supports the Markdown syntax described below. |
 
@@ -69,7 +69,7 @@ First paragraph.\n\n<p>\nSecond paragraph (also starts after a p-tag).
 ### Line breaks
 
 | Syntax | Effect |
-|---|---|
+| --- | --- |
 | `<br>` inline inside a paragraph line | Inserts a line-break inside the rendered label without starting a new paragraph. |
 | `<br>` on its own line | Flushes the current paragraph to screen without adding extra vertical space. |
 
@@ -92,7 +92,7 @@ First paragraph.\n\n<p>\nSecond paragraph (also starts after a p-tag).
 Wrap one or more block elements (headings, images, animations, videos) between an opening and a matching closing tag to control their alignment:
 
 | Opening tag | Closing tag | Effect |
-|---|---|---|
+| --- | --- | --- |
 | `<left>` | `</left>` | Align to the left. |
 | `<center>` | `</center>` | Align to the centre. |
 | `<right>` | `</right>` | Align to the right. |
@@ -110,7 +110,7 @@ Headings default to **left**; images, animations, and videos default to **left**
 The file extension determines how the resource is loaded.
 
 | Extension | Rendering |
-|---|---|
+| --- | --- |
 | `.png` `.pcx` `.bmp` (or any non-animation image) | Static image.  Downscaled to fit the viewport width if wider. |
 | `.def` `.json` (no `#N` suffix) | Animation; all frames played as a looping ~6 fps animation. |
 | `.def` `.json#N` | Single static frame `N` from the animation. |
@@ -198,7 +198,7 @@ Right-clicking a linked image still shows the alt-text tooltip as normal.
 #### Categories and identifiers
 
 | Category string | Content |
-|---|---|
+| --- | --- |
 | `glossary` | Manual glossary entries |
 | `creature` | Creature list |
 | `spell` | Spell list |
