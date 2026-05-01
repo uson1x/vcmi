@@ -282,17 +282,22 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			ImagePath   icon;
 		};
 		std::vector<AbilityRow> abilityRows;
-		std::set<std::pair<int,int>> seen;
+		std::set<std::tuple<int, int, std::string>> seen;
 
 		auto bonusList = creature->getBonuses(Selector::all);
 		for(const auto & b : *bonusList)
 		{
 			if(b->hidden) continue;
-			const std::string text = LIBRARY->bth->bonusToString(b);
+			const std::string text = !b->description.empty()
+				? b->description.toString()
+				: LIBRARY->bth->bonusToString(b, creature);
 			if(text.empty()) continue;
-			const auto key = std::make_pair((int)b->type, b->subtype.getNum());
+			const auto key = std::make_tuple((int)b->type, b->subtype.getNum(), text);
 			if(!seen.insert(key).second) continue;
-			abilityRows.push_back(AbilityRow{text, LIBRARY->bth->bonusToGraphics(b)});
+			const ImagePath icon = !b->customIconPath.empty()
+				? b->customIconPath
+				: LIBRARY->bth->bonusToGraphics(b);
+			abilityRows.push_back(AbilityRow{text, icon});
 		}
 
 		if(!abilityRows.empty())
