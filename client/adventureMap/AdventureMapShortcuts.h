@@ -82,6 +82,7 @@ class AdventureMapShortcuts
 	void zoom( int distance);
 	void search(bool next);
 	void moveHeroDirectional(const Point & direction);
+	void showWiki();
 
 public:
 	explicit AdventureMapShortcuts(AdventureMapInterface & owner);

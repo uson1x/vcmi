@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 #include "CHeroWindow.h"
+#include "wiki/WikiWindow.h"
 
 #include "CCreatureWindow.h"
 #include "CHeroBackpackWindow.h"
@@ -182,7 +183,16 @@ CHeroWindow::CHeroWindow(const CGHeroInstance * hero)
 	labels.push_back(std::make_shared<CLabel>(69, 232, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::YELLOW, LIBRARY->generaltexth->jktexts[6]));
 	labels.push_back(std::make_shared<CLabel>(213, 232, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::YELLOW, LIBRARY->generaltexth->jktexts[7]));
 
+	addUsedEvents(KEYBOARD);
 	CHeroWindow::updateArtifacts();
+}
+
+void CHeroWindow::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::ADVENTURE_OPEN_WIKI)
+		ENGINE->windows().createAndPushWindow<WikiWindow>(
+			WikiWindow::Style::BROWN,
+			WikiEntryKey{WikiCategory::HERO, curHero->getHeroType()->getJsonKey()});
 }
 
 void CHeroWindow::updateArtifacts()

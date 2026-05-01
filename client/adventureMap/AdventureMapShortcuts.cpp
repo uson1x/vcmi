@@ -26,6 +26,7 @@
 #include "../windows/CMarketWindow.h"
 #include "../windows/GUIClasses.h"
 #include "../windows/InfoWindows.h"
+#include "../windows/wiki/WikiWindow.h"
 #include "../windows/settings/SettingsMainWindow.h"
 #include "AdventureMapInterface.h"
 #include "AdventureOptions.h"
@@ -123,6 +124,7 @@ std::vector<AdventureMapShortcutState> AdventureMapShortcuts::getShortcuts()
 		{ EShortcut::ADVENTURE_MOVE_HERO_NE,     optionHeroSelected(),   [this]() { this->moveHeroDirectional({+1, -1}); } },
 		{ EShortcut::ADVENTURE_SEARCH,           optionSidePanelActive(),[this]() { this->search(false); } },
 		{ EShortcut::ADVENTURE_SEARCH_CONTINUE,  optionSidePanelActive(),[this]() { this->search(true); } },
+		{ EShortcut::ADVENTURE_OPEN_WIKI,        optionInMapView(),      [this]() { this->showWiki(); } },
 		{ EShortcut::MAIN_MENU_LOBBY,            optionSidePanelActive(),[    ]() { ENGINE->user().onGlobalLobbyInterfaceActivated(); } }
 	};
 	return result;
@@ -171,6 +173,11 @@ void AdventureMapShortcuts::switchMapLevel()
 void AdventureMapShortcuts::showQuestlog()
 {
 	GAME->interface()->showQuestLog();
+}
+
+void AdventureMapShortcuts::showWiki()
+{
+	ENGINE->windows().createAndPushWindow<WikiWindow>();
 }
 
 void AdventureMapShortcuts::toggleTrackHero()
