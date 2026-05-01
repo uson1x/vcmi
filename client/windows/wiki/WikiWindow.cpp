@@ -223,6 +223,15 @@ void WikiListItem::showAll(Canvas & to)
 			const int iconY = pos.y + (ITEM_H - ICON_SIZE) / 2;
 			to.drawColorBlended(Rect(pos.x + MARGIN_L, iconY, ICON_SIZE, ICON_SIZE), *colorFillIcon);
 		}
+		if(selected && !text.empty())
+		{
+			const int contentW = (lb && lb->getSlider()) ? (pos.w - 16) : pos.w;
+			if(contentW > 2 && pos.h > 2)
+			{
+				to.drawColorBlended(Rect(pos.x + 1, pos.y + 1, contentW - 2, pos.h - 2), ColorRGBA(0, 0, 0, 110));
+				to.drawBorder(Rect(pos.x + 1, pos.y + 1, contentW - 2, pos.h - 2), ColorRGBA(210, 170, 70, 255), 1);
+			}
+		}
 		// Separator line: full width without slider
 		if(pos.y + pos.h < parent->pos.y + parent->pos.h)
 		{
