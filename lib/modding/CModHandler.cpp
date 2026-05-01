@@ -244,6 +244,18 @@ void CModHandler::loadTranslation(const TModID & modName)
 	JsonNode baseTranslation = JsonUtils::assembleFromFiles(mod.getLocalConfig()["translations"]);
 	JsonNode extraTranslation = JsonUtils::assembleFromFiles(mod.getLocalConfig()[preferredLanguage]["translations"]);
 
+	// Per-key English fallback: if the mod has no translations for the preferred
+	// language but provides its base-language (typically English) translations,
+	// register those under the preferred language so every key shows English text
+	// rather than the raw key identifier.
+	if(extraTranslation.isNull() && preferredLanguage != modBaseLanguage)
+	{
+		JsonNode baseLangFallback = JsonUtils::assembleFromFiles(
+			mod.getLocalConfig()[modBaseLanguage]["translations"]);
+		if(!baseLangFallback.isNull())
+			extraTranslation = std::move(baseLangFallback);
+	}
+
 	LIBRARY->generaltexth->loadTranslationOverrides(modName, modBaseLanguage, baseTranslation);
 	LIBRARY->generaltexth->loadTranslationOverrides(modName, preferredLanguage, extraTranslation);
 }
