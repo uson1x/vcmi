@@ -35,6 +35,10 @@ class CTrueTypeFont final : public IFont
 
 	void renderText(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const override;
 	void renderTextImpl(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const;
+	/// Applies @p ttfStyle (OR-mask) over the current font style, calls renderText, then restores.
+	void renderTextWithStyle(int ttfStyle, SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const;
+	/// Measures @p text as if rendered with @p ttfStyle applied, returns scaled width.
+	size_t getStringWidthWithStyleScaled(int ttfStyle, const std::string & data) const;
 	size_t getFontAscentScaled() const override;
 public:
 	CTrueTypeFont(const JsonNode & fontConfig);

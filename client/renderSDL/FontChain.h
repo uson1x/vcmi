@@ -47,4 +47,15 @@ public:
 	                    const ColorRGBA & color, const Point & pos) const override;
 	size_t getStringWidthBoldScaled(const std::string & data) const override;
 	size_t getStringWidthItalicScaled(const std::string & data) const override;
+
+private:
+	/// Iterates chunks, calling renderFn(font, surface, text, color, pos) per chunk,
+	/// and advancing x by widthFn(font, text) per chunk.
+	using RenderFn = void (IFont::*)(SDL_Surface *, const std::string &, const ColorRGBA &, const Point &) const;
+	using WidthFn  = size_t (IFont::*)(const std::string &) const;
+	void renderTextWithMethods(RenderFn renderFn, WidthFn widthFn,
+	                           SDL_Surface * surface, const std::string & data,
+	                           const ColorRGBA & color, const Point & pos) const;
+	/// Sums up widthFn(chunk.font, chunk.text) over all chunks.
+	size_t sumChunkWidths(WidthFn widthFn, const std::string & data) const;
 };
