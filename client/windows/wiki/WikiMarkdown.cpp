@@ -282,19 +282,23 @@ public:
 };
 
 // WikiCodeSpan – renders an inline code snippet with a semi-transparent background rect.
+// bgW  = visual width of the background box (text without trailing space + padding).
+// advW = total advance width used by the layout (may include trailing space).
 class WikiCodeSpan : public CIntObject
 {
 	std::string text;
+	int         bgW;
 public:
-	WikiCodeSpan(int x, int y, std::string t, int totalW, int lineH)
+	WikiCodeSpan(int x, int y, std::string t, int bgW_, int advW, int lineH)
 		: CIntObject(0, Point(x, y))
 		, text(std::move(t))
-	{ pos.w = totalW; pos.h = lineH; }
+		, bgW(bgW_)
+	{ pos.w = advW; pos.h = lineH; }
 
 	void showAll(Canvas & to) override
 	{
 		// Shift background 1px down so it doesn't overlap the descenders of the line above.
-		to.drawColorBlended(Rect(Point(pos.x, pos.y + 1), Point(pos.w, pos.h - 1)), MD_CODE_BLOCK_BG);
+		to.drawColorBlended(Rect(Point(pos.x, pos.y + 1), Point(bgW, pos.h - 1)), MD_CODE_BLOCK_BG);
 		to.drawText(Point(pos.x + MD_CODE_PAD_X, pos.y + MD_CODE_PAD_Y),
 		            FONT_SMALL, Colors::WHITE, ETextAlignment::TOPLEFT, text);
 	}
@@ -815,48 +819,117 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			flushPlain();
 
 			// Build word-level layout tokens:
-			//   PLAIN  → split at spaces (word + trailing space is one token)
-			//   others → atomic (wrap as whole unit)
+			//   PLAIN/BOLD/ITALIC/CODE → split at spaces so word-wrap works.
+			//   LINK                   → atomic (clickable area must not be split).
+			// PLAIN with color tags: spaces inside {color|…} are also split points;
+			//   the color prefix is re-opened for each continuation chunk.
+			// CODE: each word-chunk keeps its own background box, but the box only
+			//   covers the visible text (no trailing-space gap); advance width includes
+			//   the space so the next token is positioned correctly.
 			struct LayoutToken
 			{
-				std::string   text;
+				std::string   text;    // rendered text
 				MDInlineType  type;
-				std::string   target; // LINK only
-				int           width;  // pre-computed pixel width
+				std::string   target;  // LINK only
+				int           width;   // cursor advance (may include trailing space)
+				int           bgWidth; // visual/bg width (CODE only: no trailing space)
 			};
 			std::vector<LayoutToken> ltoks;
 
+			// Split PLAIN text at every space, re-wrapping active color-tag prefixes.
+			// e.g. "{FF0000|hello world}" → "{FF0000|hello} ", "{FF0000|world}"
+			auto splitPlainWithColorRewrap = [](const std::string & text) -> std::vector<std::string>
+			{
+				std::vector<std::string> result;
+				std::string chunk;
+				std::string colorPrefix; // active "{colorname|" prefix when inside a tag
+
+				for(size_t i = 0; i < text.size(); ++i)
+				{
+					const char c = text[i];
+					if(c == '{')
+					{
+						// Check for {color| pattern.
+						const size_t pipe  = text.find('|', i + 1);
+						const size_t close = text.find('}', i + 1);
+						if(pipe != std::string::npos && pipe < close)
+							colorPrefix = text.substr(i, pipe - i + 1); // "{color|"
+						// else: plain brace block, no color prefix
+						chunk += c;
+					}
+					else if(c == '}')
+					{
+						colorPrefix.clear();
+						chunk += c;
+					}
+					else if(c == ' ')
+					{
+						if(!colorPrefix.empty())
+						{
+							// Close the tag before the split, reopen after.
+							chunk += '}'; // close
+							chunk += ' ';
+							result.push_back(std::move(chunk));
+							chunk = colorPrefix; // reopen: "{color|"
+						}
+						else
+						{
+							chunk += ' ';
+							result.push_back(std::move(chunk));
+							chunk.clear();
+						}
+					}
+					else
+						chunk += c;
+				}
+				if(!chunk.empty())
+					result.push_back(std::move(chunk));
+				return result;
+			};
+
 			for(const auto & tok : tokens)
 			{
+				if(tok.type == MDInlineType::LINK)
+				{
+					// Links stay atomic.
+					const int tw = (int)fontPtr->getStringWidth(tok.text);
+					ltoks.push_back({tok.text, tok.type, tok.target, tw, tw});
+					continue;
+				}
+
 				if(tok.type == MDInlineType::PLAIN)
 				{
-					size_t wp = 0;
-					while(wp < tok.text.size())
+					// Split respecting color-tag re-wrapping.
+					for(const auto & word : splitPlainWithColorRewrap(tok.text))
 					{
-						const size_t sp = tok.text.find(' ', wp);
-						if(sp == std::string::npos)
-						{
-							const std::string word = tok.text.substr(wp);
-							// Strip color tags before measuring: {} characters don't render
-							ltoks.push_back({word, MDInlineType::PLAIN, {}, (int)fontPtr->getStringWidth(stripColorTags(word))});
-							break;
-						}
-						const std::string word = tok.text.substr(wp, sp - wp + 1); // word + space
-						ltoks.push_back({word, MDInlineType::PLAIN, {}, (int)fontPtr->getStringWidth(stripColorTags(word))});
-						wp = sp + 1;
+						const int tw = (int)fontPtr->getStringWidth(stripColorTags(word));
+						ltoks.push_back({word, MDInlineType::PLAIN, {}, tw, tw});
 					}
+					continue;
 				}
-				else
+
+				// BOLD / ITALIC: split at spaces so word-wrap works.
+				// CODE: stays atomic in ltoks; the render loop does per-line box accumulation.
+				if(tok.type == MDInlineType::CODE)
 				{
-					int tw;
-					if(tok.type == MDInlineType::BOLD)
-						tw = (int)fontPtr->getStringWidthBold(tok.text);
-					else if(tok.type == MDInlineType::ITALIC)
-						tw = (int)fontPtr->getStringWidthItalic(tok.text);
-					else
-						tw = (int)fontPtr->getStringWidth(tok.text);
-					if(tok.type == MDInlineType::CODE) tw += 2 * MD_CODE_PAD_X;
-					ltoks.push_back({tok.text, tok.type, tok.target, tw});
+					// Store full content; width is only used as a hint (render loop overrides).
+					const int tw = (int)fontPtr->getStringWidth(tok.text) + 2 * MD_CODE_PAD_X;
+					ltoks.push_back({tok.text, MDInlineType::CODE, {}, tw, tw});
+					continue;
+				}
+				size_t wp = 0;
+				const std::string & src = tok.text;
+				while(wp < src.size())
+				{
+					const size_t sp   = src.find(' ', wp);
+					const bool   last = (sp == std::string::npos);
+					const std::string word = last ? src.substr(wp) : src.substr(wp, sp - wp + 1);
+					const int tw = (tok.type == MDInlineType::BOLD)
+					              ? (int)fontPtr->getStringWidthBold(word)
+					              : (int)fontPtr->getStringWidthItalic(word);
+					ltoks.push_back({word, tok.type, {}, tw, tw});
+					if(last) break;
+					wp = sp + 1;
 				}
 			}
 
@@ -867,6 +940,62 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 			for(const auto & lt : ltoks)
 			{
 				if(lt.text.empty()) continue;
+
+				// CODE: accumulate words per line; each line gets exactly one background box.
+				if(lt.type == MDInlineType::CODE)
+				{
+					// Split the full code text at spaces.
+					std::vector<std::string> codeWords;
+					{
+						size_t p = 0;
+						while(p <= lt.text.size())
+						{
+							const size_t e = lt.text.find(' ', p);
+							if(e == std::string::npos) { codeWords.push_back(lt.text.substr(p)); break; }
+							codeWords.push_back(lt.text.substr(p, e - p));
+							p = e + 1;
+						}
+					}
+
+					std::string seg; // words accumulated for the current line
+					auto flushCodeSeg = [&]()
+					{
+						if(seg.empty()) return;
+						const int bgW = (int)fontPtr->getStringWidth(seg) + 2 * MD_CODE_PAD_X;
+						widgets.push_back(std::make_shared<WikiCodeSpan>(
+							curX, curY, seg, bgW, bgW, lineH));
+						curX += bgW;
+						seg.clear();
+					};
+
+					for(const auto & word : codeWords)
+					{
+						if(word.empty()) continue;
+						const std::string candidate = seg.empty() ? word : (seg + ' ' + word);
+						const int candW = (int)fontPtr->getStringWidth(candidate) + 2 * MD_CODE_PAD_X;
+						// If adding this word would overflow (and we already have content), flush.
+						if(!seg.empty() && curX + candW > maxX)
+						{
+							flushCodeSeg();
+							curY += lineH;
+							curX = MD_MARGIN;
+						}
+						// If even the first word alone doesn't fit, wrap before starting.
+						if(seg.empty() && curX > MD_MARGIN)
+						{
+							const int singleW = (int)fontPtr->getStringWidth(word) + 2 * MD_CODE_PAD_X;
+							if(curX + singleW > maxX)
+							{
+								curY += lineH;
+								curX = MD_MARGIN;
+							}
+						}
+						seg = seg.empty() ? word : (seg + ' ' + word);
+					}
+					flushCodeSeg();
+					continue; // skip standard wrap-check and curX advance below
+				}
+
 				// Wrap if token doesn't fit (but always allow the first token on a line).
 				if(curX > MD_MARGIN && curX + lt.width > maxX)
 				{
@@ -896,17 +1025,25 @@ std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, lt.text));
 					break;
 				case MDInlineType::BOLD:
-					widgets.push_back(std::make_shared<WikiBoldSpan>(
-						curX, curY, lt.width, lineH, lt.text));
+				{
+					const std::string rendered = (!lt.text.empty() && lt.text.back() == ' ')
+					                             ? lt.text.substr(0, lt.text.size() - 1) : lt.text;
+					if(!rendered.empty())
+						widgets.push_back(std::make_shared<WikiBoldSpan>(
+							curX, curY, lt.width, lineH, rendered));
 					break;
+				}
 				case MDInlineType::ITALIC:
-					widgets.push_back(std::make_shared<WikiItalicSpan>(
-						curX, curY, lt.width, lineH, lt.text));
+				{
+					const std::string rendered = (!lt.text.empty() && lt.text.back() == ' ')
+					                             ? lt.text.substr(0, lt.text.size() - 1) : lt.text;
+					if(!rendered.empty())
+						widgets.push_back(std::make_shared<WikiItalicSpan>(
+							curX, curY, lt.width, lineH, rendered));
 					break;
+				}
 				case MDInlineType::CODE:
-					widgets.push_back(std::make_shared<WikiCodeSpan>(
-						curX, curY, lt.text, lt.width, lineH));
-					break;
+					break; // handled above, never reached
 				}
 				curX += lt.width;
 			}
