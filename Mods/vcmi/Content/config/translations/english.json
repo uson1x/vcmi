@@ -1147,6 +1147,8 @@
 	"vcmi.wiki.hero.column.level": "Level",
 	"vcmi.wiki.hero.column.spell": "Spell",
 	"vcmi.wiki.terrain.nativeTowns": "Native Towns",
+	"vcmi.wiki.terrain.moveCost": "Movement Cost",
+	"vcmi.wiki.spell.schools": "Spell School",
 	"vcmi.wiki.artifact.combined": "Combined Artifact",
 	"vcmi.wiki.artifact.gold": "Gold",
 	"vcmi.wiki.artifact.header.class": "Class",

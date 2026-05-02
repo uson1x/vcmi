@@ -42,6 +42,7 @@
 #include "../../../lib/entities/hero/CHeroClass.h"
 #include "../../../lib/entities/artifact/CArtHandler.h"
 #include "../../../lib/spells/CSpellHandler.h"
+#include "../../../lib/spells/SpellSchoolHandler.h"
 #include "../../../lib/CSkillHandler.h"
 #include "../../../lib/TerrainHandler.h"
 #include "../../../lib/modding/CModHandler.h"
@@ -577,6 +578,21 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				// Build multi-level description (Basic / Advanced / Expert)
 				std::string desc;
+				// School(s) this spell belongs to
+				{
+					std::string schools;
+					spell->forEachSchool([&](const SpellSchool & schoolId, bool &)
+					{
+						const auto * schoolObj = LIBRARY->spellSchoolHandler->getById(schoolId);
+						if(schoolObj)
+						{
+							if(!schools.empty()) schools += ", ";
+							schools += schoolObj->getNameTranslated();
+						}
+					});
+					if(!schools.empty())
+						desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.spell.schools") + "}: " + schools;
+				}
 				for(int lvl = 1; lvl <= 3; lvl++)
 				{
 					const std::string ld = spell->getDescriptionTranslated(lvl);
@@ -646,8 +662,19 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					}
 				}
 				std::string desc;
+				// Movement cost
+				{
+					const std::string label = LIBRARY->generaltexth->translate("vcmi.wiki.terrain.moveCost");
+					const std::string value = (terrain->moveCost < 0)
+						? "-"
+						: std::to_string(terrain->moveCost) + "%";
+					desc = "{" + label + "}: " + value;
+				}
 				if(!nativeTowns.empty())
-					desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}\n\n" + nativeTowns;
+				{
+					if(!desc.empty()) desc += "\n";
+					desc += "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}: " + nativeTowns;
+				}
 				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon, terrain->getModScope(), "" });
 			}
 		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
