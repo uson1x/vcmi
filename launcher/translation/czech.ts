@@ -322,7 +322,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="416"/>
         <source>Required mods</source>
-        <translation>Vyžadované modifikace VCMI</translation>
+        <translation>Vyžadované modifikace</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="417"/>
@@ -1268,7 +1268,7 @@ Heroes® of Might and Magic® III HD není podporována!</translation>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="510"/>
         <source>If you own Heroes III on gog.com, you can download a backup offline installer from gog.com. VCMI will then import Heroes III data using the offline installer. 
 Offline installer consists of two files: &quot;.exe&quot; and &quot;.bin&quot; - you must download both.</source>
-        <translation>Pokud vlastníte Heroes III na gog.com, můžete si stáhnout záložní offline instalační program z gog.com. VCMI poté importuje data Heroes III pomocí tohoto offline instalačního programu. Offline instalační program se skládá ze dvou souborů: \&quot;.exe\&quot; a \&quot;.bin\&quot; – musíte stáhnout oba.</translation>
+        <translation>Pokud vlastníte Heroes III na gog.com, můžete si stáhnout záložní offline instalační program z gog.com. VCMI poté importuje data Heroes III pomocí tohoto offline instalačního programu. Offline instalační program se skládá ze dvou souborů: &quot;.exe&quot; a &quot;.bin&quot; – musíte stáhnout oba.</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="563"/>
@@ -1321,7 +1321,7 @@ Offline installer consists of two files: &quot;.exe&quot; and &quot;.bin&quot; -
         <location filename="../firstLaunch/firstlaunch_moc.cpp" line="509"/>
         <source>Heroes III: HD Edition files are not supported by VCMI.
 Please select the directory with Heroes III: Complete Edition or Heroes III: Shadow of Death.</source>
-        <translation>Soubory z Heroes III: HD Edition nejsou ve VCMI  podporovány.
+        <translation>Soubory z Heroes III: HD Edition nejsou ve VCMI podporovány.
 Vyberte prosím složku s Heroes III: Complete Edition nebo Heroes III: Shadow of Death.</translation>
     </message>
     <message>
