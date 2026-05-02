@@ -11,7 +11,6 @@
 
 #include "Damage.h"
 #include "Registry.h"
-#include "../CSpellHandler.h"
 #include "../ISpellMechanics.h"
 
 #include "../../CStack.h"

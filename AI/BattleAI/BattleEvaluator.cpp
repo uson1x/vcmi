@@ -21,15 +21,14 @@
 #include "../../lib/callback/CBattleCallback.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/entities/building/TownFortifications.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/BattleSpellMechanics.h"
 #include "../../lib/spells/ISpellMechanics.h"
+#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/battle/BattleStateInfoForRetreat.h"
 #include "../../lib/battle/CObstacleInstance.h"
 #include "../../lib/battle/BattleAction.h"
 #include "../../lib/CRandomGenerator.h"
 #include "../../lib/GameLibrary.h"
-
 
 // TODO: remove
 // Eventually only IBattleInfoCallback and battle::Unit should be used,

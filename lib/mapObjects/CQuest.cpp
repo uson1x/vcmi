@@ -25,6 +25,7 @@
 #include "../entities/ResourceTypeHandler.h"
 #include "../mapObjectConstructors/CObjectClassesHandler.h"
 #include "../serializer/JsonSerializeFormat.h"
+#include "../spells/CSpellHandler.h"
 #include "../GameConstants.h"
 #include "../constants/StringConstants.h"
 #include "../CPlayerState.h"
@@ -34,7 +35,6 @@
 #include "../modding/ModScope.h"
 #include "../modding/ModUtility.h"
 #include "../networkPacks/PacksForClient.h"
-#include "../spells/CSpellHandler.h"
 
 #include <vstd/RNG.h>
 

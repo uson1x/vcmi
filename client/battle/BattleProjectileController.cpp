@@ -22,6 +22,7 @@
 
 #include "../../lib/CStack.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
+#include "../../lib/spells/CSpell.h"
 
 static double calculateCatapultParabolaY(const Point & from, const Point & dest, int x)
 {

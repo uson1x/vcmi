@@ -12,7 +12,7 @@
 
 #include "SummonBoatEffect.h"
 
-#include "../CSpellHandler.h"
+#include "../CSpell.h"
 
 #include "../../mapObjects/CGHeroInstance.h"
 #include "../../mapObjects/MiscObjects.h"

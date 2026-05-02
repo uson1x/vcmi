@@ -23,6 +23,7 @@
 #include "../../lib/IGameSettings.h"
 #include "../../lib/bonuses/Limiters.h"
 #include "../../lib/bonuses/Propagators.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 #include <vcmi/CreatureService.h>
 

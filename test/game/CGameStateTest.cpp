@@ -35,9 +35,9 @@
 
 #include "../../lib/mapping/CMap.h"
 
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/ISpellMechanics.h"
 #include "../../lib/spells/AbilityCaster.h"
+#include "../../lib/spells/CSpell.h"
 
 class CGameStateTest : public ::testing::Test, public SpellCastEnvironment, public MapListener
 {

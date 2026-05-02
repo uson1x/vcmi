@@ -271,6 +271,7 @@ set(lib_MAIN_SRCS
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
 	spells/BonusCaster.cpp
+	spells/CSpell.cpp
 	spells/CSpellHandler.cpp
 	spells/ExternalCaster.cpp
 	spells/ISpellMechanics.cpp
@@ -752,12 +753,14 @@ set(lib_MAIN_HEADERS
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
 	spells/BonusCaster.h
+	spells/CSpell.h
 	spells/CSpellHandler.h
 	spells/ExternalCaster.h
 	spells/ISpellMechanics.h
 	spells/ObstacleCasterProxy.h
 	spells/Problem.h
 	spells/ProxyCaster.h
+	spells/SpellAnimationItem.h
 	spells/SpellSchoolHandler.h
 	spells/TargetCondition.h
 	spells/ViewSpellInt.h

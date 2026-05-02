@@ -25,7 +25,7 @@
 #include "../spells/ObstacleCasterProxy.h"
 #include "../spells/ISpellMechanics.h"
 #include "../spells/Problem.h"
-#include "../spells/CSpellHandler.h"
+#include "../spells/CSpell.h"
 #include "../mapObjects/CGTownInstance.h"
 #include "../networkPacks/PacksForClientBattle.h"
 #include "../BattleFieldHandler.h"

@@ -12,7 +12,7 @@
 #include "BattleSpellMechanics.h"
 
 #include "Problem.h"
-#include "CSpellHandler.h"
+#include "CSpell.h"
 
 #include "../battle/IBattleState.h"
 #include "../battle/CBattleInfoCallback.h"

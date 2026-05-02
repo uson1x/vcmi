@@ -14,7 +14,6 @@
 #include "TownBuildingInstance.h"
 
 #include "../IGameSettings.h"
-#include "../spells/CSpellHandler.h"
 #include "../bonuses/Bonus.h"
 #include "../battle/IBattleInfoCallback.h"
 #include "../battle/BattleLayout.h"

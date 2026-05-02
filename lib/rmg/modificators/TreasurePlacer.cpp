@@ -30,9 +30,10 @@
 #include "../../mapObjects/CQuest.h"
 #include "../../mapObjects/MiscObjects.h"
 #include "../../CCreatureHandler.h"
-#include "../../spells/CSpellHandler.h" //for choosing random spells
 #include "../../mapping/CMap.h"
 #include "../../mapping/CMapEditManager.h"
+#include "../../spells/CSpellHandler.h"
+
 
 #include <vstd/RNG.h>
 

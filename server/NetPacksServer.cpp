@@ -24,8 +24,8 @@
 #include "../lib/gameState/CGameState.h"
 #include "../lib/battle/IBattleState.h"
 #include "../lib/battle/Unit.h"
-#include "../lib/spells/CSpellHandler.h"
 #include "../lib/spells/ISpellMechanics.h"
+#include "../lib/spells/CSpell.h"
 
 void ApplyGhNetPackVisitor::visitSaveGame(SaveGame & pack)
 {

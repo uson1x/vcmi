@@ -27,6 +27,7 @@
 #include "../render/IRenderHandler.h"
 
 #include "../../lib/battle/CPlayerBattleCallback.h"
+#include "../../lib/spells/CSpell.h"
 #include "../../lib/CStack.h"
 
 static std::optional<std::pair<BattleHex, BattleHex>> getLongWeaponLineHexes(const BattleHex & defenderHex, BattleHex::EDir direction)

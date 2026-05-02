@@ -18,10 +18,10 @@
 #include "../mapObjects/CGHeroInstance.h"
 #include "../mapObjects/CGTownInstance.h"
 #include "../mapObjects/MiscObjects.h"
+#include "../spells/CSpell.h"
 #include "../StartInfo.h"
 #include "../battle/BattleInfo.h"
 #include "../IGameSettings.h"
-#include "../spells/CSpellHandler.h"
 #include "../mapping/CMap.h"
 #include "../CPlayerState.h"
 

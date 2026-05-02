@@ -12,7 +12,6 @@
 #include "ui_rewardswidget.h"
 #include "../../lib/GameLibrary.h"
 #include "../../lib/CSkillHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/CBonusTypeHandler.h"
 #include "../../lib/CCreatureHandler.h"
 #include "../../lib/constants/StringConstants.h"
@@ -32,6 +31,8 @@
 #include <vcmi/HeroType.h>
 #include <vcmi/HeroClassService.h>
 #include <vcmi/HeroClass.h>
+#include <vcmi/spells/Service.h>
+#include <vcmi/spells/Spell.h>
 
 RewardsWidget::RewardsWidget(CMap & m, CRewardableObject & p, QWidget *parent) :
 	QDialog(parent),

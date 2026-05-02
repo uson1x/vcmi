@@ -13,7 +13,6 @@
 #include "../mapcontroller.h"
 #include "../../lib/GameLibrary.h"
 #include "../../lib/CSkillHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/CCreatureHandler.h"
 #include "../../lib/constants/StringConstants.h"
 #include "../../lib/entities/artifact/CArtHandler.h"
@@ -21,11 +20,14 @@
 #include "../../lib/mapping/CMap.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGCreature.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 #include <vcmi/HeroTypeService.h>
 #include <vcmi/HeroType.h>
 #include <vcmi/HeroClassService.h>
 #include <vcmi/HeroClass.h>
+#include <vcmi/spells/Service.h>
+#include <vcmi/spells/Spell.h>
 
 QuestWidget::QuestWidget(MapController & _controller, CQuest & _sh, QWidget *parent) :
 	QDialog(parent),
