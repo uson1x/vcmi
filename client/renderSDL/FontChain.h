@@ -49,13 +49,12 @@ public:
 	size_t getStringWidthItalicScaled(const std::string & data) const override;
 
 private:
-	/// Iterates chunks, calling renderFn(font, surface, text, color, pos) per chunk,
-	/// and advancing x by widthFn(font, text) per chunk.
-	using RenderFn = void (IFont::*)(SDL_Surface *, const std::string &, const ColorRGBA &, const Point &) const;
-	using WidthFn  = size_t (IFont::*)(const std::string &) const;
-	void renderTextWithMethods(RenderFn renderFn, WidthFn widthFn,
+	using RenderFn = std::function<void(const IFont &, SDL_Surface *, const std::string &, const ColorRGBA &, const Point &)>;
+	using WidthFn  = std::function<size_t(const IFont &, const std::string &)>;
+	/// Iterates chunks, calling renderFn(*font, ...) per chunk and advancing x by widthFn(*font, text).
+	void renderTextWithMethods(const RenderFn & renderFn, const WidthFn & widthFn,
 	                           SDL_Surface * surface, const std::string & data,
 	                           const ColorRGBA & color, const Point & pos) const;
-	/// Sums up widthFn(chunk.font, chunk.text) over all chunks.
-	size_t sumChunkWidths(WidthFn widthFn, const std::string & data) const;
+	/// Sums up widthFn(*font, text) over all chunks.
+	size_t sumChunkWidths(const WidthFn & widthFn, const std::string & data) const;
 };

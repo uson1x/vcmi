@@ -42,7 +42,7 @@ static constexpr int CELL_T = 2;
 // buildCreatureContent – main entry point
 // ─────────────────────────────────────────────────────────────────────────────
 
-std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
+std::vector<std::shared_ptr<CIntObject>> buildCreatureContent( // NOSONAR (complex by nature – many creature attributes)
 	CViewport & viewport,
 	const CCreature * creature,
 	int viewportWidth,
@@ -196,7 +196,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 		std::vector<const CCreature *> upgrades;
 		for(const CreatureID uid : creature->upgrades)
 		{
-			if(uid.getNum() >= 0 && uid.getNum() < (int)LIBRARY->creh->objects.size())
+			if(uid.getNum() >= 0 && uid.getNum() < static_cast<int>(LIBRARY->creh->objects.size()))
 			{
 				if(const auto & up = LIBRARY->creh->objects[uid.getNum()])
 					upgrades.push_back(up.get());
@@ -292,7 +292,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 				? b->description.toString()
 				: LIBRARY->bth->bonusToString(b, creature);
 			if(text.empty()) continue;
-			const auto key = std::make_tuple((int)b->type, b->subtype.getNum(), text);
+			const auto key = std::make_tuple(static_cast<int>(b->type), b->subtype.getNum(), text);
 			if(!seen.insert(key).second) continue;
 			const ImagePath icon = !b->customIconPath.empty()
 				? b->customIconPath

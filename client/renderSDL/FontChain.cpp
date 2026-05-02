@@ -20,59 +20,68 @@
 #include "../../lib/texts/Languages.h"
 #include "../../lib/GameLibrary.h"
 
-void FontChain::renderTextWithMethods(RenderFn renderFn, WidthFn widthFn,
+void FontChain::renderTextWithMethods(const RenderFn & renderFn, const WidthFn & widthFn,
                                       SDL_Surface * surface, const std::string & data,
                                       const ColorRGBA & color, const Point & pos) const
 {
 	const auto chunks = splitTextToChunks(data);
-	const int maxAscent = getFontAscentScaled();
+	const int maxAscent = static_cast<int>(getFontAscentScaled());
 	Point currentPos = pos;
 	for(const auto & chunk : chunks)
 	{
 		Point chunkPos = currentPos;
 		chunkPos.y += maxAscent - static_cast<int>(chunk.font->getFontAscentScaled());
-		(chunk.font->*renderFn)(surface, chunk.text, color, chunkPos);
-		currentPos.x += static_cast<int>((chunk.font->*widthFn)(chunk.text));
+		renderFn(*chunk.font, surface, chunk.text, color, chunkPos);
+		currentPos.x += static_cast<int>(widthFn(*chunk.font, chunk.text));
 	}
 }
 
-size_t FontChain::sumChunkWidths(WidthFn widthFn, const std::string & data) const
+size_t FontChain::sumChunkWidths(const WidthFn & widthFn, const std::string & data) const
 {
 	const auto chunks = splitTextToChunks(data);
 	size_t total = 0;
 	for(const auto & chunk : chunks)
-		total += (chunk.font->*widthFn)(chunk.text);
+		total += widthFn(*chunk.font, chunk.text);
 	return total;
 }
 
 void FontChain::renderText(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const
 {
-	renderTextWithMethods(&IFont::renderText, &IFont::getStringWidthScaled, surface, data, color, pos);
+	renderTextWithMethods(
+		[](const IFont & f, SDL_Surface * s, const std::string & t, const ColorRGBA & c, const Point & p) { f.renderText(s, t, c, p); },
+		[](const IFont & f, const std::string & t) { return f.getStringWidthScaled(t); },
+		surface, data, color, pos);
 }
 
 void FontChain::renderTextItalic(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const
 {
-	renderTextWithMethods(&IFont::renderTextItalic, &IFont::getStringWidthItalicScaled, surface, data, color, pos);
+	renderTextWithMethods(
+		[](const IFont & f, SDL_Surface * s, const std::string & t, const ColorRGBA & c, const Point & p) { f.renderTextItalic(s, t, c, p); },
+		[](const IFont & f, const std::string & t) { return f.getStringWidthItalicScaled(t); },
+		surface, data, color, pos);
 }
 
 void FontChain::renderTextBold(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const
 {
-	renderTextWithMethods(&IFont::renderTextBold, &IFont::getStringWidthBoldScaled, surface, data, color, pos);
+	renderTextWithMethods(
+		[](const IFont & f, SDL_Surface * s, const std::string & t, const ColorRGBA & c, const Point & p) { f.renderTextBold(s, t, c, p); },
+		[](const IFont & f, const std::string & t) { return f.getStringWidthBoldScaled(t); },
+		surface, data, color, pos);
 }
 
 size_t FontChain::getStringWidthScaled(const std::string & data) const
 {
-	return sumChunkWidths(&IFont::getStringWidthScaled, data);
+	return sumChunkWidths([](const IFont & f, const std::string & t) { return f.getStringWidthScaled(t); }, data);
 }
 
 size_t FontChain::getStringWidthBoldScaled(const std::string & data) const
 {
-	return sumChunkWidths(&IFont::getStringWidthBoldScaled, data);
+	return sumChunkWidths([](const IFont & f, const std::string & t) { return f.getStringWidthBoldScaled(t); }, data);
 }
 
 size_t FontChain::getStringWidthItalicScaled(const std::string & data) const
 {
-	return sumChunkWidths(&IFont::getStringWidthItalicScaled, data);
+	return sumChunkWidths([](const IFont & f, const std::string & t) { return f.getStringWidthItalicScaled(t); }, data);
 }
 
 size_t FontChain::getFontAscentScaled() const

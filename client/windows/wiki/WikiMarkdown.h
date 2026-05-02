@@ -93,9 +93,9 @@ class CViewport;
 ///                       Y-offset (px) pairs for every <a id="..."/> tag found.
 /// @return               Flat list of created widgets (parented to viewport).
 std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
-	CViewport & viewport,
+	const CViewport & viewport,
 	const std::string & markdownText,
 	int viewportWidth,
 	bool blueStyle,
-	std::function<void(const std::string &)> onWikiLink = nullptr,
+	const std::function<void(const std::string &)> & onWikiLink = nullptr,
 	std::map<std::string, int> * anchors = nullptr);

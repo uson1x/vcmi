@@ -214,7 +214,7 @@ public:
 		to.drawText(pos.topLeft(), FONT_SMALL, col, ETextAlignment::TOPLEFT, linkText);
 		// Draw underline 1 px below baseline
 		const auto & f = ENGINE->renderHandler().loadFont(FONT_SMALL);
-		const int lineY = pos.y + (int)f->getLineHeight() - 1;
+		const int lineY = pos.y + static_cast<int>(f->getLineHeight()) - 1;
 		to.drawLine(Point(pos.x, lineY), Point(pos.x + pos.w - 1, lineY), col, col);
 	}
 
@@ -316,13 +316,13 @@ public:
 		, lineH(lh)
 	{
 		pos.w = w;
-		pos.h = MD_CODE_PAD_X * 2 + (int)lines.size() * lineH;  // same padding on all sides
+		pos.h = MD_CODE_PAD_X * 2 + static_cast<int>(lines.size()) * lineH;  // same padding on all sides
 	}
 
 	void showAll(Canvas & to) override
 	{
 		to.drawColorBlended(Rect(pos.topLeft(), Point(pos.w, pos.h)), MD_CODE_BLOCK_BG);
-		for(int i = 0; i < (int)lines.size(); ++i)
+		for(int i = 0; i < static_cast<int>(lines.size()); ++i)
 			to.drawText(Point(pos.x + MD_CODE_PAD_X, pos.y + MD_CODE_PAD_X + i * lineH),
 			            FONT_SMALL, Colors::WHITE, ETextAlignment::TOPLEFT, lines[i]);
 	}
@@ -423,7 +423,7 @@ struct ParsedMedia
 	bool isVideo  = false; ///< .bik / .smk / .webm / .mp4 → VideoPath
 };
 
-static bool parseMediaLine(const std::string & line, ParsedMedia & out)
+static bool parseMediaLine(const std::string & line, ParsedMedia & out) // NOSONAR
 {
 	out.linkTarget.clear();
 	std::string mediaPart = line;
@@ -468,7 +468,7 @@ static bool parseMediaLine(const std::string & line, ParsedMedia & out)
 	{
 		out.path     = rawPath.substr(0, hash);
 		out.hasFrame = true;
-		try { out.frame = std::stoi(rawPath.substr(hash + 1)); } catch(...) {}
+		try { out.frame = std::stoi(rawPath.substr(hash + 1)); } catch(const std::exception & e) { logGlobal->warn("WikiMarkdown: invalid frame index in '{}': {}", rawPath, e.what()); }
 	}
 	else
 	{
@@ -555,8 +555,10 @@ static std::string stripColorTags(const std::string & s)
 static std::string replaceAll(std::string str, const std::string & from, const std::string & to)
 {
 	size_t pos = 0;
-	while((pos = str.find(from, pos)) != std::string::npos)
+	for(;;)
 	{
+		pos = str.find(from, pos);
+		if(pos == std::string::npos) break;
 		str.replace(pos, from.size(), to);
 		pos += to.size();
 	}
@@ -579,7 +581,7 @@ struct MDInlineToken
 /// Tokenises a single line (no embedded newlines) into inline spans.
 /// Handles: `` `code` ``, **bold**, *italic*, [text](uri).
 /// All other characters are plain.
-static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
+static std::vector<MDInlineToken> tokenizeInline(const std::string & line) // NOSONAR
 {
 	std::vector<MDInlineToken> result;
 	std::string plainAcc;
@@ -600,7 +602,7 @@ static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
 		if(line[i] == '`')
 		{
 			const size_t end = line.find('`', i + 1);
-			if(end == std::string::npos) { plainAcc += line[i++]; continue; }
+			if(end == std::string::npos) { plainAcc += line[i]; ++i; continue; }
 			flushPlain();
 			result.push_back({line.substr(i + 1, end - i - 1), MDInlineType::CODE, {}});
 			i = end + 1;
@@ -611,7 +613,7 @@ static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
 		if(i + 1 < line.size() && line[i] == '*' && line[i + 1] == '*')
 		{
 			const size_t end = line.find("**", i + 2);
-			if(end == std::string::npos) { plainAcc += line[i++]; continue; }
+			if(end == std::string::npos) { plainAcc += line[i]; ++i; continue; }
 			flushPlain();
 			result.push_back({line.substr(i + 2, end - i - 2), MDInlineType::BOLD, {}});
 			i = end + 2;
@@ -622,7 +624,7 @@ static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
 		if(line[i] == '*')
 		{
 			const size_t end = line.find('*', i + 1);
-			if(end == std::string::npos) { plainAcc += line[i++]; continue; }
+			if(end == std::string::npos) { plainAcc += line[i]; ++i; continue; }
 			flushPlain();
 			result.push_back({line.substr(i + 1, end - i - 1), MDInlineType::ITALIC, {}});
 			i = end + 1;
@@ -635,11 +637,12 @@ static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
 			const size_t cb = line.find(']', i + 1);
 			if(cb == std::string::npos || cb + 1 >= line.size() || line[cb + 1] != '(')
 			{
-				plainAcc += line[i++];
+				plainAcc += line[i];
+				++i;
 				continue;
 			}
 			const size_t cp = line.find(')', cb + 2);
-			if(cp == std::string::npos) { plainAcc += line[i++]; continue; }
+			if(cp == std::string::npos) { plainAcc += line[i]; ++i; continue; }
 			flushPlain();
 			result.push_back({
 				line.substr(i + 1, cb - i - 1),
@@ -650,7 +653,8 @@ static std::vector<MDInlineToken> tokenizeInline(const std::string & line)
 			continue;
 		}
 
-		plainAcc += line[i++];
+		plainAcc += line[i];
+		++i;
 	}
 	flushPlain();
 	return result;
@@ -720,12 +724,13 @@ static std::vector<std::string> splitPlainWithColorRewrap(const std::string & te
 /// returning the detected MDAlign (modifies the string in-place).
 static MDAlign parseCellAlign(std::string & s)
 {
-	const struct { std::string_view open; std::string_view close; MDAlign align; } tags[] =
-	{
+	struct AlignTag { std::string_view open; std::string_view close; MDAlign align; };
+	constexpr std::array<AlignTag, 3> tags =
+	{{
 		{ "<center>", "</center>", MDAlign::CENTER },
 		{ "<right>",  "</right>",  MDAlign::RIGHT  },
 		{ "<left>",   "</left>",   MDAlign::LEFT   },
-	};
+	}};
 	for(const auto & tag : tags)
 	{
 		if(s.starts_with(tag.open))
@@ -777,7 +782,7 @@ struct MDRenderer
 	// Small shared helpers
 	// -----------------------------------------------------------------------
 
-	MDAlign consumeAlign(MDAlign def) { return pendingAlign.value_or(def); }
+	MDAlign consumeAlign(MDAlign def) const { return pendingAlign.value_or(def); }
 
 	void addParagraph(const std::string & text, int x, int width, int gap,
 	                  EFonts font = FONT_SMALL,
@@ -813,7 +818,7 @@ struct MDRenderer
 	{
 		if(codeBuffer.empty()) return;
 		const auto & font2 = ENGINE->renderHandler().loadFont(FONT_SMALL);
-		const int lh = (int)font2->getLineHeight();
+		const int lh = static_cast<int>(font2->getLineHeight());
 		auto block = std::make_shared<WikiCodeBlockWidget>(MD_MARGIN, curY, textW, std::move(codeBuffer), lh);
 		curY += block->pos.h + MD_GAP;
 		widgets.push_back(std::move(block));
@@ -906,7 +911,7 @@ struct MDRenderer
 		int          bgWidth;
 	};
 
-	std::vector<LayoutToken> buildLayoutTokens(const std::string & ln) const
+	std::vector<LayoutToken> buildLayoutTokens(const std::string & ln) const // NOSONAR
 	{
 		const auto & fontPtr = ENGINE->renderHandler().loadFont(FONT_SMALL);
 		std::vector<LayoutToken> ltoks;
@@ -914,7 +919,7 @@ struct MDRenderer
 		{
 			if(tok.type == MDInlineType::LINK)
 			{
-				const int tw = (int)fontPtr->getStringWidth(tok.text);
+				const int tw = static_cast<int>(fontPtr->getStringWidth(tok.text));
 				ltoks.push_back({tok.text, tok.type, tok.target, tw, tw});
 				continue;
 			}
@@ -922,14 +927,14 @@ struct MDRenderer
 			{
 				for(const auto & word : splitPlainWithColorRewrap(tok.text))
 				{
-					const int tw = (int)fontPtr->getStringWidth(stripColorTags(word));
+					const int tw = static_cast<int>(fontPtr->getStringWidth(stripColorTags(word)));
 					ltoks.push_back({word, MDInlineType::PLAIN, {}, tw, tw});
 				}
 				continue;
 			}
 			if(tok.type == MDInlineType::CODE)
 			{
-				const int tw = (int)fontPtr->getStringWidth(tok.text) + 2 * MD_CODE_PAD_X;
+				const int tw = static_cast<int>(fontPtr->getStringWidth(tok.text)) + 2 * MD_CODE_PAD_X;
 				ltoks.push_back({tok.text, MDInlineType::CODE, {}, tw, tw});
 				continue;
 			}
@@ -942,8 +947,8 @@ struct MDRenderer
 				const bool last = (sp == std::string::npos);
 				const std::string word = last ? src.substr(wp) : src.substr(wp, sp - wp + 1);
 				const int tw = (tok.type == MDInlineType::BOLD)
-				              ? (int)fontPtr->getStringWidthBold(word)
-				              : (int)fontPtr->getStringWidthItalic(word);
+				              ? static_cast<int>(fontPtr->getStringWidthBold(word))
+				              : static_cast<int>(fontPtr->getStringWidthItalic(word));
 				ltoks.push_back({word, tok.type, {}, tw, tw});
 				if(last) break;
 				wp = sp + 1;
@@ -953,7 +958,7 @@ struct MDRenderer
 	}
 
 	// Renders one CODE inline token; splits it across lines, one box per line.
-	void renderCodeToken(const std::string & codeText, int & curX, int startX, int maxX, int lineH)
+	void renderCodeToken(const std::string & codeText, int & curX, int startX, int maxX, int lineH) // NOSONAR
 	{
 		const auto & fontPtr = ENGINE->renderHandler().loadFont(FONT_SMALL);
 		std::vector<std::string> words;
@@ -971,7 +976,7 @@ struct MDRenderer
 		auto flushSeg = [&]()
 		{
 			if(seg.empty()) return;
-			const int bgW = (int)fontPtr->getStringWidth(seg) + 2 * MD_CODE_PAD_X;
+			const int bgW = static_cast<int>(fontPtr->getStringWidth(seg)) + 2 * MD_CODE_PAD_X;
 			widgets.push_back(std::make_shared<WikiCodeSpan>(curX, curY, seg, bgW, bgW, lineH));
 			curX += bgW;
 			seg.clear();
@@ -980,11 +985,11 @@ struct MDRenderer
 		{
 			if(word.empty()) continue;
 			const std::string candidate = seg.empty() ? word : (seg + ' ' + word);
-			const int candW = (int)fontPtr->getStringWidth(candidate) + 2 * MD_CODE_PAD_X;
+			const int candW = static_cast<int>(fontPtr->getStringWidth(candidate)) + 2 * MD_CODE_PAD_X;
 			if(!seg.empty() && curX + candW > maxX) { flushSeg(); curY += lineH; curX = startX; }
 			if(seg.empty() && curX > startX)
 			{
-				const int oneW = (int)fontPtr->getStringWidth(word) + 2 * MD_CODE_PAD_X;
+				const int oneW = static_cast<int>(fontPtr->getStringWidth(word)) + 2 * MD_CODE_PAD_X;
 				if(curX + oneW > maxX) { curY += lineH; curX = startX; }
 			}
 			seg = seg.empty() ? word : (seg + ' ' + word);
@@ -992,10 +997,10 @@ struct MDRenderer
 		flushSeg();
 	}
 
-	void layoutInlineLine(const std::string & ln, int startX, int availW, int trailGap = MD_PARA_GAP)
+	void layoutInlineLine(const std::string & ln, int startX, int availW, int trailGap = MD_PARA_GAP) // NOSONAR
 	{
 		const auto & fontPtr = ENGINE->renderHandler().loadFont(FONT_SMALL);
-		const int lineH = (int)fontPtr->getLineHeight();
+		const int lineH = static_cast<int>(fontPtr->getLineHeight());
 		const int maxX  = startX + availW;
 		int curX = startX;
 
@@ -1052,7 +1057,7 @@ struct MDRenderer
 		MDAlign     textAlign = MDAlign::LEFT;
 	};
 
-	void measureTableCell(CellInfo & info, const std::string & cellText, int colW) const
+	void measureTableCell(CellInfo & info, const std::string & cellText, int colW) const // NOSONAR
 	{
 		ParsedMedia pm;
 		if(parseMediaLine(cellText, pm))
@@ -1066,7 +1071,7 @@ struct MDRenderer
 			}
 			else if(pm.isAnim)
 			{
-				const size_t fr = pm.hasFrame ? (size_t)pm.frame : 0;
+				const size_t fr = pm.hasFrame ? static_cast<size_t>(pm.frame) : 0;
 				auto probe = ENGINE->renderHandler().loadImage(
 					AnimationPath::builtin(pm.path), fr, 0, EImageBlitMode::COLORKEY);
 				if(probe)
@@ -1074,7 +1079,7 @@ struct MDRenderer
 					const Point sz = probe->dimensions();
 					if(sz.x > 0)
 					{
-						const double sc = std::min(1.0, (double)cw / sz.x);
+						const double sc = std::min(1.0, static_cast<double>(cw) / sz.x);
 						info.measuredH = std::max(1, static_cast<int>(std::round(sz.y * sc)));
 					}
 				}
@@ -1088,7 +1093,7 @@ struct MDRenderer
 					const Point sz = probe->dimensions();
 					if(sz.x > 0)
 					{
-						const double sc = std::min(1.0, (double)cw / sz.x);
+						const double sc = std::min(1.0, static_cast<double>(cw) / sz.x);
 						info.measuredH = std::max(1, static_cast<int>(std::round(sz.y * sc)));
 					}
 				}
@@ -1108,7 +1113,7 @@ struct MDRenderer
 		info.measuredH = std::max(info.measuredH, 16);
 	}
 
-	void renderTableCell(const CellInfo & info, int mx, int my, int cw, int ch, int dataRowH)
+	void renderTableCell(const CellInfo & info, int mx, int my, int cw, int ch, int dataRowH) // NOSONAR
 	{
 		if(!info.isMedia)
 		{
@@ -1134,16 +1139,17 @@ struct MDRenderer
 		else if(pm.isAnim)
 		{
 			auto probe = ENGINE->renderHandler().loadImage(
-				AnimationPath::builtin(pm.path), (size_t)pm.frame, 0, EImageBlitMode::COLORKEY);
+				AnimationPath::builtin(pm.path), static_cast<size_t>(pm.frame), 0, EImageBlitMode::COLORKEY);
 			if(probe)
 			{
 				const Point sz = probe->dimensions();
-				int rW, rH;
+				int rW;
+				int rH;
 				if(sz.x <= cw) { rW = sz.x; rH = sz.y; }
-				else { const double sc = (double)cw / sz.x; rW = cw; rH = std::max(1, static_cast<int>(std::round(sz.y * sc))); }
+				else { const double sc = static_cast<double>(cw) / sz.x; rW = cw; rH = std::max(1, static_cast<int>(std::round(sz.y * sc))); }
 				const int vOff = std::max(0, (ch - rH) / 2);
 				widgets.push_back(std::make_shared<CAnimImage>(
-					AnimationPath::builtin(pm.path), (size_t)pm.frame, Rect(mx, my + vOff, rW, rH), 0));
+					AnimationPath::builtin(pm.path), static_cast<size_t>(pm.frame), Rect(mx, my + vOff, rW, rH), 0));
 			}
 		}
 		else
@@ -1158,7 +1164,7 @@ struct MDRenderer
 		}
 	}
 
-	void flushTable()
+	void flushTable() // NOSONAR
 	{
 		if(tableBuffer.empty()) return;
 		std::vector<std::string> rawRows;
@@ -1179,20 +1185,20 @@ struct MDRenderer
 
 		const bool hasHeader   = parsedRows.size() >= 2;
 		const int  dataStart   = hasHeader ? 1 : 0;
-		const int  numDataRows = std::max(0, (int)parsedRows.size() - dataStart);
+		const int  numDataRows = std::max(0, static_cast<int>(parsedRows.size()) - dataStart);
 		const int  colW        = (textW - std::max(0, numCols - 1)) / numCols;
 
 		std::vector<std::vector<CellInfo>> grid(parsedRows.size(), std::vector<CellInfo>(numCols));
-		for(int ri = 0; ri < (int)parsedRows.size(); ++ri)
+		for(int ri = 0; ri < static_cast<int>(parsedRows.size()); ++ri)
 			for(int ci = 0; ci < numCols; ++ci)
 			{
-				const std::string & ct = (ci < (int)parsedRows[ri].size()) ? parsedRows[ri][ci] : std::string{};
+				const std::string & ct = (ci < static_cast<int>(parsedRows[ri].size())) ? parsedRows[ri][ci] : std::string{};
 				measureTableCell(grid[ri][ci], ct, colW);
 			}
 
 		const int headerH = hasHeader ? 18 : 0;
 		int dataRowH = 0;
-		for(int ri = dataStart; ri < (int)parsedRows.size(); ++ri)
+		for(int ri = dataStart; ri < static_cast<int>(parsedRows.size()); ++ri)
 			for(int ci = 0; ci < numCols; ++ci)
 				dataRowH = std::max(dataRowH, grid[ri][ci].measuredH);
 		dataRowH = std::max(dataRowH, 16);
@@ -1210,7 +1216,7 @@ struct MDRenderer
 						FONT_SMALL, ETextAlignment::CENTER, Colors::YELLOW, info.text));
 			}
 
-		for(int ri = dataStart; ri < (int)parsedRows.size(); ++ri)
+		for(int ri = dataStart; ri < static_cast<int>(parsedRows.size()); ++ri)
 		{
 			const int ry = curY + headerH + (ri - dataStart) * dataRowH;
 			for(int ci = 0; ci < numCols; ++ci)
@@ -1227,7 +1233,7 @@ struct MDRenderer
 	// Media
 	// -----------------------------------------------------------------------
 
-	void renderMediaLine(const ParsedMedia & pm)
+	void renderMediaLine(const ParsedMedia & pm) // NOSONAR
 	{
 		if(pm.isVideo)
 		{
@@ -1239,7 +1245,9 @@ struct MDRenderer
 			if(scale < 1.0f)
 				vid = std::make_shared<WikiVideoWidget>(Point(0, curY), VideoPath::builtin(pm.path), scale);
 			const int vx = alignedX(a, vid->pos.w, MD_MARGIN, textW);
-			const int vW = vid->pos.w, vH = vid->pos.h, vY = curY;
+			const int vW = vid->pos.w;
+			const int vH = vid->pos.h;
+			const int vY = curY;
 			vid->moveBy(Point(vx, 0));
 			curY += vH + MD_GAP;
 			widgets.push_back(std::move(vid));
@@ -1253,7 +1261,9 @@ struct MDRenderer
 			const MDAlign a = consumeAlign(MDAlign::LEFT);
 			auto anim = std::make_shared<WikiAnimLoopWidget>(AnimationPath::builtin(pm.path), 0, curY);
 			const int ax = alignedX(a, anim->pos.w, MD_MARGIN, textW);
-			const int aW = anim->pos.w, aH = anim->pos.h, aY = curY;
+			const int aW = anim->pos.w;
+			const int aH = anim->pos.h;
+			const int aY = curY;
 			anim->moveBy(Point(ax, 0));
 			curY += aH + MD_GAP;
 			widgets.push_back(std::move(anim));
@@ -1265,19 +1275,20 @@ struct MDRenderer
 		else if(pm.isAnim)
 		{
 			auto probe = ENGINE->renderHandler().loadImage(
-				AnimationPath::builtin(pm.path), (size_t)pm.frame, 0, EImageBlitMode::COLORKEY);
+				AnimationPath::builtin(pm.path), static_cast<size_t>(pm.frame), 0, EImageBlitMode::COLORKEY);
 			if(probe)
 			{
 				const Point sz = probe->dimensions();
 				if(sz.x > 0 && sz.y > 0)
 				{
-					int rW, rH;
+					int rW;
+					int rH;
 					if(sz.x <= textW) { rW = sz.x; rH = sz.y; }
-					else { const double sc = (double)textW / sz.x; rW = textW; rH = std::max(1, static_cast<int>(std::round(sz.y * sc))); }
+					else { const double sc = static_cast<double>(textW) / sz.x; rW = textW; rH = std::max(1, static_cast<int>(std::round(sz.y * sc))); }
 					const MDAlign a = consumeAlign(MDAlign::LEFT);
 					const int rx = alignedX(a, rW, MD_MARGIN, textW);
 					const Rect rct(rx, curY, rW, rH);
-					widgets.push_back(std::make_shared<CAnimImage>(AnimationPath::builtin(pm.path), (size_t)pm.frame, rct, 0));
+					widgets.push_back(std::make_shared<CAnimImage>(AnimationPath::builtin(pm.path), static_cast<size_t>(pm.frame), rct, 0));
 					curY += rH + MD_GAP;
 					if(!pm.alt.empty())       widgets.push_back(std::make_shared<WikiAltPopup>(rct, pm.alt));
 					if(!pm.linkTarget.empty() && onWikiLink) widgets.push_back(std::make_shared<WikiLinkOverlay>(rct, pm.linkTarget, onWikiLink));
@@ -1291,7 +1302,9 @@ struct MDRenderer
 			if(pic->height() > 0)
 			{
 				const int px = alignedX(a, pic->pos.w, MD_MARGIN, textW);
-				const int pW = pic->pos.w, pH = pic->height(), pY = curY;
+				const int pW = pic->pos.w;
+				const int pH = pic->height();
+				const int pY = curY;
 				pic->moveBy(Point(px, 0));
 				curY += pH + MD_GAP;
 				widgets.push_back(std::move(pic));
@@ -1366,7 +1379,7 @@ struct MDRenderer
 		return false;
 	}
 
-	bool handleHeading(const std::string & t)
+	bool handleHeading(const std::string & t) // NOSONAR
 	{
 		std::string headText;
 		const int level = parseHeading(t, headText);
@@ -1376,9 +1389,12 @@ struct MDRenderer
 		headText = stripAnchorTags(headText);
 		while(!headText.empty() && (headText.front() == ' ' || headText.front() == '\t')) headText.erase(headText.begin());
 		while(!headText.empty() && (headText.back()  == ' ' || headText.back()  == '\t')) headText.pop_back();
-		const EFonts fnt    = (level == 1) ? FONT_BIG    : (level == 2) ? FONT_MEDIUM : FONT_SMALL;
-		const int    topPad = (level == 1) ? MD_H1_PAD_TOP : (level == 2) ? MD_H2_PAD_TOP : MD_H3_PAD_TOP;
-		const int    lineH  = (level == 1) ? 22 : (level == 2) ? 16 : 12;
+		EFonts fnt;
+		int    topPad;
+		int    lineH;
+		if(level == 1)      { fnt = FONT_BIG;    topPad = MD_H1_PAD_TOP; lineH = 22; }
+		else if(level == 2) { fnt = FONT_MEDIUM; topPad = MD_H2_PAD_TOP; lineH = 16; }
+		else                { fnt = FONT_SMALL;  topPad = MD_H3_PAD_TOP; lineH = 12; }
 		curY += topPad;
 		const MDAlign a = consumeAlign(MDAlign::LEFT);
 		int lx; ETextAlignment ta;
@@ -1504,11 +1520,11 @@ struct MDRenderer
 // ---------------------------------------------------------------------------
 
 std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
-	CViewport & viewport,
+	const CViewport & viewport,
 	const std::string & markdownText,
 	int viewportWidth,
 	bool blueStyle,
-	std::function<void(const std::string &)> onWikiLink,
+	const std::function<void(const std::string &)> & onWikiLink,
 	std::map<std::string, int> * anchors)
 {
 	std::vector<std::shared_ptr<CIntObject>> widgets;

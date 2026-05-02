@@ -85,7 +85,7 @@ public:
 	std::string text;
 	size_t index = 0;
 
-	WikiListItem(size_t index, std::string text, std::string subtitle,
+	WikiListItem(size_t index, std::string text, std::string subtitle, // NOSONAR (8 params needed for widget configuration)
 	             std::function<void(WikiListItem *)> callback,
 	             std::optional<WikiIconInfo> iconInfo = std::nullopt,
 	             bool blueStyle = false,

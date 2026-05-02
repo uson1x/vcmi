@@ -83,12 +83,12 @@ CTrueTypeFont::CTrueTypeFont(const JsonNode & fontConfig):
 
 CTrueTypeFont::~CTrueTypeFont() = default;
 
-void CTrueTypeFont::renderTextWithStyle(int ttfStyle, SDL_Surface * surface, const std::string & data,
+void CTrueTypeFont::renderTextWithStyle(int ttfStyle, SDL_Surface * surface, const std::string & text,
                                         const ColorRGBA & color, const Point & pos) const
 {
 	const int origStyle = TTF_GetFontStyle(font.get());
 	TTF_SetFontStyle(font.get(), origStyle | ttfStyle);
-	renderText(surface, data, color, pos);
+	renderText(surface, text, color, pos);
 	TTF_SetFontStyle(font.get(), origStyle);
 }
 
@@ -104,16 +104,16 @@ size_t CTrueTypeFont::getStringWidthWithStyleScaled(int ttfStyle, const std::str
 	return static_cast<size_t>(width);
 }
 
-void CTrueTypeFont::renderTextItalic(SDL_Surface * surface, const std::string & data,
+void CTrueTypeFont::renderTextItalic(SDL_Surface * surface, const std::string & text,
                                      const ColorRGBA & color, const Point & pos) const
 {
-	renderTextWithStyle(TTF_STYLE_ITALIC, surface, data, color, pos);
+	renderTextWithStyle(TTF_STYLE_ITALIC, surface, text, color, pos);
 }
 
-void CTrueTypeFont::renderTextBold(SDL_Surface * surface, const std::string & data,
+void CTrueTypeFont::renderTextBold(SDL_Surface * surface, const std::string & text,
                                    const ColorRGBA & color, const Point & pos) const
 {
-	renderTextWithStyle(TTF_STYLE_BOLD, surface, data, color, pos);
+	renderTextWithStyle(TTF_STYLE_BOLD, surface, text, color, pos);
 }
 
 size_t CTrueTypeFont::getStringWidthBoldScaled(const std::string & text) const
