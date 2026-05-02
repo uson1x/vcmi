@@ -248,6 +248,15 @@ private:
 	/// "wiki:category/entry[#anchor]" links using BUILTIN_CATEGORY_MAP and customCategoryIds.
 	std::function<void(const std::string &)> makeLinkCallback();
 
+	/// Handles a resolved "wiki:category/entry[#anchor]" link, called from makeLinkCallback.
+	void handleWikiLink(const std::string & target);
+
+	/// Shared callback logic when a category list item is clicked.
+	void onCatItemSelectedCallback(WikiListItem * clicked);
+
+	/// Shared callback logic when an element list item is clicked.
+	void onElemItemSelectedCallback(WikiListItem * clicked);
+
 	/// Inserts a mod-scope label as the first widget in a viewport when the
 	/// current entry belongs to a non-core mod.
 	void injectModScopeLabel(CViewport & vp, std::vector<std::shared_ptr<CIntObject>> & widgets, int vpW);

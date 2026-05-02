@@ -74,7 +74,7 @@ static const std::map<std::string, WikiCategory> BUILTIN_CATEGORY_MAP = // NOSON
 // WikiListItem
 // ============================================================================
 
-WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string itemSubtitle,
+WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string itemSubtitle, // NOSONAR (8 params required for widget configuration)
 	std::function<void(WikiListItem *)> callback,
 	std::optional<WikiIconInfo> iconInfo,
 	bool blueStyle_,
@@ -435,7 +435,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		for(const auto & [entryId, e] : glossaryJson["entries"].Struct())
 		{
 			const auto catStr = e["category"].isNull() ? std::string("glossary") : e["category"].String();
-			int targetIdx = static_cast<int>(WikiCategory::GLOSSARY);
+			auto targetIdx = static_cast<int>(WikiCategory::GLOSSARY);
 			if(catStr != "glossary")
 			{
 				const auto it = customCategoryIds.find(catStr);
@@ -835,18 +835,7 @@ void WikiWindow::buildCategoryList()
 			? std::to_string(categoryEntries[idx].size()) : "";
 		auto item = std::make_shared<WikiListItem>(
 			idx, name, countStr,
-			[this](WikiListItem * clicked) {
-				// Deselect previously visible category item before updating the index
-				if(activeCategoryIndex >= 0 && categoryList)
-				{
-					auto old = std::dynamic_pointer_cast<WikiListItem>(
-						categoryList->getItem(activeCategoryIndex));
-					if(old && old.get() != clicked)
-						old->setSelected(false);
-				}
-				clicked->setSelected(true);
-				onCategoryClicked(static_cast<int>(clicked->index));
-			},
+			[this](WikiListItem * clicked){ onCatItemSelectedCallback(clicked); },
 			std::nullopt,
 			style == Style::BLUE,
 			COL1_LIST_W + SLIDER_W,
@@ -921,18 +910,8 @@ void WikiWindow::buildElementList(int categoryIndex) // NOSONAR
 		const std::optional<WikiIconInfo> icon = (idx < entries.size()) ? entries[idx].icon : std::nullopt;
 		auto item = std::make_shared<WikiListItem>(
 			idx, name, subtitle,
-			[this](WikiListItem * clicked) {
-				// Deselect previously visible element item before updating the index
-				if(activeElementIndex >= 0 && elementList)
-				{
-					auto old = std::dynamic_pointer_cast<WikiListItem>(
-						elementList->getItem(activeElementIndex));
-					if(old && old.get() != clicked)
-						old->setSelected(false);
-				}
-				clicked->setSelected(true);
-				onElementClicked(static_cast<int>(clicked->index));
-			}, icon, style == Style::BLUE, COL2_LIST_W + SLIDER_W,
+			[this](WikiListItem * clicked){ onElemItemSelectedCallback(clicked); },
+			icon, style == Style::BLUE, COL2_LIST_W + SLIDER_W,
 			/*hasSlider=*/(total > ELEM_VISIBLE_ITEMS));
 		item->pos.w = COL2_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
@@ -1427,35 +1406,63 @@ void WikiWindow::rebuildCustomCategoryViewport(int catIdx, const std::string & e
 
 std::function<void(const std::string &)> WikiWindow::makeLinkCallback()
 {
-	return [this](const std::string & target)
-	{
-		static const std::string PREFIX = "wiki:";
-		if(target.size() <= PREFIX.size() || target.substr(0, PREFIX.size()) != PREFIX)
-			return;
-		const std::string rest = target.substr(PREFIX.size());
-		const auto slash = rest.find('/');
-		if(slash == std::string::npos) return;
-		const std::string catStr = rest.substr(0, slash);
-		const std::string idFull = rest.substr(slash + 1);
-		const auto hashPos       = idFull.find('#');
-		const std::string id     = (hashPos == std::string::npos) ? idFull : idFull.substr(0, hashPos);
-		const std::string anchor = (hashPos == std::string::npos) ? std::string{} : idFull.substr(hashPos + 1);
+	return [this](const std::string & target){ handleWikiLink(target); };
+}
 
-		// Built-in categories
-		const auto builtinIt = BUILTIN_CATEGORY_MAP.find(catStr);
-		if(builtinIt != BUILTIN_CATEGORY_MAP.end())
-		{
-			navigateTo(WikiEntryKey{builtinIt->second, id, anchor});
-			return;
-		}
-		// Mod-defined custom categories
-		const auto ccIt = customCategoryIds.find(catStr);
-		if(ccIt != customCategoryIds.end())
-		{
-			navigateTo(WikiEntryKey{static_cast<WikiCategory>(ccIt->second), id, anchor});
-			return;
-		}
-	};
+void WikiWindow::handleWikiLink(const std::string & target)
+{
+	static const std::string PREFIX = "wiki:";
+	if(target.size() <= PREFIX.size() || target.substr(0, PREFIX.size()) != PREFIX)
+		return;
+	const std::string rest = target.substr(PREFIX.size());
+	const auto slash = rest.find('/');
+	if(slash == std::string::npos) return;
+	const std::string catStr = rest.substr(0, slash);
+	const std::string idFull = rest.substr(slash + 1);
+	const auto hashPos       = idFull.find('#');
+	const std::string id     = (hashPos == std::string::npos) ? idFull : idFull.substr(0, hashPos);
+	const std::string anchor = (hashPos == std::string::npos) ? std::string{} : idFull.substr(hashPos + 1);
+
+	// Built-in categories
+	const auto builtinIt = BUILTIN_CATEGORY_MAP.find(catStr);
+	if(builtinIt != BUILTIN_CATEGORY_MAP.end())
+	{
+		navigateTo(WikiEntryKey{builtinIt->second, id, anchor});
+		return;
+	}
+	// Mod-defined custom categories
+	const auto ccIt = customCategoryIds.find(catStr);
+	if(ccIt != customCategoryIds.end())
+	{
+		navigateTo(WikiEntryKey{static_cast<WikiCategory>(ccIt->second), id, anchor});
+		return;
+	}
+}
+
+void WikiWindow::onCatItemSelectedCallback(WikiListItem * clicked)
+{
+	if(activeCategoryIndex >= 0 && categoryList)
+	{
+		auto old = std::dynamic_pointer_cast<WikiListItem>(
+			categoryList->getItem(activeCategoryIndex));
+		if(old && old.get() != clicked)
+			old->setSelected(false);
+	}
+	clicked->setSelected(true);
+	onCategoryClicked(static_cast<int>(clicked->index));
+}
+
+void WikiWindow::onElemItemSelectedCallback(WikiListItem * clicked)
+{
+	if(activeElementIndex >= 0 && elementList)
+	{
+		auto old = std::dynamic_pointer_cast<WikiListItem>(
+			elementList->getItem(activeElementIndex));
+		if(old && old.get() != clicked)
+			old->setSelected(false);
+	}
+	clicked->setSelected(true);
+	onElementClicked(static_cast<int>(clicked->index));
 }
 
 void WikiWindow::rebuildMarkdownViewport(

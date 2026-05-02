@@ -468,7 +468,9 @@ static bool parseMediaLine(const std::string & line, ParsedMedia & out) // NOSON
 	{
 		out.path     = rawPath.substr(0, hash);
 		out.hasFrame = true;
-		try { out.frame = std::stoi(rawPath.substr(hash + 1)); } catch(const std::exception & e) { logGlobal->warn("WikiMarkdown: invalid frame index in '{}': {}", rawPath, e.what()); }
+		try { out.frame = std::stoi(rawPath.substr(hash + 1)); }
+		catch(const std::invalid_argument & e) { logGlobal->warn("WikiMarkdown: invalid frame index in '{}': {}", rawPath, e.what()); }
+		catch(const std::out_of_range & e) { logGlobal->warn("WikiMarkdown: frame index out of range in '{}': {}", rawPath, e.what()); }
 	}
 	else
 	{
@@ -547,7 +549,10 @@ static std::string stripColorTags(const std::string & s)
 			i = close + 1;
 		}
 		else
-			out += s[i++];
+		{
+			out += s[i];
+			++i;
+		}
 	}
 	return out;
 }
@@ -818,7 +823,7 @@ struct MDRenderer
 	{
 		if(codeBuffer.empty()) return;
 		const auto & font2 = ENGINE->renderHandler().loadFont(FONT_SMALL);
-		const int lh = static_cast<int>(font2->getLineHeight());
+		const auto lh = static_cast<int>(font2->getLineHeight());
 		auto block = std::make_shared<WikiCodeBlockWidget>(MD_MARGIN, curY, textW, std::move(codeBuffer), lh);
 		curY += block->pos.h + MD_GAP;
 		widgets.push_back(std::move(block));
@@ -891,7 +896,13 @@ struct MDRenderer
 			const auto toks = tokenizeInline(ln);
 			const bool styled = std::any_of(toks.begin(), toks.end(),
 				[](const MDInlineToken & t){ return t.type != MDInlineType::PLAIN; });
-			if(!styled) { if(!plainAcc.empty()) plainAcc += '\n'; plainAcc += ln; continue; }
+			if(!styled)
+			{
+				if(!plainAcc.empty())
+					plainAcc += '\n';
+				plainAcc += ln;
+				continue;
+			}
 			flushPlainAcc();
 			layoutInlineLine(ln, MD_MARGIN, textW);
 		}
@@ -919,7 +930,7 @@ struct MDRenderer
 		{
 			if(tok.type == MDInlineType::LINK)
 			{
-				const int tw = static_cast<int>(fontPtr->getStringWidth(tok.text));
+				const auto tw = static_cast<int>(fontPtr->getStringWidth(tok.text));
 				ltoks.push_back({tok.text, tok.type, tok.target, tw, tw});
 				continue;
 			}
@@ -927,14 +938,14 @@ struct MDRenderer
 			{
 				for(const auto & word : splitPlainWithColorRewrap(tok.text))
 				{
-					const int tw = static_cast<int>(fontPtr->getStringWidth(stripColorTags(word)));
+					const auto tw = static_cast<int>(fontPtr->getStringWidth(stripColorTags(word)));
 					ltoks.push_back({word, MDInlineType::PLAIN, {}, tw, tw});
 				}
 				continue;
 			}
 			if(tok.type == MDInlineType::CODE)
 			{
-				const int tw = static_cast<int>(fontPtr->getStringWidth(tok.text)) + 2 * MD_CODE_PAD_X;
+				const auto tw = static_cast<int>(fontPtr->getStringWidth(tok.text)) + 2 * MD_CODE_PAD_X;
 				ltoks.push_back({tok.text, MDInlineType::CODE, {}, tw, tw});
 				continue;
 			}
@@ -989,7 +1000,7 @@ struct MDRenderer
 			if(!seg.empty() && curX + candW > maxX) { flushSeg(); curY += lineH; curX = startX; }
 			if(seg.empty() && curX > startX)
 			{
-				const int oneW = static_cast<int>(fontPtr->getStringWidth(word)) + 2 * MD_CODE_PAD_X;
+				const auto oneW = static_cast<int>(fontPtr->getStringWidth(word)) + 2 * MD_CODE_PAD_X;
 				if(curX + oneW > maxX) { curY += lineH; curX = startX; }
 			}
 			seg = seg.empty() ? word : (seg + ' ' + word);
@@ -1015,16 +1026,24 @@ struct MDRenderer
 			{
 				case MDInlineType::PLAIN:
 					if(!rendered.empty())
-						widgets.push_back(std::make_shared<CLabel>(
-							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, rendered));
+					{
+						auto lbl = std::make_shared<CLabel>(
+							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, rendered);
+						lbl->pos.w = lt.width; // use pre-stripped width; CLabel measures raw text incl. color tags
+						widgets.push_back(std::move(lbl));
+					}
 					break;
 				case MDInlineType::LINK:
 					if(onWikiLink)
 						widgets.push_back(std::make_shared<WikiLinkLabel>(
 							curX, curY, lt.width, lineH, lt.text, lt.target, onWikiLink));
 					else
-						widgets.push_back(std::make_shared<CLabel>(
-							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, lt.text));
+					{
+						auto lbl = std::make_shared<CLabel>(
+							curX, curY, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, lt.text);
+						lbl->pos.w = lt.width;
+						widgets.push_back(std::move(lbl));
+					}
 					break;
 				case MDInlineType::BOLD:
 					if(!rendered.empty())
@@ -1471,6 +1490,14 @@ struct MDRenderer
 	// Main entry point
 	// -----------------------------------------------------------------------
 
+	bool processLine(const std::string & t)
+	{
+		return handleFencedCode(t)  || handleTableRow(t)   || handleEmptyLine(t)  ||
+		       handleAlignTag(t)    || handleAnchorLine(t) || handleBreakTags(t)  ||
+		       handleHeading(t)     || handleHRule(t)       || handleMedia(t)      ||
+		       handleBulletItem(t)  || handleOrderedItem(t) || handleBlockquote(t);
+	}
+
 	void run(const std::string & markdownText)
 	{
 		std::vector<std::string> lines;
@@ -1489,22 +1516,12 @@ struct MDRenderer
 			std::string t = rawLine;
 			while(!t.empty() && (t.back() == ' ' || t.back() == '\t')) t.pop_back();
 
-			if(handleFencedCode(t))  continue;
-			if(handleTableRow(t))    continue;
-			if(handleEmptyLine(t))   continue;
-			if(handleAlignTag(t))    continue;
-			if(handleAnchorLine(t))  continue;
-			if(handleBreakTags(t))   continue;
-			if(handleHeading(t))     continue;
-			if(handleHRule(t))       continue;
-			if(handleMedia(t))       continue;
-			if(handleBulletItem(t))  continue;
-			if(handleOrderedItem(t)) continue;
-			if(handleBlockquote(t))  continue;
-
-			// Accumulate as paragraph text.
-			flushBlockquote();
-			paraBuffer.push_back(t);
+			if(!processLine(t))
+			{
+				// Accumulate as paragraph text.
+				flushBlockquote();
+				paraBuffer.push_back(t);
+			}
 		}
 
 		flushPara();

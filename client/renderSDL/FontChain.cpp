@@ -25,7 +25,7 @@ void FontChain::renderTextWithMethods(const RenderFn & renderFn, const WidthFn &
                                       const ColorRGBA & color, const Point & pos) const
 {
 	const auto chunks = splitTextToChunks(data);
-	const int maxAscent = static_cast<int>(getFontAscentScaled());
+	const auto maxAscent = static_cast<int>(getFontAscentScaled());
 	Point currentPos = pos;
 	for(const auto & chunk : chunks)
 	{
