@@ -67,8 +67,50 @@
 #include "../../lib/CRandomGenerator.h"
 #include "../../lib/CSkillHandler.h"
 #include "../../lib/CSoundBase.h"
+#include "../../lib/constants/EntityIdentifiers.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 #include <boost/lexical_cast.hpp>
+
+ImagePath CRecruitmentWindow::getRecruitmentBackground(const CGDwelling * dwelling, int level)
+{
+	int cardsCount = 0;
+	for(int i = 0; i < dwelling->creatures.size(); i++)
+	{
+		if(level >= 0 && i != level)
+			continue;
+
+		cardsCount += static_cast<int>(dwelling->creatures[i].second.size());
+	}
+
+	std::string fileName = cardsCount >= 6 ? "TPRCRT6" : cardsCount == 5 ? "TPRCRT5" : "TPRCRT4";
+	return ImagePath::builtin(fileName);
+}
+
+ImagePath CUniversityWindow::getUniversityBackground(size_t skillCount)
+{
+	const int backgroundSkills = std::clamp(static_cast<int>(skillCount), 1, 7);
+	return ImagePath::builtin("UNIVRS" + std::to_string(backgroundSkills));
+}
+
+ImagePath CUniversityWindow::getUniversityConfirmBackground(int costElements)
+{
+	const int backgroundCostElements = std::clamp(costElements, 1, 2);
+	return ImagePath::builtin("UNIVRSC" + std::to_string(backgroundCostElements));
+}
+
+int CUniversityWindow::getUniversityItemPosX(size_t itemIndex, size_t skillCount, int windowWidth)
+{
+	const int skillColumns = std::clamp(static_cast<int>(skillCount), 1, 7);
+	const int smallBlockWidth = 102;
+	const int smallBlockGap = 2;
+	const int iconHalfSize = 22;
+	const int stripSetWidth = skillColumns * smallBlockWidth + (skillColumns - 1) * smallBlockGap;
+	const int stripStartX = (windowWidth - stripSetWidth) / 2;
+	const int stripX = stripStartX + static_cast<int>(itemIndex) * (smallBlockWidth + smallBlockGap);
+
+	return stripX + (smallBlockWidth / 2) - iconHalfSize;
+}
 
 CRecruitmentWindow::CCreatureCard::CCreatureCard(CRecruitmentWindow * window, const CCreature * crea, int totalAmount)
 	: CIntObject(LCLICK | SHOW_POPUP),
@@ -163,6 +205,27 @@ void CRecruitmentWindow::buy()
 {
 	CreatureID crid =  selected->creature->getId();
 	SlotID dstslot = dst->getSlotFor(crid);
+	const CGHeroInstance * hero = dynamic_cast<const CGHeroInstance *>(dst);
+
+	if (selected->creature->warMachine.hasValue() && hero)
+	{
+		ArtifactID newWarMachine = selected->creature->warMachine;
+		ArtifactID currentWarMachine = hero->getReplacedWarMachine(newWarMachine);
+		if (currentWarMachine.hasValue() && newWarMachine != currentWarMachine)
+		{
+			MetaString message;
+			message.appendTextID("vcmi.townWindow.blacksmith.replaceWarMachine");
+			message.replaceName(currentWarMachine);
+			message.replaceName(newWarMachine);
+
+			GAME->interface()->showYesNoDialog(
+				message.toString(),
+				[this, crid](){ onRecruit(crid, slider->getValue()); if(level >= 0) close();},
+				nullptr
+			);
+			return;
+		}
+	}
 
 	if(!dstslot.validSlot() && (selected->creature->warMachine == ArtifactID::NONE)) //no available slot
 	{
@@ -199,25 +262,26 @@ void CRecruitmentWindow::buy()
 void CRecruitmentWindow::showAll(Canvas & to)
 {
 	CWindowObject::showAll(to);
+	const int layoutOffsetX = (pos.w - 484) / 2;
 
-	Rect(172, 222, 67, 42) + pos.topLeft();
+	Rect(172 + layoutOffsetX, 222, 67, 42) + pos.topLeft();
 
 	// recruit\total values
-	to.drawBorder(Rect(172, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
-	to.drawBorder(Rect(246, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(171 + layoutOffsetX, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(246 + layoutOffsetX, 222, 67, 42) + pos.topLeft(), Colors::YELLOW);
 
 	//cost boxes
-	to.drawBorder(Rect( 64, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
-	to.drawBorder(Rect(322, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(63 + layoutOffsetX, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
+	to.drawBorder(Rect(322 + layoutOffsetX, 222, 99, 76) + pos.topLeft(), Colors::YELLOW);
 
 	//buttons borders
-	to.drawBorder(Rect(133, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
-	to.drawBorder(Rect(211, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
-	to.drawBorder(Rect(289, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
+	to.drawBorder(Rect(133 + layoutOffsetX, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
+	to.drawBorder(Rect(211 + layoutOffsetX, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
+	to.drawBorder(Rect(289 + layoutOffsetX, 312, 66, 34) + pos.topLeft(), Colors::METALLIC_GOLD);
 }
 
 CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, const CArmedInstance * Dst, const std::function<void(CreatureID,int)> & Recruit, const std::function<void()> & onClose, int y_offset):
-	CWindowObject(PLAYER_COLORED, ImagePath::builtin("TPRCRT")),
+	CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, getRecruitmentBackground(Dwelling, Level)),
 	onRecruit(Recruit),
 	onClose(onClose),
 	level(Level),
@@ -226,26 +290,27 @@ CRecruitmentWindow::CRecruitmentWindow(const CGDwelling * Dwelling, int Level, c
 	dwelling(Dwelling)
 {
 	moveBy(Point(0, y_offset));
+	const int layoutOffsetX = (pos.w - 484) / 2;
 
 	OBJECT_CONSTRUCTION;
 
 	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
 
-	slider = std::make_shared<CSlider>(Point(176, 279), 135, std::bind(&CRecruitmentWindow::sliderMoved, this, _1), 0, 0, 0, Orientation::HORIZONTAL);
+	slider = std::make_shared<CSlider>(Point(173 + layoutOffsetX, 280), 138, std::bind(&CRecruitmentWindow::sliderMoved, this, _1), 0, 0, 0, Orientation::HORIZONTAL);
 
-	maxButton = std::make_shared<CButton>(Point(134, 313), AnimationPath::builtin("IRCBTNS.DEF"), LIBRARY->generaltexth->zelp[553], std::bind(&CSlider::scrollToMax, slider), EShortcut::RECRUITMENT_MAX);
-	buyButton = std::make_shared<CButton>(Point(212, 313), AnimationPath::builtin("IBY6432.DEF"), LIBRARY->generaltexth->zelp[554], std::bind(&CRecruitmentWindow::buy, this), EShortcut::GLOBAL_ACCEPT);
-	cancelButton = std::make_shared<CButton>(Point(290, 313), AnimationPath::builtin("ICN6432.DEF"), LIBRARY->generaltexth->zelp[555], std::bind(&CRecruitmentWindow::close, this), EShortcut::GLOBAL_CANCEL);
+	maxButton = std::make_shared<CButton>(Point(134 + layoutOffsetX, 313), AnimationPath::builtin("IRCBTNS.DEF"), LIBRARY->generaltexth->zelp[553], std::bind(&CSlider::scrollToMax, slider), EShortcut::RECRUITMENT_MAX);
+	buyButton = std::make_shared<CButton>(Point(212 + layoutOffsetX, 313), AnimationPath::builtin("IBY6432.DEF"), LIBRARY->generaltexth->zelp[554], std::bind(&CRecruitmentWindow::buy, this), EShortcut::GLOBAL_ACCEPT);
+	cancelButton = std::make_shared<CButton>(Point(290 + layoutOffsetX, 313), AnimationPath::builtin("ICN6432.DEF"), LIBRARY->generaltexth->zelp[555], std::bind(&CRecruitmentWindow::close, this), EShortcut::GLOBAL_CANCEL);
 
-	title = std::make_shared<CLabel>(243, 32, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW);
-	availableValue = std::make_shared<CLabel>(205, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
-	toRecruitValue = std::make_shared<CLabel>(279, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+	title = std::make_shared<CLabel>(243 + layoutOffsetX, 32, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW);
+	availableValue = std::make_shared<CLabel>(204 + layoutOffsetX, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+	toRecruitValue = std::make_shared<CLabel>(279 + layoutOffsetX, 253, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
 
-	costPerTroopValue = std::make_shared<CreatureCostBox>(Rect(65, 222, 97, 74), LIBRARY->generaltexth->allTexts[346]);
-	totalCostValue = std::make_shared<CreatureCostBox>(Rect(323, 222, 97, 74), LIBRARY->generaltexth->allTexts[466]);
+	costPerTroopValue = std::make_shared<CreatureCostBox>(Rect(64 + layoutOffsetX, 222, 97, 74), LIBRARY->generaltexth->allTexts[346]);
+	totalCostValue = std::make_shared<CreatureCostBox>(Rect(323 + layoutOffsetX, 222, 97, 74), LIBRARY->generaltexth->allTexts[466]);
 
-	availableTitle = std::make_shared<CLabel>(205, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[465]);
-	toRecruitTitle = std::make_shared<CLabel>(279, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[16]);
+	availableTitle = std::make_shared<CLabel>(204 + layoutOffsetX, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[465]);
+	toRecruitTitle = std::make_shared<CLabel>(279 + layoutOffsetX, 233, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->allTexts[16]);
 
 	availableCreaturesChanged();
 }
@@ -335,6 +400,11 @@ CSplitWindow::CSplitWindow(const CCreature * creature, std::function<void(int, i
 	int total = leftAmount + rightAmount;
 	int leftMax = total - rightMin;
 	int rightMax = total - leftMin;
+	int defaultRightAmount = rightAmount;
+	if(settings["general"]["enableUiEnhancements"].Bool())
+		defaultRightAmount = std::clamp(total -1, rightMin, rightMax);
+	leftAmount = total - defaultRightAmount;
+	rightAmount = defaultRightAmount;
 
 	ok = std::make_shared<CButton>(Point(20, 263), AnimationPath::builtin("IOK6432"), CButton::tooltip(), std::bind(&CSplitWindow::apply, this), EShortcut::GLOBAL_ACCEPT);
 	cancel = std::make_shared<CButton>(Point(214, 263), AnimationPath::builtin("ICN6432"), CButton::tooltip(), std::bind(&CSplitWindow::close, this), EShortcut::GLOBAL_CANCEL);
@@ -357,7 +427,7 @@ CSplitWindow::CSplitWindow(const CCreature * creature, std::function<void(int, i
 	animLeft = std::make_shared<CCreaturePic>(20, 54, creature, true, false);
 	animRight = std::make_shared<CCreaturePic>(177, 54,creature, true, false);
 
-	slider = std::make_shared<CSlider>(Point(21, 194), 257, std::bind(&CSplitWindow::sliderMoved, this, _1), 0, sliderPosition, rightAmount - rightMin, Orientation::HORIZONTAL);
+	slider = std::make_shared<CSlider>(Point(21, 194), 257, std::bind(&CSplitWindow::sliderMoved, this, _1), 0, sliderPosition, defaultRightAmount - rightMin, Orientation::HORIZONTAL);
 
 	std::string titleStr = LIBRARY->generaltexth->allTexts[256];
 	boost::algorithm::replace_first(titleStr,"%s", creature->getNamePluralTranslated());
@@ -1021,7 +1091,7 @@ void CUniversityWindow::CItem::update()
 }
 
 CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID building, const IMarket * _market, const std::function<void()> & onWindowClosed)
-	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("UNIVERS1")),
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, getUniversityBackground(_market->availableItemsIds(EMarketMode::RESOURCE_SKILL).size())),
 	hero(_hero),
 	onWindowClosed(onWindowClosed),
 	market(_market)
@@ -1031,6 +1101,7 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 
 	std::string titleStr = LIBRARY->generaltexth->allTexts[602];
 	std::string speechStr = LIBRARY->generaltexth->allTexts[603];
+	int mapObjectTitleOffsetX = 0;
 
 	if(auto town = dynamic_cast<const CGTownInstance *>(_market))
 	{
@@ -1040,6 +1111,9 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 	else if(auto uni = dynamic_cast<const CGUniversity *>(_market); uni->appearance)
 	{
 		titlePic = std::make_shared<CAnimImage>(uni->appearance->animationFile, 0, 0, 0, 0, CShowableAnim::MAP_OBJECT_MODE);
+		const int mapObjectWidthPx = static_cast<int>(uni->appearance->getWidth()) * 32; // map object tile width in pixels
+		const int renderedWidthPx = titlePic->getPosition().w;
+		mapObjectTitleOffsetX = std::max(0, (renderedWidthPx - mapObjectWidthPx) / 2);
 		titleStr = uni->getObjectName();
 		speechStr = uni->getSpeechTranslated();
 	}
@@ -1048,17 +1122,24 @@ CUniversityWindow::CUniversityWindow(const CGHeroInstance * _hero, BuildingID bu
 		titlePic = std::make_shared<CPicture>(ImagePath::builtin("UNIVBLDG"));
 	}
 
-	titlePic->center(Point(232 + pos.x, 76 + pos.y));
+	const int centerX = pos.w / 2;
+	titlePic->center(Point(centerX + pos.x + mapObjectTitleOffsetX, 76 + pos.y));
 
-	clerkSpeech = std::make_shared<CTextBox>(speechStr, Rect(24, 129, 413, 70), 0, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
-	title = std::make_shared<CLabel>(231, 26, FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW, titleStr);
+	const int speechFrameWidth = 414;
+	const int speechFrameHeight = 74;
+	const int speechFrameX = (pos.w - speechFrameWidth) / 2;
+	const int speechFrameY = 127;
+	const int clerkTextInsetX = 2; // keep extra 1px horizontal clearance from frame
+	const int clerkTextInsetY = 1;
+	clerkSpeech = std::make_shared<CTextBox>(speechStr, Rect(speechFrameX + clerkTextInsetX, speechFrameY + clerkTextInsetY, speechFrameWidth - 2 * clerkTextInsetX, speechFrameHeight - 2 * clerkTextInsetY), 0, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+	title = std::make_shared<CLabel>(centerX, 26, FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW, titleStr);
 
 	std::vector<TradeItemBuy> goods = market->availableItemsIds(EMarketMode::RESOURCE_SKILL);
 
 	for(int i=0; i<goods.size(); i++)//prepare clickable items
-		items.push_back(std::make_shared<CItem>(this, goods[i].as<SecondarySkill>().getNum(), 54+i*104, 234));
+		items.push_back(std::make_shared<CItem>(this, goods[i].as<SecondarySkill>().getNum(), getUniversityItemPosX(i, goods.size(), pos.w), 234));
 
-	cancel = std::make_shared<CButton>(Point(200, 313), AnimationPath::builtin("IOKAY.DEF"), LIBRARY->generaltexth->zelp[632], [&](){ close(); }, EShortcut::GLOBAL_ACCEPT);
+	cancel = std::make_shared<CButton>(Point(centerX - 32, 313), AnimationPath::builtin("IOKAY.DEF"), LIBRARY->generaltexth->zelp[632], [&](){ close(); }, EShortcut::GLOBAL_ACCEPT);
 	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
 }
 
@@ -1068,6 +1149,11 @@ void CUniversityWindow::close()
 		onWindowClosed();
 
 	CStatusbarWindow::close();
+}
+
+const CGHeroInstance * CUniversityWindow::getHero() const
+{
+	return hero;
 }
 
 void CUniversityWindow::updateSecondarySkills()
@@ -1082,7 +1168,7 @@ void CUniversityWindow::makeDeal(SecondarySkill skill)
 }
 
 CUnivConfirmWindow::CUnivConfirmWindow(CUniversityWindow * owner_, SecondarySkill SKILL, bool available)
-	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("UNIVERS2.PCX")),
+	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, CUniversityWindow::getUniversityConfirmBackground(1)),
 	owner(owner_)
 {
 	OBJECT_CONSTRUCTION;
@@ -1094,14 +1180,23 @@ CUnivConfirmWindow::CUnivConfirmWindow(CUniversityWindow * owner_, SecondarySkil
 
 	boost::replace_first(text, "%d", std::to_string(goldNeeded));
 
-	clerkSpeech = std::make_shared<CTextBox>(text, Rect(24, 129, 413, 70), 0, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
+	const int centerX = pos.w / 2;
+	const int speechFrameWidth = 414;
+	const int speechFrameHeight = 74;
+	const int speechFrameX = (pos.w - speechFrameWidth) / 2;
+	const int speechFrameY = 127;
+	const int clerkTextInsetX = 2; // keep extra 1px horizontal clearance from frame
+	const int clerkTextInsetY = 1;
+	clerkSpeech = std::make_shared<CTextBox>(text, Rect(speechFrameX + clerkTextInsetX, speechFrameY + clerkTextInsetY, speechFrameWidth - 2 * clerkTextInsetX, speechFrameHeight - 2 * clerkTextInsetY), 0, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE);
 
-	name = std::make_shared<CLabel>(230, 37,  FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, SKILL.toEntity(LIBRARY)->getNameTranslated());
-	icon = std::make_shared<CAnimImage>(AnimationPath::builtin("SECSKILL"), SKILL.getNum()*3+3, 0, 211, 51);
-	level = std::make_shared<CLabel>(230, 107, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->levels[1]);
+	name = std::make_shared<CLabel>(centerX, 37,  FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, SKILL.toEntity(LIBRARY)->getNameTranslated());
+	icon = std::make_shared<CAnimImage>(AnimationPath::builtin("SECSKILL"), SKILL.getNum()*3+3);
+	icon->center(Point(pos.x + centerX, pos.y + 71));
+	level = std::make_shared<CLabel>(centerX, 105, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, LIBRARY->generaltexth->levels[1]);
 
-	costIcon = std::make_shared<CAnimImage>(AnimationPath::builtin("RESOURCE"), GameResID(EGameResID::GOLD), 0, 210, 210);
-	cost = std::make_shared<CLabel>(230, 267, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, "2000");
+	costIcon = std::make_shared<CAnimImage>(AnimationPath::builtin("RESOURCE"), GameResID(EGameResID::GOLD));
+	costIcon->center(Point(pos.x + centerX, pos.y + 234));
+	cost = std::make_shared<CLabel>(centerX, 267, FONT_SMALL, ETextAlignment::CENTER, Colors::WHITE, std::to_string(goldNeeded));
 
 	std::string hoverText = LIBRARY->generaltexth->allTexts[609];
 	boost::replace_first(hoverText, "%s", LIBRARY->generaltexth->levels[0]+ " " + SKILL.toEntity(LIBRARY)->getNameTranslated());
@@ -1111,10 +1206,10 @@ CUnivConfirmWindow::CUnivConfirmWindow(CUniversityWindow * owner_, SecondarySkil
 	boost::replace_first(text, "%s", SKILL.toEntity(LIBRARY)->getNameTranslated());
 	boost::replace_first(text, "%d", std::to_string(goldNeeded));
 
-	confirm = std::make_shared<CButton>(Point(148, 299), AnimationPath::builtin("IBY6432.DEF"), CButton::tooltip(hoverText, text), [this, SKILL](){makeDeal(SKILL);}, EShortcut::GLOBAL_ACCEPT);
+	confirm = std::make_shared<CButton>(Point(centerX - 84, 299), AnimationPath::builtin("IBY6432.DEF"), CButton::tooltip(hoverText, text), [this, SKILL](){makeDeal(SKILL);}, EShortcut::GLOBAL_ACCEPT);
 	confirm->block(!available);
 
-	cancel = std::make_shared<CButton>(Point(252,299), AnimationPath::builtin("ICANCEL.DEF"), LIBRARY->generaltexth->zelp[631], [&](){ close(); }, EShortcut::GLOBAL_CANCEL);
+	cancel = std::make_shared<CButton>(Point(centerX + 20,299), AnimationPath::builtin("ICANCEL.DEF"), LIBRARY->generaltexth->zelp[631], [&](){ close(); }, EShortcut::GLOBAL_CANCEL);
 	statusbar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(8, pos.h - 26, pos.w - 16, 19), 8, pos.h - 26));
 }
 
@@ -1124,7 +1219,7 @@ void CUnivConfirmWindow::makeDeal(SecondarySkill skill)
 	close();
 }
 
-CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits)
+CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, const MetaString & customTitle)
 	: CWindowObject(PLAYER_COLORED, ImagePath::builtin("GARRISON"))
 {
 	OBJECT_CONSTRUCTION;
@@ -1136,11 +1231,17 @@ CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance
 	}
 	quit = std::make_shared<CButton>(Point(399, 314), AnimationPath::builtin("IOK6432.DEF"), CButton::tooltip(LIBRARY->generaltexth->tcommands[8], ""), [this](){ close(); }, EShortcut::GLOBAL_ACCEPT);
 
+	const CGHeroInstance * sourceHero = dynamic_cast<const CGHeroInstance *>(up);
+	const auto * sourceTown = dynamic_cast<const CGTownInstance *>(up);
+	if(sourceTown == nullptr && sourceHero != nullptr)
+		sourceTown = sourceHero->getVisitedTown();
+
+	if(sourceHero == nullptr && sourceTown != nullptr)
+		sourceHero = sourceTown->getGarrisonHero();
+
 	std::string titleText;
 	if(down->tempOwner == up->tempOwner)
-	{
-		titleText = LIBRARY->generaltexth->allTexts[709];
-	}
+		titleText = !customTitle.empty() ? customTitle.toString() : LIBRARY->generaltexth->allTexts[709];
 	else
 	{
 		//assume that this is joining monsters dialog
@@ -1156,8 +1257,12 @@ CGarrisonWindow::CGarrisonWindow(const CArmedInstance * up, const CGHeroInstance
 	}
 	title = std::make_shared<CLabel>(275, 30, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW, titleText);
 
-	banner = std::make_shared<CAnimImage>(AnimationPath::builtin("CREST58"), up->getOwner().getNum(), 0, 28, 124);
-	portrait = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), down->getIconIndex(), 0, 29, 222);
+	if(sourceTown != nullptr && down->getVisitedTown() != sourceTown && sourceHero != nullptr)
+		banner = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), sourceHero->getIconIndex(), 0, 27, 127);
+	else
+		banner = std::make_shared<CAnimImage>(AnimationPath::builtin("CREST58"), up->getOwner().getNum(), 0, 27, 127);
+
+	portrait = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), down->getIconIndex(), 0, 27, 223);
 }
 
 void CGarrisonWindow::updateGarrisons()

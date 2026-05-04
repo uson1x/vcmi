@@ -966,8 +966,7 @@ void AINodeStorage::setHeroes(std::map<const CGHeroInstance *, HeroRole> heroes)
 
 		if(actor->hero->tempOwner != aiNk->playerID)
 		{
-			bool onLand = !actor->hero->inBoat() || actor->hero->getBoat()->layer != EPathfindingLayer::SAIL;
-			actor->initialMovement = actor->hero->movementPointsLimit(onLand);
+			actor->initialMovement = actor->hero->movementPointsLimit();
 		}
 
 		playerID = actor->hero->tempOwner;
@@ -1142,7 +1141,7 @@ struct TownPortalFinder
 		}
 
 		AIPathNode * node = nodeOptional.value();
-		float movementCost = (float)movementNeeded / (float)hero->movementPointsLimit(EPathfindingLayer::LAND);
+		float movementCost = (float)movementNeeded / (float)hero->movementPointsLimit();
 		movementCost += bestNode->getCost();
 
 		if(node->action == EPathNodeAction::UNKNOWN || node->getCost() > movementCost)

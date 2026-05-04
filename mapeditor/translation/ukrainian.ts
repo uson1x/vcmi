@@ -207,7 +207,7 @@
         <location filename="../campaigneditor/campaigneditor.cpp" line="431"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="436"/>
         <source>Failed to open map</source>
-        <translation>Не вдалося відкрити карту</translation>
+        <translation>Не вдалося відкрити мапу</translation>
     </message>
 </context>
 <context>
@@ -806,7 +806,7 @@
         <location filename="../mainwindow.ui" line="1086"/>
         <location filename="../mainwindow.ui" line="1089"/>
         <source>Template editor</source>
-        <translation>Редактор шаблонів випадкових карт</translation>
+        <translation>Редактор шаблонів випадкових мап</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1097"/>
@@ -1104,7 +1104,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1416"/>
         <source>Lock objects on map to avoid unnecessary changes</source>
-        <translation>Заблокувати об’єкти на карті, щоб уникнути небажаних змін</translation>
+        <translation>Заблокувати об’єкти на мапі, щоб уникнути небажаних змін</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1419"/>
@@ -1119,7 +1119,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1427"/>
         <source>Unlock all objects on the map</source>
-        <translation>Розблокувати всі об’єкти на карті</translation>
+        <translation>Розблокувати всі об’єкти на мапі</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1257"/>
@@ -1304,7 +1304,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="909"/>
         <source>Monsters</source>
-        <translation>Створіння</translation>
+        <translation>Істоти</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="910"/>
@@ -1393,7 +1393,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1501"/>
         <source>Select maps to convert</source>
-        <translation>Виберіть карти для перетворення</translation>
+        <translation>Виберіть мапи для перетворення</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1503"/>
@@ -1418,7 +1418,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1525"/>
         <source>Failed to convert the map. Abort operation</source>
-        <translation>Не вдалося перетворити карту. Операції перервано</translation>
+        <translation>Не вдалося перетворити мапу. Операції перервано</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1531"/>
@@ -1465,7 +1465,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapcontroller.cpp" line="636"/>
         <source>This object&apos;s mod is mandatory for map to remain valid.</source>
-        <translation>Модифікація що містить цей об’єкт обов’язкова для того, щоб карта лишалася дійсною.</translation>
+        <translation>Модифікація що містить цей об’єкт обов’язкова для того, щоб мапа лишалася дійсною.</translation>
     </message>
 </context>
 <context>
@@ -1586,7 +1586,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="32"/>
         <source>Mandatory mods to play this map</source>
-        <translation>Обов’язкові модифікації для гри на цій карті</translation>
+        <translation>Обов’язкові модифікації для гри на цій мапі</translation>
     </message>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="46"/>
@@ -2314,7 +2314,7 @@ Do you want to do that now ?</source>
 Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <comment>should be consistent with Map-&gt;General menu entry translation</comment>
         <translation>Модифікація &apos;%1&apos;%2 є обов&apos;язковою для об&apos;єкта на мапі.
-Додайте його до списку обов&apos;язкових модифікацій у Карта → Загальні налаштування.</translation>
+Додайте його до списку обов&apos;язкових модифікацій у Мапа → Загальні налаштування.</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.cpp" line="217"/>
@@ -2841,7 +2841,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="884"/>
         <source>Cast an adventure map spell</source>
-        <translation>Застосувати закляття пригодницької карти</translation>
+        <translation>Застосувати закляття пригодницької мапи</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="893"/>
@@ -3168,7 +3168,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="140"/>
         <source>No map</source>
-        <translation>Немає карти</translation>
+        <translation>Немає мапи</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="183"/>
@@ -3762,7 +3762,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1299"/>
         <source>Connections</source>
-        <translation type="unfinished">З’єднання</translation>
+        <translation>Сполучення</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1343"/>
@@ -3899,7 +3899,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="379"/>
         <source>Junction</source>
-        <translation type="unfinished">Вузол</translation>
+        <translation>Розв&apos;язка</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="380"/>
@@ -3909,7 +3909,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="381"/>
         <source>Sealed</source>
-        <translation type="unfinished">Запечатано</translation>
+        <translation>Закрите</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="408"/>
@@ -3970,22 +3970,22 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="450"/>
         <source>Fictive</source>
-        <translation type="unfinished">Фіктивний</translation>
+        <translation>Фіктивне</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="451"/>
         <source>Repulsive</source>
-        <translation type="unfinished">Відштовхувальний</translation>
+        <translation>Відштовхуюче</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="452"/>
         <source>Wide</source>
-        <translation type="unfinished">Широкий</translation>
+        <translation>Широке</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Force portal</source>
-        <translation type="unfinished">Примусовий портал</translation>
+        <translation>Примусовий портал</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="455"/>
@@ -4128,47 +4128,47 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="47"/>
         <source>affects human</source>
-        <translation type="unfinished">впливає на гравця</translation>
+        <translation>Діє на гравця-людину</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="54"/>
         <source>affects AI</source>
-        <translation type="unfinished">впливає на ІІ</translation>
+        <translation>діє на гравця-ШІ</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="70"/>
         <source>Day of first occurrence</source>
-        <translation type="unfinished">День першого спрацьовування</translation>
+        <translation>День першої активації</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="91"/>
         <source>Repeat after (0 = no repeat)</source>
-        <translation type="unfinished">Повторювати через (0 = не повторювати)</translation>
+        <translation>Повторювати кожен... (0 = не повторювати)</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="112"/>
         <source>Affected players</source>
-        <translation type="unfinished">Гравці, на яких впливає</translation>
+        <translation>Гравці, на яких діє подія</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="135"/>
         <source>Resources</source>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="194"/>
         <source>type</source>
-        <translation type="unfinished">тип</translation>
+        <translation>тип</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="199"/>
         <source>qty</source>
-        <translation type="unfinished">кільк.</translation>
+        <translation>кількість</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="211"/>
         <source>Objects to delete</source>
-        <translation type="unfinished">Об&apos;єкти для видалення</translation>
+        <translation>Об&apos;єкти для видалення</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="218"/>
@@ -4196,22 +4196,22 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="53"/>
         <source>Build all</source>
-        <translation type="unfinished">Побудувати все</translation>
+        <translation>Побудувати все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="60"/>
         <source>Demolish all</source>
-        <translation type="unfinished">Знести все</translation>
+        <translation>Знести все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="67"/>
         <source>Enable all</source>
-        <translation type="unfinished">Увімкнути все</translation>
+        <translation>Дозволити все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="74"/>
         <source>Disable all</source>
-        <translation type="unfinished">Вимкнути все</translation>
+        <translation>Заборонити все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
@@ -4221,12 +4221,12 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Enabled</source>
-        <translation type="unfinished">Увімкнено</translation>
+        <translation>Дозволено</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Built</source>
-        <translation type="unfinished">Побудовано</translation>
+        <translation>Побудовано</translation>
     </message>
 </context>
 <context>
@@ -4234,7 +4234,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="23"/>
         <source>Town event</source>
-        <translation type="unfinished">Подія міста</translation>
+        <translation>Подія міста</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="42"/>
@@ -4244,42 +4244,42 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="57"/>
         <source>Event name</source>
-        <translation type="unfinished">Назва події</translation>
+        <translation>Назва події</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="64"/>
         <source>Type event message text</source>
-        <translation type="unfinished">Введіть текст повідомлення події</translation>
+        <translation>Введіть текст повідомлення події</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="85"/>
         <source>Day of first occurrence</source>
-        <translation type="unfinished">День першого спрацьовування</translation>
+        <translation>День першої активації</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="99"/>
         <source>Repeat after (0 = no repeat)</source>
-        <translation type="unfinished">Повторювати через (0 = не повторювати)</translation>
+        <translation>Повторювати кожен... (0 = не повторювати)</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="123"/>
         <source>Affected players</source>
-        <translation type="unfinished">Гравці, на яких впливає</translation>
+        <translation>Гравці, на яких діє подія</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="146"/>
         <source>affects human</source>
-        <translation type="unfinished">впливає на гравця</translation>
+        <translation>Діє на гравця-людину</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="155"/>
         <source>affects AI</source>
-        <translation type="unfinished">впливає на ІІ</translation>
+        <translation>діє на гравця-ШІ</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="166"/>
         <source>Resources</source>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="198"/>
@@ -4294,17 +4294,17 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="258"/>
         <source>OK</source>
-        <translation type="unfinished">Гаразд</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.cpp" line="172"/>
         <source>Creature level %1 / Creature level %1 Upgrade</source>
-        <translation type="unfinished">Рівень істоти %1 / Покращення рівня істоти %1</translation>
+        <translation>істота %1го рівня / Покращена істота %1го рівня</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.cpp" line="214"/>
         <source>Day %1 - %2</source>
-        <translation type="unfinished">День %1 - %2</translation>
+        <translation>День %1 - %2</translation>
     </message>
 </context>
 <context>
@@ -4312,7 +4312,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="187"/>
         <source>Day %1 - %2</source>
-        <translation type="unfinished">День %1 - %2</translation>
+        <translation>День %1 - %2</translation>
     </message>
 </context>
 <context>
@@ -4320,7 +4320,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="29"/>
         <source>Town events</source>
-        <translation type="unfinished">Події міста</translation>
+        <translation>Події міста</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="37"/>
@@ -4340,7 +4340,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="107"/>
         <source>Day %1 - %2</source>
-        <translation type="unfinished">День %1 - %2</translation>
+        <translation>День %1 - %2</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="128"/>
@@ -4353,17 +4353,17 @@ Guard: %3</source>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="14"/>
         <source>Select Town hints</source>
-        <translation type="unfinished">Виберіть підказки міст</translation>
+        <translation>Виберіть підказки міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="20"/>
         <source>Town hints</source>
-        <translation type="unfinished">Підказки міст</translation>
+        <translation>Підказки міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="24"/>
         <source>Town hint Selector</source>
-        <translation type="unfinished">Вибір підказок міст</translation>
+        <translation>Вибір підказок міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="30"/>
@@ -4378,32 +4378,32 @@ Guard: %3</source>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="30"/>
         <source>Action</source>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="33"/>
         <source>Like Zone</source>
-        <translation type="unfinished">Як зона</translation>
+        <translation>Як зона</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="34"/>
         <source>Not like zone (comma separated)</source>
-        <translation type="unfinished">Не як зона (через кому)</translation>
+        <translation>Відмінно від зони (через кому)</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="35"/>
         <source>Related to zone terrain</source>
-        <translation type="unfinished">Пов’язано з місцевістю зони</translation>
+        <translation>Пов’язано з місцевістю зони</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="60"/>
         <source>Delete</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="99"/>
         <source>Add</source>
-        <translation type="unfinished">Додати</translation>
+        <translation>Додати</translation>
     </message>
 </context>
 <context>
@@ -4430,7 +4430,7 @@ Guard: %3</source>
         <location filename="../inspector/townspellswidget.ui" line="231"/>
         <location filename="../inspector/townspellswidget.ui" line="277"/>
         <source>Spell that may appear in mage guild</source>
-        <translation type="unfinished">Закляття, яке може з’явитися у гільдії магів</translation>
+        <translation>Закляття, яке може з’явитися у гільдії магів</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="100"/>
@@ -4439,7 +4439,7 @@ Guard: %3</source>
         <location filename="../inspector/townspellswidget.ui" line="238"/>
         <location filename="../inspector/townspellswidget.ui" line="284"/>
         <source>Spell that must appear in mage guild</source>
-        <translation type="unfinished">Закляття, яке обов’язково має бути у гільдії магів</translation>
+        <translation>Закляття, яке обов’язково має бути у гільдії магів</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="122"/>
@@ -4467,43 +4467,43 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/translations.ui" line="14"/>
         <source>Map translations</source>
-        <translation type="unfinished">Переклади карти</translation>
+        <translation>Переклади мапи</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="31"/>
         <source>Language</source>
-        <translation type="unfinished">Мова</translation>
+        <translation>Мова</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="48"/>
         <source>Supported</source>
-        <translation type="unfinished">Підтримується</translation>
+        <translation>Підтримується</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="70"/>
         <source>String ID</source>
-        <translation type="unfinished">Ідентифікатор рядка</translation>
+        <translation>Ідентифікатор рядка</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="75"/>
         <source>Text</source>
-        <translation type="unfinished">Текст</translation>
+        <translation>Текст</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.cpp" line="177"/>
         <location filename="../mapsettings/translations.cpp" line="181"/>
         <source>Remove translation</source>
-        <translation type="unfinished">Видалити переклад</translation>
+        <translation>Видалити переклад</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.cpp" line="177"/>
         <source>Default language cannot be removed</source>
-        <translation type="unfinished">Мову за замовчуванням не можна видалити</translation>
+        <translation>Мову за замовчуванням не можна видалити</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.cpp" line="181"/>
         <source>All existing text records for this language will be removed. Continue?</source>
-        <translation type="unfinished">Усі наявні текстові записи для цієї мови буде видалено. Продовжити?</translation>
+        <translation>Увесь наявний переклад на цю мову буде видалено. Продовжити?</translation>
     </message>
 </context>
 <context>
@@ -4512,42 +4512,42 @@ Guard: %3</source>
         <location filename="../templateeditor/treasureselector.ui" line="14"/>
         <location filename="../templateeditor/treasureselector.ui" line="20"/>
         <source>Select Treasures</source>
-        <translation type="unfinished">Виберіть скарби</translation>
+        <translation>Оберіть скарби</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="26"/>
         <source>Treasure Selector</source>
-        <translation type="unfinished">Вибір скарбів</translation>
+        <translation>Вибір скарбів</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Min</source>
-        <translation type="unfinished">Мін</translation>
+        <translation>Мін</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Max</source>
-        <translation type="unfinished">Макс</translation>
+        <translation>Макс</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Density</source>
-        <translation type="unfinished">Щільність</translation>
+        <translation>Щільність</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Action</source>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="50"/>
         <source>Delete</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="65"/>
         <source>Add</source>
-        <translation type="unfinished">Додати</translation>
+        <translation>Додати</translation>
     </message>
 </context>
 <context>
@@ -4555,27 +4555,27 @@ Guard: %3</source>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
         <source>Terrain Selector</source>
-        <translation type="unfinished">Вибір місцевості</translation>
+        <translation>Вибір ґрунту</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
         <source>Spell Selector</source>
-        <translation type="unfinished">Вибір заклять</translation>
+        <translation>Вибір заклять</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
         <source>Artifact Selector</source>
-        <translation type="unfinished">Вибір артефактів</translation>
+        <translation>Вибір артефактів</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
         <source>Skill Selector</source>
-        <translation type="unfinished">Вибір умінь</translation>
+        <translation>Вибір вторинних навичок</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
         <source>Hero Type Selector</source>
-        <translation type="unfinished">Вибір типу героя</translation>
+        <translation>Вибір типу героя</translation>
     </message>
 </context>
 <context>
@@ -4583,117 +4583,117 @@ Guard: %3</source>
     <message>
         <location filename="../validator.ui" line="17"/>
         <source>Map validation results</source>
-        <translation>Результати валідації карти</translation>
+        <translation>Результати перевірки мапи</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="46"/>
         <source>Map is not loaded</source>
-        <translation type="unfinished">Карту не завантажено</translation>
+        <translation>Мапу не завантажено</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="68"/>
         <source>No factions allowed for player %1</source>
-        <translation type="unfinished">Гравцю %1 не дозволено жодної фракції</translation>
+        <translation>Гравцю %1 не дозволено жодної фракції</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="71"/>
         <source>No players allowed to play this map</source>
-        <translation type="unfinished">Жодному гравцю не дозволено грати на цій карті</translation>
+        <translation>Жодному гравцю не дозволено грати на цій мапі</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="73"/>
         <source>Map is allowed for one player and cannot be started</source>
-        <translation type="unfinished">Карта дозволена лише для одного гравця і не може бути запущена</translation>
+        <translation>Мапа дозволена лише для одного гравця і не може бути запущена</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="75"/>
         <source>No human players allowed to play this map</source>
-        <translation type="unfinished">Жодному людському гравцю не дозволено грати на цій карті</translation>
+        <translation>Жодному людському гравцю не дозволено грати на цій мапі</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="95"/>
         <source>Object %1 is assigned to non-playable player %2</source>
-        <translation type="unfinished">Об&apos;єкт %1 призначено недоступному для гри гравцю %2</translation>
+        <translation>Об&apos;єкт %1 належить недоступному для гри гравцю %2</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="140"/>
         <source>Spell scroll %1 doesn&apos;t have instance assigned and must be removed</source>
-        <translation type="unfinished">Сувій закляття %1 не має призначеного екземпляру й має бути видалений</translation>
+        <translation>Сувій закляття %1 не має призначеного екземпляру й має бути видалений</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="146"/>
         <source>Artifact %1 is prohibited by map settings</source>
-        <translation type="unfinished">Артефакт %1 заборонено у налаштуваннях карти</translation>
+        <translation>Артефакт %1 заборонено у налаштуваннях мапи</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="160"/>
         <source>Player %1 has no towns and heroes assigned</source>
-        <translation type="unfinished">Гравець %1 не має міст і героїв</translation>
+        <translation>%1 гравець не має міст і героїв</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="108"/>
         <source>Prison %1 must be a NEUTRAL</source>
-        <translation type="unfinished">Тюрма %1 має бути НЕЙТРАЛЬНОЮ</translation>
+        <translation>Тюрма %1 має бути НЕЙТРАЛЬНОЮ</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="89"/>
         <source>Ownable object %1 is UNFLAGGABLE but must have NEUTRAL or player owner</source>
-        <translation type="unfinished">Придатний до володіння об&apos;єкт %1 є НЕПРАПОРОПОСТАВНИМ, але має мати НЕЙТРАЛЬНОГО або ігрового власника</translation>
+        <translation>Придатний до володіння об&apos;єкт %1 є ЗАВЖДИ НЕЙТРАЛЬНИЙ, але має мати НЕЙТРАЛЬНОГО або ігрового власника</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="113"/>
         <source>Hero %1 must have an owner</source>
-        <translation type="unfinished">Герой %1 має мати власника</translation>
+        <translation>Герой %1 має мати власника</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="120"/>
         <source>Hero %1 is prohibited by map settings</source>
-        <translation type="unfinished">Героя %1 заборонено у налаштуваннях карти</translation>
+        <translation>Героя %1 заборонено у налаштуваннях мапи</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="123"/>
         <source>Hero %1 has duplicate on map</source>
-        <translation type="unfinished">Герой %1 дублюється на карті</translation>
+        <translation>Герой %1 дублюється на мапі</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="126"/>
         <source>Hero %1 has an empty type and must be removed</source>
-        <translation type="unfinished">Герой %1 має порожній тип і має бути видалений</translation>
+        <translation>Герой %1 має порожній тип і має бути видалений</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="137"/>
         <source>Spell scroll %1 is prohibited by map settings</source>
-        <translation type="unfinished">Сувій закляття %1 заборонено у налаштуваннях карти</translation>
+        <translation>Сувій закляття %1 заборонено у налаштуваннях мапи</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="162"/>
         <source>Player %1 doesn&apos;t have any starting town</source>
-        <translation type="unfinished">Гравець %1 не має жодного стартового міста</translation>
+        <translation>Гравець %1 не має жодного стартового міста</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="168"/>
         <source>Map name is not specified</source>
-        <translation type="unfinished">Назва карти не вказана</translation>
+        <translation>Мапа не має назви</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="170"/>
         <source>Map description is not specified</source>
-        <translation type="unfinished">Опис карти не вказаний</translation>
+        <translation>Мапа не має опису</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="208"/>
         <source>The map is valid and has no issues.</source>
-        <translation type="unfinished">Карта дійсна і не має проблем.</translation>
+        <translation>Мапа дійсна і не має проблем.</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="181"/>
         <source>Exception occurs during validation: %1</source>
-        <translation type="unfinished">Під час перевірки сталася помилка: %1</translation>
+        <translation>Під час перевірки сталася помилка: %1</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="185"/>
         <source>Unknown exception occurs during validation</source>
-        <translation type="unfinished">Невідома помилка під час перевірки</translation>
+        <translation>Невідома помилка під час перевірки</translation>
     </message>
 </context>
 <context>
@@ -4701,7 +4701,7 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/victoryconditions.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Форма</translation>
+        <translation>Вікно</translation>
     </message>
     <message>
         <location filename="../mapsettings/victoryconditions.ui" line="40"/>
@@ -4766,12 +4766,12 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/victoryconditions.cpp" line="49"/>
         <source>Kill monster</source>
-        <translation type="unfinished">Вбити монстра</translation>
+        <translation>Вбити монстра</translation>
     </message>
     <message>
         <location filename="../mapsettings/victoryconditions.cpp" line="435"/>
         <source>Any town</source>
-        <translation type="unfinished">Будь-яке місто</translation>
+        <translation>Будь-яке місто</translation>
     </message>
 </context>
 <context>
@@ -4814,37 +4814,37 @@ Guard: %3</source>
     <message>
         <location filename="../windownewmap.ui" line="93"/>
         <source>S  (36x36)</source>
-        <translation type="unfinished">S  (36x36)</translation>
+        <translation>S  (36x36)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="98"/>
         <source>M  (72x72)</source>
-        <translation type="unfinished">M  (72x72)</translation>
+        <translation>M  (72x72)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="103"/>
         <source>L  (108x108)</source>
-        <translation type="unfinished">L  (108x108)</translation>
+        <translation>L  (108x108)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="113"/>
         <source>H  (180x180)</source>
-        <translation type="unfinished">H  (180x180)</translation>
+        <translation>H  (180x180)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="118"/>
         <source>XH (216x216)</source>
-        <translation type="unfinished">XH (216x216)</translation>
+        <translation>XH (216x216)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="123"/>
         <source>G  (252x252)</source>
-        <translation type="unfinished">G  (252x252)</translation>
+        <translation>G  (252x252)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="312"/>
         <source>Levels</source>
-        <translation type="unfinished">Рівні</translation>
+        <translation>Рівнів</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="397"/>
@@ -4867,12 +4867,12 @@ Guard: %3</source>
     <message>
         <location filename="../windownewmap.ui" line="265"/>
         <source>Standard size</source>
-        <translation type="unfinished">Стандартний розмір</translation>
+        <translation>Стандартний розмір</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="290"/>
         <source>Custom size</source>
-        <translation type="unfinished">Користувацький розмір</translation>
+        <translation>Користувацький розмір</translation>
     </message>
     <message>
         <source>Underground</source>
@@ -4881,12 +4881,12 @@ Guard: %3</source>
     <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
-        <translation type="unfinished">Люди</translation>
+        <translation>Людей</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="520"/>
         <source>Computers</source>
-        <translation type="unfinished">Комп&apos;ютери</translation>
+        <translation>Штучних Інтелектів</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="586"/>
@@ -4932,17 +4932,17 @@ Guard: %3</source>
     <message>
         <location filename="../windownewmap.ui" line="887"/>
         <source>Dirt</source>
-        <translation type="unfinished">Ґрунт</translation>
+        <translation>Грунтова</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="900"/>
         <source>Gravel</source>
-        <translation type="unfinished">Гравій</translation>
+        <translation>Гравійна</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="913"/>
         <source>Cobblestone</source>
-        <translation type="unfinished">Бруківка</translation>
+        <translation>Бруківка</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="946"/>
@@ -4958,12 +4958,12 @@ Guard: %3</source>
     <message>
         <location filename="../windownewmap.ui" line="1042"/>
         <source>Generate random map</source>
-        <translation>Згенерувати випадкову карту</translation>
+        <translation>Згенерувати випадкову мапу</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="1070"/>
         <source>OK</source>
-        <translation type="unfinished">Гаразд</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="1089"/>
@@ -4973,32 +4973,32 @@ Guard: %3</source>
     <message>
         <location filename="../windownewmap.cpp" line="294"/>
         <source>No template</source>
-        <translation type="unfinished">Шаблон відсутній</translation>
+        <translation>Шаблон відсутній</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="294"/>
         <source>No template for parameters specified. Random map cannot be generated.</source>
-        <translation type="unfinished">Немає шаблону для вказаних параметрів. Неможливо згенерувати випадкову карту.</translation>
+        <translation>Немає шаблону для вказаних параметрів. Неможливо згенерувати випадкову мапу.</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="316"/>
         <source>RMG failure</source>
-        <translation type="unfinished">Помилка генерації випадкової карти</translation>
+        <translation>Помилка генерації випадкової мапи</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="343"/>
         <source>Multilevel support</source>
-        <translation type="unfinished">Підтримка кількох рівнів</translation>
+        <translation>Підтримка багаторівневих мап</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="343"/>
         <source>Multilevel support is highly experimental yet. Expect issues.</source>
-        <translation type="unfinished">Підтримка кількох рівнів поки що дуже експериментальна. Можливі проблеми.</translation>
+        <translation>Підтримка багаторівневих мап поки що дуже експериментальна. Можливі проблеми.</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="464"/>
         <source>[default]</source>
-        <translation type="unfinished">[типово]</translation>
+        <translation>[типово]</translation>
     </message>
 </context>
 <context>
@@ -5006,27 +5006,27 @@ Guard: %3</source>
     <message>
         <location filename="../mainwindow.cpp" line="109"/>
         <source>Filepath of the map to open.</source>
-        <translation type="unfinished">Шлях до файлу карти, яку слід відкрити.</translation>
+        <translation>Шлях до файлу мапи, яку слід відкрити.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="112"/>
         <source>Extract original H3 archives into a separate folder.</source>
-        <translation type="unfinished">Розпакувати оригінальні архіви H3 у окрему папку.</translation>
+        <translation>Розпакувати оригінальні архіви H3 у окрему теку.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="113"/>
         <source>From an extracted archive, it Splits TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 and Un44 into individual PNG&apos;s.</source>
-        <translation type="unfinished">З розпакованого архіву розділяє TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 та Un44 на окремі PNG&apos;шки.</translation>
+        <translation>З розпакованого архіву розділити TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 та Un44 на окремі PNG файли.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="114"/>
         <source>From an extracted archive, Converts single Images (found in Images folder) from .pcx to png.</source>
-        <translation type="unfinished">З розпакованого архіву конвертує окремі зображення (з папки Images) з .pcx у .png.</translation>
+        <translation>З розпакованого архіву перетворити окремі зображення (з папки Images) з .pcx у .png.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
-        <translation type="unfinished">Видалити оригінальні файли для тих, які були розділені або конвертовані.</translation>
+        <translation>Видалити вихідні файли для тих, які були розділені або перетворені.</translation>
     </message>
 </context>
 </TS>

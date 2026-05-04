@@ -169,6 +169,8 @@ struct DLL_LINKAGE CGPathNode
 
 struct DLL_LINKAGE CGPath
 {
+	using ELayer = EPathfindingLayer;
+
 	std::vector<CGPathNode> nodes; //just get node by node
 
 	/// Starting position of path, matches location of hero
@@ -178,8 +180,17 @@ struct DLL_LINKAGE CGPath
 	/// Last node in path, this is what hero wants to reach in the end
 	const CGPathNode & lastNode() const;
 
-	int3 startPos() const; // start point
-	int3 endPos() const; //destination point
+	/// if nextNode() can be accessed
+	bool hasNextNode() const;
+
+	/// starting point
+	int3 startPos() const;
+	/// destination point
+	int3 endPos() const;
+	/// start layer
+	ELayer startLayer() const;
+	/// destination layer
+	ELayer endLayer() const;
 };
 
 struct DLL_LINKAGE CPathsInfo
@@ -195,12 +206,19 @@ struct DLL_LINKAGE CPathsInfo
 
 	CPathsInfo(const int3 & Sizes, const CGHeroInstance * hero_);
 	~CPathsInfo();
-	const CGPathNode * getPathInfo(const int3 & tile) const;
-	bool getPath(CGPath & out, const int3 & dst) const;
+	const CGPathNode * getPathInfo(const int3 & tile, const ELayer layer = ELayer::AUTO) const;
+	bool getPath(CGPath & out, const int3 & dst, const ELayer layer = ELayer::AUTO) const;
 	const CGPathNode * getNode(const int3 & coord) const;
 
+	//FIXME: what is the non-const version used for? internal node storage should be modified via NodeStorage only
 	STRONG_INLINE
 	CGPathNode * getNode(const int3 & coord, const ELayer layer)
+	{
+		return &nodes[layer.getNum()][coord.z][coord.x][coord.y];
+	}
+
+	STRONG_INLINE
+	const CGPathNode * getNode(const int3 & coord, const ELayer layer) const
 	{
 		return &nodes[layer.getNum()][coord.z][coord.x][coord.y];
 	}

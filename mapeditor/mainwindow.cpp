@@ -231,6 +231,8 @@ void EditorMainWindow::loadTranslation()
 	logGlobal->info("Loading editor translation: language='%s', file='%s', resource='%s'",
 		language, translationFile, translationFileResourcePath.toStdString());
 
+	qApp->removeTranslator(&translator);
+
 	if(!QFile::exists(translationFileResourcePath))
 	{
 		logGlobal->warn("Translation file %s does not exist!", translationFileResourcePath.toStdString());

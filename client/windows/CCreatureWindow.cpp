@@ -101,8 +101,12 @@ public:
 	{
 		if(commander)
 			return commander->getType()->getNameSingularTranslated();
-		else
-			return creature->getNamePluralTranslated();
+		if (stackNode)
+			return stackNode->getName();
+		if (stack)
+			return stack->getName();
+
+		return creature->getNamePluralTranslated();
 	}
 private:
 
@@ -503,43 +507,46 @@ CStackWindow::CommanderMainSection::CommanderMainSection(CStackWindow * owner, i
 
 	if(parent->info->levelupInfo)
 	{
+		static constexpr ui32 commanderAbilitySkillOffset = 100;
+
 		abilitiesBackground = std::make_shared<CPicture>(ImagePath::builtin("stackWindow/commander-abilities.png"));
 		abilitiesBackground->moveBy(Point(0, pos.h));
 
-		size_t abilitiesCount = boost::range::count_if(parent->info->levelupInfo->skills, [](ui32 skillID)
+		std::vector<ui32> abilitySkills;
+		abilitySkills.reserve(parent->info->levelupInfo->skills.size());
+		for(ui32 skillID : parent->info->levelupInfo->skills)
 		{
-			return skillID >= 100;
-		});
+			if(skillID >= commanderAbilitySkillOffset)
+				abilitySkills.push_back(skillID);
+		}
+		size_t abilitiesCount = abilitySkills.size();
 
-		auto onCreate = [this](size_t index)->std::shared_ptr<CIntObject>
+		auto onCreate = [this, abilitySkills](size_t index)->std::shared_ptr<CIntObject>
 		{
-			for(auto skillID : parent->info->levelupInfo->skills)
+			if(index >= abilitySkills.size())
+				return nullptr;
+
+			const ui32 skillID = abilitySkills[index];
+			const auto bonuses = LIBRARY->creh->skillRequirements[skillID - commanderAbilitySkillOffset].first;
+			const CStackInstance * stack = parent->info->commander;
+			auto icon = std::make_shared<CCommanderSkillIcon>(std::make_shared<CPicture>(stack->bonusToGraphics(bonuses[0])), true, [](){});
+			icon->callback = [this, skillID, icon]()
 			{
-				if(index == 0 && skillID >= 100)
-				{
-					const auto bonuses = LIBRARY->creh->skillRequirements[skillID-100].first;
-					const CStackInstance * stack = parent->info->commander;
-					auto icon = std::make_shared<CCommanderSkillIcon>(std::make_shared<CPicture>(stack->bonusToGraphics(bonuses[0])), true, [](){});
-					icon->callback = [this, skillID, icon]()
-					{
-						parent->setSelection(skillID, icon);
-					};
-					std::string abilityDescription;
-					for(size_t i = 0; i < bonuses.size(); i++)
-					{
-						if(!abilityDescription.empty())
-							abilityDescription += "\n";
+				parent->setSelection(skillID, icon);
+			};
+			std::string abilityDescription;
+			for(size_t i = 0; i < bonuses.size(); i++)
+			{
+				if(!abilityDescription.empty())
+					abilityDescription += "\n";
 
-						abilityDescription += LIBRARY->bth->bonusToString(bonuses[i]);
-					}
-
-					icon->hoverText = abilityDescription;
-					icon->text = abilityDescription;
-
-					return icon;
-				}
+				abilityDescription += LIBRARY->bth->bonusToString(bonuses[i]);
 			}
-			return nullptr;
+
+			icon->hoverText = abilityDescription;
+			icon->text = abilityDescription;
+
+			return icon;
 		};
 
 		abilities = std::make_shared<CListBox>(onCreate, Point(38, 3+pos.h), Point(63, 0), 6, abilitiesCount);

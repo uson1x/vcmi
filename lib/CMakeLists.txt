@@ -265,6 +265,8 @@ set(lib_MAIN_SRCS
 	serializer/JsonUpdater.cpp
 	serializer/SerializerReflection.cpp
 
+	scripting/ScriptHandler.cpp
+
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
 	spells/BonusCaster.cpp
@@ -282,7 +284,9 @@ set(lib_MAIN_SRCS
 	spells/adventure/AdventureSpellMechanics.cpp
 	spells/adventure/DimensionDoorEffect.cpp
 	spells/adventure/RemoveObjectEffect.cpp
+	spells/adventure/ReinforcementsEffect.cpp
 	spells/adventure/SummonBoatEffect.cpp
+	spells/adventure/TownRelatedAdventureSpellEffect.cpp
 	spells/adventure/TownPortalEffect.cpp
 	spells/adventure/ViewWorldEffect.cpp
 
@@ -299,7 +303,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Obstacle.cpp
 	spells/effects/Registry.cpp
 	spells/effects/UnitEffect.cpp
-	spells/effects/Summon.cpp
 	spells/effects/Teleport.cpp
 	spells/effects/Timed.cpp
 	spells/effects/RemoveObstacle.cpp
@@ -318,7 +321,6 @@ set(lib_MAIN_SRCS
 	ConditionalWait.cpp
 	CPlayerState.cpp
 	CRandomGenerator.cpp
-	CScriptingModule.cpp
 	CSkillHandler.cpp
 	CStack.cpp
 	ExceptionsCommon.cpp
@@ -332,7 +334,6 @@ set(lib_MAIN_SRCS
 	RiverHandler.cpp
 	RoadHandler.cpp
 	MapLayerHandler.cpp
-	ScriptHandler.cpp
 	TerrainHandler.cpp
 	TurnTimerInfo.cpp
 	GameLibrary.cpp
@@ -421,6 +422,7 @@ set(lib_MAIN_HEADERS
 	../include/vcmi/events/SubscriptionRegistry.h
 	../include/vcmi/events/TurnStarted.h
 
+	../include/vcmi/scripting/ApiTags.h
 	../include/vcmi/scripting/Service.h
 
 	../include/vcmi/spells/Caster.h
@@ -743,6 +745,8 @@ set(lib_MAIN_HEADERS
 	serializer/Serializeable.h
 	serializer/SerializerReflection.h
 
+	scripting/ScriptHandler.h
+
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
 	spells/BonusCaster.h
@@ -760,6 +764,7 @@ set(lib_MAIN_HEADERS
 	spells/adventure/AdventureSpellEffect.h
 	spells/adventure/DimensionDoorEffect.h
 	spells/adventure/RemoveObjectEffect.h
+	spells/adventure/ReinforcementsEffect.h
 	spells/adventure/SummonBoatEffect.h
 	spells/adventure/TownPortalEffect.h
 	spells/adventure/ViewWorldEffect.h
@@ -777,7 +782,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Obstacle.h
 	spells/effects/Registry.h
 	spells/effects/UnitEffect.h
-	spells/effects/Summon.h
 	spells/effects/Teleport.h
 	spells/effects/Timed.h
 	spells/effects/RemoveObstacle.h
@@ -799,7 +803,6 @@ set(lib_MAIN_HEADERS
 	Color.h
 	CPlayerState.h
 	CRandomGenerator.h
-	CScriptingModule.h
 	CSkillHandler.h
 	CSoundBase.h
 	CStack.h
@@ -823,7 +826,6 @@ set(lib_MAIN_HEADERS
 	RiverHandler.h
 	RoadHandler.h
 	MapLayerHandler.h
-	ScriptHandler.h
 	ScopeGuard.h
 	StartInfo.h
 	TerrainHandler.h
@@ -858,6 +860,7 @@ endif()
 if(ENABLE_STATIC_LIBS AND ENABLE_CLIENT)
 	target_compile_definitions(vcmi PRIVATE STATIC_AI)
 	target_link_libraries(vcmi PRIVATE EmptyAI)
+	target_link_libraries(vcmi PRIVATE vcmiLua)
 
 	if(ENABLE_NULLKILLER2_AI)
 		target_link_libraries(vcmi PRIVATE Nullkiller2)
@@ -929,8 +932,10 @@ if(COPY_CONFIG_ON_BUILD)
 	add_custom_command(TARGET vcmi POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/config
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/Mods
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/scripts
 		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_modules/create_link.cmake ${CMAKE_SOURCE_DIR}/config ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/config
 		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_modules/create_link.cmake ${CMAKE_SOURCE_DIR}/Mods ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/Mods
+		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_modules/create_link.cmake ${CMAKE_SOURCE_DIR}/scripts ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/scripts
 	)
 endif()
 

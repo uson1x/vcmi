@@ -227,7 +227,7 @@ void CSettingsView::loadSettings()
 	ui->spinBoxFramerateLimit->setDisabled(settings["video"]["vsync"].Bool());
 	ui->sliderReservedArea->setValue(std::round(settings["video"]["reservedWidth"].Float() * 100));
 
-	ui->spinBoxNetworkPort->setValue(settings["server"]["localPort"].Integer());
+	ui->spinBoxNetworkPort->setValue(settings["server"]["port"].Integer());
 
 	ui->lineEditRepositoryDefault->setText(QString::fromStdString(settings["launcher"]["defaultRepositoryURL"].String()));
 	ui->lineEditRepositoryExtra->setText(QString::fromStdString(settings["launcher"]["extraRepositoryURL"].String()));

@@ -49,7 +49,7 @@
         <location filename="../campaigneditor/campaigneditor.ui" line="14"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="159"/>
         <source>VCMI Campaign Editor</source>
-        <translation type="unfinished">Editor de Campañas VCMI</translation>
+        <translation>Editor de Campañas VCMI</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="36"/>
@@ -79,7 +79,7 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="113"/>
         <source>Open Campaignset</source>
-        <translation type="unfinished">Abrir conjunto de campañas</translation>
+        <translation>Abrir conjunto de campañas</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="121"/>
@@ -105,24 +105,24 @@
         <location filename="../campaigneditor/campaigneditor.ui" line="145"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="148"/>
         <source>Campaign Properties</source>
-        <translation type="unfinished">Propiedades de la campaña</translation>
+        <translation>Propiedades de campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="159"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="162"/>
         <source>Scenario Properties</source>
-        <translation type="unfinished">Propiedades del escenario</translation>
+        <translation>Propiedades del escenario</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="173"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="176"/>
         <source>Show full background</source>
-        <translation type="unfinished">Mostrar fondo completo</translation>
+        <translation>Mostrar fondo completo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="124"/>
         <source>Scenario editor</source>
-        <translation type="unfinished">Editor de escenarios</translation>
+        <translation>Editor de escenarios</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="147"/>
@@ -146,17 +146,17 @@
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo abrir campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>Validation failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Validación incorrecta</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>Campaign has no maps defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>La campaña no tiene mapas definidos.</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="251"/>
@@ -166,32 +166,32 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="253"/>
         <source>All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)</source>
-        <translation type="unfinished">Todas las campañas soportadas (*.vcmp *.h3c);;Campañas VCMI (*.vcmp);;Campañas HoMM3 (*.h3c)</translation>
+        <translation>Todas las campañas soportadas (*.vcmp *.h3c);;Campañas VCMI (*.vcmp);;Campañas HoMM3 (*.h3c)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Open Campaign set</source>
-        <translation type="unfinished">Abrir conjunto de campañas</translation>
+        <translation>Abrir conjunto de campañas</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="280"/>
         <source>Select Campaign set</source>
-        <translation type="unfinished">Seleccionar conjunto de campañas</translation>
+        <translation>Seleccionar conjunto de campañas</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Open Campaign</source>
-        <translation type="unfinished">Abrir campaña</translation>
+        <translation>Abrir campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="292"/>
         <source>Select Campaign</source>
-        <translation type="unfinished">Seleccionar campaña</translation>
+        <translation>Seleccionar campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="308"/>
         <source>Save campaign</source>
-        <translation type="unfinished">Guardar campaña</translation>
+        <translation>Guardar campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="308"/>
@@ -216,7 +216,7 @@
         <location filename="../campaigneditor/campaignproperties.ui" line="14"/>
         <location filename="../campaigneditor/campaignproperties.cpp" line="28"/>
         <source>Campaign Properties</source>
-        <translation type="unfinished">Propiedades de la campaña</translation>
+        <translation>Propiedades de campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="30"/>
@@ -226,12 +226,12 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="36"/>
         <source>Campaign name</source>
-        <translation type="unfinished">Nombre de la campaña</translation>
+        <translation>Nombre de campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="46"/>
         <source>Campaign description</source>
-        <translation type="unfinished">Descripción de la campaña</translation>
+        <translation>Descripción de campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="56"/>
@@ -241,58 +241,58 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="66"/>
         <source>Author contact (e.g. e-mail)</source>
-        <translation type="unfinished">Contacto del autor (ej. correo electrónico)</translation>
+        <translation>Contacto del autor (p.ej. correo-e)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="76"/>
         <source>Campaign creation date</source>
-        <translation type="unfinished">Fecha de creación de la campaña</translation>
+        <translation>Fecha de creación de la campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="86"/>
         <source>Campaign version</source>
-        <translation type="unfinished">Versión de la campaña</translation>
+        <translation>Versión de la campaña</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="96"/>
         <source>Music</source>
-        <translation type="unfinished">Música</translation>
+        <translation>Música</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="106"/>
         <source>Scenario difficulty is user selectable</source>
-        <translation type="unfinished">Dificultad del escenario seleccionable por el usuario</translation>
+        <translation>Dificultad del escenario seleccionable por el usuario</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="114"/>
         <location filename="../campaigneditor/campaignproperties.ui" line="197"/>
         <source>Regions</source>
-        <translation type="unfinished">Regiones</translation>
+        <translation>Regiones</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="120"/>
         <source>Regions Preset</source>
-        <translation type="unfinished">Preajuste de regiones</translation>
+        <translation>Preajuste de regiones</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="137"/>
         <source>Background</source>
-        <translation type="unfinished">Fondo</translation>
+        <translation>Fondo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="147"/>
         <source>Suffix</source>
-        <translation type="unfinished">Sufijo</translation>
+        <translation>Sufijo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="173"/>
         <source>Prefix</source>
-        <translation type="unfinished">Prefijo</translation>
+        <translation>Prefijo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="183"/>
         <source>Color suffix length</source>
-        <translation type="unfinished">Longitud del sufijo de color</translation>
+        <translation>Longitud del sufijo de color</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="226"/>
@@ -307,72 +307,72 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="258"/>
         <source>Misc</source>
-        <translation type="unfinished">Varios</translation>
+        <translation>Varios</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="264"/>
         <source>Loading background image</source>
-        <translation type="unfinished">Cargando imagen de fondo</translation>
+        <translation>Cargando imagen de fondo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="274"/>
         <source>Video rim image</source>
-        <translation type="unfinished">Imagen del borde del video</translation>
+        <translation>Imagen del borde del vídeo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
         <source>Enable rim image</source>
-        <translation type="unfinished">Habilitar imagen del borde</translation>
+        <translation>Habilitar imagen del borde</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="304"/>
         <source>Intro video</source>
-        <translation type="unfinished">Video de introducción</translation>
+        <translation>Video de introducción</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="314"/>
         <source>Outro video</source>
-        <translation type="unfinished">Video de cierre</translation>
+        <translation>Vídeo de cierre</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="57"/>
         <source>Custom</source>
-        <translation type="unfinished">Personalizado</translation>
+        <translation>Personalizado</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Infix</source>
-        <translation type="unfinished">Infijo</translation>
+        <translation>Infijo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>X</source>
-        <translation type="unfinished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Y</source>
-        <translation type="unfinished">Y</translation>
+        <translation>Y</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Label Pos X</source>
-        <translation type="unfinished">Posición de la etiqueta X</translation>
+        <translation>Posición de la etiqueta X</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
         <source>Label Pos Y</source>
-        <translation type="unfinished">Posición de la etiqueta Y</translation>
+        <translation>Posición de la etiqueta Y</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="201"/>
         <source>Fewer Scenarios</source>
-        <translation type="unfinished">Menos escenarios</translation>
+        <translation>Menos escenarios</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.cpp" line="201"/>
         <source>New Region setup supports fewer scenarios than before. Some will removed. Continue?</source>
-        <translation type="unfinished">La nueva configuración de la región admite menos escenarios que antes. Algunos serán eliminados. ¿Continuar?</translation>
+        <translation>La nueva configuración de la región admite menos escenarios que antes. Algunos serán eliminados. ¿Continuar?</translation>
     </message>
 </context>
 <context>
@@ -381,7 +381,7 @@
         <location filename="../templateeditor/entitiesselector.ui" line="14"/>
         <location filename="../templateeditor/entitiesselector.ui" line="20"/>
         <source>Select Entities</source>
-        <translation type="unfinished">Seleccionar entidades</translation>
+        <translation>Seleccionar entidades</translation>
     </message>
 </context>
 <context>
@@ -418,12 +418,12 @@
         <location filename="../templateeditor/factionselector.ui" line="14"/>
         <location filename="../templateeditor/factionselector.ui" line="20"/>
         <source>Select Factions</source>
-        <translation type="unfinished">Seleccionar facciones</translation>
+        <translation>Seleccionar facciones</translation>
     </message>
     <message>
         <location filename="../templateeditor/factionselector.cpp" line="25"/>
         <source>Faction Selector</source>
-        <translation type="unfinished">Selector de facciones</translation>
+        <translation>Selector de facciones</translation>
     </message>
 </context>
 <context>
@@ -759,7 +759,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1036"/>
         <source>Ctrl+O</source>
-        <translation type="unfinished">Ctrl+O</translation>
+        <translation>Ctrl+O</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1046"/>
@@ -774,7 +774,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1057"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished">Ctrl+S</translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1062"/>
@@ -784,7 +784,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1065"/>
         <source>Ctrl+N</source>
-        <translation type="unfinished">Ctrl+N</translation>
+        <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1070"/>
@@ -800,13 +800,13 @@
         <location filename="../mainwindow.ui" line="1078"/>
         <location filename="../mainwindow.ui" line="1081"/>
         <source>Campaign editor</source>
-        <translation type="unfinished">Editor de campañas</translation>
+        <translation>Editor de campaña</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1086"/>
         <location filename="../mainwindow.ui" line="1089"/>
         <source>Template editor</source>
-        <translation type="unfinished">Editor de plantillas</translation>
+        <translation>Editor de plantilla</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1097"/>
@@ -817,7 +817,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1103"/>
         <source>Ctrl+U</source>
-        <translation type="unfinished">Ctrl+U</translation>
+        <translation>Ctrl+U</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1111"/>
@@ -827,7 +827,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1114"/>
         <source>Ctrl+Shift+P</source>
-        <translation type="unfinished">Ctrl+Shift+P</translation>
+        <translation>Ctrl+Mayús+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1119"/>
@@ -837,7 +837,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1122"/>
         <source>Ctrl+X</source>
-        <translation type="unfinished">Ctrl+X</translation>
+        <translation>Ctrl+X</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1127"/>
@@ -847,7 +847,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1130"/>
         <source>Ctrl+C</source>
-        <translation type="unfinished">Ctrl+C</translation>
+        <translation>Ctrl+C</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1135"/>
@@ -857,7 +857,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1138"/>
         <source>Ctrl+V</source>
-        <translation type="unfinished">Ctrl+V</translation>
+        <translation>Ctrl+V</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1143"/>
@@ -877,7 +877,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1160"/>
         <source>Ctrl+G</source>
-        <translation type="unfinished">Ctrl+G</translation>
+        <translation>Ctrl+G</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1168"/>
@@ -892,7 +892,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1174"/>
         <source>Ctrl+Enter</source>
-        <translation type="unfinished">Ctrl+Enter</translation>
+        <translation>Ctrl+Intro</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1182"/>
@@ -902,7 +902,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1185"/>
         <source>Ctrl+P</source>
-        <translation type="unfinished">Ctrl+P</translation>
+        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1193"/>
@@ -913,7 +913,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1199"/>
         <source>Ctrl+Z</source>
-        <translation type="unfinished">Ctrl+Z</translation>
+        <translation>Ctrl+Z</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1210"/>
@@ -923,7 +923,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1213"/>
         <source>Ctrl+Y</source>
-        <translation type="unfinished">Ctrl+Y</translation>
+        <translation>Ctrl+Y</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1224"/>
@@ -933,7 +933,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1227"/>
         <source>Del</source>
-        <translation type="unfinished">Del</translation>
+        <translation>Supr</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1235"/>
@@ -943,7 +943,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1238"/>
         <source>Ctrl+0</source>
-        <translation type="unfinished">Ctrl+0</translation>
+        <translation>Ctrl+0</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1243"/>
@@ -953,13 +953,13 @@
     <message>
         <location filename="../mainwindow.ui" line="1246"/>
         <source>Ctrl+Shift+V</source>
-        <translation type="unfinished">Ctrl+Shift+V</translation>
+        <translation>Ctrl+Mayús+V</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
         <location filename="../mainwindow.cpp" line="1413"/>
         <source>Select map layer type</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar tipo de capa de mapa</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
@@ -982,7 +982,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1290"/>
         <source>Ctrl+1</source>
-        <translation type="unfinished">Ctrl+1</translation>
+        <translation>Ctrl+1</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1298"/>
@@ -992,7 +992,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1301"/>
         <source>Ctrl+2</source>
-        <translation type="unfinished">Ctrl+2</translation>
+        <translation>Ctrl+2</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1309"/>
@@ -1002,7 +1002,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1312"/>
         <source>Ctrl+3</source>
-        <translation type="unfinished">Ctrl+3</translation>
+        <translation>Ctrl+3</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1320"/>
@@ -1012,7 +1012,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1323"/>
         <source>Ctrl+4</source>
-        <translation type="unfinished">Ctrl+4</translation>
+        <translation>Ctrl+4</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1331"/>
@@ -1022,7 +1022,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1334"/>
         <source>Ctrl+5</source>
-        <translation type="unfinished">Ctrl+5</translation>
+        <translation>Ctrl+5</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1342"/>
@@ -1032,7 +1032,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1345"/>
         <source>Ctrl+6</source>
-        <translation type="unfinished">Ctrl+6</translation>
+        <translation>Ctrl+6</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1353"/>
@@ -1042,7 +1042,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1356"/>
         <source>Ctrl+7</source>
-        <translation type="unfinished">Ctrl+7</translation>
+        <translation>Ctrl+7</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1364"/>
@@ -1052,7 +1052,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1367"/>
         <source>Ctrl+8</source>
-        <translation type="unfinished">Ctrl+8</translation>
+        <translation>Ctrl+8</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1372"/>
@@ -1062,7 +1062,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1375"/>
         <source>Ctrl+E</source>
-        <translation type="unfinished">Ctrl+E</translation>
+        <translation>Ctrl+E</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1383"/>
@@ -1083,7 +1083,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1397"/>
         <source>Ctrl+Shift+M</source>
-        <translation type="unfinished">Ctrl+Shift+M</translation>
+        <translation>Ctrl+Mayús+M</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1402"/>
@@ -1094,7 +1094,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1408"/>
         <source>Ctrl+Shift+C</source>
-        <translation type="unfinished">Ctrl+Shift+C</translation>
+        <translation>Ctrl+Mayús+C</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1413"/>
@@ -1135,7 +1135,7 @@
     <message>
         <location filename="../mainwindow.ui" line="1438"/>
         <source>Ctrl++</source>
-        <translation type="unfinished">Ctrl++</translation>
+        <translation>Ctrl++</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1443"/>
@@ -1183,7 +1183,7 @@
         <location filename="../mainwindow.cpp" line="453"/>
         <location filename="../mainwindow.cpp" line="1430"/>
         <source>Level %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nivel %1: %2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="479"/>
@@ -1219,12 +1219,12 @@
     <message>
         <location filename="../mainwindow.cpp" line="635"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
-        <translation>El mapa tiene problemas críticos y probablemente no será jugable. Abre el Validador en el menú de Mapa para ver los problemas encontrados</translation>
+        <translation>El mapa tiene problemas críticos y probablemente no será jugable. Abre el Validador en el menú de Mapa para ver los asuntos encontrados</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
-        <translation>El mapa tiene algunos errores. Abre el Validador en el menú de Mapa para ver los problemas encontrados</translation>
+        <translation>El mapa tiene algunos errores. Abre el Validador en el menú de Mapa para ver los asuntos encontrados</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="664"/>
@@ -1339,27 +1339,27 @@
     <message>
         <location filename="../mainwindow.cpp" line="1056"/>
         <source>Undo clicked</source>
-        <translation type="unfinished">Deshacer pulsado</translation>
+        <translation>Deshacer pulsado</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1067"/>
         <source>Redo clicked</source>
-        <translation type="unfinished">Rehacer pulsado</translation>
+        <translation>Rehacer pulsado</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1078"/>
         <source>Passability clicked</source>
-        <translation type="unfinished">Transitable pulsado</translation>
+        <translation>Transitable pulsado</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1091"/>
         <source>Grid clicked</source>
-        <translation type="unfinished">Cuadrícula pulsada</translation>
+        <translation>Cuadrícula pulsada</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1172"/>
         <source>Fill clicked</source>
-        <translation type="unfinished">Relleno pulsado</translation>
+        <translation>Relleno pulsado</translation>
     </message>
     <message>
         <source>View surface</source>
@@ -1383,7 +1383,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1414"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1469"/>
@@ -1451,22 +1451,21 @@
     <message>
         <location filename="../mapcontroller.cpp" line="626"/>
         <source>Missing Required Mod</source>
-        <translation type="unfinished">Falta un mod requerido</translation>
+        <translation>Falta un mod requerido</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="626"/>
         <source>
 
 Do you want to do that now ?</source>
-        <translation type="unfinished">
-
+        <translation>
 
 ¿Quieres hacerlo ahora?</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="636"/>
         <source>This object&apos;s mod is mandatory for map to remain valid.</source>
-        <translation type="unfinished">El mod de este objeto es obligatorio para que el mapa siga siendo válido.</translation>
+        <translation>El mod de este objeto es obligatorio para que el mapa siga siendo válido.</translation>
     </message>
 </context>
 <context>
@@ -1484,7 +1483,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapsettings/mapsettings.ui" line="61"/>
         <source>Mods</source>
-        <translation>Mods</translation>
+        <translation>Mod</translation>
     </message>
     <message>
         <location filename="../mapsettings/mapsettings.ui" line="80"/>
@@ -1559,12 +1558,12 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/mineselector.ui" line="14"/>
         <location filename="../templateeditor/mineselector.ui" line="20"/>
         <source>Select Mines</source>
-        <translation type="unfinished">Seleccionar minas</translation>
+        <translation>Seleccionar minas</translation>
     </message>
     <message>
         <location filename="../templateeditor/mineselector.cpp" line="29"/>
         <source>Mine Selector</source>
-        <translation type="unfinished">Selector de minas</translation>
+        <translation>Selector de mina</translation>
     </message>
     <message>
         <location filename="../templateeditor/mineselector.cpp" line="35"/>
@@ -1630,7 +1629,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="14"/>
         <source>Select Objects</source>
-        <translation type="unfinished">Seleccionar objetos</translation>
+        <translation>Seleccionar objetos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="20"/>
@@ -1640,27 +1639,27 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="30"/>
         <source>Required Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Objetos requeridos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="40"/>
         <source>Banned Objects</source>
-        <translation type="unfinished">Objetos prohibidos</translation>
+        <translation>Objetos prohibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="50"/>
         <source>Banned Object Categories</source>
-        <translation type="unfinished">Categorías de objetos prohibidas</translation>
+        <translation>Categorías de objetos prohibidas</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="33"/>
         <source>Object Selector</source>
-        <translation type="unfinished">Selector de objetos</translation>
+        <translation>Selector de objeto</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="96"/>
         <source>Category</source>
-        <translation type="unfinished">Categoría</translation>
+        <translation>Categoría</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="96"/>
@@ -1668,7 +1667,7 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Action</source>
-        <translation type="unfinished">Acción</translation>
+        <translation>Acción</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="100"/>
@@ -1689,7 +1688,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="103"/>
         <source>Creature bank</source>
-        <translation type="unfinished">Banco de criaturas</translation>
+        <translation>Banco de criaturas</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="104"/>
@@ -1699,7 +1698,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="105"/>
         <source>Dwelling</source>
-        <translation type="unfinished">Morada</translation>
+        <translation>Morada</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="106"/>
@@ -1709,7 +1708,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="107"/>
         <source>Resource generator</source>
-        <translation type="unfinished">Generador de recursos</translation>
+        <translation>Generador de recursos</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="108"/>
@@ -1719,22 +1718,22 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="109"/>
         <source>Random artifact</source>
-        <translation type="unfinished">Artefacto aleatorio</translation>
+        <translation>Artefacto aleatorio</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="110"/>
         <source>Pandoras box</source>
-        <translation type="unfinished">Caja de Pandora</translation>
+        <translation>Caja de Pandora</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="111"/>
         <source>Quest artifact</source>
-        <translation type="unfinished">Artefacto de misión</translation>
+        <translation>Artefacto de misión</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="112"/>
         <source>Seer hut</source>
-        <translation type="unfinished">Cabaña del vidente</translation>
+        <translation>Cabaña del vidente</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="124"/>
@@ -1742,7 +1741,7 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="261"/>
         <location filename="../templateeditor/objectselector.cpp" line="345"/>
         <source>Delete</source>
-        <translation type="unfinished">Eliminar</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="139"/>
@@ -1750,24 +1749,24 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/objectselector.cpp" line="278"/>
         <location filename="../templateeditor/objectselector.cpp" line="360"/>
         <source>Add</source>
-        <translation type="unfinished">Añadir</translation>
+        <translation>Añadir</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="164"/>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Object</source>
-        <translation type="unfinished">Objeto</translation>
+        <translation>Objeto</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Conteo</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <source>Guard</source>
-        <translation type="unfinished">Guardia</translation>
+        <translation>Guardia</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
@@ -1777,12 +1776,12 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Probability</source>
-        <translation type="unfinished">Probabilidad</translation>
+        <translation>Probabilidad</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Max per zone</source>
-        <translation type="unfinished">Máximo por zona</translation>
+        <translation>Máximo por zona</translation>
     </message>
 </context>
 <context>
@@ -1848,22 +1847,22 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="45"/>
         <source>Select Player</source>
-        <translation type="unfinished">Seleccionar jugador</translation>
+        <translation>Seleccionar jugador</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="54"/>
         <source>Hero cannot be created as NEUTRAL</source>
-        <translation type="unfinished">No se puede crear un héroe como NEUTRAL</translation>
+        <translation>No se puede crear un héroe como NEUTRAL</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="60"/>
         <source>Switch to one of the available players:</source>
-        <translation type="unfinished">Cambia a uno de los jugadores disponibles:</translation>
+        <translation>Cambia a uno de los jugadores disponibles:</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="89"/>
         <source>Shortcut: %1</source>
-        <translation type="unfinished">Acceso directo: %1</translation>
+        <translation>Atajo: %1</translation>
     </message>
 </context>
 <context>
@@ -1933,7 +1932,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="175"/>
         <source>Random hero secondary skills</source>
-        <translation type="unfinished">Habilidades secundarias aleatorias del héroe</translation>
+        <translation>Habilidades secundarias aleatorias del héroe</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="181"/>
@@ -2255,7 +2254,7 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="467"/>
         <location filename="../inspector/inspector.cpp" line="616"/>
         <source>Cpu trigger</source>
-        <translation>Activador CPU</translation>
+        <translation>Activador Cpu</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="475"/>
@@ -2306,15 +2305,15 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapcontroller.cpp" line="649"/>
         <source> (submod of %1)</source>
-        <translation type="unfinished"> (submod de %1)</translation>
+        <translation> (submod de %1)</translation>
     </message>
     <message>
         <location filename="../mapcontroller.cpp" line="651"/>
         <source>The mod &apos;%1&apos;%2, is required by an object on the map.
 Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <comment>should be consistent with Map-&gt;General menu entry translation</comment>
-        <translation type="unfinished">El mod &apos;%1&apos;%2 es requerido por un objeto en el mapa.
-Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</translation>
+        <translation>El mod &apos;%1&apos;%2, es requerido por un objeto en el mapa.
+Agrégalo a los mods requeridos del mapa en Mapa-&gt;Ajustes generales.</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.cpp" line="217"/>
@@ -2485,7 +2484,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="220"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation>Incorrecto al abrir campaña</translation>
     </message>
 </context>
 <context>
@@ -2677,7 +2676,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../inspector/rewardswidget.ui" line="148"/>
         <source> days</source>
-        <translation>días</translation>
+        <translation> días</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="160"/>
@@ -2934,7 +2933,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/scenarioproperties.ui" line="14"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="35"/>
         <source>Scenario Properties</source>
-        <translation type="unfinished">Propiedades del escenario</translation>
+        <translation>Propiedades del escenario</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="30"/>
@@ -2944,32 +2943,32 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="36"/>
         <source>Region name</source>
-        <translation type="unfinished">Nombre de la región</translation>
+        <translation>Nombre de la región</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="50"/>
         <source>Region color</source>
-        <translation type="unfinished">Color de la región</translation>
+        <translation>Color de la región</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="60"/>
         <source>Scenario name</source>
-        <translation type="unfinished">Nombre del escenario</translation>
+        <translation>Nombre del escenario</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="74"/>
         <source>Map file</source>
-        <translation type="unfinished">Archivo del mapa</translation>
+        <translation>Archivo del mapa</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="90"/>
         <source>Import...</source>
-        <translation type="unfinished">Importar...</translation>
+        <translation>Importar…</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="97"/>
         <source>Export...</source>
-        <translation type="unfinished">Exportar...</translation>
+        <translation>Exportar…</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="104"/>
@@ -2980,27 +2979,27 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="113"/>
         <source>Default difficulty</source>
-        <translation type="unfinished">Dificultad predeterminada</translation>
+        <translation>Dificultad predeterminada</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="123"/>
         <source>Prerequisites</source>
-        <translation type="unfinished">Requisitos previos</translation>
+        <translation>Requisitos previos</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="133"/>
         <source>Region right-click text</source>
-        <translation type="unfinished">Texto al hacer clic derecho en la región</translation>
+        <translation>Texto al pulsar al derecho en la región</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="144"/>
         <source>Prologue/Epilogue</source>
-        <translation type="unfinished">Prólogo/Epílogo</translation>
+        <translation>Prólogo/Epílogo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="150"/>
         <source>Prologue</source>
-        <translation type="unfinished">Prólogo</translation>
+        <translation>Prólogo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="156"/>
@@ -3012,25 +3011,25 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/scenarioproperties.ui" line="168"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="262"/>
         <source>Video</source>
-        <translation type="unfinished">Video</translation>
+        <translation>Vídeo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="185"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="279"/>
         <source>Video 2</source>
-        <translation type="unfinished">Vídeo 2</translation>
+        <translation>Vídeo 2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="202"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="296"/>
         <source>Music</source>
-        <translation type="unfinished">Música</translation>
+        <translation>Música</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="219"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="313"/>
         <source>Voice</source>
-        <translation type="unfinished">Voz</translation>
+        <translation>Voz</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="231"/>
@@ -3041,17 +3040,17 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="244"/>
         <source>Epilogue</source>
-        <translation type="unfinished">Epílogo</translation>
+        <translation>Epílogo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="339"/>
         <source>Crossover</source>
-        <translation type="unfinished">Crossover</translation>
+        <translation>Atravesar</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="345"/>
         <source>Crossover heroes retain</source>
-        <translation type="unfinished">Héroes del crossover retenidos</translation>
+        <translation>Héroes del cruce retenidos</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="351"/>
@@ -3066,7 +3065,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="365"/>
         <source>Secondary skills</source>
-        <translation type="unfinished">Habilidades secundarias</translation>
+        <translation>Habilidades secundarias</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="372"/>
@@ -3081,7 +3080,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="412"/>
         <source>All</source>
-        <translation type="unfinished">Todos</translation>
+        <translation>Todos</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="419"/>
@@ -3091,74 +3090,74 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="446"/>
         <source>Crossover artifacts</source>
-        <translation type="unfinished">Artefactos de crossover</translation>
+        <translation>Artefactos de cruce</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="475"/>
         <source>Starting</source>
-        <translation type="unfinished">Inicial</translation>
+        <translation>Inicial</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="481"/>
         <source>Starting options are</source>
-        <translation type="unfinished">Las opciones iniciales son</translation>
+        <translation>Las opciones iniciales son</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="488"/>
         <source>Starting bonus options</source>
-        <translation type="unfinished">Opciones de bonificación inicial</translation>
+        <translation>Opciones de bonificación inicial</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="495"/>
         <source>Hero crossover options</source>
-        <translation type="unfinished">Opciones de héroe crossover</translation>
+        <translation>Opciones de héroe cruzado</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="502"/>
         <source>Starting hero options</source>
-        <translation type="unfinished">Opciones de héroe inicial</translation>
+        <translation>Opciones de héroe inicial</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="520"/>
         <source>Bonus</source>
-        <translation type="unfinished">Bonificación</translation>
+        <translation>Bonificación</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="526"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="460"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="470"/>
         <source>Player position</source>
-        <translation type="unfinished">Posición del jugador</translation>
+        <translation>Posición del jugador</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="536"/>
         <source>Starting bonus option</source>
-        <translation type="unfinished">Opción de bonificación inicial</translation>
+        <translation>Opción de bonificación inicial</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="547"/>
         <source>Crossover/ Starting hero</source>
-        <translation type="unfinished">Crossover/Héroe inicial</translation>
+        <translation>Cruce/Héroe inicial</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="565"/>
         <source>Add...</source>
-        <translation type="unfinished">Agregar...</translation>
+        <translation>Agregar…</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="572"/>
         <source>Edit...</source>
-        <translation type="unfinished">Editar...</translation>
+        <translation>Editar…</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="121"/>
         <source>Strongest</source>
-        <translation type="unfinished">Más fuerte</translation>
+        <translation>Más fuerte</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="122"/>
         <source>Generated</source>
-        <translation type="unfinished">Generado</translation>
+        <translation>Generado</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="123"/>
@@ -3168,7 +3167,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="140"/>
         <source>No map</source>
-        <translation type="unfinished">Sin mapa</translation>
+        <translation>Sin mapa</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="183"/>
@@ -3189,13 +3188,13 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/scenarioproperties.cpp" line="398"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="431"/>
         <source>Error</source>
-        <translation type="unfinished">Error</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="398"/>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="431"/>
         <source>Could not open the file.</source>
-        <translation type="unfinished">No se pudo abrir el archivo.</translation>
+        <translation>No se pudo abrir el archivo.</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="424"/>
@@ -3205,22 +3204,22 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="424"/>
         <source>VCMI maps (*.vmap);</source>
-        <translation type="unfinished">Mapas VCMI (*.vmap);</translation>
+        <translation>Mapas VCMI (*.vmap);</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="424"/>
         <source>HoMM3 maps (*.h3m);</source>
-        <translation type="unfinished">Mapas HoMM3 (*.h3m);</translation>
+        <translation>Mapas HoMM3 (*.h3m);</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="460"/>
         <source>Source scenario</source>
-        <translation type="unfinished">Escenario fuente</translation>
+        <translation>Escenario origen</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.cpp" line="470"/>
         <source>Hero</source>
-        <translation type="unfinished">Héroe</translation>
+        <translation>Héroe</translation>
     </message>
 </context>
 <context>
@@ -3228,12 +3227,12 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="14"/>
         <source>Scenario Properties</source>
-        <translation type="unfinished">Propiedades del escenario</translation>
+        <translation>Propiedades del escenario</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="20"/>
         <source>Select a bonus type</source>
-        <translation type="unfinished">Seleccionar tipo de bonificación</translation>
+        <translation>Seleccionar tipo de bonificación</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="27"/>
@@ -3247,7 +3246,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/startingbonus.ui" line="34"/>
         <location filename="../campaigneditor/startingbonus.ui" line="134"/>
         <source>Creature</source>
-        <translation type="unfinished">Criatura</translation>
+        <translation>Criatura</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="41"/>
@@ -3255,7 +3254,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/startingbonus.ui" line="190"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="363"/>
         <source>Building</source>
-        <translation type="unfinished">Edificio</translation>
+        <translation>Edificio</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="48"/>
@@ -3268,13 +3267,13 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/startingbonus.ui" line="55"/>
         <location filename="../campaigneditor/startingbonus.ui" line="254"/>
         <source>Spell scroll</source>
-        <translation type="unfinished">Pergamino de hechizo</translation>
+        <translation>Pergamino de hechizo</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="62"/>
         <location filename="../campaigneditor/startingbonus.ui" line="294"/>
         <source>Primary skill</source>
-        <translation type="unfinished">Habilidad primaria</translation>
+        <translation>Habilidad primaria</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="69"/>
@@ -3282,7 +3281,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/startingbonus.ui" line="380"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="387"/>
         <source>Secondary skill</source>
-        <translation type="unfinished">Habilidad secundaria</translation>
+        <translation>Habilidad secundaria</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="76"/>
@@ -3299,28 +3298,28 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../campaigneditor/startingbonus.ui" line="300"/>
         <location filename="../campaigneditor/startingbonus.ui" line="370"/>
         <source>Recipient</source>
-        <translation type="unfinished">Destinatario</translation>
+        <translation>Destinatario</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="150"/>
         <source>Creature type</source>
-        <translation type="unfinished">Tipo de criatura</translation>
+        <translation>Tipo de criatura</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="160"/>
         <location filename="../campaigneditor/startingbonus.ui" line="430"/>
         <source>Quantity</source>
-        <translation type="unfinished">Cantidad</translation>
+        <translation>Cantidad</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="310"/>
         <source>Attack skill</source>
-        <translation type="unfinished">Habilidad de ataque</translation>
+        <translation>Habilidad de ataque</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="320"/>
         <source>Defense skill</source>
-        <translation type="unfinished">Habilidad de defensa</translation>
+        <translation>Habilidad de defensa</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="330"/>
@@ -3335,27 +3334,27 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="390"/>
         <source>Mastery</source>
-        <translation type="unfinished">Maestría</translation>
+        <translation>Maestría</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="420"/>
         <source>Resource type</source>
-        <translation type="unfinished">Tipo de recurso</translation>
+        <translation>Tipo de recurso</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="34"/>
         <source>Edit Starting Bonus</source>
-        <translation type="unfinished">Editar bonificación inicial</translation>
+        <translation>Editar bonificación inicial</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="62"/>
         <source>Strongest</source>
-        <translation type="unfinished">Más fuerte</translation>
+        <translation>Más fuerte</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="63"/>
         <source>Generated</source>
-        <translation type="unfinished">Generado</translation>
+        <translation>Generado</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="64"/>
@@ -3365,62 +3364,62 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="95"/>
         <source>Main town is of random faction</source>
-        <translation type="unfinished">La ciudad principal es de una facción aleatoria</translation>
+        <translation>La ciudad principal es de una facción aleatoria</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="107"/>
         <source>Player does not have a main town!</source>
-        <translation type="unfinished">¡El jugador no tiene ciudad principal!</translation>
+        <translation>¡El jugador no tiene ciudad principal!</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="132"/>
         <source>Common (%1 and %2)</source>
-        <translation type="unfinished">Común (%1 y %2)</translation>
+        <translation>Común (%1 y %2)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="137"/>
         <source>Rare (%1, %2, %3, %4)</source>
-        <translation type="unfinished">Raro (%1, %2, %3, %4)</translation>
+        <translation>Raro (%1, %2, %3, %4)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="319"/>
         <source>strongest hero</source>
-        <translation type="unfinished">héroe más fuerte</translation>
+        <translation>héroe más fuerte</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="321"/>
         <source>generated hero</source>
-        <translation type="unfinished">héroe generado</translation>
+        <translation>héroe generado</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="323"/>
         <source>random hero</source>
-        <translation type="unfinished">héroe aleatorio</translation>
+        <translation>héroe aleatorio</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="354"/>
         <source>%1 spell for %2</source>
-        <translation type="unfinished">Hechizo %1 para %2</translation>
+        <translation>Hechizo %1 para %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="359"/>
         <source>%1 %2 for %3</source>
-        <translation type="unfinished">%1 %2 para %3</translation>
+        <translation>%1 %2 para %3</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="368"/>
         <source>%1 artifact for %2</source>
-        <translation type="unfinished">Artefacto %1 para %2</translation>
+        <translation>Artefacto %1 para %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="373"/>
         <source>%1 spell scroll for %2</source>
-        <translation type="unfinished">Pergamino de hechizo %1 para %2</translation>
+        <translation>Pergamino de hechizo %1 para %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="378"/>
         <source>Primary skill (Attack: %1, Defense: %2, Spell: %3, Knowledge: %4) for %5</source>
-        <translation type="unfinished">Habilidad primaria (Ataque: %1, Defensa: %2, Hechizo: %3, Conocimiento: %4) para %5</translation>
+        <translation>Habilidad primaria (Ataque: %1, Defensa: %2, Hechizo: %3, Conocimiento: %4) para %5</translation>
     </message>
 </context>
 <context>
@@ -3429,7 +3428,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../templateeditor/templateeditor.ui" line="14"/>
         <location filename="../templateeditor/templateeditor.cpp" line="637"/>
         <source>VCMI Template Editor</source>
-        <translation type="unfinished">Editor de plantillas VCMI</translation>
+        <translation>Editor de plantillas VCMI</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="36"/>
@@ -3454,7 +3453,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="114"/>
         <source>Selected Template:</source>
-        <translation type="unfinished">Plantilla seleccionada:</translation>
+        <translation>Plantilla seleccionada:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="137"/>
@@ -3471,7 +3470,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="151"/>
         <source>Rename</source>
-        <translation type="unfinished">Renombrar</translation>
+        <translation>Renombrar</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="215"/>
@@ -3486,38 +3485,38 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="233"/>
         <source>Description</source>
-        <translation type="unfinished">Descripción</translation>
+        <translation>Descripción</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="245"/>
         <source>Min Size</source>
-        <translation type="unfinished">Tamaño mín.</translation>
+        <translation>Tamaño mín</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="264"/>
         <location filename="../templateeditor/templateeditor.ui" line="363"/>
         <location filename="../templateeditor/templateeditor.ui" line="585"/>
         <source>X</source>
-        <translation type="unfinished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="294"/>
         <location filename="../templateeditor/templateeditor.ui" line="393"/>
         <location filename="../templateeditor/templateeditor.ui" line="615"/>
         <source>Y</source>
-        <translation type="unfinished">Y</translation>
+        <translation>Y</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="324"/>
         <location filename="../templateeditor/templateeditor.ui" line="423"/>
         <location filename="../templateeditor/templateeditor.ui" line="1378"/>
         <source>Z</source>
-        <translation type="unfinished">Z</translation>
+        <translation>Z</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="344"/>
         <source>Max Size</source>
-        <translation type="unfinished">Tamaño máx.</translation>
+        <translation>Tamaño máx</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="443"/>
@@ -3528,12 +3527,12 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="459"/>
         <source>Human</source>
-        <translation type="unfinished">Humano</translation>
+        <translation>Humano</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="472"/>
         <source>Allowed water content</source>
-        <translation type="unfinished">Contenido de agua permitido</translation>
+        <translation>Contenido de agua permitido</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="478"/>
@@ -3556,48 +3555,48 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="502"/>
         <source>Entities</source>
-        <translation type="unfinished">Entidades</translation>
+        <translation>Entidades</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="508"/>
         <source>Banned Spells</source>
-        <translation type="unfinished">Hechizos prohibidos</translation>
+        <translation>Hechizos prohibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="515"/>
         <source>Banned Artifacts</source>
-        <translation type="unfinished">Artefactos prohibidos</translation>
+        <translation>Artefactos prohibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="522"/>
         <source>Banned Skills</source>
-        <translation type="unfinished">Habilidades prohibidas</translation>
+        <translation>Habilidades prohibidas</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="529"/>
         <source>Banned Heroes</source>
-        <translation type="unfinished">Héroes prohibidos</translation>
+        <translation>Héroes prohibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="561"/>
         <source>Zone</source>
-        <translation type="unfinished">Zona</translation>
+        <translation>Zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="567"/>
         <source>Visualisation</source>
-        <translation type="unfinished">Visualización</translation>
+        <translation>Visualización</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="573"/>
         <source>Position</source>
-        <translation type="unfinished">Posición</translation>
+        <translation>Posición</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="645"/>
         <location filename="../templateeditor/templateeditor.ui" line="701"/>
         <source>Size</source>
-        <translation type="unfinished">Tamaño</translation>
+        <translation>Tamaño</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="673"/>
@@ -3618,12 +3617,12 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="729"/>
         <source>Forced level</source>
-        <translation type="unfinished">Nivel forzado</translation>
+        <translation>Nivel forzado</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="741"/>
         <source>Zone link</source>
-        <translation type="unfinished">Enlace de zonas</translation>
+        <translation>Enlace de zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="747"/>
@@ -3636,7 +3635,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../templateeditor/templateeditor.ui" line="754"/>
         <location filename="../templateeditor/templateeditor.ui" line="1267"/>
         <source>Custom objects</source>
-        <translation type="unfinished">Objetos personalizados</translation>
+        <translation>Objetos personalizados</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="761"/>
@@ -3648,7 +3647,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../templateeditor/templateeditor.ui" line="768"/>
         <location filename="../templateeditor/templateeditor.ui" line="1109"/>
         <source>Terrain</source>
-        <translation type="unfinished">Terreno</translation>
+        <translation>Terreno</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="785"/>
@@ -3656,17 +3655,17 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
         <location filename="../templateeditor/templateeditor.ui" line="1235"/>
         <location filename="../templateeditor/templateeditor.cpp" line="378"/>
         <source>Treasure</source>
-        <translation type="unfinished">Tesoro</translation>
+        <translation>Tesoro</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="848"/>
         <source>Town info</source>
-        <translation type="unfinished">Información de la ciudad</translation>
+        <translation>Informe de ciudad</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="854"/>
         <source>Town count</source>
-        <translation type="unfinished">Cantidad de ciudades</translation>
+        <translation>Cantidad de ciudades</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="866"/>
@@ -3687,52 +3686,52 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="917"/>
         <source>Castle count</source>
-        <translation type="unfinished">Cantidad de castillos</translation>
+        <translation>Cantidad de castillos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="980"/>
         <source>Town density</source>
-        <translation type="unfinished">Densidad de ciudades</translation>
+        <translation>Densidad de ciudad</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1043"/>
         <source>Castle density</source>
-        <translation type="unfinished">Densidad de castillos</translation>
+        <translation>Densidad de castillo</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1115"/>
         <source>Match terrain to town</source>
-        <translation type="unfinished">Hacer coincidir el terreno con la ciudad</translation>
+        <translation>Hacer coincidir el terreno con la ciudad</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1122"/>
         <source>Terrain types</source>
-        <translation type="unfinished">Tipos de terreno</translation>
+        <translation>Tipos de terreno</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1129"/>
         <source>Banned terrain types</source>
-        <translation type="unfinished">Tipos de terreno prohibidos</translation>
+        <translation>Tipos de terreno prohibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1145"/>
         <source>Towns are same type</source>
-        <translation type="unfinished">Las ciudades son del mismo tipo</translation>
+        <translation>Las ciudades son del mismo tipo</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1152"/>
         <source>Allowed towns</source>
-        <translation type="unfinished">Ciudades permitidas</translation>
+        <translation>Ciudades permitidas</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1159"/>
         <source>Banned towns</source>
-        <translation type="unfinished">Ciudades prohibidas</translation>
+        <translation>Ciudades prohibidas</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1166"/>
         <source>Town hints</source>
-        <translation type="unfinished">Pistas de ciudad</translation>
+        <translation>Consejos del pueblo</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1176"/>
@@ -3742,17 +3741,17 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1182"/>
         <source>Allowed monsters</source>
-        <translation type="unfinished">Monstruos permitidos</translation>
+        <translation>Monstruos permitidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1189"/>
         <source>Banned monsters</source>
-        <translation type="unfinished">Monstruos prohibidos</translation>
+        <translation>Monstruos prohibidos</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1207"/>
         <source>Strength</source>
-        <translation type="unfinished">Fuerza</translation>
+        <translation>Fuerza</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1261"/>
@@ -3762,7 +3761,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1299"/>
         <source>Connections</source>
-        <translation type="unfinished">Conexiones</translation>
+        <translation>Conexiones</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1343"/>
@@ -3792,12 +3791,12 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1375"/>
         <source>Add zone</source>
-        <translation type="unfinished">Agregar zona</translation>
+        <translation>Agregar zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1386"/>
         <source>Remove zone</source>
-        <translation type="unfinished">Eliminar zona</translation>
+        <translation>Eliminar zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1389"/>
@@ -3808,7 +3807,7 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1394"/>
         <source>Auto position</source>
-        <translation type="unfinished">Autoposición</translation>
+        <translation>Auto‐posición</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1397"/>
@@ -3838,12 +3837,12 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1418"/>
         <source>Zoom auto</source>
-        <translation type="unfinished">Zoom automático</translation>
+        <translation>Zoom automático</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1421"/>
         <source>Ctrl+Shift+:</source>
-        <translation type="unfinished">Ctrl+Shift+:</translation>
+        <translation>Ctrl+Mayús+:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1426"/>
@@ -3858,63 +3857,63 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="236"/>
         <source>Min</source>
-        <translation type="unfinished">Mín</translation>
+        <translation>Mín</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="236"/>
         <source>Max</source>
-        <translation type="unfinished">Máx</translation>
+        <translation>Máx</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="236"/>
         <source>Action</source>
-        <translation type="unfinished">Acción</translation>
+        <translation>Acción</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="254"/>
         <location filename="../templateeditor/templateeditor.cpp" line="467"/>
         <source>Delete</source>
-        <translation type="unfinished">Eliminar</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="293"/>
         <source>ID: %1</source>
-        <translation type="unfinished">ID: %1</translation>
+        <translation>ID: %1</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="295"/>
         <source>Max treasure: %1</source>
-        <translation type="unfinished">Tesoro máx.: %1</translation>
+        <translation>Tesoro máx.: %1</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="376"/>
         <source>Player start</source>
-        <translation type="unfinished">Inicio del jugador</translation>
+        <translation>Inicio del jugador</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="377"/>
         <source>CPU start</source>
-        <translation type="unfinished">Inicio de la CPU</translation>
+        <translation>Inicio de CPU</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="379"/>
         <source>Junction</source>
-        <translation type="unfinished">Cruce</translation>
+        <translation>Cruce</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="380"/>
         <source>Water</source>
-        <translation type="unfinished">Agua</translation>
+        <translation>Agua</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="381"/>
         <source>Sealed</source>
-        <translation type="unfinished">Sellado</translation>
+        <translation>Sellado</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="408"/>
         <source>Automatic</source>
-        <translation type="unfinished">Automático</translation>
+        <translation>Automático</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="409"/>
@@ -3945,64 +3944,64 @@ Agrégalo a los mods requeridos del mapa en Mapa-&gt;Configuración general.</tr
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Zone A</source>
-        <translation type="unfinished">Zona A</translation>
+        <translation>Zona A</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Zone B</source>
-        <translation type="unfinished">Zona B</translation>
+        <translation>Zona B</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Guard</source>
-        <translation type="unfinished">Guardia</translation>
+        <translation>Guardia</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Road</source>
-        <translation type="unfinished">Camino</translation>
+        <translation>Camino</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="449"/>
         <source>Guarded</source>
-        <translation type="unfinished">Protegido</translation>
+        <translation>Protegido</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="450"/>
         <source>Fictive</source>
-        <translation type="unfinished">Ficticio</translation>
+        <translation>Ficticio</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="451"/>
         <source>Repulsive</source>
-        <translation type="unfinished">Repulsivo</translation>
+        <translation>Repulsivo</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="452"/>
         <source>Wide</source>
-        <translation type="unfinished">Ancho</translation>
+        <translation>Anchura</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Force portal</source>
-        <translation type="unfinished">Forzar portal</translation>
+        <translation>Forzar portal</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="455"/>
         <source>Yes</source>
-        <translation type="unfinished">Sí</translation>
+        <translation>Sí</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="456"/>
         <source>No</source>
-        <translation type="unfinished">No</translation>
+        <translation>No</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="565"/>
         <source>Zone A: %1
 Zone B: %2
 Guard: %3</source>
-        <translation type="unfinished">Zona A: %1
+        <translation>Zona A: %1
 Zona B: %2
 Guardia: %3</translation>
     </message>
@@ -4019,89 +4018,89 @@ Guardia: %3</translation>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="649"/>
         <source>Validation failed!</source>
-        <translation type="unfinished"></translation>
+        <translation>¡Validación incorrecta!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="654"/>
         <source>No player range defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin intervalo de jugador definido.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="661"/>
         <source>Invalid range for players.</source>
-        <translation type="unfinished"></translation>
+        <translation>Intervalo para jugadores inválido.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="669"/>
         <source>Invalid range for human players.</source>
-        <translation type="unfinished"></translation>
+        <translation>Intervalo para jugadores humanos no válido.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="684"/>
         <source>Connection references non-existing zone(s): %1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Referencias de conexión en zona(s) no existente: %1 - %2</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="696"/>
         <source>Zone %1 has no connections.</source>
-        <translation type="unfinished"></translation>
+        <translation>La zona %1 no tiene conexiones.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="720"/>
         <source>Player %1 must have exactly one player start zone (found %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>El jugador %1 debe tener exactamente un jugador en zona inicial (encontrado %2).</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="757"/>
         <source>Open template</source>
-        <translation type="unfinished">Abrir plantilla</translation>
+        <translation>Abrir plantilla</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="759"/>
         <source>VCMI templates(*.json)</source>
-        <translation type="unfinished">Plantillas VCMI (*.json)</translation>
+        <translation>Plantillas VCMI (*.json)</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="775"/>
         <source>Save template</source>
-        <translation type="unfinished">Guardar plantilla</translation>
+        <translation>Guardar plantilla</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="775"/>
         <source>VCMI templates (*.json)</source>
-        <translation type="unfinished">Plantillas VCMI (*.json)</translation>
+        <translation>Plantillas VCMI (*.json)</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="891"/>
         <location filename="../templateeditor/templateeditor.cpp" line="932"/>
         <source>Enter Name</source>
-        <translation type="unfinished">Introducir nombre</translation>
+        <translation>Introducir nombre</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="891"/>
         <location filename="../templateeditor/templateeditor.cpp" line="932"/>
         <source>Name:</source>
-        <translation type="unfinished">Nombre:</translation>
+        <translation>Nombre:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="898"/>
         <source>Already existing!</source>
-        <translation type="unfinished">¡Ya existe!</translation>
+        <translation>¡Ya existe!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="898"/>
         <source>A template with this name is already existing.</source>
-        <translation type="unfinished">Ya existe una plantilla con ese nombre.</translation>
+        <translation>Ya existe una plantilla con ese nombre.</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>To few templates!</source>
-        <translation type="unfinished">¡Muy pocas plantillas!</translation>
+        <translation>¡Muy pocas plantillas!</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
-        <translation type="unfinished">Debe permanecer al menos una plantilla tras eliminar.</translation>
+        <translation>Debe permanecer al menos una plantilla tras eliminar.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -4353,17 +4352,17 @@ Guardia: %3</translation>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="14"/>
         <source>Select Town hints</source>
-        <translation type="unfinished">Seleccionar pistas de ciudad</translation>
+        <translation>Seleccionar pistas de pueblo</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="20"/>
         <source>Town hints</source>
-        <translation type="unfinished">Pistas de ciudad</translation>
+        <translation>Pistas de pueblo</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="24"/>
         <source>Town hint Selector</source>
-        <translation type="unfinished">Selector de pistas de ciudad</translation>
+        <translation>Selector de pistas de pueblo</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="30"/>
@@ -4378,32 +4377,32 @@ Guardia: %3</translation>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="30"/>
         <source>Action</source>
-        <translation type="unfinished">Acción</translation>
+        <translation>Acción</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="33"/>
         <source>Like Zone</source>
-        <translation type="unfinished">Como la zona</translation>
+        <translation>Como la zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="34"/>
         <source>Not like zone (comma separated)</source>
-        <translation type="unfinished">No como la zona (separado por comas)</translation>
+        <translation>No como la zona (separado por comas)</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="35"/>
         <source>Related to zone terrain</source>
-        <translation type="unfinished">Relacionado con la terrenología de la zona</translation>
+        <translation>Relacionado con terreno de la zona</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="60"/>
         <source>Delete</source>
-        <translation type="unfinished">Eliminar</translation>
+        <translation>Eliminar</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="99"/>
         <source>Add</source>
-        <translation type="unfinished">Añadir</translation>
+        <translation>Añadir</translation>
     </message>
 </context>
 <context>
@@ -4512,42 +4511,42 @@ Guardia: %3</translation>
         <location filename="../templateeditor/treasureselector.ui" line="14"/>
         <location filename="../templateeditor/treasureselector.ui" line="20"/>
         <source>Select Treasures</source>
-        <translation type="unfinished">Seleccionar tesoros</translation>
+        <translation>Seleccionar tesoros</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="26"/>
         <source>Treasure Selector</source>
-        <translation type="unfinished">Selector de tesoros</translation>
+        <translation>Selector de tesoro</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Min</source>
-        <translation type="unfinished">Mín</translation>
+        <translation>Mín</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Max</source>
-        <translation type="unfinished">Máx</translation>
+        <translation>Máx</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Density</source>
-        <translation type="unfinished">Densidad</translation>
+        <translation>Densidad</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="32"/>
         <source>Action</source>
-        <translation type="unfinished">Acción</translation>
+        <translation>Acción</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="50"/>
         <source>Delete</source>
-        <translation type="unfinished">Eliminar</translation>
+        <translation>Eliminar</translation>
     </message>
     <message>
         <location filename="../templateeditor/treasureselector.cpp" line="65"/>
         <source>Add</source>
-        <translation type="unfinished">Añadir</translation>
+        <translation>Añadir</translation>
     </message>
 </context>
 <context>
@@ -4555,27 +4554,27 @@ Guardia: %3</translation>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
         <source>Terrain Selector</source>
-        <translation type="unfinished">Selector de terreno</translation>
+        <translation>Selector de terreno</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
         <source>Spell Selector</source>
-        <translation type="unfinished">Selector de hechizos</translation>
+        <translation>Selector de hechizo</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
         <source>Artifact Selector</source>
-        <translation type="unfinished">Selector de artefactos</translation>
+        <translation>Selector de artefacto</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
         <source>Skill Selector</source>
-        <translation type="unfinished">Selector de habilidades</translation>
+        <translation>Selector de habilidad</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
         <source>Hero Type Selector</source>
-        <translation type="unfinished">Selector de tipo de héroe</translation>
+        <translation>Selector de tipo de héroe</translation>
     </message>
 </context>
 <context>
@@ -4638,7 +4637,7 @@ Guardia: %3</translation>
     <message>
         <location filename="../validator.cpp" line="89"/>
         <source>Ownable object %1 is UNFLAGGABLE but must have NEUTRAL or player owner</source>
-        <translation type="unfinished">El objeto poseíble %1 no se puede marcar pero debe tener un propietario NEUTRAL o jugador</translation>
+        <translation>El objeto poseíble %1 es INETIQUETABLE pero debe tener un propietario NEUTRAL o jugador</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="113"/>
@@ -4683,7 +4682,7 @@ Guardia: %3</translation>
     <message>
         <location filename="../validator.cpp" line="208"/>
         <source>The map is valid and has no issues.</source>
-        <translation type="unfinished">El mapa es válido y no tiene problemas.</translation>
+        <translation>El mapa es válido y no tiene ninguno de los asuntos.</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="181"/>
@@ -4844,7 +4843,7 @@ Guardia: %3</translation>
     <message>
         <location filename="../windownewmap.ui" line="312"/>
         <source>Levels</source>
-        <translation type="unfinished">Niveles</translation>
+        <translation>Niveles</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="397"/>
@@ -4862,7 +4861,7 @@ Guardia: %3</translation>
     <message>
         <location filename="../windownewmap.ui" line="476"/>
         <source>Computer teams</source>
-        <translation>Equipos de la IA</translation>
+        <translation>Equipos de Computador</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="265"/>
@@ -4988,12 +4987,12 @@ Guardia: %3</translation>
     <message>
         <location filename="../windownewmap.cpp" line="343"/>
         <source>Multilevel support</source>
-        <translation type="unfinished">Compatibilidad multinivel</translation>
+        <translation>Mantenimiento en multinivel</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="343"/>
         <source>Multilevel support is highly experimental yet. Expect issues.</source>
-        <translation type="unfinished">La compatibilidad multinivel aún es muy experimental. Espere problemas.</translation>
+        <translation>El mantenimiento multinivel aún es altamente experimental. Espere problemas.</translation>
     </message>
     <message>
         <location filename="../windownewmap.cpp" line="464"/>
