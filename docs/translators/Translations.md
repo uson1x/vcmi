@@ -107,6 +107,18 @@ If something is not clear - feel free to ask us on Discord or forum. Translation
 
 If you want to start new translation for a mod or to update existing one you may need to export it first. To do that:
 
+- Optionally, backup your mod preset - game may modify active submods of mod being translated
+- Set game language in Launcher to one that you want to target
+- launch VCMI server in translation export mode:
+  - (Windows) Create shortcut for VCMI_Server.exe and append `--translate-mod=XXX` to "Target" field in shortcut properties, where XXX is identifier of mod that you want to translate
+  - (command-line) Open command line and run `vcmiserver --translate-mod=XXX`, where XXX is identifier of mod that you want to translate
+
+After that, start Launcher, switch to Help tab and open "log files directory". You can find exported json's in `extracted/translation` directory.
+
+### Exporting translation (alternative)
+
+Alternatively, you can use vcmi client to do similar actions:
+
 - Enable mod(s) that you want to export and set game language in Launcher to one that you want to target
 - Launch VCMI and start any map to get in game
 - Press Tab to activate chat and enter '/translate'
@@ -116,6 +128,8 @@ After that, start Launcher, switch to Help tab and open "log files directory". Y
 If your mod also contains maps or campaigns that you want to translate, then use `/translate maps` command instead.
 
 If you want to update existing translation, you can use `/translate missing` command that will export only strings that were not translated
+
+NOTE: when translating with this method, some strings may not export correctly, for example strings that were modified in multiple mods. To avoid this, you'll need to disable mods that overrride other strings and do a second re-run of this command
 
 ### Translating mod information
 
