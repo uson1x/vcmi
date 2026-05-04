@@ -41,10 +41,6 @@ public:
 	size_t getGlyphWidth(const char * data) const;
 	/// Return width of the string
 	size_t getStringWidth(const std::string & data) const;
-	/// Return width of the string rendered in bold style
-	size_t getStringWidthBold(const std::string & data) const;
-	/// Return width of the string rendered in italic style
-	size_t getStringWidthItalic(const std::string & data) const;
 	/// Returns distance from top of the font glyphs to baseline
 	size_t getFontAscent() const;
 
@@ -52,30 +48,6 @@ public:
 	virtual void renderText(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const = 0;
 
 	virtual bool canRepresentCharacter(const char * data) const	= 0;
-
-	/// Returns true if this is a scalable (TrueType) font that supports bold/italic styling.
-	virtual bool isScalable() const { return false; }
-
-	/// Return width of the string as if rendered in bold style (scaled).
-	/// Default: delegates to getStringWidthScaled (equal width for bitmap fonts).
-	virtual size_t getStringWidthBoldScaled(const std::string & data) const { return getStringWidthScaled(data); }
-	/// Return width of the string as if rendered in italic style (scaled).
-	/// Default: delegates to getStringWidthScaled (equal width for bitmap fonts).
-	virtual size_t getStringWidthItalicScaled(const std::string & data) const { return getStringWidthScaled(data); }
-
-	/// Render text with italic styling applied.
-	/// Default implementation falls back to regular renderText (no visual italic).
-	/// Override in scalable-font implementations to apply real slant via TTF.
-	virtual void renderTextItalic(SDL_Surface * surface, const std::string & data,
-	                              const ColorRGBA & color, const Point & pos) const
-	{ renderText(surface, data, color, pos); }
-
-	/// Render text with bold styling applied.
-	/// Default implementation falls back to regular renderText (no visual bold).
-	/// Override in scalable-font implementations to apply real weight via TTF.
-	virtual void renderTextBold(SDL_Surface * surface, const std::string & data,
-	                            const ColorRGBA & color, const Point & pos) const
-	{ renderText(surface, data, color, pos); }
 
 	/**
 	 * @param surface - destination to print text on

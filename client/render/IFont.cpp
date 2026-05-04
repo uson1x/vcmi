@@ -38,16 +38,6 @@ size_t IFont::getStringWidth(const std::string & data) const
 	return getStringWidthScaled(data) / getScalingFactor();
 }
 
-size_t IFont::getStringWidthBold(const std::string & data) const
-{
-	return getStringWidthBoldScaled(data) / getScalingFactor();
-}
-
-size_t IFont::getStringWidthItalic(const std::string & data) const
-{
-	return getStringWidthItalicScaled(data) / getScalingFactor();
-}
-
 size_t IFont::getFontAscent() const
 {
 	return getFontAscentScaled() / getScalingFactor();
