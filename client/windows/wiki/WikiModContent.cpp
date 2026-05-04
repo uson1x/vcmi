@@ -241,8 +241,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iRowH  = iconSz.y + 4;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.town");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const CFaction * f : entries)
 				addIconRow(
@@ -272,8 +272,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iRowH  = iconSz.y + 4;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.hero");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const CHero * h : entries)
 			{
@@ -307,8 +307,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iRowH  = iconSz.y + 4;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.creature");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const CCreature * c : entries)
 			{
@@ -343,8 +343,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iRowH  = iconSz.y + 4;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.artifact");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const CArtifact * a : entries)
 				addIconRow(
@@ -376,8 +376,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iRowH  = iconSz.y + 4;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.spell");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const CSpell * s : entries)
 				addIconRow(
@@ -408,8 +408,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iRowH  = iconSz.y + 4;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.skill");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const CSkill * sk : entries)
 				addIconRow(
@@ -439,8 +439,8 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 			const int iIconW = iRowH;
 			const int iNameW = tableW - iIconW;
 			makeSectionHeader("vcmi.wiki.category.terrain");
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-				{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const TerrainType * t : entries)
 				addColorRow(

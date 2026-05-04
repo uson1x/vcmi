@@ -156,7 +156,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent( // NOSONAR (compl
 		const int colLbl = tableW / 2;
 		const int rowCnt = static_cast<int>(stats.size());
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, {colLbl, tableW - colLbl}, 0, rowH, rowCnt, blueStyle));
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, std::vector<int>{colLbl, tableW - colLbl}, 0, rowH, rowCnt, blueStyle));
 
 		for(int i = 0; i < rowCnt; ++i)
 		{
@@ -186,7 +186,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent( // NOSONAR (compl
 				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 				LIBRARY->generaltexth->translate("vcmi.wiki.creature.section.cost")));
 			curY += 20;
-			wikiAddResourceCost(widgets, cost, MARGIN, curY, W - MARGIN * 2);
+			widgets.push_back(std::make_shared<WikiResourceCost>(cost, MARGIN, curY, W - MARGIN * 2));
 			curY += 18 + GAP;
 		}
 	}

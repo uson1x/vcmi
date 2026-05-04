@@ -79,66 +79,77 @@ void WikiClickable::showAll(Canvas & to)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// wikiMakeTableGrid
+// WikiTableGrid
 // ─────────────────────────────────────────────────────────────────────────────
 
-std::shared_ptr<GraphicalPrimitiveCanvas> wikiMakeTableGrid(
+WikiTableGrid::WikiTableGrid(
 	int x, int y, int totalW,
 	const std::vector<int> & colWidths,
 	int headerH,
 	int dataRowH,
 	int dataRowCount,
 	bool blue)
+	: GraphicalPrimitiveCanvas(Rect(x, y, totalW, headerH + dataRowH * dataRowCount))
 {
 	const ColorRGBA border = wikiBorderColor(blue);
 	const ColorRGBA inner  = wikiInnerColor(blue);
 	const int totalH = headerH + dataRowH * dataRowCount;
-
-	auto grid = std::make_shared<GraphicalPrimitiveCanvas>(Rect(x, y, totalW, totalH));
 
 	if(headerH > 0)
 	{
 		const ColorRGBA header = blue
 			? ColorRGBA{20, 40, 80, 140}
 			: ColorRGBA{60, 50, 30, 140};
-		grid->addBox(Point(0, 0), Point(totalW, headerH), header);
+		addBox(Point(0, 0), Point(totalW, headerH), header);
 	}
 
-	grid->addRectangle(Point(0, 0), Point(totalW, totalH), border);
+	addRectangle(Point(0, 0), Point(totalW, totalH), border);
 
 	if(headerH > 0)
-		grid->addLine(Point(0, headerH), Point(totalW, headerH), border);
+		addLine(Point(0, headerH), Point(totalW, headerH), border);
 
 	for(int r = 1; r < dataRowCount; ++r)
 	{
 		const int lineY = headerH + r * dataRowH;
-		grid->addLine(Point(1, lineY), Point(totalW - 2, lineY), inner);
+		addLine(Point(1, lineY), Point(totalW - 2, lineY), inner);
 	}
 
 	int cx = 0;
-	for(int i = 0; i + 1 < (int)colWidths.size(); ++i)
+	for(int i = 0; i + 1 < static_cast<int>(colWidths.size()); ++i)
 	{
 		cx += colWidths[i];
-		grid->addLine(Point(cx, 1), Point(cx, totalH - 2), inner);
+		addLine(Point(cx, 1), Point(cx, totalH - 2), inner);
 	}
-
-	return grid;
 }
 
+WikiTableGrid::WikiTableGrid(
+	int x, int y, int totalW,
+	std::initializer_list<int> colWidths,
+	int headerH,
+	int dataRowH,
+	int dataRowCount,
+	bool blue)
+	: WikiTableGrid(x, y, totalW, std::vector<int>(colWidths), headerH, dataRowH, dataRowCount, blue)
+{}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// wikiAddResourceCost
+// WikiResourceCost
 // ─────────────────────────────────────────────────────────────────────────────
 
 static constexpr int RES_ICON_W = 14;
 static constexpr int RES_GAP    =  3;
+static constexpr int RES_ENTRY_W = RES_ICON_W + 26 + RES_GAP;
 
-void wikiAddResourceCost(
-	std::vector<std::shared_ptr<CIntObject>> & out,
+WikiResourceCost::WikiResourceCost(
 	const TResources & cost,
-	int startX, int y, int maxWidth)
+	int startX, int y,
+	int maxWidth)
+	: CIntObject(0, Point(startX, y))
 {
-	struct ResInfo { GameResID id; int amount; };
-	std::vector<ResInfo> entries;
+	OBJECT_CONSTRUCTION;
+
+	struct ResEntry { GameResID id; int amount; };
+	std::vector<ResEntry> entries;
 
 	TResources::nziterator it(cost);
 	while(it.valid())
@@ -150,29 +161,29 @@ void wikiAddResourceCost(
 	if(entries.empty())
 		return;
 
-	// Gold always first, then others in natural enum order
-	std::stable_sort(entries.begin(), entries.end(), [](const ResInfo & a, const ResInfo & b){
-		const bool aGold = (a.id == GameResID::GOLD);
-		const bool bGold = (b.id == GameResID::GOLD);
-		if(aGold != bGold) return aGold;
+	std::stable_sort(entries.begin(), entries.end(), [](const ResEntry & a, const ResEntry & b)
+	{
+		if((a.id == GameResID::GOLD) != (b.id == GameResID::GOLD))
+			return a.id == GameResID::GOLD;
 		return a.id < b.id;
 	});
 
-	const int entryW = RES_ICON_W + 26 + RES_GAP;
-	int x = startX;
-
+	int relX = 0;
 	for(const auto & e : entries)
 	{
-		if(x + entryW > startX + maxWidth)
+		if(relX + RES_ENTRY_W > maxWidth)
 			break;
 
-		out.push_back(std::make_shared<CAnimImage>(
-			AnimationPath::builtin("SMALRES"), e.id.getNum(), 0, x, y));
-		out.push_back(std::make_shared<CLabel>(
-			x + RES_ICON_W + 7, y + 1,
+		items.push_back(std::make_shared<CAnimImage>(
+			AnimationPath::builtin("SMALRES"), e.id.getNum(), 0, relX, 0));
+		items.push_back(std::make_shared<CLabel>(
+			relX + RES_ICON_W + 7, 1,
 			FONT_TINY, ETextAlignment::TOPLEFT, Colors::WHITE,
 			std::to_string(e.amount)));
 
-		x += entryW;
+		relX += RES_ENTRY_W;
 	}
+
+	pos.w = relX;
+	pos.h = 16;
 }

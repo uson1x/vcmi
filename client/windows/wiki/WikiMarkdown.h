@@ -12,86 +12,64 @@
 class CIntObject;
 class CViewport;
 
-/// Renders a Markdown-formatted string as a flat list of CIntObject widgets
-/// suitable for populating a CViewport's content() container.
+/// Renders a subset of Markdown into a flat list of CIntObject widgets that
+/// populate a CViewport's content() container.
 ///
-/// Supported syntax:
-///   # / ## / ###          Headings (FONT_BIG/MEDIUM/SMALL, yellow).
-///                         Default alignment is CENTER; use <left> or <right>
-///                         on the preceding line to override.
-///   ---  ___  ***         Horizontal rule.
-///   - text  /  * text     Unordered bullet list item.
-///   N. text               Ordered list item (any leading integer).
-///   ![alt](path.png)      Static image via ImagePath::builtin(path).
-///                         File extension is used to detect the media type;
-///                         the resource system strips it at load time.
-///   ![alt](path.def)      Animation – all frames played as a looping ~6 fps
-///                         animation (WikiAnimLoopWidget).
-///   ![alt](path.def#N)    Single static frame N of an animation.
-///   ![alt](path.bik)      Video file (.bik / .smk / .webm / .mp4), looped
-///                         and downscaled automatically to fit the viewport.
-///   <center>  <left>  <right>
-///                         Alignment tag for the next block element.
-///                         Images/video default to LEFT; headings to CENTER.
-///   <p>                   Explicit paragraph break (same as a blank line).
-///   <br>                  Line-break.  On its own line: flushes the current
-///                         paragraph without adding extra vertical gap.
-///                         Inline (e.g. "first line<br>second"): inserts a
-///                         newline inside the rendered label.
-///   | H1 | H2 |           GFM-style pipe table.  First row is the header;
-///   |----|----|           second row must be the separator (|---|---|).
-///   | c1 | c2 |           Cells may contain any media syntax above.
-///   [text](wiki:category/id)  Clickable inline link to another wiki page.
-///                         Category names: glossary, creature, spell, hero,
-///                         town, artifact, skill, terrain, mod.
-///                         The id for glossary entries is the translation-key
-///                         base without the trailing .name suffix, e.g.:
-///                         wiki:glossary/vcmi.wiki.glossary.mdtest
-///                         Append #anchorname to scroll the target page to a
-///                         named anchor:
-///                         wiki:glossary/vcmi.wiki.glossary.mdtest#mysection
-///                         Requires onWikiLink callback to be non-null.
-///   [![alt](media)](wiki:id) Clickable image/animation/video link.
-///                         Wrapping any media line in [...](...) makes the
-///                         whole media widget navigate on left-click.
-///                         Right-click still shows the alt-text popup.
-///   <a id="name" />       Invisible named anchor.  Use <a id="name" /> or
-///                         <a name="name" /> on its own line or embedded in a
-///                         heading (e.g. "## <a id="top" />Heading").
-///                         Anchor names should be lowercase without spaces.
-///                         If @p anchors is non-null the map is populated with
-///                         name → content Y-offset (pixels) pairs so callers
-///                         can scroll a CViewport to a specific section.
-///   **text**              Bold inline span.  On scalable (TrueType) fonts the
-///                         text is drawn twice with a 1 px horizontal offset
-///                         (pseudo-bold).  On bitmap fonts the markers are
-///                         stripped and the text is rendered plain.
-///   *text*                Italic inline span.  On scalable fonts the SDL_TTF
-///                         italic style is applied temporarily while drawing.
-///                         On bitmap fonts the text is rendered plain.
-///   `code`                Inline code span.  Text is drawn with a semi-
-///                         transparent dark background rectangle.  Works on
-///                         all font types.
-///   ```                   Fenced code block.  Lines between a pair of ``` are
-///                         rendered verbatim inside a semi-transparent dark
-///                         background rectangle.  An optional language tag on
-///                         the opening fence (e.g. ```cpp) is accepted but
-///                         ignored (no syntax highlighting).  Works on all
-///                         font types.
-///   {VCMI color tags}     Passed through unchanged to all text labels.
-///   regular paragraphs   Auto-wrapped CMultiLineLabel; blank line = gap.
+/// Supported syntax
+/// ----------------
+///   # / ## / ###              Headings — FONT_BIG / FONT_MEDIUM / FONT_SMALL,
+///                             yellow.  Default alignment is LEFT.
+///   ---  ___  ***             Horizontal rule (≥3 identical chars on one line).
+///   - text  /  * text         Unordered bullet list item.
+///   N. text                   Ordered list item (any leading integer + dot).
+///   ![alt](path.ext)          Static image (png, pcx, bmp, …).  Downscaled
+///                             proportionally when wider than the viewport.
+///   ![alt](path.def)          Animation — all frames looped at ~6 fps.
+///   ![alt](path.def#N)        Single static frame N from an animation.
+///   ![alt](path.bik)          Video (.bik / .smk / .webm / .mp4), looped and
+///                             downscaled automatically to fit the viewport.
+///   <center>  <left>  <right> Persistent alignment block tag.  Close with the
+///   </center> </left> </right> matching close tag to reset alignment.  Affects
+///                             headings, images, animations, and video.
+///   | H1 | H2 |               GFM-style pipe table.  First row is the header;
+///   |----------|              second row must be a separator (|---|---|).
+///   | c1 | c2 |               Cells may contain any media syntax listed above.
+///   [text](wiki:category/id)  Clickable link to another wiki page.  Categories:
+///                             glossary, creature, spell, hero, town, artifact,
+///                             skill, terrain, mod, or a custom mod category id.
+///                             Append #anchor to jump to a named section.
+///   [![alt](path)](wiki:id)   Clickable media link — left-click navigates,
+///                             right-click shows the alt-text tooltip.
+///   <a id="name" />           Invisible named anchor (also <a name="name" />).
+///                             Embedding in a heading is allowed:
+///                               ## <a id="top" />Section title
+///                             When @p anchors is non-null the map is populated
+///                             with name → content Y-offset (px) entries.
+///   {VCMI color tags}         Passed through as-is to all text labels.
+///   regular paragraphs        Auto-wrapped CMultiLineLabel.  A blank line ends
+///                             the current paragraph and adds a vertical gap.
 ///
-/// Images wider than @p viewportWidth are downscaled preserving aspect ratio.
+/// Unsupported syntax (logged as warnings if encountered)
+/// ------------------------------------------------------
+///   **bold**    Bold inline spans — H3 bitmap fonts do not support bold.
+///   *italic*    Italic inline spans — not supported by H3 bitmap fonts.
+///   `code`      Inline code spans — no monospace font available in-game.
+///   ``` … ```   Fenced code blocks — same reason as above.
+///   > quote     Blockquotes — not part of the minimal wiki feature set.
+///   <p>         HTML paragraph tag — use a blank line instead.
+///   <br>        HTML line-break tag — use a blank line instead.
+///
+/// For any of the above, a one-time warning is emitted to vcmi.log and the
+/// inner text is rendered as a plain paragraph where possible.
 ///
 /// @param viewport       CViewport whose content() is the construction target.
-/// @param markdownText   Markdown source (may contain VCMI {tag} syntax).
-/// @param viewportWidth  Pixel width available for content.
+/// @param markdownText   Markdown source text (may contain VCMI {tag} syntax).
+/// @param viewportWidth  Available pixel width for content.
 /// @param blueStyle      True → blue wiki theme; false → brown theme.
 /// @param onWikiLink     Optional callback invoked when a wiki link is clicked.
-///                       Argument is the raw URI string, e.g. "wiki:creature/imp".
-/// @param anchors        Optional output map populated with anchor name → content
-///                       Y-offset (px) pairs for every <a id="..."/> tag found.
-/// @return               Flat list of created widgets (parented to viewport).
+///                       Receives the raw URI, e.g. "wiki:creature/imp".
+/// @param anchors        Optional output map: anchor name → content Y-offset (px).
+/// @return               Flat list of created widgets (parented to viewport.content()).
 std::vector<std::shared_ptr<CIntObject>> buildMarkdownContent(
 	const CViewport & viewport,
 	const std::string & markdownText,
