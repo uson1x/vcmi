@@ -651,7 +651,7 @@
     <name>MainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="14"/>
-        <location filename="../mainwindow.cpp" line="415"/>
+        <location filename="../mainwindow.cpp" line="417"/>
         <source>VCMI Map Editor</source>
         <translation>Éditeur de carte VCMI</translation>
     </message>
@@ -957,15 +957,15 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
-        <location filename="../mainwindow.cpp" line="1413"/>
+        <location filename="../mainwindow.cpp" line="1415"/>
         <source>Select map layer type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
-        <location filename="../mainwindow.cpp" line="1322"/>
-        <location filename="../mainwindow.cpp" line="1326"/>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Update appearance</source>
         <translation>Mettre à jour l&apos;apparence</translation>
     </message>
@@ -1158,12 +1158,12 @@
         <translation>Ctrl+Maj+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Confirmation</source>
         <translation>Confirmation</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation>Les modifications non sauvegardées seront perdues. Êtes-vous sûr ?</translation>
     </message>
@@ -1180,184 +1180,184 @@
         <translation type="obsolete">Niveau - %1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="453"/>
-        <location filename="../mainwindow.cpp" line="1430"/>
+        <location filename="../mainwindow.cpp" line="455"/>
+        <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="481"/>
         <source>Mods are required</source>
         <translation type="unfinished">Des mods sont requis</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="487"/>
-        <location filename="../mainwindow.cpp" line="493"/>
+        <location filename="../mainwindow.cpp" line="489"/>
+        <location filename="../mainwindow.cpp" line="495"/>
         <source>Failed to open map</source>
         <translation type="unfinished">Échec de l’ouverture de la carte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="524"/>
+        <location filename="../mainwindow.cpp" line="526"/>
         <source>Open map</source>
         <translation>Ouvrir une carte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="528"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation>Toutes les cartes prises en charge (*.vmap *.h3m);;Cartes VCMI (*.vmap);;Cartes HoMM3 (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="580"/>
+        <location filename="../mainwindow.cpp" line="582"/>
         <source>Recently Opened Files</source>
         <translation type="unfinished">Fichiers récemment ouverts</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="633"/>
+        <location filename="../mainwindow.cpp" line="635"/>
         <source>Map validation</source>
         <translation type="unfinished">Validation de la carte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">La carte comporte des problèmes critiques et ne sera probablement pas jouable. Ouvrez le validateur depuis le menu Carte pour voir les problèmes détectés</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="637"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">La carte comporte certaines erreurs. Ouvrez le validateur depuis le menu Carte pour voir les problèmes détectés</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="664"/>
+        <location filename="../mainwindow.cpp" line="666"/>
         <source>Failed to save map</source>
         <translation type="unfinished">Échec de l’enregistrement de la carte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>Save map</source>
         <translation>Enregistrer la carte</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>VCMI maps (*.vmap)</source>
         <translation>Cartes VCMI (*.vmap)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="885"/>
+        <location filename="../mainwindow.cpp" line="887"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="898"/>
+        <location filename="../mainwindow.cpp" line="900"/>
         <source>Towns</source>
         <translation type="unfinished">Villes</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="899"/>
+        <location filename="../mainwindow.cpp" line="901"/>
         <source>Objects</source>
         <translation type="unfinished">Objets</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="900"/>
+        <location filename="../mainwindow.cpp" line="902"/>
         <source>Heroes</source>
         <translation>Héros</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="901"/>
+        <location filename="../mainwindow.cpp" line="903"/>
         <source>Artifacts</source>
         <translation type="unfinished">Artefacts</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="902"/>
+        <location filename="../mainwindow.cpp" line="904"/>
         <source>Resources</source>
         <translation type="unfinished">Ressources</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="903"/>
+        <location filename="../mainwindow.cpp" line="905"/>
         <source>Banks</source>
         <translation type="unfinished">Banques</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="904"/>
+        <location filename="../mainwindow.cpp" line="906"/>
         <source>Dwellings</source>
         <translation type="unfinished">Habitations</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="905"/>
+        <location filename="../mainwindow.cpp" line="907"/>
         <source>Grounds</source>
         <translation type="unfinished">Terrains</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="906"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>Teleports</source>
         <translation type="unfinished">Téléporteurs</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="907"/>
+        <location filename="../mainwindow.cpp" line="909"/>
         <source>Mines</source>
         <translation type="unfinished">Mines</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="908"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>Triggers</source>
         <translation type="unfinished">Déclencheurs</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="911"/>
         <source>Monsters</source>
         <translation type="unfinished">Monstres</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="910"/>
+        <location filename="../mainwindow.cpp" line="912"/>
         <source>Quests</source>
         <translation type="unfinished">Quêtes</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="911"/>
+        <location filename="../mainwindow.cpp" line="913"/>
         <source>Wog Objects</source>
         <translation type="unfinished">Objets WoG</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="912"/>
+        <location filename="../mainwindow.cpp" line="914"/>
         <source>Obstacles</source>
         <translation type="unfinished">Obstacles</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Other</source>
         <translation type="unfinished">Autres</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Mods loading problem</source>
         <translation type="unfinished">Problème de chargement des mods</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
         <translation type="unfinished">Erreur critique lors du chargement des mods. Désactivez les mods invalides et redémarrez.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1056"/>
+        <location filename="../mainwindow.cpp" line="1058"/>
         <source>Undo clicked</source>
         <translation type="unfinished">Clic sur Annuler</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1067"/>
+        <location filename="../mainwindow.cpp" line="1069"/>
         <source>Redo clicked</source>
         <translation type="unfinished">Clic sur Rétablir</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1078"/>
+        <location filename="../mainwindow.cpp" line="1080"/>
         <source>Passability clicked</source>
         <translation type="unfinished">Clic sur Passabilité</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1091"/>
+        <location filename="../mainwindow.cpp" line="1093"/>
         <source>Grid clicked</source>
         <translation type="unfinished">Clic sur Grille</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1172"/>
+        <location filename="../mainwindow.cpp" line="1174"/>
         <source>Fill clicked</source>
         <translation type="unfinished">Clic sur Remplir</translation>
     </message>
@@ -1366,77 +1366,77 @@
         <translation type="vanished">Afficher la surface</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1322"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Pas d&apos;objets sélectionnés</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1326"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>This operation is irreversible. Do you want to continue?</source>
         <translation>Cette opération est irreversible. Voulez-vous continuer ?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Errors occurred. %1 objects were not updated</source>
         <translation>Erreur rencontrée. %1 objets n&apos;ont pas étés mis à jour</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1414"/>
+        <location filename="../mainwindow.cpp" line="1416"/>
         <source>Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1469"/>
+        <location filename="../mainwindow.cpp" line="1471"/>
         <source>Save to image</source>
         <translation>Sauvegarder en tant qu&apos;image</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1501"/>
+        <location filename="../mainwindow.cpp" line="1503"/>
         <source>Select maps to convert</source>
         <translation>Sélectionner les cartes à convertir</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1503"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>HoMM3 maps(*.h3m)</source>
         <translation>Cartes HoMM3(*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1507"/>
+        <location filename="../mainwindow.cpp" line="1509"/>
         <source>Choose directory to save converted maps</source>
         <translation>Sélectionner le dossier ou sauvegarder les cartes converties</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Operation completed</source>
         <translation>Opération terminée</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Successfully converted %1 maps</source>
         <translation>Conversion éffectuée avec succès des %1 cartes</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1525"/>
+        <location filename="../mainwindow.cpp" line="1527"/>
         <source>Failed to convert the map. Abort operation</source>
         <translation>Erreur de conversion de carte. Opération annulée</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1531"/>
+        <location filename="../mainwindow.cpp" line="1533"/>
         <source>Select campaign to convert</source>
         <translation type="unfinished">Sélectionner une campagne à convertir</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1533"/>
+        <location filename="../mainwindow.cpp" line="1535"/>
         <source>HoMM3 campaigns (*.h3c)</source>
         <translation type="unfinished">Campagnes HoMM3 (*.h3c)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1537"/>
+        <location filename="../mainwindow.cpp" line="1539"/>
         <source>Select destination file</source>
         <translation type="unfinished">Sélectionner le fichier de destination</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1539"/>
+        <location filename="../mainwindow.cpp" line="1541"/>
         <source>VCMI campaigns (*.vcmp)</source>
         <translation type="unfinished">Campagnes VCMI (*.vcmp)</translation>
     </message>
@@ -4095,8 +4095,12 @@ Garde : %3</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
+        <source>Too few templates!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>To few templates!</source>
-        <translation type="unfinished">Pas assez de modèles !</translation>
+        <translation type="obsolete">Pas assez de modèles !</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
