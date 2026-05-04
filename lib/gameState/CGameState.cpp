@@ -96,9 +96,9 @@ HeroTypeID CGameState::pickUnusedHeroTypeRandomly(vstd::RNG & randomGenerator, c
 	const PlayerSettings &ps = scenarioOps->getIthPlayersSettings(owner);
 	for(const HeroTypeID & hid : getUnusedAllowedHeroes())
 	{
-		if(hid.toHeroType()->heroClass->faction == ps.castle)
+		if(hid.toHeroType()->heroClass->faction == ps.castle && isHeroAllowedForPlayer(hid, owner))
 			factionHeroes.push_back(hid);
-		else
+		else if (isHeroAllowedForPlayer(hid, owner))
 			otherHeroes.push_back(hid);
 	}
 
@@ -121,6 +121,16 @@ HeroTypeID CGameState::pickUnusedHeroTypeRandomly(vstd::RNG & randomGenerator, c
 
 	logGlobal->error("No free heroes at all!");
 	throw std::runtime_error("Can not allocate hero. All heroes are already used.");
+}
+
+bool CGameState::isHeroAllowedForPlayer(const HeroTypeID & hid, const PlayerColor & owner)
+{
+	for(const auto & disposedHero : map->disposedHeroes)
+	{
+		if(disposedHero.heroId == hid)
+            return disposedHero.players.count(owner);
+	}
+	return true;
 }
 
 int CGameState::getDate(int d, Date mode)

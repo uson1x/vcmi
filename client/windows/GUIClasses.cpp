@@ -205,6 +205,27 @@ void CRecruitmentWindow::buy()
 {
 	CreatureID crid =  selected->creature->getId();
 	SlotID dstslot = dst->getSlotFor(crid);
+	const CGHeroInstance * hero = dynamic_cast<const CGHeroInstance *>(dst);
+
+	if (selected->creature->warMachine.hasValue() && hero)
+	{
+		ArtifactID newWarMachine = selected->creature->warMachine;
+		ArtifactID currentWarMachine = hero->getReplacedWarMachine(newWarMachine);
+		if (currentWarMachine.hasValue() && newWarMachine != currentWarMachine)
+		{
+			MetaString message;
+			message.appendTextID("vcmi.townWindow.blacksmith.replaceWarMachine");
+			message.replaceName(currentWarMachine);
+			message.replaceName(newWarMachine);
+
+			GAME->interface()->showYesNoDialog(
+				message.toString(),
+				[this, crid](){ onRecruit(crid, slider->getValue()); if(level >= 0) close();},
+				nullptr
+			);
+			return;
+		}
+	}
 
 	if(!dstslot.validSlot() && (selected->creature->warMachine == ArtifactID::NONE)) //no available slot
 	{
@@ -1759,6 +1780,8 @@ void CObjectListWindow::init(std::shared_ptr<CIntObject> titleWidget_, std::stri
 	list = std::make_shared<CListBox>(std::bind(&CObjectListWindow::genItem, this, _1),
 		Point(14, 151), Point(0, 25), 9, itemsVisible.size(), 0, 1 + (blue ? 4 : 0), Rect(262, -32, 256, 256) );
 	list->setRedrawParent(true);
+	if(list->getSlider())
+		list->getSlider()->setInertiaEnabled(true);
 
 	ok = std::make_shared<CButton>(Point(15, 402), AnimationPath::builtin(blue ? "MuBchck" : "IOKAY.DEF"), CButton::tooltip(), std::bind(&CObjectListWindow::elementSelected, this), EShortcut::GLOBAL_ACCEPT);
 	ok->block(!list->size());

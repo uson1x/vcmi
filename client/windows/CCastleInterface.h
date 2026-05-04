@@ -451,5 +451,5 @@ class CBlacksmithDialog : public CStatusbarWindow
 	std::shared_ptr<CLabel> costValue;
 
 public:
-	CBlacksmithDialog(bool possible, CreatureID creMachineID, ArtifactID aid, ObjectInstanceID hid);
+	CBlacksmithDialog(bool possible, ArtifactID newArtifact, ArtifactID existingArtifact, ObjectInstanceID hid);
 };

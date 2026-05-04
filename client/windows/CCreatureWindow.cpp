@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 #include "CCreatureWindow.h"
+#include "wiki/WikiWindow.h"
 
 #include <vcmi/spells/Spell.h>
 #include <vcmi/spells/Service.h>
@@ -27,6 +28,7 @@
 #include "../windows/InfoWindows.h"
 #include "../gui/WindowHandler.h"
 #include "../GameEngine.h"
+#include "../gui/WindowHandler.h"
 #include "../GameInstance.h"
 #include "../gui/Shortcut.h"
 #include "../battle/BattleInterface.h"
@@ -355,8 +357,12 @@ public:
 	{
 		if(commander)
 			return commander->getType()->getNameSingularTranslated();
-		else
-			return creature->getNamePluralTranslated();
+		if (stackNode)
+			return stackNode->getName();
+		if (stack)
+			return stack->getName();
+
+		return creature->getNamePluralTranslated();
 	}
 private:
 
@@ -876,7 +882,15 @@ CStackWindow::MainSection::MainSection(CStackWindow * owner, int yOffset, bool s
 		dmgMultiply += battleStack->valOfBonuses(bonusSelector);
 	}
 		
-	icons = std::make_shared<CPicture>(ImagePath::builtin("stackWindow/icons"), 117, 32);
+	static const std::array<std::string, 8> iconNames = {
+		"stackWindow/iconAttack", "stackWindow/iconDefense", "stackWindow/iconShots", "stackWindow/iconDamage",
+		"stackWindow/iconHealth", "stackWindow/iconHealthLeft", "stackWindow/iconSpeed", "stackWindow/iconMana"
+	};
+	static const std::array<int, 8> iconY = {
+		31, 49, 69, 88, 107, 126, 144, 164
+	};
+	for(int i = 0; i < 8; i++)
+		statIcons[i] = std::make_shared<CPicture>(ImagePath::builtin(iconNames[i]), 117, iconY[i]);
 
 	morale = std::make_shared<MoraleLuckBox>(true, Rect(Point(321, 32), Point(42, 42) ));
 	luck = std::make_shared<MoraleLuckBox>(false,  Rect(Point(375, 32), Point(42, 42) ));
@@ -1128,6 +1142,15 @@ void CStackWindow::init()
 	initSections();
 
 	background->pos = pos;
+	addUsedEvents(KEYBOARD);
+}
+
+void CStackWindow::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::ADVENTURE_OPEN_WIKI && info->creature)
+		ENGINE->windows().createAndPushWindow<WikiWindow>(
+			WikiWindow::Style::BROWN,
+			WikiEntryKey{WikiCategory::CREATURE, info->creature->getJsonKey()});
 }
 
 void CStackWindow::initBonusesList()
