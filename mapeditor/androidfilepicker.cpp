@@ -45,8 +45,7 @@ struct PickerReceiver : QAndroidActivityResultReceiver
 			QAndroidJniObject uri = data.callObjectMethod(
 				"getData", "()Landroid/net/Uri;");
 			if(uri.isValid())
-				result = uri.callObjectMethod<jstring>(
-					"toString", "()Ljava/lang/String;").toString();
+				result = uri.callObjectMethod("toString", "()Ljava/lang/String;").toString();
 		}
 		loop.quit();
 	}
