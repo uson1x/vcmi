@@ -40,8 +40,6 @@ endif()
 # Platform-independent options
 
 option(ENABLE_CLIENT "Enable compilation of game client" ON)
-option(ENABLE_ERM "Enable compilation of ERM scripting module" OFF)
-option(ENABLE_LUA "Enable compilation of LUA scripting module" OFF)
 option(ENABLE_VIDEO "Enable video support using ffmpeg" ON)
 option(ENABLE_TRANSLATIONS "Enable generation of translations for launcher and editor" ON)
 option(ENABLE_MINIMAL_LIB "Build only core parts of vcmi library that are required for game lobby" OFF)
@@ -133,11 +131,7 @@ else()
 	endif()
 endif()
 
-# ERM depends on LUA implicitly
-if(ENABLE_ERM AND NOT ENABLE_LUA)
-	set(ENABLE_LUA ON)
-endif()
-
+include(CMakeDependentOption)
 cmake_dependent_option(ENABLE_INNOEXTRACT "Enable innoextract for GOG file extraction in launcher" ON "ENABLE_LAUNCHER" OFF)
 cmake_dependent_option(ENABLE_GITVERSION "Enable Version.cpp with Git commit hash" ON "NOT ENABLE_GOLDMASTER" OFF)
 cmake_dependent_option(ENABLE_TEMPLATE_EDITOR "Enable template editor inside map editor" ON "ENABLE_EDITOR" OFF)
@@ -487,10 +481,6 @@ if(HAIKU)
 	set(SYSTEM_LIBS ${SYSTEM_LIBS} network)
 endif()
 
-if(ENABLE_LUA)
-	add_definitions(-DSCRIPTING_ENABLED=1)
-endif()
-
 ############################################
 #        Finding packages                  #
 ############################################
@@ -575,9 +565,6 @@ endif()
 
 if(NOT ENABLE_MINIMAL_LIB)
 	find_package(TBB REQUIRED)
-endif()
-
-if(ENABLE_LUA)
 	find_package(luajit)
 
 	if(TARGET luajit::luajit)
@@ -585,13 +572,13 @@ if(ENABLE_LUA)
 	else()
 		message(STATUS "Cannot find LuaJIT! Fallback to using usual Lua.")
 		find_package(Lua REQUIRED)
-		if(Lua_FOUND)
-			add_library(luajit::luajit UNKNOWN IMPORTED)
-			set_target_properties(luajit::luajit PROPERTIES
-				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}")
-			set_target_properties(luajit::luajit PROPERTIES
-				IMPORTED_LOCATION "${LUA_LIBRARIES}")
-		endif()
+		if(Lua_FOUND AND NOT TARGET Lua::Lua)
+			add_library(Lua::Lua INTERFACE IMPORTED)
+			set_target_properties(Lua::Lua PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}"
+				INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}"
+			)
+	    endif()
 	endif()
 endif()
 
@@ -707,12 +694,8 @@ if (ENABLE_CLIENT OR ENABLE_SERVER)
 	add_subdirectory(server)
 endif()
 
-if(ENABLE_ERM)
-	add_subdirectory(scripting/erm)
-endif()
-
-if(ENABLE_LUA)
-	add_subdirectory(scripting/lua)
+if(NOT ENABLE_MINIMAL_LIB)
+	add_subdirectory(luascript)
 endif()
 
 if(ENABLE_LAUNCHER OR ENABLE_EDITOR)
@@ -760,13 +743,11 @@ if(ANDROID)
 		vcmi_install_libs_symlink("${CMAKE_SYSROOT}/usr/lib/${ANDROID_SYSROOT_LIB_SUBDIR}/${stlLibName}")
 	endif()
 else()
+	install(DIRECTORY scripts DESTINATION ${DATA_DIR})
 	install(DIRECTORY config DESTINATION ${DATA_DIR})
 	if (ENABLE_CLIENT OR ENABLE_SERVER)
 		install(DIRECTORY Mods DESTINATION ${DATA_DIR})
 	endif()
-endif()
-if(ENABLE_LUA)
-	install(DIRECTORY scripts DESTINATION ${DATA_DIR})
 endif()
 
 # that script is useless for Windows / iOS / Android
@@ -903,8 +884,21 @@ elseif(MACOS AND NOT ENABLE_MONOLITHIC_INSTALL)
 
 	install(FILES "${CMAKE_SOURCE_DIR}/osx/vcmi.icns" DESTINATION ${APP_BUNDLE_RESOURCES_DIR})
 
-	configure_file("${CMAKE_SOURCE_DIR}/osx/Info.plist.in" "${CMAKE_BINARY_DIR}/Info.plist")
-	install(FILES "${CMAKE_BINARY_DIR}/Info.plist" DESTINATION ${APP_BUNDLE_CONTENTS_DIR})
+	set(infoPlist "${CMAKE_BINARY_DIR}/Info.plist")
+	configure_file("${CMAKE_SOURCE_DIR}/osx/Info.plist.in" ${infoPlist})
+	if(CMAKE_OSX_DEPLOYMENT_TARGET)
+		set(deploymentTargetPlistKey ":LSMinimumSystemVersion")
+		execute_process(COMMAND
+			/usr/libexec/PlistBuddy ${infoPlist} -c "Add ${deploymentTargetPlistKey} string ${CMAKE_OSX_DEPLOYMENT_TARGET}"
+			RESULT_VARIABLE addPlistEntryReturnCode
+		)
+		if(NOT addPlistEntryReturnCode EQUAL 0)
+			execute_process(COMMAND
+				/usr/libexec/PlistBuddy ${infoPlist} -c "Set ${deploymentTargetPlistKey} ${CMAKE_OSX_DEPLOYMENT_TARGET}"
+			)
+		endif()
+	endif()
+	install(FILES ${infoPlist} DESTINATION ${APP_BUNDLE_CONTENTS_DIR})
 
 	# Bundle fixing code must be in separate directory to be executed after all other install code
 	add_subdirectory(osx)

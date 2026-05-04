@@ -693,7 +693,7 @@ void AIGateway::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelI
 	});
 }
 
-void AIGateway::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID)
+void AIGateway::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle)
 {
 	LOG_TRACE_PARAMS(logAi, "removableUnits '%i', queryID '%i'", removableUnits % queryID);
 	std::string s1 = up->nodeName();
@@ -799,10 +799,6 @@ void AIGateway::makeTurn()
 	catch (const TerminationRequestedException &)
 	{
 		logAi->debug("Making turn thread has been terminated. We'll end without calling endTurn");
-	}
-	catch (...)
-	{
-		logAi->error("Unknown exception in makeTurn. Ending turn without calling endTurn.");
 	}
 }
 

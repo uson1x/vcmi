@@ -77,14 +77,14 @@ public:
 	void swapWanderingHero(size_t pos1, size_t pos2);
 
 	void setPath(const CGHeroInstance * h, const CGPath & path);
-	bool setPath(const CGHeroInstance * h, const int3 & destination);
+	bool setPath(const CGHeroInstance * h, const int3 & destination, const EPathfindingLayer & layer);
 
 	const CGPath & getPath(const CGHeroInstance * h) const;
 	bool hasPath(const CGHeroInstance * h) const;
 
 	void removeLastNode(const CGHeroInstance * h);
 	void erasePath(const CGHeroInstance * h);
-	void verifyPath(const CGHeroInstance * h);
+	bool verifyPath(const CGHeroInstance * h);
 
 	/// Returns currently selected object
 	const CGHeroInstance * getCurrentHero() const;

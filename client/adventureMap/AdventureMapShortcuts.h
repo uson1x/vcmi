@@ -71,6 +71,7 @@ class AdventureMapShortcuts
 	void quickLoadGame();
 	void digGrail();
 	void viewPuzzleMap();
+	void replayTurn();
 	void restartGame();
 	void visitObject();
 	void openObject();
@@ -81,6 +82,7 @@ class AdventureMapShortcuts
 	void zoom( int distance);
 	void search(bool next);
 	void moveHeroDirectional(const Point & direction);
+	void enterDisembarkMode();
 
 public:
 	explicit AdventureMapShortcuts(AdventureMapInterface & owner);
@@ -104,11 +106,13 @@ public:
 	bool optionMapScrollingActive();
 	bool optionMapViewActive();
 	bool optionMarketplace();
-	bool optionHeroBoat(EPathfindingLayer layer);
+	bool optionHeroBoat(const EPathfindingLayer & layer);
 	bool optionHeroDig();
 	bool optionViewStatistic();
 	bool optionIsLocal();
 	bool optionQuickSaveLoad();
+	bool optionCanDisembark();
+	bool optionDisembarking();
 
 	void setState(EAdventureState newState);
 	EAdventureState getState() const;

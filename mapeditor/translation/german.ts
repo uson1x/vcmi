@@ -576,27 +576,27 @@
     <message>
         <location filename="../inspector/herospellwidget.ui" line="79"/>
         <source>Level 1</source>
-        <translation>Level 1</translation>
+        <translation>Stufe 1</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.ui" line="120"/>
         <source>Level 2</source>
-        <translation>Level 2</translation>
+        <translation>Stufe 2</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.ui" line="161"/>
         <source>Level 3</source>
-        <translation>Level 3</translation>
+        <translation>Stufe 3</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.ui" line="202"/>
         <source>Level 4</source>
-        <translation>Level 4</translation>
+        <translation>Stufe 4</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
-        <translation>Level 5</translation>
+        <translation>Stufe 5</translation>
     </message>
 </context>
 <context>

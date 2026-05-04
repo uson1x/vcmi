@@ -377,7 +377,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="870"/>
         <source>Extracting content.zip (%1/%2) for %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozbalování souboru content.zip (%1/%2) pro modifikaci %3</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="877"/>
@@ -720,7 +720,7 @@ Režim celé obrazovky - hra pokryje celou vaši obrazovku a použije vybrané r
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="437"/>
         <source>Full mod extraction</source>
-        <translation type="unfinished"></translation>
+        <translation>Úplné rozbalení modifikací</translation>
     </message>
     <message>
         <location filename="../settingsView/csettingsview_moc.ui" line="593"/>

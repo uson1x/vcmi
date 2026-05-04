@@ -604,13 +604,31 @@ bool BattleFlowProcessor::tryMakeAutomaticActionOfMeleeUnit(const CBattleInfoCal
 		bool isMachine = possibleTarget->unitType()->warMachine != ArtifactID::NONE;
 		bool isParalyzed = possibleTarget->hasBonusOfType(BonusType::NOT_ACTIVE) && !isMachine;
 
-		BattleHexArray attackableHexes = possibleTarget->getAttackableHexes(actingStack);
+		BattleHexArray attackableHexes;
+		const auto availableHexes = battle.battleGetAvailableHexes(reachabilityCache, actingStack, true);
+
+		for(const BattleHex & targetHex : possibleTarget->getHexes())
+		{
+			for(int direction = 0; direction < 8; ++direction)
+			{
+				auto directionEnum = static_cast<BattleHex::EDir>(direction);
+				if(!battle.battleCanAttackHex(availableHexes, actingStack, targetHex, directionEnum))
+					continue;
+
+				BattleHex attackFromHex = battle.fromWhichHexAttack(actingStack, targetHex, directionEnum);
+				if(availableHexes.contains(attackFromHex))
+					attackableHexes.insert(attackFromHex);
+			}
+		}
+
+		bool isReachable = !attackableHexes.empty();
+		if(!isReachable)
+			continue;
+
 		BattleHex closestTargetAdjacentHex = boost::min_element(attackableHexes, [&reachabilityCache](const BattleHex & lhs, const BattleHex & rhs)
 		{
 			return reachabilityCache.distances[lhs.toInt()] < reachabilityCache.distances[rhs.toInt()];
 		})[0];
-
-		bool isReachable = battle.battleGetAvailableHexes(reachabilityCache, actingStack, true).contains(closestTargetAdjacentHex);
 
 		TargetInfo currentTarget =
 		{
@@ -660,7 +678,7 @@ bool BattleFlowProcessor::tryMakeAutomaticActionOfMeleeUnit(const CBattleInfoCal
 bool BattleFlowProcessor::tryMakeAutomaticActionOfCatapult(const CBattleInfoCallback & battle, const CStack * next)
 {
 	const CGHeroInstance * curOwner = battle.battleGetOwnerHero(next);
-	if (next->unitType()->getId() == CreatureID::CATAPULT)
+	if (next->isCatapult())
 	{
 		const auto & attackableBattleHexes = battle.getAttackableWallParts();
 
@@ -687,7 +705,7 @@ bool BattleFlowProcessor::tryMakeAutomaticActionOfCatapult(const CBattleInfoCall
 bool BattleFlowProcessor::tryMakeAutomaticActionOfFirstAidTent(const CBattleInfoCallback & battle, const CStack * next)
 {
 	const CGHeroInstance * curOwner = battle.battleGetOwnerHero(next);
-	if (next->unitType()->getId() == CreatureID::FIRST_AID_TENT)
+	if (next->isFirstAidTent())
 	{
 		TStacks possibleStacks = battle.battleGetStacksIf([&next](const CStack * s)
 		{

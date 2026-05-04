@@ -158,6 +158,7 @@ void MainWindow::enterSetup()
 {
 	ui->sidePanel->setVisible(false);
 	ui->tabListWidget->setCurrentIndex(TabRows::SETUP);
+	ui->setupView->enterSetup();
 }
 
 void MainWindow::exitSetup(bool goToMods)
@@ -330,6 +331,8 @@ void MainWindow::updateTranslation()
 	QString translationFileResourcePath = QString{":/translation/%1"}.arg(translationFile.c_str());
 
 	logGlobal->info("Loading translation %s", translationFile);
+
+	qApp->removeTranslator(&translator);
 
 	if(!QFile::exists(translationFileResourcePath))
 	{

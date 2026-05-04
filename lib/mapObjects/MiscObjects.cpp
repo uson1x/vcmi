@@ -88,7 +88,7 @@ void CGMine::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroInstance *
 
 	if(relations == PlayerRelations::SAME_PLAYER) //we're visiting our mine
 	{
-		gameEvents.showGarrisonDialog(id,h->id,true);
+		gameEvents.showGarrisonDialog(id, h->id, true, MetaString());
 		return;
 	}
 	else if (relations == PlayerRelations::ALLIES)//ally
@@ -628,7 +628,6 @@ bool CGWhirlpool::isProtected(const CGHeroInstance * h)
 
 const CArtifactInstance * CGArtifact::getArtifactInstance() const
 {
-	assert(storedArtifact.hasValue());
 	if(!storedArtifact.hasValue())
 		return nullptr;
 
@@ -915,7 +914,7 @@ void CGGarrison::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroInstan
 	if (relations == PlayerRelations::ENEMIES)
 		gameEvents.setOwner(this, h->tempOwner);
 
-	gameEvents.showGarrisonDialog(id, h->id, removableUnits);
+	gameEvents.showGarrisonDialog(id, h->id, removableUnits, MetaString());
 }
 
 bool CGGarrison::passableFor(PlayerColor player) const
@@ -1149,6 +1148,26 @@ void CGShipyard::serializeJsonOptions(JsonSerializeFormat& handler)
 BoatId CGShipyard::getBoatType() const
 {
 	return createdBoat;
+}
+
+EPathfindingLayer CGShipyard::getBoatLayer() const
+{
+	auto handler = LIBRARY->objtypeh->getHandlerFor(Obj::BOAT, getBoatType());
+	auto boatConstructor = std::dynamic_pointer_cast<const BoatInstanceConstructor>(handler);
+	return boatConstructor->getLayer();
+}
+
+void CGShipyard::getBoatCost(ResourceSet & cost) const
+{
+	if (getBoatLayer() == EPathfindingLayer::AVIATE)
+	{
+		cost[EGameResID::WOOD] = 20;
+		cost[EGameResID::GOLD] = 5000;
+	}
+	else
+	{
+		IShipyard::getBoatCost(cost);
+	}
 }
 
 const IOwnableObject * CGShipyard::asOwnable() const
