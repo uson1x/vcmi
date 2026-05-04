@@ -31,7 +31,7 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="182"/>
         <source>User data directory</source>
-        <translation>Användardata-mapp</translation>
+        <translation>Mapp för användardata</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="88"/>
@@ -54,7 +54,7 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="114"/>
         <source>Log files directory</source>
-        <translation>Loggfils-mapp</translation>
+        <translation>Mapp för loggfiler</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="107"/>
@@ -64,7 +64,7 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="168"/>
         <source>Game data directory</source>
-        <translation>Speldata-mapp</translation>
+        <translation>Mapp för speldata</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="175"/>
@@ -74,7 +74,7 @@
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="227"/>
         <source>Configuration files directory</source>
-        <translation>Konfigurationsfils-mapp</translation>
+        <translation>Mapp för konfigurationsfiler</translation>
     </message>
     <message>
         <location filename="../aboutProject/aboutproject_moc.ui" line="290"/>
@@ -249,7 +249,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="352"/>
         <source>Download size</source>
-        <translation>Nedladdnings-storlek</translation>
+        <translation>Nedladdningsstorlek</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="354"/>
@@ -292,7 +292,7 @@
         <location filename="../modManager/cmodlistview_moc.cpp" line="999"/>
         <location filename="../modManager/cmodlistview_moc.cpp" line="1004"/>
         <source>mods repository index</source>
-        <translation>Index över modd‑förråd (repon)</translation>
+        <translation>Index över moddförråd (repon)</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="363"/>
@@ -327,7 +327,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="417"/>
         <source>Conflicting mods</source>
-        <translation>Modd-konflikter</translation>
+        <translation>Moddkonflikter</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="419"/>
@@ -347,7 +347,7 @@
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="422"/>
         <source>This is a submod and it cannot be installed or uninstalled separately from its parent mod</source>
-        <translation>Detta är en undermodd/submodd och den kan inte installeras eller avinstalleras separat från huvud-modden</translation>
+        <translation>Detta är en undermodd/submodd och den kan inte installeras eller avinstalleras separat från sin huvudmodd</translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="441"/>
@@ -1113,7 +1113,7 @@ Exklusivt helskärmsläge - spelet täcker hela skärmen och använder den valda
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="316"/>
         <source>You can manually copy Maps, Data, and Mp3 folders from the original game directory to the VCMI data directory shown below</source>
-        <translation>Ni kan manuellt kopiera mapparna Maps, Data och Mp3 från den ursprungliga spelkatalogen till VCMI-datakatalogen som visas nedan</translation>
+        <translation>Ni kan manuellt kopiera mapparna Maps, Data och Mp3 från den ursprungliga spelmappen till VCMI:s datamapp som visas nedan</translation>
     </message>
     <message>
         <location filename="../firstLaunch/firstlaunch_moc.ui" line="335"/>
@@ -1445,7 +1445,7 @@ Vänligen välj mappen där ni installerade Heroes III.</translation>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="38"/>
         <source>Select Directory with HD Edition (Steam folder)</source>
-        <translation>Välj katalog med HD Edition (Steam-mapp)</translation>
+        <translation>Välj mappen med HD Edition (Steam-mapp)</translation>
     </message>
     <message>
         <location filename="../modManager/hdextractor.cpp" line="46"/>
@@ -2238,18 +2238,18 @@ För att importera Heroes Chronicles laddar du ner offline-installationsprogramm
         <source>VCMI has detected that Heroes III music files are missing from your installation. VCMI will run, but in-game music will not be available.
 
 To resolve this problem, please copy missing mp3 files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation>VCMI har upptäckt att musikfiler från Heroes III saknas i din installation. VCMI kommer att starta, men musiken i spelet kommer inte att fungera.
+        <translation>VCMI har upptäckt att musikfilerna från Heroes III saknas i din installation. VCMI kommer att starta, men musiken i spelet kommer inte att vara tillgänglig.
 
-För att lösa problemet behöver du kopiera de saknade mp3-filerna från Heroes III till VCMI:s datafils-mapp manuellt eller installera om VCMI och importera datafilerna från Heroes III på nytt.</translation>
+För att lösa problemet, kopiera de saknade mp3‑filerna från Heroes III till VCMI:s datafilsmapp manuellt, eller installera om VCMI och importera Heroes III‑datafilerna på nytt.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="370"/>
         <source>VCMI has detected that Heroes III video files are missing from your installation. VCMI will run, but in-game cutscenes will not be available.
 
 To resolve this problem, please copy VIDEO.VID file from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation>VCMI har upptäckt att videofiler från Heroes III saknas i din installation. VCMI kommer att starta, men mellansekvenserna i spelet kommer inte att fungera.
+        <translation>VCMI har upptäckt att videofilerna från Heroes III saknas i din installation. VCMI kommer att starta, men mellansekvenserna i spelet kommer inte att vara tillgängliga.
 
-För att lösa problemet behöver du kopiera filen VIDEO.VID från Heroes III till VCMI:s datakatalog manuellt eller installera om VCMI och importera Heroes III-datafilerna på nytt.</translation>
+För att lösa problemet, kopiera filen VIDEO.VID från Heroes III till VCMI:s datafilsmapp manuellt, eller installera om VCMI och importera Heroes III‑datafilerna på nytt.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="381"/>
@@ -2265,9 +2265,9 @@ För att lösa detta problem bör du installera om spelet och importera datafile
         <source>VCMI has detected that some of Heroes III: Armageddon&apos;s Blade data files are missing from your installation. VCMI will work, but Armageddon&apos;s Blade campaigns will not be available.
 
 To resolve this problem, please copy missing data files from Heroes III to VCMI data files directory manually or reinstall VCMI and re-import Heroes III data files.</source>
-        <translation>VCMI har upptäckt att vissa datafiler för Heroes III: Armageddon&apos;s Blade saknas i din installation. VCMI fungerar, men kampanjerna i Armageddon&apos;s Blade kommer inte att vara tillgängliga.
+        <translation>VCMI har upptäckt att vissa av datafilerna från Heroes III: Armageddon&apos;s Blade saknas i din installation. VCMI kommer att fungera, men kampanjerna från Armageddon&apos;s Blade kommer inte att vara tillgängliga.
 
-För att lösa detta problem behöver du kopiera de saknade datafilerna från Heroes III till VCMI:s datakatalog manuellt eller installera om VCMI och importera datafilerna från Heroes III på nytt.</translation>
+För att lösa problemet, kopiera de saknade datafilerna från Heroes III till VCMI:s datafilsmapp manuellt, eller installera om VCMI och importera Heroes III‑datafilerna på nytt.</translation>
     </message>
     <message>
         <location filename="../startGame/StartGameTab.cpp" line="403"/>

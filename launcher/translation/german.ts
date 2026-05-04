@@ -2230,7 +2230,7 @@ WARNUNG: In einigen Fällen sind die aktualisierten Versionen der Mods nicht mit
         <location filename="../startGame/StartGameTab.cpp" line="346"/>
         <source>If you own Heroes Chronicles on gog.com, you can use offline backup installers provided by gog to import Heroes Chronicles data into VCMI as custom campaigns.
 To import Heroes Chronicles, download offline backup installer of each chronicle that you wish to install, select &apos;Import files&apos; option and select downloaded file. This will generate and install mod for VCMI that contains imported chronicles.</source>
-        <translation type="unfinished">Wenn Sie Heroes Chronicles in Ihrer Sammlung auf gog.com haben, können Sie die von GOG bereitgestellten Offline-Versionen der Spiel-Installationsdateien nutzen, um die Heroes-Chronicles-Daten als benutzerdefinierte Kampagne in VCMI zu importieren.
+        <translation>Wenn Sie Heroes Chronicles in Ihrer Sammlung auf gog.com haben, können Sie die von GOG bereitgestellten Offline-Versionen der Spiel-Installationsdateien nutzen, um die Heroes-Chronicles-Daten als benutzerdefinierte Kampagne in VCMI zu importieren.
 Um Heroes Chronicles zu importieren, laden Sie die Offline-Version der Spiel-Installationsdateien jeder Chronicle, die Sie installieren möchten, herunter. Klicken Sie dann auf &apos;Dateien importieren&apos; und wählen Sie die heruntergeladene Datei aus. Die importierten Chronicles werden dann automatisch als Modifikation für VCMI generiert und installiert.</translation>
     </message>
     <message>

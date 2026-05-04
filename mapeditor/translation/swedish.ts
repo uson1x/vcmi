@@ -317,7 +317,7 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="274"/>
         <source>Video rim image</source>
-        <translation>Video-kantbild</translation>
+        <translation>Kantbild för video</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
@@ -1403,7 +1403,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1509"/>
         <source>Choose directory to save converted maps</source>
-        <translation>Välj katalog för att spara konverterade kartor</translation>
+        <translation>Välj mappen för att spara konverterade kartor</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1523"/>

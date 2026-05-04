@@ -1606,7 +1606,7 @@ Chcete to udělat nyní?</translation>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="68"/>
         <source>Set required mods based on objects placed on the map. This method may cause problems if you have customized rewards, garrisons, etc from mods</source>
-        <translation>Nastavit potřebné modifikace v závislosti na umístěných objektech na mapě. Tato metoda může způsobit problém, pokud máte přizpůsobené odměny, posátky atd.  z modifikací</translation>
+        <translation>Nastavit potřebné modifikace v závislosti na umístěných objektech na mapě. Tato metoda může způsobit problém, pokud máte přizpůsobené odměny, posádky atd. z modifikací</translation>
     </message>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="71"/>
