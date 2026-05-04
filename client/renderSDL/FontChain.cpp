@@ -22,25 +22,17 @@
 
 void FontChain::renderText(SDL_Surface * surface, const std::string & data, const ColorRGBA & color, const Point & pos) const
 {
-	const auto chunks = splitTextToChunks(data);
-	const auto maxAscent = static_cast<int>(getFontAscentScaled());
+	auto chunks = splitTextToChunks(data);
+	int maxAscent = getFontAscentScaled();
 	Point currentPos = pos;
-	for(const auto & chunk : chunks)
+	for (auto const & chunk : chunks)
 	{
 		Point chunkPos = currentPos;
-		chunkPos.y += maxAscent - static_cast<int>(chunk.font->getFontAscentScaled());
+		int currAscent = chunk.font->getFontAscentScaled();
+		chunkPos.y += maxAscent - currAscent;
 		chunk.font->renderText(surface, chunk.text, color, chunkPos);
-		currentPos.x += static_cast<int>(chunk.font->getStringWidthScaled(chunk.text));
+		currentPos.x += chunk.font->getStringWidthScaled(chunk.text);
 	}
-}
-
-size_t FontChain::getStringWidthScaled(const std::string & data) const
-{
-	const auto chunks = splitTextToChunks(data);
-	size_t total = 0;
-	for(const auto & chunk : chunks)
-		total += chunk.font->getStringWidthScaled(chunk.text);
-	return total;
 }
 
 size_t FontChain::getFontAscentScaled() const
@@ -157,4 +149,14 @@ std::vector<FontChain::TextChunk> FontChain::splitTextToChunks(const std::string
 	}
 
 	return chunks;
+}
+
+size_t FontChain::getStringWidthScaled(const std::string & data) const
+{
+	size_t result = 0;
+	auto chunks = splitTextToChunks(data);
+	for (auto const & chunk : chunks)
+		result += chunk.font->getStringWidthScaled(chunk.text);
+
+	return result;
 }
