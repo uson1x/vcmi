@@ -11,7 +11,6 @@
 
 #include "Moat.h"
 
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 
 #include "../../entities/building/CBuilding.h"

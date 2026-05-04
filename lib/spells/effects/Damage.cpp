@@ -10,7 +10,6 @@
 #include "StdInc.h"
 
 #include "Damage.h"
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 
 #include "../../CStack.h"

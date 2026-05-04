@@ -10,7 +10,6 @@
 #include "StdInc.h"
 
 #include "DemonSummon.h"
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 #include "../../battle/CBattleInfoCallback.h"
 #include "../../battle/BattleInfo.h"

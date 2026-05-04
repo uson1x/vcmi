@@ -14,9 +14,10 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-class Services;
-class JsonNode;
-class ServerCallback;
+namespace spells::effects
+{
+    class SpellEffectService;
+}
 
 namespace scripting
 {
@@ -35,7 +36,7 @@ class DLL_LINKAGE Script
 public:
 	virtual ~Script() = default;
 
-	virtual std::string getJsonKey() const = 0;
+	virtual std::string getIdentifier() const = 0;
 	virtual const std::string & getSource() const = 0;
 };
 
@@ -52,16 +53,7 @@ class DLL_LINKAGE Service
 public:
 	virtual ~Service() = default;
 
-	virtual std::unique_ptr<Pool> createPoolInstance(const Environment * ENV) const = 0;
-};
-
-class DLL_LINKAGE Module
-{
-public:
-	virtual ~Module() = default;
-
-	virtual void loadObject(const std::string & scope, const std::string & name, const JsonNode & data) = 0;
-	virtual void afterLoadFinalization() = 0;
+	virtual void installScripting(spells::effects::SpellEffectService * spellEffects) = 0;
 
 	virtual std::unique_ptr<Pool> createPoolInstance(const Environment * ENV) const = 0;
 

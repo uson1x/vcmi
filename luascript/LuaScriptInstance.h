@@ -14,6 +14,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+class JsonNode;
 class JsonSerializeFormat;
 class Services;
 
@@ -23,22 +24,12 @@ namespace scripting
 class LuaModule;
 class LuaContext;
 
-class LuaScriptInstance : public Script
+class LuaScriptInstance final : public Script
 {
 public:
-	LuaScriptInstance(LuaModule & host);
+	LuaScriptInstance(LuaModule & host, const std::string & modScope, const std::string & sourcePath);
 	virtual ~LuaScriptInstance();
 
-	enum class Implements : int8_t
-	{
-		NONE = -1,
-		ANYTHING,
-		BATTLE_EFFECT
-	};
-
-	Implements implements;
-
-	std::string identifier;
 	std::string modScope;
 	std::string sourcePath;
 	std::string sourceText;
@@ -47,10 +38,8 @@ public:
 
 	std::shared_ptr<LuaContext> createContext(const Environment * ENV) const;
 
-	void loadFromJson(const JsonNode & input);
-
-	std::string getJsonKey() const override;
-	const std::string & getSource() const override;
+	std::string getIdentifier() const override { return modScope + ':' + sourcePath;}
+	const std::string & getSource() const override { return sourceText;}
 };
 }
 

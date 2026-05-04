@@ -19,8 +19,8 @@
 #include "TerrainHandler.h"
 #include "MapLayerHandler.h"
 #include "spells/SpellSchoolHandler.h"
-#include "spells/effects/Registry.h"
 #include "CSkillHandler.h"
+#include "callback/CDynLibHandler.h"
 #include "entities/artifact/CArtHandler.h"
 #include "entities/faction/CTownHandler.h"
 #include "entities/hero/CHeroClassHandler.h"
@@ -39,11 +39,13 @@
 #include "mapObjectConstructors/CObjectClassesHandler.h"
 #include "mapObjects/ObstacleSetHandler.h"
 #include "mapping/CMapEditManager.h"
-#include "scripting/ScriptHandler.h"
 #include "spells/CSpellHandler.h"
+#include "spells/effects/SpellEffectHandler.h"
 #include "BattleFieldHandler.h"
 #include "ObstacleHandler.h"
 #include "GameSettings.h"
+
+#include <vcmi/scripting/Service.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -106,14 +108,9 @@ const CIdentifierStorage * GameLibrary::identifiers() const
 	return identifiersHandler.get();
 }
 
-const spells::effects::Registry * GameLibrary::spellEffects() const
+const spells::effects::SpellEffectService * GameLibrary::spellEffects() const
 {
-	return spells::effects::GlobalRegistry::get();
-}
-
-spells::effects::Registry * GameLibrary::spellEffects()
-{
-	return spells::effects::GlobalRegistry::get();
+	return spellEffectHandler.get();
 }
 
 const BattleFieldService * GameLibrary::battlefields() const
@@ -220,15 +217,18 @@ void GameLibrary::initializeLibrary()
 	createHandler(objtypeh);
 	createHandler(spellSchoolHandler);
 	createHandler(spellh);
+	createHandler(spellEffectHandler);
 	createHandler(skillh);
 	createHandler(terviewh);
 	createHandler(campaignRegions);
 	createHandler(tplh); //templates need already resolved identifiers (refactor?)
-	createHandler(scriptHandler);
 	createHandler(battlefieldsHandler);
 	createHandler(obstacleHandler);
 	createHandler(mapLayerHandler);
 
+	boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
+	scriptHandler = CDynLibHandler::getNewScriptingModule(filePath);
+	scriptHandler->installScripting(spellEffectHandler.get());
 	modh->load();
 	modh->afterLoad();
 

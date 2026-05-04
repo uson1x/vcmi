@@ -31,8 +31,7 @@ public:
 
 	MOCK_METHOD3(updateEntity, void(Metatype, int32_t, const JsonNode &));
 
-	MOCK_CONST_METHOD0(spellEffects, const spells::effects::Registry *());
-	MOCK_METHOD0(spellEffects, spells::effects::Registry *());
+	MOCK_CONST_METHOD0(spellEffects, const spells::effects::SpellEffectService *());
 };
 
 

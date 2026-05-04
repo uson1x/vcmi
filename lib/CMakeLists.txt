@@ -266,8 +266,6 @@ set(lib_MAIN_SRCS
 	serializer/JsonUpdater.cpp
 	serializer/SerializerReflection.cpp
 
-	scripting/ScriptHandler.cpp
-
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
 	spells/BonusCaster.cpp
@@ -303,7 +301,7 @@ set(lib_MAIN_SRCS
 	spells/effects/LocationEffect.cpp
 	spells/effects/Moat.cpp
 	spells/effects/Obstacle.cpp
-	spells/effects/Registry.cpp
+	spells/effects/SpellEffectHandler.cpp
 	spells/effects/UnitEffect.cpp
 	spells/effects/Teleport.cpp
 	spells/effects/Timed.cpp
@@ -748,8 +746,6 @@ set(lib_MAIN_HEADERS
 	serializer/Serializeable.h
 	serializer/SerializerReflection.h
 
-	scripting/ScriptHandler.h
-
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
 	spells/BonusCaster.h
@@ -785,7 +781,8 @@ set(lib_MAIN_HEADERS
 	spells/effects/Heal.h
 	spells/effects/LocationEffect.h
 	spells/effects/Obstacle.h
-	spells/effects/Registry.h
+	spells/effects/SpellEffectHandler.h
+	spells/effects/SpellEffectService.h
 	spells/effects/UnitEffect.h
 	spells/effects/Teleport.h
 	spells/effects/Timed.h

@@ -12,7 +12,7 @@
 
 #include "../lib/json/JsonNode.h"
 #include "../lib/spells/effects/Effect.h"
-#include "../lib/spells/effects/Registry.h"
+#include "../lib/spells/effects/SpellEffectService.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,27 +22,30 @@ namespace scripting
 {
 class LuaScriptInstance;
 class LuaContext;
+class LuaModule;
+class LuaScriptPool;
 }
 
 namespace spells::effects
 {
 
-class LuaSpellEffectFactory : public IEffectFactory
+class LuaSpellEffectFactory final : public ISpellEffectFactory
 {
-	using LuaScriptInstance = scripting::LuaScriptInstance;
-	using LuaContext = scripting::LuaContext;
-
 public:
-	LuaSpellEffectFactory(const LuaScriptInstance * script_);
+	LuaSpellEffectFactory(scripting::LuaModule & host);
 	virtual ~LuaSpellEffectFactory();
 
-	Effect * create() const override;
+	void initialize(const std::string & scope, const std::string & name) override;
+	std::shared_ptr<Effect> create(const std::string & scope, const std::string & name) const override;
+
+	void registerScripts(scripting::LuaScriptPool * pool);
 
 private:
-	const LuaScriptInstance * script;
+	std::map<std::string, std::unique_ptr<scripting::LuaScriptInstance> > loadedScripts;
+	scripting::LuaModule & host;
 };
 
-class LuaSpellEffect : public Effect
+class LuaSpellEffect final : public Effect
 {
 	using LuaScriptInstance = scripting::LuaScriptInstance;
 	using LuaContext = scripting::LuaContext;

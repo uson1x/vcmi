@@ -14,6 +14,8 @@
 
 #include "../VCMIDirs.h"
 
+#include <vcmi/scripting/Service.h>
+
 #ifdef STATIC_AI
 #  ifdef ENABLE_NULLKILLER2_AI
 #    include "../../AI/Nullkiller2/AIGateway.h"
@@ -39,14 +41,14 @@
 VCMI_LIB_NAMESPACE_BEGIN
 
 template<typename rett>
-std::shared_ptr<rett> createAny(const boost::filesystem::path & libpath, const std::string & methodName)
+rett createAny(const boost::filesystem::path & libpath, const std::string & methodName)
 {
 #ifdef STATIC_AI
 	// android currently doesn't support loading libs dynamically, so the access to the known libraries
 	// is possible only via specializations of this template
 	throw std::runtime_error("Could not resolve ai library " + libpath.generic_string());
 #else
-	using TGetAIFun = void (*)(std::shared_ptr<rett> &);
+	using TGetAIFun = void (*)(rett &);
 	using TGetNameFun = void (*)(char *);
 
 	char temp[150];
@@ -100,12 +102,12 @@ std::shared_ptr<rett> createAny(const boost::filesystem::path & libpath, const s
 	getName(temp);
 	logGlobal->info("Loaded %s", temp);
 
-	std::shared_ptr<rett> ret;
+	rett ret;
 	getAI(ret);
 	if(!ret)
 		logGlobal->error("Cannot get AI!");
 
-	return ret;
+	return std::move(ret);
 #endif // STATIC_AI
 }
 
@@ -151,7 +153,7 @@ std::shared_ptr<rett> createAnyAI(const std::string & dllname, const std::string
 	logGlobal->info("Opening %s", dllname);
 
 	const boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("AI", dllname);
-	auto ret = createAny<rett>(filePath, methodName);
+	auto ret = createAny<std::shared_ptr<rett>>(filePath, methodName);
 	ret->dllName = dllname;
 	return ret;
 }
@@ -166,9 +168,9 @@ std::shared_ptr<CBattleGameInterface> CDynLibHandler::getNewBattleAI(const std::
 	return createAnyAI<CBattleGameInterface>(dllname, "GetNewBattleAI");
 }
 
-std::shared_ptr<scripting::Module> CDynLibHandler::getNewScriptingModule(const boost::filesystem::path & dllname)
+std::unique_ptr<scripting::Service> CDynLibHandler::getNewScriptingModule(const boost::filesystem::path & dllname)
 {
-	return createAny<scripting::Module>(dllname, "GetNewModule");
+	return createAny<std::unique_ptr<scripting::Service>>(dllname, "GetNewModule");
 }
 
 VCMI_LIB_NAMESPACE_END

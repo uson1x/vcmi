@@ -156,11 +156,11 @@ void LuaContext::cleanupGlobals()
 void LuaContext::initialize()
 {
 	std::lock_guard guard(mutex);
-	int ret = luaL_loadbuffer(L, script->getSource().c_str(), script->getSource().size(), script->getJsonKey().c_str());
+	int ret = luaL_loadbuffer(L, script->getSource().c_str(), script->getSource().size(), script->getIdentifier().c_str());
 
 	if(ret)
 	{
-		logScript->error("Script '%s' failed to load, error: %s", script->getJsonKey(), toStringRaw(-1));
+		logScript->error("Script '%s' failed to load, error: %s", script->getIdentifier(), toStringRaw(-1));
 		popAll();
 		return;
 	}
@@ -173,12 +173,12 @@ void LuaContext::initialize()
 
 	if(ret)
 	{
-		logScript->error("Script '%s' failed to run, error: '%s'", script->getJsonKey(), toStringRaw(-1));
+		logScript->error("Script '%s' failed to run, error: '%s'", script->getIdentifier(), toStringRaw(-1));
 		popAll();
 	}
 
 	if (!lua_istable(L, -1)) {
-		logScript->error("Script '%s' did not return a table", script->getJsonKey());
+		logScript->error("Script '%s' did not return a table", script->getIdentifier());
 		popAll();
 		return;
 	}
@@ -254,22 +254,9 @@ int LuaContext::loadModule()
 {
 	int argc = lua_gettop(L);
 
-	if(argc < 1)
+	if(argc != 1)
 		return errorRetVoid("Module name required");
 
-	//if module is loaded already, assume that module name is valid
-	modules->push();
-	lua_pushvalue(L, -2);
-	lua_rawget(L, -2);
-
-	if(lua_istable(L, -1))
-	{
-		lua_replace(L, 1);
-		lua_settop(L, 1);
-		return 1;
-	}
-
-	//continue with more checks
 	if(!lua_isstring(L, 1))
 		return errorRetVoid("Module name must be string");
 
@@ -293,69 +280,35 @@ int LuaContext::loadModule()
 		modulePath = temp.at(1);
 	}
 
-	if(scope.empty())
+	auto *loader = scope.empty() ? CResourceHandler::get() : CResourceHandler::get(scope);
+
+	ScriptPath id = ScriptPath::builtinTODO(modulePath);
+
+	if(!loader->existsResource(id))
+		return errorRetVoid("Module not found: "+modulePath);
+
+	auto rawData = loader->load(id)->readAll();
+	auto sourceText = std::string(reinterpret_cast<char *>(rawData.first.get()), rawData.second);
+	int ret = luaL_loadbuffer(L, sourceText.c_str(), sourceText.size(), modulePath.c_str());
+
+	if(ret)
+		return errorRetVoid(toStringRaw(-1));
+
+	ret = lua_pcall(L, 0, 1, 0);
+
+	if(ret)
 	{
-		const auto *registar = api::Registry::get()->find(modulePath);
-
-		if(!registar)
-		{
-			return errorRetVoid("Module not found: "+modulePath);
-		}
-
-		registar->pushMetatable(L);
-	}
-	else if(scope == ModScope::scopeBuiltin())
-	{
-
-	//	boost::algorithm::replace_all(modulePath, boost::is_any_of("\\/ "), "");
-
-		boost::algorithm::replace_all(modulePath, ".", "/");
-
-		auto *loader = CResourceHandler::get(ModScope::scopeBuiltin());
-
-		modulePath = "scripts/lib/" + modulePath;
-
-		ResourcePath id(modulePath, EResType::LUA_SCRIPT);
-
-		if(!loader->existsResource(id))
-			return errorRetVoid("Module not found: "+modulePath);
-
-		auto rawData = loader->load(id)->readAll();
-
-		auto sourceText = std::string(reinterpret_cast<char *>(rawData.first.get()), rawData.second);
-
-		int ret = luaL_loadbuffer(L, sourceText.c_str(), sourceText.size(), modulePath.c_str());
-
-		if(ret)
-			return errorRetVoid(toStringRaw(-1));
-
-		ret = lua_pcall(L, 0, 1, 0);
-
-		if(ret)
-		{
-			logGlobal->error("Module '%s' failed to run, error: %s", modulePath, toStringRaw(-1));
-			popAll();
-			return 0;
-		}
-	}
-	else
-	{
-		//todo: also allow loading scripts from same scope
-		return errorRetVoid("No access to scope "+scope);
+		logGlobal->error("Module '%s' failed to run, error: %s", modulePath, toStringRaw(-1));
+		popAll();
+		return 0;
 	}
 
-	modules->push(); //name table modules
-	lua_pushvalue(L, 1);//name table modules name
+	if (!lua_istable(L, -1)) {
+		logScript->error("Script '%s' did not return a table", modulePath);
+		popAll();
+		return 0;
+	}
 
-	if(!lua_isstring(L, -1))
-		return errorRetVoid("Module name corrupted");
-
-	lua_pushvalue(L, -3);//name table modules name table
-	lua_rawset(L, -3);//name table modules
-	lua_pop(L, 1);//name table
-
-	lua_replace(L, 1);//table table
-	lua_settop(L, 1);//table
 	return 1;
 }
 

@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 
+#include "LuaScriptPool.h"
 #include "LuaSpellEffect.h"
 
 #include "LuaContext.h"
@@ -33,17 +34,29 @@ namespace spells
 namespace effects
 {
 
-LuaSpellEffectFactory::LuaSpellEffectFactory(const LuaScriptInstance * script_)
-	: script(script_)
+LuaSpellEffectFactory::LuaSpellEffectFactory(scripting::LuaModule & host)
+	:host(host)
 {
 
 }
 
 LuaSpellEffectFactory::~LuaSpellEffectFactory() = default;
 
-Effect * LuaSpellEffectFactory::create() const
+void LuaSpellEffectFactory::initialize(const std::string & scope, const std::string & name)
 {
-	return new LuaSpellEffect(script);
+	auto loadedScript = std::make_unique<scripting::LuaScriptInstance>(host, scope,name);
+	loadedScripts[loadedScript->getIdentifier()] = std::move(loadedScript);
+}
+
+std::shared_ptr<Effect> LuaSpellEffectFactory::create(const std::string & scope, const std::string & name) const
+{
+	return std::make_shared<LuaSpellEffect>(loadedScripts.at(scope + ':' + name).get());
+}
+
+void LuaSpellEffectFactory::registerScripts(scripting::LuaScriptPool * pool)
+{
+	for (const auto & script : loadedScripts)
+		pool->registerScript(script.second.get());
 }
 
 LuaSpellEffect::LuaSpellEffect(const LuaScriptInstance * script_)

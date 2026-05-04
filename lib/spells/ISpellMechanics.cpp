@@ -18,7 +18,6 @@
 
 #include "adventure/AdventureSpellMechanics.h"
 #include "effects/Effects.h"
-#include "effects/Registry.h"
 #include "effects/Damage.h"
 #include "effects/Timed.h"
 
@@ -69,7 +68,7 @@ protected:
 	void loadEffects(const JsonNode & config, const int level)
 	{
 		JsonDeserializer deser(nullptr, config);
-		effects->serializeJson(LIBRARY->spellEffects(), deser, level, spell->modScope, spell->identifier);
+		effects->serializeJson(deser, level, spell->modScope, spell->identifier);
 	}
 private:
 	std::shared_ptr<IReceptiveCheck> targetCondition;

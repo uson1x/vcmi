@@ -1,23 +1,6 @@
 local Base = require("spellEffect")
-
-local Script = {}
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
-
-Script.spellEffectSchema = {
-	required = { "id" },
-	properties = {
-		type = {},
-		indirect = {},
-		optional = {},
-		id = { type = "string" }, -- type of creature that can be summoned by the spell
-		permanent = { type = "boolean" }, -- if true, summoned units persists after combat
-		exclusive =  { type = "boolean" }, -- if true, spell can only be used if there are no summoned units of another typee
-		summonByHealth = { type = "boolean" }, -- if true, spell effect power represents summoned health, if not - summoned amount
-		summonSameUnit = { type = "boolean" } -- if true, spell will increase stack size of existing summon, if available, instead of summoning a separate stack 
-	},
-	additionalProperties = false
-}
 
 local function summonedEffectValue(parameters, mechanics)
 	local effectPower = mechanics:getEffectPower()
@@ -53,13 +36,6 @@ end
 function Script.initialize(parameters)
 	parameters.creature = LIBRARY:getCreatureByName(parameters.id)
 	return parameters
-end
-
---- Returns true if specified target can be affected by the spell
---- if target can not be affected, script needs to call `problem:add`
---- to explain the reason to the player
-function Script.applicableTarget(parameters, mechanics, problem, target)
-    return true
 end
 
 --- Returns true if spell can be casted in general

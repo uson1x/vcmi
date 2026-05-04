@@ -10,7 +10,6 @@
 #include "StdInc.h"
 
 #include "Dispel.h"
-#include "Registry.h"
 
 #include <vcmi/spells/Spell.h>
 

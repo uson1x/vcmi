@@ -190,6 +190,7 @@ using TextPath = ResourcePathTempl<EResType::TEXT>;
 using JsonPath = ResourcePathTempl<EResType::JSON>;
 using VideoPath = ResourcePathTempl<EResType::VIDEO>;
 using AudioPath = ResourcePathTempl<EResType::SOUND>;
+using ScriptPath = ResourcePathTempl<EResType::LUA_SCRIPT>;
 
 namespace EResTypeHelper
 {

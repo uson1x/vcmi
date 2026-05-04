@@ -17,6 +17,7 @@
 #include "../../../lib/networkPacks/SetStackEffect.h"
 
 #include "../../../lib/serializer/JsonDeserializer.h"
+#include "../../../lib/spells/effects/SpellEffectService.h"
 
 bool battle::operator==(const Destination& left, const Destination& right)
 {
@@ -53,18 +54,9 @@ EffectFixture::~EffectFixture() = default;
 
 void EffectFixture::setupEffect(const JsonNode & effectConfig)
 {
-	subject = Effect::create(GlobalRegistry::get(), effectName);
-	ASSERT_TRUE(subject);
+	SpellEffectID effectID(*LIBRARY->identifiers()->getIdentifier(ModScope::scopeGame(), "spellEffect", effectName));
 
-	JsonNode effectConfigActual = effectConfig;
-	effectConfigActual.setModScope("game");
-	JsonDeserializer deser(nullptr, effectConfigActual);
-	subject->serializeJson(deser);
-}
-
-void EffectFixture::setupEffect(Registry * registry, const JsonNode & effectConfig)
-{
-	subject = Effect::create(registry, effectName);
+	subject = LIBRARY->spellEffects()->create(effectID);
 	ASSERT_TRUE(subject);
 
 	JsonNode effectConfigActual = effectConfig;

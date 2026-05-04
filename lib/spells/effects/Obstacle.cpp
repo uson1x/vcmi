@@ -11,7 +11,6 @@
 
 #include "Obstacle.h"
 
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 
 #include "../../battle/IBattleState.h"

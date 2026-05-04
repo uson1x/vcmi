@@ -10,6 +10,7 @@
 #include "StdInc.h"
 
 #include "Effects.h"
+#include "SpellEffectService.h"
 
 #include <vcmi/spells/Caster.h>
 
@@ -128,7 +129,7 @@ Effects::EffectsToApply Effects::prepare(const Mechanics * m, const Target & aim
 	return effectsToApply;
 }
 
-void Effects::serializeJson(const Registry * registry, JsonSerializeFormat & handler, const int level, const std::string & spellScope, const std::string & spellIdentifier)
+void Effects::serializeJson(JsonSerializeFormat & handler, const int level, const std::string & spellScope, const std::string & spellIdentifier)
 {
 	assert(!handler.saving);
 
@@ -139,11 +140,9 @@ void Effects::serializeJson(const Registry * registry, JsonSerializeFormat & han
 		const std::string & name = p.first;
 
 		auto guard = handler.enterStruct(name);
+		SpellEffectID effectID(*LIBRARY->identifiers()->getIdentifier("spellEffect", p.second["type"]));
 
-		std::string type;
-		handler.serializeString("type", type);
-
-		auto effect = Effect::create(registry, type);
+		auto effect = LIBRARY->spellEffects()->create(effectID);
 		if(effect)
 		{
 			effect->name = name;

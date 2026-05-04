@@ -10,7 +10,6 @@
 #include "StdInc.h"
 
 #include "Teleport.h"
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 #include "../../battle/IBattleState.h"
 #include "../../battle/CBattleInfoCallback.h"
