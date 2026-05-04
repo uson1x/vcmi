@@ -10,7 +10,8 @@
 #pragma once
 
 #include <QString>
-#include <QWidget>
+
+class QWidget;
 
 #ifdef VCMI_ANDROID
 
@@ -43,7 +44,7 @@ public:
 
 	/// After saving a file locally, copies it to the content:// URI from the SAF picker.
 	/// Only needed when the save target was external.
-	static bool writeFileToUri(const QString & localPath, const QString & contentUri);
+	static void writeFileToUri(const QString & localPath, const QString & contentUri);
 
 private:
 	/// Opens the Android native file picker for reading via JNI.

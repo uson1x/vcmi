@@ -11,6 +11,7 @@
 #include "editorfiledialog.h"
 
 #include <QFileDialog>
+#include <QWidget>
 
 #ifdef VCMI_ANDROID
 #include "androidfilepicker.h"
@@ -47,13 +48,11 @@ QString EditorFileDialog::getSaveFileName(QWidget * parent, const QString & titl
 #endif
 }
 
-bool EditorFileDialog::writeFileToUri(const QString & localPath, const QString & contentUri)
+void EditorFileDialog::writeFileToUri(const QString & localPath, const QString & contentUri)
 {
 	if(contentUri.isEmpty())
-		return true;
+		return;
 #ifdef VCMI_ANDROID
-	return AndroidFilePicker::writeFileToUri(localPath, contentUri);
-#else
-	return true;
+	AndroidFilePicker::writeFileToUri(localPath, contentUri);
 #endif
 }

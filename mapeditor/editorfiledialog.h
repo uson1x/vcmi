@@ -10,7 +10,8 @@
 #pragma once
 
 #include <QString>
-#include <QWidget>
+
+class QWidget;
 
 /// Thin wrappers around file dialogs that transparently handle
 /// the Android SAF (Storage Access Framework) file picker.
@@ -34,6 +35,6 @@ namespace EditorFileDialog
 		bool externalOnly = false);
 
 	/// After saving a file locally on Android, copies it to the content:// URI.
-	/// No-op (returns true) when contentUri is empty or on non-Android platforms.
-	bool writeFileToUri(const QString & localPath, const QString & contentUri);
+	/// No-op when contentUri is empty or on non-Android platforms.
+	void writeFileToUri(const QString & localPath, const QString & contentUri);
 }
