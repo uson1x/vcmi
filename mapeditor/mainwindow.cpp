@@ -218,18 +218,14 @@ void EditorMainWindow::parseCommandLine(ExtractionOptions & extractionOptions)
 void EditorMainWindow::loadTranslation()
 {
 #ifdef ENABLE_QT_TRANSLATIONS
-	// Use a static translator parented to qApp so it outlives EditorMainWindow and
-	// stays registered for the campaign/template editors.
-	static bool translationInstalled = false;
-	if(translationInstalled)
-		return;
-
 	const std::string language = settings["general"]["language"].String();
 	const std::string translationFile = language + ".qm";
 	QString translationFileResourcePath = QString{":/editor/translation/%1"}.arg(translationFile.c_str());
 
 	logGlobal->info("Loading editor translation: language='%s', file='%s', resource='%s'",
 		language, translationFile, translationFileResourcePath.toStdString());
+
+	qApp->removeTranslator(&translator);
 
 	if(!QFile::exists(translationFileResourcePath))
 	{
@@ -240,26 +236,19 @@ void EditorMainWindow::loadTranslation()
 	if(translationFile == "english.qm")
 	{
 		// No translator needed for English
-		translationInstalled = true;
 		return;
 	}
 
-	auto * translator = new QTranslator(qApp);
-	if(!translator->load(translationFileResourcePath))
+	if(!translator.load(translationFileResourcePath))
 	{
 		logGlobal->error("Failed to load translation file %s", translationFileResourcePath.toStdString());
-		delete translator;
 		return;
 	}
 
-	if(!qApp->installTranslator(translator))
+	if(!qApp->installTranslator(&translator))
 	{
 		logGlobal->error("Failed to install translator for translation file %s", translationFileResourcePath.toStdString());
-		delete translator;
-		return;
 	}
-
-	translationInstalled = true;
 #endif
 }
 
