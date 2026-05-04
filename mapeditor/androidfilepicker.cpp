@@ -233,7 +233,7 @@ QString AndroidFilePicker::nativeSaveFile(const QString & mimeType, const QStrin
 	QAndroidJniObject jExtraTitle =
 		QAndroidJniObject::fromString("android.intent.extra.TITLE");
 	QAndroidJniObject jName = QAndroidJniObject::fromString(suggestedName);
-	intent.callMethod<jobject>(
+	intent.callObjectMethod(
 		"putExtra",
 		"(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;",
 		jExtraTitle.object<jstring>(), jName.object<jstring>());
