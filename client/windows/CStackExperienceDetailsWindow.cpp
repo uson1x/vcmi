@@ -87,7 +87,7 @@ int CStackWindow::StackExperienceDetailsWindow::getStackExperienceTierFromCreatu
 int CStackWindow::StackExperienceDetailsWindow::calculateDynamicTableRowCount(const CStackInstance * stack, const CCreature * creature)
 {
 	if(!stack || !creature || !GAME->interface())
-		return 7;
+		return 8;
 
 	struct BonusKey
 	{
@@ -117,7 +117,7 @@ int CStackWindow::StackExperienceDetailsWindow::calculateDynamicTableRowCount(co
 	}
 
 	const int minBonusRows = 1;
-	const int maxDataRows = 7; // keep dialog within 800x600
+	const int maxDataRows = 8; // keep dialog within 800x600
 	const int dataRows = std::clamp(1 + std::max(minBonusRows, static_cast<int>(uniqueBonuses.size())), minBonusRows + 1, maxDataRows); // Experience + bonus rows
 	return dataRows; // table data rows (header handled by background template)
 }
