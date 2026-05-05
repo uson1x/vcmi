@@ -1,5 +1,7 @@
 package eu.vcmi.vcmi;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.system.ErrnoException;
@@ -17,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 
 import eu.vcmi.vcmi.util.FileUtil;
 
@@ -26,6 +29,11 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 	public boolean justLaunched = false;
 
 	private static final int MIN_UI_HEIGHT_PX = 600;
+	private static final int REQUEST_OPEN_FILE = 200;
+	private static final int REQUEST_SAVE_FILE = 201;
+
+	private CountDownLatch pickerLatch;
+	private String pickerResultUri;
 
 	@Override
 	public void onCreate(@Nullable final Bundle savedInstanceState)
@@ -72,11 +80,86 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 	}
 
 	/**
-	 * Called from C++ (Qt thread) via JNI after saving to a local file.
-	 * Copies the local file content into the content:// URI obtained from the SAF picker.
+	 * Called from C++ (Qt thread) via JNI.
+	 * Opens the Android native file picker for reading.
+	 * Blocks the calling (Qt) thread until the user picks a file or cancels.
+	 * The picked file is copied to a temp location and the local path is returned.
+	 *
+	 * @param mimeType MIME type filter, e.g. "*​/*"
+	 * @return absolute path to the temp copy, or empty string on cancel/error
+	 */
+	public String pickFileForOpen(String mimeType)
+	{
+		pickerLatch = new CountDownLatch(1);
+		pickerResultUri = null;
+
+		runOnUiThread(() -> {
+			Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+			intent.setType(mimeType);
+			startActivityForResult(intent, REQUEST_OPEN_FILE);
+		});
+
+		try { pickerLatch.await(); } catch (InterruptedException ignored) {}
+
+		if (pickerResultUri == null || pickerResultUri.isEmpty())
+			return "";
+
+		// Copy the content:// URI to a temp file so Qt can work with a normal path
+		try
+		{
+			Uri uri = Uri.parse(pickerResultUri);
+			String displayName = FileUtil.getFilenameFromUri(pickerResultUri, this);
+			if (displayName.isEmpty())
+				displayName = "picked_file";
+			File tempFile = new File(getCacheDir(), displayName);
+			try (InputStream in = getContentResolver().openInputStream(uri);
+				 OutputStream out = new FileOutputStream(tempFile))
+			{
+				FileUtil.copyStream(in, out);
+			}
+			return tempFile.getAbsolutePath();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	/**
+	 * Called from C++ (Qt thread) via JNI.
+	 * Opens the Android native file picker for saving (ACTION_CREATE_DOCUMENT).
+	 * Blocks the calling (Qt) thread until the user picks a location or cancels.
+	 *
+	 * @param mimeType      MIME type for the new file
+	 * @param suggestedName default file name shown to the user
+	 * @return content:// URI string, or empty string on cancel
+	 */
+	public String pickFileForSave(String mimeType, String suggestedName)
+	{
+		pickerLatch = new CountDownLatch(1);
+		pickerResultUri = null;
+
+		runOnUiThread(() -> {
+			Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+			intent.setType(mimeType);
+			intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
+			startActivityForResult(intent, REQUEST_SAVE_FILE);
+		});
+
+		try { pickerLatch.await(); } catch (InterruptedException ignored) {}
+
+		return (pickerResultUri != null) ? pickerResultUri : "";
+	}
+
+	/**
+	 * Called from C++ after saving to a local file.
+	 * Copies the local file content into the content:// URI obtained from pickFileForSave.
 	 *
 	 * @param localPath  absolute path to the locally saved file
-	 * @param contentUri the content:// URI string to write into
+	 * @param contentUri the content:// URI string returned by pickFileForSave
 	 */
 	public void writeFileToUri(String localPath, String contentUri)
 	{
@@ -106,35 +189,19 @@ public class ActivityMapEditor extends org.qtproject.qt5.android.bindings.QtActi
 		}
 	}
 
-	/**
-	 * Called from C++ (Qt thread) via JNI.
-	 * Copies a content:// URI into the app's cache directory and returns the local path.
-	 * Used after the file picker delivers a URI so that Qt can work with a normal file path.
-	 *
-	 * @param uriString the content:// URI string to copy
-	 * @return absolute path to the temp copy, or empty string on error
-	 */
-	public String copyUriToTempFile(String uriString)
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		try
+		if ((requestCode == REQUEST_OPEN_FILE || requestCode == REQUEST_SAVE_FILE) && pickerLatch != null)
 		{
-			Uri uri = Uri.parse(uriString);
-			String displayName = FileUtil.getFilenameFromUri(uriString, this);
-			if (displayName.isEmpty())
-				displayName = "picked_file";
-			File tempFile = new File(getCacheDir(), displayName);
-			try (InputStream in = getContentResolver().openInputStream(uri);
-				 OutputStream out = new FileOutputStream(tempFile))
-			{
-				FileUtil.copyStream(in, out);
-			}
-			return tempFile.getAbsolutePath();
+			if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null)
+				pickerResultUri = data.getData().toString();
+			else
+				pickerResultUri = "";
+			pickerLatch.countDown();
+			return;
 		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			return "";
-		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 }
