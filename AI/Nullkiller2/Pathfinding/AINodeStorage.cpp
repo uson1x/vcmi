@@ -762,13 +762,6 @@ void HeroChainCalculationTask::calculateHeroChain(
 			}
 		}
 
-		// Always acquire locks in consistent order to prevent deadlock
-		// Order by memory address to ensure consistent acquisition order
-		const ChainActor * firstActor = carrier->actor;
-		const ChainActor * secondActor = other->actor;
-		if(firstActor > secondActor)
-			std::swap(firstActor, secondActor);
-
 		// Retry with timeout to prevent livelock using exponential backoff
 		constexpr auto maxDelay = std::chrono::milliseconds(16);
 		auto currentDelay = std::chrono::milliseconds(1);
@@ -776,11 +769,24 @@ void HeroChainCalculationTask::calculateHeroChain(
 
 		for(int attempt = 0; attempt < maxRetries; ++attempt)
 		{
-			const auto exchangeResult = firstActor->tryExchangeNoLock(secondActor);
+			const auto exchangeResult = carrier->actor->tryExchangeNoLock(other->actor);
 			if(exchangeResult.lockAcquired)
 			{
 				if (exchangeResult.actor)
+				{
+					if(exchangeResult.actor->hero != carrier->actor->hero)
+					{
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
+						logAi->trace(
+			"HeroChainCalculationTask::calculateHeroChain exchange direction mismatch: result=%s, carrier=%s, other=%s",
+						exchangeResult.actor->toString(),
+							carrier->actor->toString(),
+							other->actor->toString());
+#endif
+						return;
+					}
 					result.push_back(calculateExchange(exchangeResult.actor, carrier, other));
+				}
 				return;
 			}
 
