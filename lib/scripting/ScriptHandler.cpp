@@ -23,12 +23,13 @@ namespace scripting
 
 ScriptHandler::ScriptHandler()
 {
-	boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiERM");
-
-	filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
+	boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
 
 	if(!boost::filesystem::exists(filePath))
-		throw std::runtime_error("Critical error! Failed to initialize Lua scripting module!");
+	{
+		logGlobal->warn("Lua scripting module not found at path: %s - scripting will be unavailable", filePath.string());
+		return;
+	}
 
 	lua = CDynLibHandler::getNewScriptingModule(filePath);
 }
@@ -37,7 +38,8 @@ ScriptHandler::~ScriptHandler() = default;
 
 void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNode & data)
 {
-	return lua->loadObject(scope, name, data);
+	if(lua)
+		lua->loadObject(scope, name, data);
 }
 
 void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNode & data, size_t index)
@@ -47,12 +49,15 @@ void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNo
 
 void ScriptHandler::afterLoadFinalization()
 {
-	return lua->afterLoadFinalization();
+	if(lua)
+		lua->afterLoadFinalization();
 }
 
 std::unique_ptr<Pool> ScriptHandler::createPoolInstance(const Environment * ENV) const
 {
-	return lua->createPoolInstance(ENV);
+	if(lua)
+		return lua->createPoolInstance(ENV);
+	return {};
 }
 
 std::vector<JsonNode> ScriptHandler::loadLegacyData()
