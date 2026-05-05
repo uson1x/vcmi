@@ -218,7 +218,7 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 	addLongInfo(1, LIBRARY->generaltexth->translate("vcmi.stackExperience.popup.maxRecruitsRank10"), std::to_string(maxRecruitsAtRank10));
 
 	std::vector<NumericRow> rows = {
-		{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.Experience"), [&rankThresholds](const CStackInstance & stackInst)
+		{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.experience"), [&rankThresholds](const CStackInstance & stackInst)
 			{
 				const int rank = std::clamp(stackInst.getExpRank(), 0, MAX_RANKS - 1);
 				return static_cast<int>(rankThresholds[std::min(rank, static_cast<int>(rankThresholds.size()) - 1)]);
@@ -393,9 +393,9 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 	auto getPreferredPresentation = [&](const BonusKey & key) -> std::optional<PreferredRowPresentation>
 	{
 		if(key.type == BonusType::PRIMARY_SKILL && key.subtype == BonusSubtypeID(PrimarySkill::ATTACK))
-			return PreferredRowPresentation{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.attack"), ImagePath::builtin("stackExperienceIconAttack"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.attack"), std::nullopt};
+			return PreferredRowPresentation{LIBRARY->generaltexth->allTexts[190], ImagePath::builtin("stackExperienceIconAttack"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.attack"), std::nullopt};
 		if(key.type == BonusType::PRIMARY_SKILL && key.subtype == BonusSubtypeID(PrimarySkill::DEFENSE))
-			return PreferredRowPresentation{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.defense"), ImagePath::builtin("stackExperienceIconDefense"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.defense"), std::nullopt};
+			return PreferredRowPresentation{LIBRARY->generaltexth->allTexts[391], ImagePath::builtin("stackExperienceIconDefense"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.defense"), std::nullopt};
 		if(key.type == BonusType::CREATURE_DAMAGE && key.subtype == BonusSubtypeID(BonusCustomSubtype::creatureDamageMin))
 			return PreferredRowPresentation{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.minDamage"), ImagePath::builtin("stackExperienceIconMinDamage"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.minDamage"), std::nullopt};
 		if(key.type == BonusType::CREATURE_DAMAGE && key.subtype == BonusSubtypeID(BonusCustomSubtype::creatureDamageMax))
@@ -410,12 +410,12 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 					result += b->val;
 				return result;
 			};
-			return PreferredRowPresentation{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.health"), ImagePath::builtin("stackExperienceIconHealth"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.health"), override};
+			return PreferredRowPresentation{LIBRARY->generaltexth->allTexts[388], ImagePath::builtin("stackExperienceIconHealth"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.health"), override};
 		}
 		if(key.type == BonusType::STACKS_SPEED)
-			return PreferredRowPresentation{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.speed"), ImagePath::builtin("stackExperienceIconSpeed"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.speed"), std::nullopt};
+			return PreferredRowPresentation{LIBRARY->generaltexth->allTexts[193], ImagePath::builtin("stackExperienceIconSpeed"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.speed"), std::nullopt};
 		if(key.type == BonusType::SHOTS)
-			return PreferredRowPresentation{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.shots"), ImagePath::builtin("stackExperienceIconShots"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.shots"), std::nullopt};
+			return PreferredRowPresentation{LIBRARY->generaltexth->allTexts[198], ImagePath::builtin("stackExperienceIconShots"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.shots"), std::nullopt};
 		if(key.type == BonusType::CASTS)
 			return PreferredRowPresentation{LIBRARY->generaltexth->allTexts[399], ImagePath::builtin("stackExperienceIconCasts"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.casts"), std::nullopt};
 
@@ -584,7 +584,7 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 	constexpr int closeButtonBottomMargin = 40;
 	constexpr int closeButtonWidth = 64;
 	constexpr int closeButtonHeight = 32;
-	closeButton = std::make_shared<CButton>(Point(centerX - closeButtonWidth / 2, pos.h - closeButtonBottomMargin - closeButtonHeight), AnimationPath::builtin("IOKAY.DEF"), LIBRARY->generaltexth->zelp[632], [this](){ close(); }, EShortcut::GLOBAL_ACCEPT);
+	closeButton = std::make_shared<CButton>(Point(centerX - closeButtonWidth / 2, pos.h - closeButtonBottomMargin - closeButtonHeight), AnimationPath::builtin("IOKAY.DEF"), CButton::tooltip(LIBRARY->generaltexth->translate("vcmi.stackExperience.closeDetails")), [this](){ close(); }, EShortcut::GLOBAL_ACCEPT);
 	closeButton->setBorderColor(Colors::METALLIC_GOLD);
 }
 

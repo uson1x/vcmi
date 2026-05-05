@@ -986,6 +986,16 @@ void CCreatureHandler::loadStackExperience(CCreature * creature, const JsonNode 
 			% lowerLimit);
 	};
 
+	const auto stackExperienceSelector = Selector::sourceTypeSel(BonusSource::STACK_EXPERIENCE);
+	for(const auto & existingBonus : *creature->getBonuses(stackExperienceSelector))
+	{
+		int lowerLimit = 0;
+		if (const auto * rankLimiter = dynamic_cast<const RankRangeLimiter *>(existingBonus->limiter.get()))
+			lowerLimit = rankLimiter->minRank;
+
+		loadedStackExperienceBonuses.insert(makeStackExpBonusSignature(*existingBonus, lowerLimit));
+	}
+
 	for (const JsonNode &exp : input.Vector())
 	{
 		const bool hasExplicitSubtype = !exp["bonus"]["subtype"].isNull();
