@@ -371,6 +371,7 @@
 	"vcmi.bonusSource.artifact": "Artifact",
 	"vcmi.bonusSource.commander": "Commander",
 	"vcmi.bonusSource.creature": "Ability",
+	"vcmi.bonusSource.experience": "Stack",
 	"vcmi.bonusSource.hero": "Hero",
 	"vcmi.bonusSource.other": "Other",
 	"vcmi.bonusSource.spell": "Spell",

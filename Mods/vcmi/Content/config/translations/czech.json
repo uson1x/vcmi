@@ -369,6 +369,7 @@
 	"vcmi.bonusSource.artifact": "Artefakt",
 	"vcmi.bonusSource.commander": "Velitel",
 	"vcmi.bonusSource.creature": "Schopnost",
+	"vcmi.bonusSource.experience": "Oddíl",
 	"vcmi.bonusSource.hero": "Hrdina",
 	"vcmi.bonusSource.other": "Ostatní",
 	"vcmi.bonusSource.spell": "Kouzlo",
