@@ -77,9 +77,8 @@ At the moment, all our services are hosted by Digital Ocean. Current approach is
 | Droplet | Specifications | Services |
 | ------- | -------------- | -------- |
 | `vcmi-artifactory` | 4 Gb / 2 CPU / 80 Gb / $24 | [Conan Artifactory server](https://artifactory.vcmi.eu/) (removed, snapshot available) |
-| `vcmi-forum` | 2 Gb / 1 CPU / 25 Gb / $12 (+20%) | [Discourse forum](https://forum.vcmi.eu/) |
-| `vcmi-second` | 1 Gb / 1 CPU / 20 Gb / $6 | Old multiplayer lobby server that runs on Ubuntu 20.04. Soon to be removed |
-| `vcmi-lobby` | 1 Gb / 1 CPU / 20 Gb / $6 | Multiplayer lobby (lobby.vcmi.eu or beholder.vcmi.eu - deprecated) |
+| `vcmi-forum` | 2 Gb / 1 CPU / 25 Gb / $12 (+20%) | [Discourse forum](https://forum.vcmi.eu/). Note: 25 Gb droplet - ssd can be expanded, or we can downscale entire droplet to 1 Gb config |
+| `vcmi-weblate` | 2 Gb / 1 CPU / 50 Gb / $12 | [Weblate](https://weblate.vcmi.eu/) |
 | `vcmi-web` | 512 Mb / 1 CPU / 10 Gb + 100 Gb / $4 (+20%) + $10 | Builds uploading from Github, [Build download page](http://download.vcmi.eu/), [Legacy download page](https://builds.vcmi.download/). Also contains nginx server for redirecting [old bug tracker](https://bugs.vcmi.eu/), [old wiki](https://wiki.vcmi.eu/), and [old slack invite page](https://slack.vcmi.eu/) |
 
 Notes:
@@ -111,6 +110,7 @@ Notes:
 | [forum.vcmi.eu](https://forum.vcmi.eu) | Discourse forum | `vcmi-forum` | - |
 | [bugs.vcmi.eu](https://bugs.vcmi.eu) | Bug tracker | `vcmi-web` | Redirects to [Github Issues](https://github.com/vcmi/vcmi/issues) |
 | [slack.vcmi.eu](https://slack.vcmi.eu) | Slack invite page | `vcmi-web` | Redirects to [main page](https://vcmi.eu/) |
+| [weblate.vcmi.eu](https://weblate.vcmi.eu) | Weblate translation service | `vcmi-weblate` | - |
 | [wiki.vcmi.eu](https://wiki.vcmi.eu) | Wiki | `vcmi-web` | Redirects to [main page](https://vcmi.eu/) |
 | [vcmi.download](https://vcmi.download) | Main page redirect | CNAME | No content, redirects to [main page](https://vcmi.eu/) |
 | [builds.vcmi.download](https://builds.vcmi.download) | Public downloads | `vcmi-second` | Redirects to [download.vcmi.eu](https://download.vcmi.eu) |
@@ -122,11 +122,11 @@ Currenly we have following services deployed:
 - [Discourse](Discourse.md)
 - [Multiplayer lobby](Multiplayer_Lobby.md)
 - [Downloads & daily builds](Daily_Builds.md)
+- [Weblate](Weblate.md)
 
 Potential addition for the future:
 
 - Conan Artifactory
-- Self-hosted Weblate, to bypass Libre tier restrictions on our Weblate hosted by upstream team and allow translation of Heroes 3, mods, and VCMI website
 - Crash reporter tool, such as [GlitchTip](https://glitchtip.com/)
 - (long-term) Expanded multiplayer lobby with cheat-proof game hosting
 

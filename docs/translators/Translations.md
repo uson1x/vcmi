@@ -93,8 +93,6 @@ VCMI contains several new strings, to cover functionality not existing in Heroes
 - Linux specific
 - Android Launcher
 
-### Translation of in-game data
-
 Most of game data is translated using [Weblate](https://hosted.weblate.org/projects/vcmi/)
 
 For usage of Weblate, please refer to [Weblate documentation](https://docs.weblate.org/en/latest/user/translating.html)
@@ -102,6 +100,27 @@ For usage of Weblate, please refer to [Weblate documentation](https://docs.webla
 If something is not clear - feel free to ask us on Discord or forum. Translation made via Weblate will be automatically integrated into VCMI for next release
 
 ## Translating mods
+
+### Weblate translations
+
+Translation for some mods is being migrated to our self-hosted [Weblate](https://weblate.vcmi.eu/projects/). If mod that you wish to translate is already there and it already has your language, then all you need to do is register and start translating.
+
+If you wish to add a new mod on our Weblate, please contact VCMI Team for initial setup via Discord or Github.
+
+Mod management on weblate:
+
+- If translation to a new language needs to be added to Weblate, please add empty dummy files for required language to mod repository on Github. This should automatically generate translation on Weblate once changes are merged
+- If there is a new submods that needs translating, add required files (english.json and any required dummy translations) to mod repository on Github. After that, on Weblate add new component and configure it as follows. If you have not set any of these fields, they can be edited later in Component -> Settings -> Files tab.
+  - Source code repository: `weblate://mod-name/mod-name`
+  - File format: `Json nested structure file` (should be auto-selected)
+  - File mask: `Mods/XXX/Content/translation/*.json` for submods, or `Mods/XXX/Mods/YYY/Content/translation/*.json` for submods of submods. Weblate will offer to auto-detect this option
+  - Json indentation: `1`
+  - Json indentation style: `Tabs`
+  - Monolingual base language file: `Mods/XXX/Content/translation/english.json` for submods, or `Mods/XXX/Mods/YYY/Content/translation/english.json` for submods of submods.
+  - Edit base file: `off`
+  - Adding new translation: `Disable adding new translations`
+
+WARNING: Do not edit or move translation files other than through Weblate. If you have to, for example due to submod reorganization, make sure to flush any changes from Weblate using Component -> Repo
 
 ### Exporting translation
 
@@ -141,7 +160,7 @@ In order to display information in Launcher in language selected by user add fol
 		"description" : "<translated description>",
 		"author" : "<translated author>",
 		"translations" : [
-			"config/<modName>/<language>.json"
+			"translation/<language>.json"
 		]
 	},
 ```
@@ -150,7 +169,7 @@ However, normally you don't need to use block for English. Instead, English text
 
 ### Translating in-game strings
 
-After you have exported translation and added mod information for your language, copy exported file to `<mod directory>/Content/config/<mod name>/<language>.json`.
+After you have exported translation and added mod information for your language, copy exported file to `<mod directory>/Content/translation/<language>.json`.
 
 Use any text editor (Notepad++ is recommended for Windows) and translate all strings from this file to your language
 
