@@ -34,6 +34,8 @@ class CCommanderArtPlace;
 class LRClickableArea;
 class GraphicalPrimitiveCanvas;
 class CFilledTexture;
+class CSlider;
+class CGStatusBar;
 
 class CCommanderSkillIcon : public LRClickableAreaWText //TODO: maybe bring commander skill button initialization logic inside?
 {
