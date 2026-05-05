@@ -19,6 +19,10 @@
 #include "../lib/filesystem/Filesystem.h"
 #include "../lib/modding/CModHandler.h"
 #include "../lib/modding/ModManager.h"
+#include "callback/EditorCallback.h"
+#include "campaign/CampaignHandler.h"
+#include "mapping/CMap.h"
+#include "mapping/CMapService.h"
 #include "modding/ModDescription.h"
 #include "texts/CGeneralTextHandler.h"
 
@@ -62,7 +66,68 @@ static void generateTranslations(const std::string & modID)
 	LIBRARY = new GameLibrary;
 	LIBRARY->initializeFilesystem(false);
 	LIBRARY->initializeLibrary();
-	LIBRARY->generaltexth->exportAllTexts(textsByMod, false);
+
+	{
+		CMapService mapService;
+
+		logGlobal->info("Searching for available maps");
+		std::unordered_set<ResourcePath> mapList = CResourceHandler::get()->getFilteredFiles([&](const ResourcePath & ident)
+		{
+			return ident.getType() == EResType::MAP;
+		});
+
+		std::vector<std::unique_ptr<CMap>> loadedMaps;
+		std::vector<std::shared_ptr<CampaignState>> loadedCampaigns;
+
+		logGlobal->info("Loading maps for export");
+		for (auto const & mapName : mapList)
+		{
+			try
+			{
+				std::string mapModName = LIBRARY->modh->findResourceOrigin(mapName);
+				if (mapModName != modID && !mapModName.starts_with(modID + '.'))
+					continue;
+
+				EditorCallback cb(nullptr);
+				// load and drop loaded map - we only need loader to run over all maps
+				loadedMaps.push_back(mapService.loadMap(mapName, &cb));
+			}
+			catch(std::exception & e)
+			{
+				logGlobal->warn("Map %s is invalid. Message: %s", mapName.getName(), e.what());
+			}
+		}
+
+		logGlobal->info("Searching for available campaigns");
+		std::unordered_set<ResourcePath> campaignList = CResourceHandler::get()->getFilteredFiles([&](const ResourcePath & ident)
+		{
+			return ident.getType() == EResType::CAMPAIGN;
+		});
+
+		logGlobal->info("Loading campaigns for export");
+		for (auto const & campaignName : campaignList)
+		{
+			try
+			{
+				std::string campaignModName = LIBRARY->modh->findResourceOrigin(campaignName);
+				if (campaignModName != modID && !campaignModName.starts_with(modID + '.'))
+					continue;
+
+				loadedCampaigns.push_back(CampaignHandler::getCampaign(campaignName.getName()));
+				for (auto const & part : loadedCampaigns.back()->allScenarios())
+				{
+					EditorCallback cb(nullptr);
+					loadedCampaigns.back()->getMap(part, &cb);
+				}
+			}
+			catch(std::exception & e)
+			{
+				logGlobal->warn("Campaign %s is invalid. Message: %s", campaignName.getName(), e.what());
+			}
+		}
+
+		LIBRARY->generaltexth->exportAllTexts(textsByMod, false);
+	}
 
 	for(const auto & modEntry : textsByMod)
 	{
@@ -106,7 +171,7 @@ static void generateTranslations(const std::string & modID)
 		{
 			std::string preferredLanguage = LIBRARY->generaltexth->getPreferredLanguage();
 			std::string filename = boost::replace_all_copy(modEntry.first, ".", "/Mods/");
-			const boost::filesystem::path dirPath = outPath / filename / "Content/config/translation/";
+			const boost::filesystem::path dirPath = outPath / filename / "Content/translation/";
 			boost::filesystem::create_directories(dirPath);
 			const boost::filesystem::path filePath = dirPath / (preferredLanguage + ".json");
 			std::ofstream file(filePath.c_str());

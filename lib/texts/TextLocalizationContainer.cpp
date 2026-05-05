@@ -161,11 +161,19 @@ void TextLocalizationContainer::exportAllTexts(std::map<std::string, ExportedStr
 		std::string modName = entry.second.baseStringModContext;
 		std::string originalMod = entry.second.identifierModContext;
 
-		if (modName == originalMod && modName.find('.') != std::string::npos)
-			modName = modName.substr(0, modName.find('.'));
-		else
+		if (modName != originalMod)
+		{
+			// this is string patching - one mod modified string from another mod
 			if (!vstd::contains(storage[modName].overridenMods, originalMod))
 				storage[modName].overridenMods.push_back(originalMod);
+		}
+		else
+		{
+			// move string to translation of base mod, for more convenient translation of scattered strings
+			// except for maps / compaigns - those are usually kept in separate submod, so keep translations separate to group maps and game translations separate
+			if (modName.find('.') != std::string::npos && !entry.first.starts_with("map.") && !entry.first.starts_with("campaign."))
+				modName = modName.substr(0, modName.find('.'));
+		}
 
 		if (!textToWrite.empty())
 			storage[modName].strings[entry.first] = textToWrite;
