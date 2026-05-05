@@ -123,6 +123,19 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 			GAME->server().getGlobalLobby().activateInterface();
 	}, EShortcut::GLOBAL_CANCEL);
 
+	// Make sure scenario selection is centered
+	if(screenType == ESelectionScreen::newGame || screenType == ESelectionScreen::loadGame)
+	{
+		const Point contentOffset(19, 0);
+		for(CIntObject * child : children)
+		{
+			if(!child || child == background.get())
+				continue;
+
+			child->moveBy(contentOffset);
+		}
+	}
+
 	if(hideScreen) // workaround to avoid confusing players by custom campaign list displaying for a few ms -> instead of this draw a black screen while "loading"
 	{
 		blackScreen = std::make_shared<GraphicalPrimitiveCanvas>(Rect(Point(0, 0), pos.dimensions()));
@@ -273,6 +286,10 @@ void CLobbyScreen::updateAfterStateChange()
 	{
 		tabBattleOnlyMode = std::make_shared<BattleOnlyModeTab>();
 		tabBattleOnlyMode->setEnabled(false);
+
+		// Make sure scenario selection is centered
+		if(screenType == ESelectionScreen::newGame || screenType == ESelectionScreen::loadGame)
+			tabBattleOnlyMode->moveBy(Point(19, 0));
 
 		if(GAME->server().battleMode)
 			toggleTab(tabBattleOnlyMode);
