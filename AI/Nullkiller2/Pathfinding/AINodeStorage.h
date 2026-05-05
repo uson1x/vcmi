@@ -175,7 +175,7 @@ private:
 	uint8_t turnDistanceLimit[2];
 
 public:
-	/// more than 1 chain layer for each hero allows us to have more than 1 path to each tile so we can chose more optimal one.	
+	/// more than 1 chain layer for each hero allows us to have more than 1 path to each tile so we can chose more optimal one.
 	AINodeStorage(Nullkiller * aiNk, const int3 & sizes);
 	~AINodeStorage() override;
 
@@ -245,7 +245,7 @@ public:
 
 	template<class NodeRange>
 	bool hasBetterChain(
-		const CGPathNode * source, 
+		const CGPathNode * source,
 		const AIPathNode & destinationNode,
 		const NodeRange & chains) const;
 
