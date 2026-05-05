@@ -1032,6 +1032,7 @@
 	"vcmi.stackExperience.desc.casts": "{Seslání}\nZvyšuje počet seslání o ${val}.",
 	"vcmi.stackExperience.table.yes": "Ano",
 	"vcmi.stackExperience.popup.upgradeMultiplier": "Zkušenosti zachované po vylepšení",
+	"vcmi.stackExperience.closeDetails": "Opustit podrobnosti zkušeností oddílu",
 	"vcmi.stackExperience.windowTitle": "Podrobnosti zkušeností oddílu",
 	"vcmi.statisticWindow.icon.defeated": "Porážka",
 	"vcmi.statisticWindow.icon.grailFound": "Nalezen Svatý grál",

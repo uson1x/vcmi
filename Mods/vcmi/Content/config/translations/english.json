@@ -1035,6 +1035,7 @@
 	"vcmi.stackExperience.desc.casts": "{Casts}\nIncreases number of casts by ${val}.",
 	"vcmi.stackExperience.table.yes": "Yes",
 	"vcmi.stackExperience.popup.upgradeMultiplier": "Experience kept after Upgrade",
+	"vcmi.stackExperience.closeDetails": "Exit stack experience details",
 	"vcmi.stackExperience.windowTitle": "Stack Experience Details",
 	"vcmi.statisticWindow.icon.defeated": "Defeated",
 	"vcmi.statisticWindow.icon.grailFound": "Grail found",

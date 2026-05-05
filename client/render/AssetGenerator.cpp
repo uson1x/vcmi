@@ -1368,18 +1368,19 @@ AssetGenerator::CanvasPtr AssetGenerator::createStackExperienceIcon(const std::s
 	{
 		auto icon = ENGINE->renderHandler().loadAnimation(anim, EImageBlitMode::COLORKEY)->getImage(frame);
 		Canvas iconCanvas(Point(icon->width(), icon->height()), CanvasScalingPolicy::IGNORE);
-		iconCanvas.drawColor(Rect(0, 0, icon->width(), icon->height()), Colors::TRANSPARENCY);
 		iconCanvas.draw(icon, Point(0, 0), Rect(0, 0, icon->width(), icon->height()));
 		canvas.drawScaled(iconCanvas, Point(0, 0), Point(32, 32));
 	};
 
 	auto drawCenteredOverlay = [&](const std::shared_ptr<IImage> & overlay, int size = 28)
 	{
-		Canvas overlayCanvas(Point(overlay->width(), overlay->height()), CanvasScalingPolicy::IGNORE);
-		overlayCanvas.drawColor(Rect(0, 0, overlay->width(), overlay->height()), Colors::TRANSPARENCY);
-		overlayCanvas.draw(overlay, Point(0, 0), Rect(0, 0, overlay->width(), overlay->height()));
 		const int offset = (32 - size) / 2;
-		canvas.drawScaled(overlayCanvas, Point(offset, offset), Point(size, size));
+		auto scaledOverlay = ENGINE->renderHandler().createImage(Point(size, size), CanvasScalingPolicy::IGNORE);
+		auto scaledOverlayCanvas = scaledOverlay->getCanvas();
+		Canvas overlayCanvas(Point(overlay->width(), overlay->height()), CanvasScalingPolicy::IGNORE);
+		overlayCanvas.draw(overlay, Point(0, 0), Rect(0, 0, overlay->width(), overlay->height()));
+		scaledOverlayCanvas.drawScaled(overlayCanvas, Point(0, 0), Point(size, size));
+		canvas.draw(std::static_pointer_cast<IImage>(scaledOverlay), Point(offset, offset), Rect(0, 0, size, size));
 	};
 
 	if(iconId == "experience")
