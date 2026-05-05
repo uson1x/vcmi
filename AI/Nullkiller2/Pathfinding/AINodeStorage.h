@@ -288,7 +288,17 @@ public:
 	}
 
 	void calculateTownPortalTeleportations(std::vector<CGPathNode *> & neighbours);
-	void fillChainInfo(const AIPathNode * node, AIPath & path, int parentIndex) const;
+
+	using RealMoveMasksByHero = std::map<const CGHeroInstance *, uint64_t>;
+
+	STRONG_INLINE bool isRealMovementNode(const AIPathNode * node) const
+	{
+		return node && node->actor && node->actor->hero && node->coord != node->actor->hero->visitablePos();
+	}
+
+	// Reconstructs an AIPath by walking theNodeBefore / chainOther, appending branch nodes first and linking them via parentIndex
+	// Returns false when reconstruction would assign conflicting real-move chainMasks to the same hero
+	bool tryReconstructChainInfo(const AIPathNode * node, AIPath & path, int & parentIndex, RealMoveMasksByHero & realMoveMasks) const;
 
 	template<typename Fn>
 	void iterateValidNodes(const int3 & pos, EPathfindingLayer layer, Fn fn)
