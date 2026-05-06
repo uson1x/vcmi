@@ -237,12 +237,14 @@ void CModHandler::initializeConfig()
 void CModHandler::loadTranslation(const TModID & modName)
 {
 	const auto & mod = getModInfo(modName);
+	JsonParsingSettings settings;
+	settings.strict	= true; // weblate requirement
 
 	std::string preferredLanguage = LIBRARY->generaltexth->getPreferredLanguage();
 	std::string modBaseLanguage = getModInfo(modName).getBaseLanguage();
 
-	JsonNode baseTranslation = JsonUtils::assembleFromFiles(mod.getLocalConfig()["translations"]);
-	JsonNode extraTranslation = JsonUtils::assembleFromFiles(mod.getLocalConfig()[preferredLanguage]["translations"]);
+	JsonNode baseTranslation = JsonUtils::assembleFromFiles(mod.getLocalConfig()["translations"], settings);
+	JsonNode extraTranslation = JsonUtils::assembleFromFiles(mod.getLocalConfig()[preferredLanguage]["translations"], settings);
 
 	LIBRARY->generaltexth->loadTranslationOverrides(modName, modBaseLanguage, baseTranslation);
 	LIBRARY->generaltexth->loadTranslationOverrides(modName, preferredLanguage, extraTranslation);
