@@ -63,9 +63,9 @@ When possible at least two of active core developers must have access to them in
 
 This section dedicated to explain specific configurations of our servers for anyone who might need to improve it in future.
 
-### Droplet configuration
+### VPS configuration
 
-At the moment, all our services are hosted by Digital Ocean. Current approach is to keep services on separate VPS (called "droplets" by Digital Ocean) for better isolation & to allow independent restarts / upgrades. This also allows us to measure performance & system load of each service independently. All droplets can only be accessed using ssh login with public key. Currently access to all droplets is granted to:
+At the moment, most our services are hosted by Digital Ocean. Current approach is to keep services on separate VPS (called "droplets" by Digital Ocean) for better isolation & to allow independent restarts / upgrades. This also allows us to measure performance & system load of each service independently. All droplets can only be accessed using ssh login with public key. Currently access to all droplets is granted to:
 
 - Ivan Savenko
 - Alexvins
@@ -74,19 +74,25 @@ At the moment, all our services are hosted by Digital Ocean. Current approach is
 - SXX
 - kambala (`vcmi-artifactory` droplet)
 
-| Droplet | Specifications | Services |
-| ------- | -------------- | -------- |
-| `vcmi-artifactory` | 4 Gb / 2 CPU / 80 Gb / $24 | [Conan Artifactory server](https://artifactory.vcmi.eu/) (removed, snapshot available) |
-| `vcmi-forum` | 2 Gb / 1 CPU / 25 Gb / $12 (+20%) | [Discourse forum](https://forum.vcmi.eu/). Note: 25 Gb droplet - ssd can be expanded, or we can downscale entire droplet to 1 Gb config |
-| `vcmi-weblate` | 2 Gb / 1 CPU / 50 Gb / $12 | [Weblate](https://weblate.vcmi.eu/) |
-| `vcmi-web` | 512 Mb / 1 CPU / 10 Gb + 100 Gb / $4 (+20%) + $10 | Builds uploading from Github, [Build download page](http://download.vcmi.eu/), [Legacy download page](https://builds.vcmi.download/). Also contains nginx server for redirecting [old bug tracker](https://bugs.vcmi.eu/), [old wiki](https://wiki.vcmi.eu/), and [old slack invite page](https://slack.vcmi.eu/) |
+Lobby is currently hosted on Hetzner, with migration of other services to Hetzner in plans. Login is via public key, currently granted to:
+
+- Ivan Savenko
+
+| VPS | Location | Specifications | Services |
+| --- | -------- | -------------- | -------- |
+| `vcmi-forum` | DO Droplet | 2 Gb / 1 CPU / 25 Gb / $12 (+20%) | [Discourse forum](https://forum.vcmi.eu/). Note: 25 Gb droplet - ssd can be expanded, or we can downscale entire droplet to 1 Gb config |
+| `vcmi-weblate` | DO Droplet | 2 Gb / 1 CPU / 50 Gb / $12 | [Weblate](https://weblate.vcmi.eu/) |
+| `vcmi-web` | DO Droplet | 512 Mb / 1 CPU / 10 Gb + 100 Gb / $4 (+20%) + $10 | Builds uploading from Github, [Build download page](http://download.vcmi.eu/), [Legacy download page](https://builds.vcmi.download/). Also contains nginx server for redirecting [old bug tracker](https://bugs.vcmi.eu/), [old wiki](https://wiki.vcmi.eu/), and [old slack invite page](https://slack.vcmi.eu/) |
+| `vcmi-lobby` | Hetzner Server | 4 Gb / 2 CPU / 40 Gb / €4 (+20%) | Multiplayer lobby (lobby.vcmi.eu or beholder.vcmi.eu - deprecated) as we ll as [API endpoint](https://api.vcmi.eu/) |
+| `vcmi-artifactory` | DO Snapshot | 4 Gb / 2 CPU / 80 Gb / $24 | [Conan Artifactory server](https://artifactory.vcmi.eu/) |
+| `vcmi-main` | DO Snapshot | ??? / $1 | Contains old bugtracker, forum, and wiki |
+| `vcmi-second` | DO Snapshot | ??? / $1 | Contains old MP lobby and builds uploader |
 
 Notes:
 
-- All droplets other than `vcmi-second` run Ubuntu 24.04
-- Droplets with deployed services have backups enabled (+20% costs)
-- In addition to droplets, we have separate 100 Gb volume for builds ($10 / month), currently attached to `vcmi-web`
-- There is snapshot for old `vcmi-main` droplet, preserved in case if we need to retrieve some data from it - old bugtracker, forum, and wiki ($1.5 / month)
+- All active VPS run Ubuntu 24.04
+- VPS with deployed and tested services have backups enabled (+20% costs)
+- In addition, we have separate 100 Gb volume for builds ($10 / month), currently attached to `vcmi-web`
 
 ### Rules to stick to
 

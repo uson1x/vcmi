@@ -83,31 +83,10 @@ services:
     - "127.0.0.1:8080:8080"
 ```
 
-
 ## Upgrade
 
-```sh
-cd /var/discourse
-./launcher rebuild app
-```
-
-Alternatively can be done in UI, but untested
+(not investigated)
 
 ## Migration
 
-When setting up Discourse, it needs to be already located on target domain name, so it might be a good idea to do operations in following order:
-
-- create backup on old server (or pick latest weekly backup)
-- switch domain name to new IP & wait for DNS to propagate
-- ensure that ports 80 and 443 are open on new server
-- setup Discourse on new server
-- restore backup either in web interface or in console on new server
-- adjust or migrate configuration file from old server to new one
-
-
-
-
-
-
-
-
+(not investigated)

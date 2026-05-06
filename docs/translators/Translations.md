@@ -85,42 +85,72 @@ It's possible to add video subtitles. Create a JSON file in `video` folder of tr
 
 ## Translating VCMI data
 
-VCMI contains several new strings, to cover functionality not existing in Heroes III. It can be roughly split into following parts:
-
-- In-game texts, most noticeably - in-game settings menu.
-- Game Launcher
-- Map Editor
-- Linux specific
-- Android Launcher
-
-Most of game data is translated using [Weblate](https://hosted.weblate.org/projects/vcmi/)
+VCMI game data is translated via [Weblate](https://hosted.weblate.org/projects/vcmi/).
 
 For usage of Weblate, please refer to [Weblate documentation](https://docs.weblate.org/en/latest/user/translating.html)
 
 If something is not clear - feel free to ask us on Discord or forum. Translation made via Weblate will be automatically integrated into VCMI for next release
 
-## Translating mods
-
-### Weblate translations
+## Translating mods via Weblate
 
 Translation for some mods is being migrated to our self-hosted [Weblate](https://weblate.vcmi.eu/projects/). If mod that you wish to translate is already there and it already has your language, then all you need to do is register and start translating.
 
 If you wish to add a new mod on our Weblate, please contact VCMI Team for initial setup via Discord or Github.
 
-Mod management on weblate:
+### Initial setup
 
-- If translation to a new language needs to be added to Weblate, please add empty dummy files for required language to mod repository on Github. This should automatically generate translation on Weblate once changes are merged
-- If there is a new submods that needs translating, add required files (english.json and any required dummy translations) to mod repository on Github. After that, on Weblate add new component and configure it as follows. If you have not set any of these fields, they can be edited later in Component -> Settings -> Files tab.
-  - Source code repository: `weblate://mod-name/mod-name`
-  - File format: `Json nested structure file` (should be auto-selected)
-  - File mask: `Mods/XXX/Content/translation/*.json` for submods, or `Mods/XXX/Mods/YYY/Content/translation/*.json` for submods of submods. Weblate will offer to auto-detect this option
-  - Json indentation: `1`
-  - Json indentation style: `Tabs`
-  - Monolingual base language file: `Mods/XXX/Content/translation/english.json` for submods, or `Mods/XXX/Mods/YYY/Content/translation/english.json` for submods of submods.
-  - Edit base file: `off`
-  - Adding new translation: `Disable adding new translations`
+Before starting, go through this checklist to ensure that mod is ready for Weblate:
 
-WARNING: Do not edit or move translation files other than through Weblate. If you have to, for example due to submod reorganization, make sure to flush any changes from Weblate using Component -> Repo
+- mod must be hosted by vcmi-mods Github organization
+- mod must contain mod.json in top-level directory, and not in a subdirectory
+- preferrably, mod should use centralized workflow from <https://github.com/vcmi-mods/workflow>
+- export English strings by running `vcmiserver --translate-mod=mod-name` and moving all generated `english.json` files to your mod
+- create dummy .json for each language to which you wish to translate in every submod that has translatable strings
+
+This operation can only be done by VCMI Team. Only mods hosted by vcmi-mods org can be translated this way.
+
+- Create new project on Weblate:
+  - Project name: name of the mod
+  - Project slug: mod ID
+  - Project website: mod page in vcmi-mods org
+- Create new component:
+  - Version control system: `Git`
+  - Source code repository: `https://github.com/vcmi-mods/mod-name.git`
+  - Repository branch: `vcmi-1.x`. This is branch from which Weblate will take translations
+  - On next page, select `Json nested structure file` with path pattern `content/translation/*.json`
+  - Repository push URL: `https://github_pat_***@github.com/vcmi-mods/horn-of-the-abyss.git` (replace *** with token from existing project)
+  - Push branch: `vcmi-1.x`. This is branch to which Weblate will upload translations
+  - Rest of options are the same as with addition of new submods
+
+### Addition of new languages
+
+This operation can be done by anyone with write access to mod repository. You can also create new pull request and ask for someone with write access to accept it.
+
+If translation to a new language needs to be added to Weblate, please add empty dummy files for required language to mod repository on Github. This should automatically generate translation on Weblate once changes are merged.
+
+Note that while Weblate supports basically any language, VCMI only supports limited set of languages listed in this document
+
+### Addition of new submods
+
+This operation can only be done by VCMI Team
+
+If there is a new submods that needs translating, add required files (english.json and any required dummy translations) to mod repository on Github. Please use the same list of translations as for the rest of the mod.
+
+After that, on Weblate add new component and configure it as follows. If you have not set any of these fields, they can be edited later in Component -> Settings -> Files tab.
+
+- Source code repository: `weblate://mod-name/mod-name`
+- On next page, select `Json nested structure file` with path pattern:
+  - File mask: `Mods/XXX/Content/translation/*.json` for submods.
+  - File mask: `Mods/XXX/Mods/YYY/Content/translation/*.json` for submods of submods
+- Json indentation: `1`
+- Json indentation style: `Tabs`
+- Monolingual base language file: `Mods/XXX/Content/translation/english.json` for submods, or `Mods/XXX/Mods/YYY/Content/translation/english.json` for submods of submods.
+- Edit base file: `off`
+- Adding new translation: `Disable adding new translations`
+
+WARNING: Do not edit or move translation files other than through Weblate. If you have to, for example due to submod reorganization, please contact VCMI Team.
+
+## Translating mods manually
 
 ### Exporting translation
 
