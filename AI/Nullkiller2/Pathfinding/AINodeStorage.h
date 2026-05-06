@@ -49,7 +49,7 @@ struct AIPathNode : public CGPathNode
 
 	void addSpecialAction(std::shared_ptr<const SpecialAction> action);
 
-	inline void reset(EPathfindingLayer layer, EPathAccessibility accessibility)
+	STRONG_INLINE void reset(EPathfindingLayer layer, EPathAccessibility accessibility)
 	{
 		CGPathNode::reset();
 
@@ -213,26 +213,26 @@ public:
 		float cost,
 		bool saveToCommitted = true) const;
 
-	inline const AIPathNode * getAINode(const CGPathNode * node) const
+	STRONG_INLINE const AIPathNode * getAINode(const CGPathNode * node) const
 	{
 		return static_cast<const AIPathNode *>(node);
 	}
 
-	inline void updateAINode(CGPathNode * node, std::function<void (AIPathNode *)> updater)
+	STRONG_INLINE void updateAINode(CGPathNode * node, std::function<void (AIPathNode *)> updater)
 	{
 		auto * aiNode = static_cast<AIPathNode *>(node);
 
 		updater(aiNode);
 	}
 
-	inline const CGHeroInstance * getHero(const CGPathNode * node) const
+	STRONG_INLINE const CGHeroInstance * getHero(const CGPathNode * node) const
 	{
 		const auto * aiNode = getAINode(node);
 
 		return aiNode->actor->hero;
 	}
 
-	inline bool blocked(const int3 & tile, EPathfindingLayer layer) const
+	STRONG_INLINE bool blocked(const int3 & tile, EPathfindingLayer layer) const
 	{
 		EPathAccessibility accessible = getAccessibility(tile, layer);
 
@@ -277,12 +277,12 @@ public:
 
 	uint64_t evaluateArmyLoss(const CGHeroInstance * hero, uint64_t armyValue, uint64_t danger) const;
 
-	inline EPathAccessibility getAccessibility(const int3 & tile, EPathfindingLayer layer) const
+	STRONG_INLINE EPathAccessibility getAccessibility(const int3 & tile, EPathfindingLayer layer) const
 	{
 		return (*this->accessibility)[tile.z][tile.x][tile.y][layer.getNum()];
 	}
 
-	inline void resetTile(const int3 & tile, EPathfindingLayer layer, EPathAccessibility tileAccessibility)
+	STRONG_INLINE void resetTile(const int3 & tile, EPathfindingLayer layer, EPathAccessibility tileAccessibility)
 	{
 		(*this->accessibility)[tile.z][tile.x][tile.y][layer.getNum()] = tileAccessibility;
 	}
