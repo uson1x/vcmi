@@ -20,6 +20,7 @@
 HeroesSettings::HeroesSettings(QWidget * parent) : AbstractSettings(parent), ui(new Ui::HeroesSettings)
 {
 	ui->setupUi(this);
+	ui->heroPortrait->setScene(&scene);
 }
 
 HeroesSettings::~HeroesSettings()
@@ -34,7 +35,10 @@ void HeroesSettings::initialize(MapController & c)
 	for(const auto & objectPtr : LIBRARY->heroh->objects)
 	{
 		auto * item = new QListWidgetItem(QString::fromStdString(objectPtr->getNameTranslated()));
-		item->setData(Qt::UserRole, QVariant::fromValue(objectPtr->getIndex()));
+		QVariantList data;
+		data.push_back(QVariant::fromValue(objectPtr->getIndex()));
+		data.push_back(QVariant::fromValue(objectPtr->imageIndex));
+		item->setData(Qt::UserRole, data);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
 		item->setCheckState(controller->map()->allowedHeroes.count(objectPtr->getId()) ? Qt::Checked : Qt::Unchecked);
 		ui->heroList->addItem(item);
@@ -83,13 +87,14 @@ void HeroesSettings::on_filterModeCombo_currentIndexChanged(int index)
 void HeroesSettings::on_heroList_itemSelectionChanged()
 {
 	updatePlayersSelection();
+	drawPortrait();
 }
 
 void HeroesSettings::on_heroList_itemChanged(QListWidgetItem * item)
 {
 	updatePlayersSelection();
 	if(item->checkState() == Qt::Unchecked)
-		removeDisposedHero(item->data(Qt::UserRole).toInt());
+		removeDisposedHero(item->data(Qt::UserRole).toList().at(0).toInt());
 }
 
 void HeroesSettings::on_playerList_itemChanged(QListWidgetItem * item)
@@ -155,7 +160,24 @@ void HeroesSettings::filterHeroes()
 		ui->heroList->clearSelection();
 		ui->heroList->setCurrentIndex(QModelIndex());
 		updatePlayersSelection();
+		drawPortrait();
 	}
+}
+
+void HeroesSettings::drawPortrait()
+{
+	if(!ui->heroList->currentItem())
+	{
+		ui->heroPortrait->setHidden(true);
+		return;
+	}
+	ui->heroPortrait->setHidden(false);
+
+	Animation portraitAnimation(AnimationPath::builtin("PortraitsLarge").getOriginalName());
+	portraitAnimation.load(getSelectedHeroImageIndex());
+	pixmap = QPixmap::fromImage(*portraitAnimation.getImage(getSelectedHeroImageIndex()));
+	scene.addPixmap(pixmap);
+	ui->heroPortrait->fitInView(scene.itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
 void HeroesSettings::setDisposedHero(int heroId, std::set<PlayerColor> players)
@@ -213,7 +235,12 @@ std::set<PlayerColor> HeroesSettings::getSelectedPlayers()
 
 int HeroesSettings::getSelectedHeroId()
 {
-	return ui->heroList->currentItem()->data(Qt::UserRole).toInt();
+	return ui->heroList->currentItem()->data(Qt::UserRole).toList().at(0).toInt();
+}
+
+int HeroesSettings::getSelectedHeroImageIndex()
+{
+	return ui->heroList->currentItem()->data(Qt::UserRole).toList().at(1).toInt();
 }
 
 bool HeroesSettings::allPlayersSelected()

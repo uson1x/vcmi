@@ -68,6 +68,16 @@
     </rect>
    </property>
   </widget>
+  <widget class="QGraphicsView" name="heroPortrait">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>50</y>
+     <width>116</width>
+     <height>128</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
