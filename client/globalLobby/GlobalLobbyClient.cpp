@@ -619,7 +619,7 @@ const JsonNode & GlobalLobbyClient::getCurrentAccountDetails() const
 	// migration helper: use beholder.vcmi.eu account details for lobby.vcmi.eu
 	if (knownHosts[currentHost].isNull() && boost::ends_with(currentHost, "vcmi.eu"))
 	{
-		for (const auto & host : knownHosts[currentHost].Struct())
+		for (const auto & host : knownHosts.Struct())
 		{
 			if (boost::ends_with(host.first, "vcmi.eu"))
 				return host.second;
