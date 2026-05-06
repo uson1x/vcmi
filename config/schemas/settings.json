@@ -785,7 +785,7 @@
 				},
 				"hostname" : {
 					"type" : "string",
-					"default" : "beholder.vcmi.eu"
+					"default" : "lobby.vcmi.eu"
 				},
 				"port" : {
 					"type" : "number",

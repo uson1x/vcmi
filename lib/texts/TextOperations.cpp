@@ -44,7 +44,7 @@ size_t TextOperations::getUnicodeCharacterSize(char firstByte)
 		return 4;
 
 	assert(0);// invalid unicode sequence
-	return 4;
+	return 1;
 }
 
 bool TextOperations::isValidUnicodeCharacter(const char * character, size_t maxSize)

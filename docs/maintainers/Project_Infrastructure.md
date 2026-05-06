@@ -8,7 +8,6 @@
 4. Verify VCMI.download domain name expiration date with SXX
 5. Verify Google Apps (G Suite) status with Tow
 6. Restore firewall which for some reason is disabled on DO
-7. Migrate remaining services from `vcmi-second` droplet
 
 ## Services and accounts
 
@@ -66,7 +65,7 @@ This section dedicated to explain specific configurations of our servers for any
 
 ### Droplet configuration
 
-All droplets can only be accessed using ssh login with public key. Currently access to all droplets is granted to:
+At the moment, all our services are hosted by Digital Ocean. Current approach is to keep services on separate VPS (called "droplets" by Digital Ocean) for better isolation & to allow independent restarts / upgrades. This also allows us to measure performance & system load of each service independently. All droplets can only be accessed using ssh login with public key. Currently access to all droplets is granted to:
 
 - Ivan Savenko
 - Alexvins
@@ -77,13 +76,15 @@ All droplets can only be accessed using ssh login with public key. Currently acc
 
 | Droplet | Specifications | Services |
 | ------- | -------------- | -------- |
-| `vcmi-artifactory` | 4 Gb / 2 CPU / 80 Gb / $24 | [Conan Artifactory server](https://artifactory.vcmi.eu/) (WIP) |
+| `vcmi-artifactory` | 4 Gb / 2 CPU / 80 Gb / $24 | [Conan Artifactory server](https://artifactory.vcmi.eu/) (removed, snapshot available) |
 | `vcmi-forum` | 2 Gb / 1 CPU / 25 Gb / $12 (+20%) | [Discourse forum](https://forum.vcmi.eu/) |
-| `vcmi-second` | 1 Gb / 1 CPU / 20 Gb / $6 | Multiplayer lobby (lobby.vcmi.eu or beholder.vcmi.eu - deprecated). Floating IP: 67.207.75.182 |
+| `vcmi-second` | 1 Gb / 1 CPU / 20 Gb / $6 | Old multiplayer lobby server that runs on Ubuntu 20.04. Soon to be removed |
+| `vcmi-lobby` | 1 Gb / 1 CPU / 20 Gb / $6 | Multiplayer lobby (lobby.vcmi.eu or beholder.vcmi.eu - deprecated) |
 | `vcmi-web` | 512 Mb / 1 CPU / 10 Gb + 100 Gb / $4 (+20%) + $10 | Builds uploading from Github, [Build download page](http://download.vcmi.eu/), [Legacy download page](https://builds.vcmi.download/). Also contains nginx server for redirecting [old bug tracker](https://bugs.vcmi.eu/), [old wiki](https://wiki.vcmi.eu/), and [old slack invite page](https://slack.vcmi.eu/) |
 
 Notes:
 
+- All droplets other than `vcmi-second` run Ubuntu 24.04
 - Droplets with deployed services have backups enabled (+20% costs)
 - In addition to droplets, we have separate 100 Gb volume for builds ($10 / month), currently attached to `vcmi-web`
 - There is snapshot for old `vcmi-main` droplet, preserved in case if we need to retrieve some data from it - old bugtracker, forum, and wiki ($1.5 / month)
@@ -95,16 +96,7 @@ Notes:
 - Exception for HTTP(S) connection on ports 80 / 443 from [CloudFlare IP Ranges](https://www.cloudflare.com/ips/).
 - No one except core developers should ever know real server IPs.
 - Droplet hostname should never be valid host. Otherwise it's exposed in [reverse DNS](https://en.wikipedia.org/wiki/Reverse_DNS).
-- If some non-web service need to listen for external connections then read below.
-
-### Our publicly-facing server
-
-We only expose reserve IP that can be detached from droplet in case of emergency using DO control panel. This also allow us to easily move public services to dedicated droplet in future.
-
-- Address: beholder.vcmi.eu (67.207.75.182)
-- Port 22 serve SFTP for file uploads as well as CI artifacts uploads.
-
-If new services added firewall rules can be adjusted in [DO control panel](https://cloud.digitalocean.com/networking/firewalls).
+- If some non-web service need to listen for external connections, it needs to use "Reserve IP" for it. If new services added firewall rules can be adjusted in [DO control panel](https://cloud.digitalocean.com/networking/firewalls).
 
 ## Domain names
 
@@ -113,8 +105,9 @@ If new services added firewall rules can be adjusted in [DO control panel](https
 | [vcmi.eu](https://vcmi.eu) | Main page redirect | CNAME | No content, redirects to [real main page](https://vcmi.github.io/) |
 | [download.vcmi.eu](https://download.vcmi.eu) | Public downloads & daily builds | `vcmi-web` | - |
 | [upload.vcmi.eu](https://upload.vcmi.eu) | Domain name for uploading daily builds from Github | `vcmi-web` | No http services |
-| [beholder.vcmi.eu](https://beholder.vcmi.eu) | Multiplayer lobby | `vcmi-second` | No http services. Used for VCMI 1.7.3 lobby and older. Deprecated in favor of `lobby` |
-| [lobby.vcmi.eu](https://lobby.vcmi.eu) | Multiplayer lobby | `vcmi-second` | No http services |
+| [beholder.vcmi.eu](https://beholder.vcmi.eu) | Multiplayer lobby | `vcmi-lobby` | No http services. Used for VCMI 1.7.3 lobby and older. Deprecated in favor of `lobby` |
+| [lobby.vcmi.eu](https://lobby.vcmi.eu) | Multiplayer lobby | `vcmi-lobby` | No http services |
+| [api.vcmi.eu](https://lobby.vcmi.eu) | Multiplayer lobby API endpoint | `vcmi-lobby` | nginx acts as proxy to provide https wrapper for http-only REST API |
 | [forum.vcmi.eu](https://forum.vcmi.eu) | Discourse forum | `vcmi-forum` | - |
 | [bugs.vcmi.eu](https://bugs.vcmi.eu) | Bug tracker | `vcmi-web` | Redirects to [Github Issues](https://github.com/vcmi/vcmi/issues) |
 | [slack.vcmi.eu](https://slack.vcmi.eu) | Slack invite page | `vcmi-web` | Redirects to [main page](https://vcmi.eu/) |
