@@ -344,11 +344,13 @@ bool CServerHandler::isGuest() const
 
 bool CServerHandler::hasRemoteClientInLobby() const
 {
-	std::set<GameConnectionID> connectedClients;
 	for(const auto & playerEntry : playerNames)
-		connectedClients.insert(playerEntry.second.connection);
+	{
+		if(playerEntry.second.connection != hostClientId)
+			return true;
+	}
 
-	return connectedClients.size() > 1;
+	return false;
 }
 
 const std::string & CServerHandler::getLocalHostname() const

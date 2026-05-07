@@ -434,7 +434,7 @@ void CGameHandler::changeSecSkill(const CGHeroInstance * hero, SecondarySkill wh
 
 }
 
-void CGameHandler::handleClientDisconnection(GameConnectionID connectionID)
+void CGameHandler::handleClientDisconnection(GameConnectionID connectionID, const std::vector<PlayerConnectionID> & disconnectedPlayerIds)
 {
 	if(gameServer().getState() == EServerState::SHUTDOWN || !gameState().getStartInfo())
 	{
@@ -455,6 +455,28 @@ void CGameHandler::handleClientDisconnection(GameConnectionID connectionID)
 			disconnectedPlayers.push_back(player.first);
 		else
 			remainingPlayers.push_back(player.first);
+	}
+
+	if(disconnectedPlayers.empty() && !disconnectedPlayerIds.empty())
+	{
+		for(const auto & player : gameState().players)
+		{
+			if (gameInfo().getPlayerState(player.first)->status != EPlayerStatus::INGAME)
+				continue;
+
+			const auto playerSettings = gameInfo().getPlayerSettings(player.first);
+			if(!playerSettings)
+				continue;
+
+			for(const auto disconnectedPlayerId : disconnectedPlayerIds)
+			{
+				if(vstd::contains(playerSettings->connectedPlayerIDs, disconnectedPlayerId))
+				{
+					disconnectedPlayers.push_back(player.first);
+					break;
+				}
+			}
+		}
 	}
 
 	for (const auto & inGamePlayer : remainingPlayers)

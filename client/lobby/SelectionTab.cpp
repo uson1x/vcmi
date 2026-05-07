@@ -1012,8 +1012,12 @@ bool SelectionTab::isMapCompatibleWithLobbyPlayerCount(const ElementInfo & info)
 
 size_t SelectionTab::getRequiredHumanPlayers() const
 {
-	const size_t minimumPlayers = (GAME->server().loadMode == ELoadMode::MULTI || GAME->server().hotseatMode) ? 2 : 1;
-	return std::max(minimumPlayers, GAME->server().playerNames.size());
+	return requiredHumanPlayers;
+}
+
+void SelectionTab::setRequiredHumanPlayers(size_t players)
+{
+	requiredHumanPlayers = players;
 }
 
 void SelectionTab::parseMaps(const std::unordered_set<ResourcePath> & files)

@@ -91,6 +91,7 @@ public:
 	int currentMapSizeFilter = 0;
 	bool showRandom;
 	std::string lastCompatibilityNotice;
+	size_t requiredHumanPlayers = 1;
 
 	std::shared_ptr<CTextInput> inputName;
 
@@ -115,6 +116,7 @@ public:
 	void selectFileName(std::string fname);
 	void selectNewestFile();
 	std::shared_ptr<ElementInfo> getSelectedMapInfo() const;
+	void setRequiredHumanPlayers(size_t players);
 	void rememberCurrentSelection();
 	void restoreLastSelection();
 

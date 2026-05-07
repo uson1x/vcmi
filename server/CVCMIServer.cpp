@@ -520,26 +520,20 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 	vstd::erase(activeConnections, connection);
 
 	std::vector<PlayerConnectionID> disconnectedPlayerIds;
-	std::vector<std::string> disconnectedPlayerNames;
 	for(const auto & playerEntry : playerNames)
 	{
-		if(playerEntry.second.connection == connection->connectionID)
-		{
-			disconnectedPlayerIds.push_back(playerEntry.first);
-			disconnectedPlayerNames.push_back(playerEntry.second.name);
-		}
-	}
+		if(playerEntry.second.connection != connection->connectionID)
+			continue;
 
-	for(const auto & playerName : disconnectedPlayerNames)
-	{
-		logNetwork->info("Player disconnected from lobby: name='%s', connectionId=%d", playerName, static_cast<int>(connection->connectionID));
+		disconnectedPlayerIds.push_back(playerEntry.first);
+		logNetwork->info("Player disconnected from lobby: name='%s', connectionId=%d", playerEntry.second.name, static_cast<int>(connection->connectionID));
 		MetaString disconnectMessage;
 		disconnectMessage.appendTextID("vcmi.lobby.system.playerDisconnected");
-		disconnectMessage.replaceRawString(playerName);
+		disconnectMessage.replaceRawString(playerEntry.second.name);
 		announceTxt(disconnectMessage);
 	}
 
-	if(disconnectedPlayerNames.empty())
+	if(disconnectedPlayerIds.empty())
 		logNetwork->info("Connection %d disconnected from lobby with no mapped player names", static_cast<int>(connection->connectionID));
 
 	if(activeConnections.empty() || hostClientId == connection->connectionID)
@@ -550,23 +544,17 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 
 	if(gh && getState() == EServerState::GAMEPLAY)
 	{
-		gh->handleClientDisconnection(connection->connectionID);
+		gh->handleClientDisconnection(connection->connectionID, disconnectedPlayerIds);
 	}
 
 	for(const auto & playerId : disconnectedPlayerIds)
 		playerNames.erase(playerId);
 
-	if(!disconnectedPlayerIds.empty())
+	for(auto & playerInfoEntry : si->playerInfos)
 	{
-		for(auto & playerInfoEntry : si->playerInfos)
-		{
-			auto & connectedPlayerIDs = playerInfoEntry.second.connectedPlayerIDs;
-			for(const auto & playerId : disconnectedPlayerIds)
-				connectedPlayerIDs.erase(playerId);
-
-			if(connectedPlayerIDs.empty())
-				setPlayerConnectedId(playerInfoEntry.second, PlayerConnectionID::PLAYER_AI);
-		}
+		auto & connectedPlayerIDs = playerInfoEntry.second.connectedPlayerIDs;
+		for(const auto & playerId : disconnectedPlayerIds)
+			connectedPlayerIDs.erase(playerId);
 	}
 }
 

@@ -219,15 +219,6 @@ void CLobbyScreen::toggleTab(std::shared_ptr<CIntObject> tab)
 	CSelectionBase::toggleTab(tab);
 }
 
-void CLobbyScreen::tick(uint32_t msPassed)
-{
-	CSelectionBase::tick(msPassed);
-
-	updateHostLobbyChatState();
-	if(curTab != tabBattleOnlyMode)
-		updateStartButtonState();
-}
-
 void CLobbyScreen::start(bool campaign)
 {
 	if(curTab == tabBattleOnlyMode)
@@ -336,6 +327,7 @@ void CLobbyScreen::updateAfterStateChange()
 	updateHostLobbyChatState();
 	const bool shouldFilterByPlayerCount = screenType == ESelectionScreen::newGame && GAME->server().loadMode == ELoadMode::MULTI;
 	const size_t requiredHumanPlayers = shouldFilterByPlayerCount ? std::max<size_t>(2, GAME->server().playerNames.size()) : 0;
+	tabSel->setRequiredHumanPlayers(requiredHumanPlayers);
 
 	if(!compatibilityFilterInitialized || (shouldFilterByPlayerCount && requiredHumanPlayers != lastRequiredHumanPlayers))
 	{

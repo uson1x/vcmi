@@ -17,6 +17,7 @@
 #include "../lib/gameState/GameStatistics.h"
 #include "../lib/networkPacks/PacksForServer.h"
 #include "../lib/serializer/GameConnectionID.h"
+#include "../lib/serializer/PlayerConnectionID.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -205,7 +206,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	void init(StartInfo *si, Load::ProgressAccumulator & progressTracking);
-	void handleClientDisconnection(GameConnectionID connectionI);
+	void handleClientDisconnection(GameConnectionID connectionID, const std::vector<PlayerConnectionID> & disconnectedPlayerIds = {});
 	void handleReceivedPack(GameConnectionID connectionId, CPackForServer & pack);
 	bool hasPlayerAt(PlayerColor player, GameConnectionID connectionId) const;
 	bool hasBothPlayersAtSameConnection(PlayerColor left, PlayerColor right) const;
