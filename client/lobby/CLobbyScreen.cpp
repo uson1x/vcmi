@@ -41,7 +41,6 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 	: CSelectionBase(screenType), bonusSel(nullptr)
 {
 	OBJECT_CONSTRUCTION;
-	addUsedEvents(TIME);
 	tabSel = std::make_shared<SelectionTab>(screenType);
 	curTab = tabSel;
 
