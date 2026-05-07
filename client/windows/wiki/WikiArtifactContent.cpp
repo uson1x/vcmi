@@ -164,8 +164,8 @@ std::vector<std::shared_ptr<CIntObject>> buildArtifactContent(
 		const int colPrc  = tableW / 3;
 		const int colSlt  = tableW - colCls - colPrc;
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW,
-			{colCls, colPrc, colSlt}, 16, rowH, 1, blueStyle));
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW,
+			std::vector<int>{colCls, colPrc, colSlt}, 16, rowH, 1, blueStyle));
 
 		// Column headers
 		widgets.push_back(std::make_shared<CLabel>(
@@ -261,7 +261,7 @@ std::vector<std::shared_ptr<CIntObject>> buildArtifactContent(
 		const int iconW  = 36;
 		const std::vector<int> cols = {iconW, tableW - iconW};
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, cols,
 			0, rowH, static_cast<int>(art->getConstituents().size()), blueStyle));
 
 		for(const CArtifact * c : art->getConstituents())
@@ -285,7 +285,7 @@ std::vector<std::shared_ptr<CIntObject>> buildArtifactContent(
 		const int iconW  = 36;
 		const std::vector<int> cols = {iconW, tableW - iconW};
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, cols,
 			0, rowH, static_cast<int>(art->getPartOf().size()), blueStyle));
 
 		for(const CArtifact * p : art->getPartOf())

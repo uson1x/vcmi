@@ -57,22 +57,41 @@ public:
 	void showAll(Canvas & to) override;
 };
 
-/// Creates a styled table-grid canvas.
+/// Styled table-grid widget.
 ///
 /// When @p headerH > 0 a filled header row and a separator line are added
 /// above the data rows.  When @p headerH == 0 only the outer border,
 /// inter-row dividers, and column separators are drawn (key-value grid style).
-std::shared_ptr<GraphicalPrimitiveCanvas> wikiMakeTableGrid(
-	int x, int y, int totalW,
-	const std::vector<int> & colWidths,
-	int headerH,
-	int dataRowH,
-	int dataRowCount,
-	bool blue = false);
+class WikiTableGrid : public GraphicalPrimitiveCanvas
+{
+public:
+	WikiTableGrid(
+		int x, int y, int totalW,
+		const std::vector<int> & colWidths,
+		int headerH,
+		int dataRowH,
+		int dataRowCount,
+		bool blue = false);
+	WikiTableGrid(
+		int x, int y, int totalW,
+		std::initializer_list<int> colWidths,
+		int headerH,
+		int dataRowH,
+		int dataRowCount,
+		bool blue = false);
+};
 
-/// Appends resource icon + amount label pairs into @p out, laid out
-/// horizontally from (@p startX, @p y) and clipped to @p maxWidth.
-void wikiAddResourceCost(
-	std::vector<std::shared_ptr<CIntObject>> & out,
-	const TResources & cost,
-	int startX, int y, int maxWidth);
+/// Horizontal row of resource icon + amount pairs.
+///
+/// Icons and labels are laid out from (@p startX, @p y) and clipped to
+/// @p maxWidth.  The widget's @p pos covers all rendered children.
+class WikiResourceCost : public CIntObject
+{
+	std::vector<std::shared_ptr<CIntObject>> items; ///< keeps child shared_ptrs alive
+
+public:
+	WikiResourceCost(
+		const TResources & cost,
+		int startX, int y,
+		int maxWidth);
+};

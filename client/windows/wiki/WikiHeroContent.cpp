@@ -159,7 +159,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		const int rowH   = 18;
 		const int colLbl = tableW / 2;
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, {colLbl, tableW - colLbl}, 0, rowH, nStats, blueStyle));
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, std::vector<int>{colLbl, tableW - colLbl}, 0, rowH, nStats, blueStyle));
 
 		for(int i = 0; i < nStats; ++i)
 		{
@@ -255,7 +255,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			const int headerH = 16;
 			const int rowH    = 36;
 
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, cols,
 				headerH, rowH, static_cast<int>(armyRows.size()), blueStyle));
 
 			widgets.push_back(std::make_shared<CLabel>(
@@ -345,7 +345,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			const std::vector<int> cols = { iconW, nameW };
 			const int rowH   = 36;
 
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, cols,
 				0, rowH, static_cast<int>(wmRows.size()), blueStyle));
 
 			for(const auto & wr : wmRows)
@@ -395,7 +395,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		const int rowH    = 36;
 		const int n       = static_cast<int>(hero->secSkillsInit.size());
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, cols,
 			headerH, rowH, n, blueStyle));
 		widgets.push_back(std::make_shared<CLabel>(
 			MARGIN + iconW + CELL_L, curY + CELL_T,
@@ -456,7 +456,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 		{
 			const int tableW = W - MARGIN * 2;
 			const int rowH   = 28;
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, {tableW}, 0, rowH, 1, blueStyle));
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, std::vector<int>{tableW}, 0, rowH, 1, blueStyle));
 			widgets.push_back(std::make_shared<CLabel>(
 				MARGIN + tableW / 2, curY + rowH / 2 - 5,
 				FONT_SMALL, ETextAlignment::TOPCENTER, Colors::WHITE,
@@ -482,7 +482,7 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 			const int headerH = 16;
 			const int rowH    = 36;
 
-			widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, cols,
+			widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, cols,
 				headerH, rowH, static_cast<int>(validSpells.size()), blueStyle));
 			widgets.push_back(std::make_shared<CLabel>(
 				MARGIN + iconW + CELL_L, curY + CELL_T,

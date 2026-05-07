@@ -14,6 +14,7 @@
 #include "WikiHeroContent.h"
 #include "WikiArtifactContent.h"
 #include "WikiModContent.h"
+#include "WikiMarkdown.h"
 
 #include "../../gui/Shortcut.h"
 #include "../../gui/WindowHandler.h"
@@ -41,6 +42,7 @@
 #include "../../../lib/entities/hero/CHeroClass.h"
 #include "../../../lib/entities/artifact/CArtHandler.h"
 #include "../../../lib/spells/CSpellHandler.h"
+#include "../../../lib/spells/SpellSchoolHandler.h"
 #include "../../../lib/CSkillHandler.h"
 #include "../../../lib/TerrainHandler.h"
 #include "../../../lib/modding/CModHandler.h"
@@ -48,16 +50,36 @@
 #include "../../../lib/texts/TextOperations.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "../../../lib/json/JsonNode.h"
+#include "../../../lib/json/JsonUtils.h"
+
+// ============================================================================
+// Built-in category string-id → WikiCategory mapping
+// Used for both validation (reserved names) and link-callback resolution.
+// ============================================================================
+
+static const std::map<std::string, WikiCategory> BUILTIN_CATEGORY_MAP = // NOSONAR (std::map cannot be constexpr)
+{
+	{"glossary", WikiCategory::GLOSSARY},
+	{"town",     WikiCategory::TOWN},
+	{"hero",     WikiCategory::HERO},
+	{"creature", WikiCategory::CREATURE},
+	{"artifact", WikiCategory::ARTIFACT},
+	{"spell",    WikiCategory::SPELL},
+	{"skill",    WikiCategory::SKILL},
+	{"terrain",  WikiCategory::TERRAIN},
+	{"mod",      WikiCategory::MOD},
+};
 
 // ============================================================================
 // WikiListItem
 // ============================================================================
 
-WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string itemSubtitle,
+WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string itemSubtitle, // NOSONAR (8 params required for widget configuration)
 	std::function<void(WikiListItem *)> callback,
 	std::optional<WikiIconInfo> iconInfo,
 	bool blueStyle_,
-	int itemWidth)
+	int itemWidth,
+	bool hasSlider)
 	: onSelected(std::move(callback))
 	, text(std::move(itemText))
 	, index(itemIndex)
@@ -85,7 +107,7 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string i
 		{
 			// Query native image size to compute aspect-correct rendered height and center it.
 			auto refImg = ENGINE->renderHandler().loadImage(
-				iconInfo->path, (int)iconInfo->frame, (int)iconInfo->group, EImageBlitMode::COLORKEY);
+				iconInfo->path, static_cast<int>(iconInfo->frame), static_cast<int>(iconInfo->group), EImageBlitMode::COLORKEY);
 			const Point nativeSz = refImg ? refImg->dimensions() : Point(ICON_SIZE, ICON_SIZE);
 			// "Contain" scaling: fit the larger dimension to ICON_SIZE, preserve aspect.
 			int iconW2, iconH2;
@@ -116,11 +138,14 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string i
 		}
 	}
 
-	// Alignment and anchor depend on whether an icon is present.
+	// itemWidth = full item pos.w (slider area included).
+	// For text centering/wrapping we use effectiveW = itemWidth minus slider when active.
+	static constexpr int SLIDER_W_LOCAL = 16;
+	const int effectiveW = (!iconInfo && hasSlider) ? itemWidth - SLIDER_W_LOCAL : itemWidth;
 	const ETextAlignment hAlign = iconInfo ? ETextAlignment::CENTERLEFT : ETextAlignment::CENTER;
 	const int labelRectX = iconInfo ? labelOffsetX : 0;
-	const int labelAnchorX = iconInfo ? labelOffsetX : (itemWidth / 2);
-	const int labelW = std::max(10, itemWidth - labelRectX - (iconInfo ? MARGIN_L : 0));
+	const int labelAnchorX = iconInfo ? labelOffsetX : (effectiveW / 2);
+	const int labelW = std::max(10, effectiveW - labelRectX - (iconInfo ? MARGIN_L : 0));
 
 	if(!itemSubtitle.empty())
 	{
@@ -205,7 +230,7 @@ void WikiListItem::hover(bool on)
 	}
 }
 
-void WikiListItem::showAll(Canvas & to)
+void WikiListItem::showAll(Canvas & to) // NOSONAR
 {
 	// Clip to parent (CListBox) bounds so items never spill into adjacent columns.
 	// Exclude the slider area so text / icons do not overdraw the scrollbar.
@@ -222,6 +247,15 @@ void WikiListItem::showAll(Canvas & to)
 		{
 			const int iconY = pos.y + (ITEM_H - ICON_SIZE) / 2;
 			to.drawColorBlended(Rect(pos.x + MARGIN_L, iconY, ICON_SIZE, ICON_SIZE), *colorFillIcon);
+		}
+		if(selected && !text.empty())
+		{
+			const int contentW = (lb && lb->getSlider()) ? (pos.w - 16) : pos.w;
+			if(contentW > 2 && pos.h > 2)
+			{
+				to.drawColorBlended(Rect(pos.x + 1, pos.y + 1, contentW - 2, pos.h - 2), ColorRGBA(0, 0, 0, 110));
+				to.drawBorder(Rect(pos.x + 1, pos.y + 1, contentW - 2, pos.h - 2), ColorRGBA(210, 170, 70, 255), 1);
+			}
 		}
 		// Separator line: full width without slider
 		if(pos.y + pos.h < parent->pos.y + parent->pos.h)
@@ -289,7 +323,7 @@ static constexpr int CLOSE_Y       = 564;
 // WikiWindow – constructor
 // ============================================================================
 
-WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> initialEntry)
+WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> initialEntry) // NOSONAR
 	: CWindowObject(BORDERED)
 	, style(style_)
 {
@@ -368,25 +402,79 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	categoryNames[static_cast<int>(WikiCategory::MOD)]       = LIBRARY->generaltexth->translate("vcmi.wiki.category.mod");
 	categoryEntries.resize(static_cast<int>(WikiCategory::COUNT));
 
-	// Glossary – loaded from a moddable JSON file
+	// Glossary + custom categories – loaded from all active mods via assembleFromFiles.
+	// "entries"    -> goes into the built-in GLOSSARY category (default when no "category" key).
+	// "categories" -> defines additional mod-specific categories, each rendered as Markdown.
 	{
-		const int iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
-		try
+		const JsonNode glossaryJson = JsonUtils::assembleFromFiles("config/wikiGlossary.json");
+
+		// 1. Register custom categories declared by mods.
+		for(const auto & [catId, catNode] : glossaryJson["categories"].Struct())
 		{
-			const JsonNode glossaryJson(JsonPath::builtin("config/wikiGlossary.json"));
-			for(const auto & e : glossaryJson["entries"].Vector())
+			if(BUILTIN_CATEGORY_MAP.count(catId))
 			{
-				const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
-				const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
-				categoryEntries[iGlossary].push_back({ name, name, desc, std::nullopt, "", "" });
+				logGlobal->error("WikiWindow: mod-defined category '{}' conflicts with a built-in category – skipped.", catId);
+				continue;
+			}
+			if(customCategoryIds.count(catId))
+				continue; // already registered by an earlier mod
+
+			const auto idx = static_cast<int>(categoryNames.size());
+			const std::string name = LIBRARY->generaltexth->translate(catNode["name"].String());
+			categoryNames.push_back(name);
+			categoryEntries.emplace_back();
+			customCategoryIds[catId] = idx;
+		}
+
+		// 2. Load entries; route each to its category (default: GLOSSARY).
+		// Custom-category entries are collected with their optional "order" field so they
+		// can be reordered after the loop (JsonMap iterates alphabetically by key).
+		// key = category index, value = list of (order, entry)
+		std::map<int, std::vector<std::pair<int, WikiEntry>>> customOrderedEntries;
+
+		for(const auto & [entryId, e] : glossaryJson["entries"].Struct())
+		{
+			const auto catStr = e["category"].isNull() ? std::string("glossary") : e["category"].String();
+			auto targetIdx = static_cast<int>(WikiCategory::GLOSSARY);
+			if(catStr != "glossary")
+			{
+				const auto it = customCategoryIds.find(catStr);
+				if(it != customCategoryIds.end())
+					targetIdx = it->second;
+				else
+					logGlobal->warn("WikiWindow: entry '{}' references unknown category '{}' – placed in Glossary.", entryId, catStr);
+			}
+			const std::string name = LIBRARY->generaltexth->translate(e["name"].String());
+			const std::string desc = LIBRARY->generaltexth->translate(e["description"].String());
+			WikiEntry entry{ entryId, name, desc, std::nullopt, "", "" };
+
+			if(targetIdx == static_cast<int>(WikiCategory::GLOSSARY))
+			{
+				categoryEntries[targetIdx].push_back(std::move(entry));
+			}
+			else
+			{
+				// Custom category: collect with order value (default INT_MAX keeps alphabetical fallback)
+				const int order = e["order"].isNull() ? 999999 : static_cast<int>(e["order"].Integer());
+				customOrderedEntries[targetIdx].emplace_back(order, std::move(entry));
 			}
 		}
-		catch(const std::exception &) {} // file absent → empty glossary
+
+		// Insert custom-category entries sorted by their "order" field
+		for(auto & [catIdx, orderedList] : customOrderedEntries)
+		{
+			std::stable_sort(orderedList.begin(), orderedList.end(),
+			                 [](const auto & a, const auto & b){ return a.first < b.first; });
+			for(auto & [ord, entry] : orderedList)
+				categoryEntries[catIdx].push_back(std::move(entry));
+		}
 	}
-	// Sort glossary alphabetically
-	std::sort(categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].begin(),
-	          categoryEntries[static_cast<int>(WikiCategory::GLOSSARY)].end(),
-	          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	// Sort the glossary alphabetically; custom categories keep their "order" field sequence.
+	{
+		const auto iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
+		std::sort(categoryEntries[iGlossary].begin(), categoryEntries[iGlossary].end(),
+		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
+	}
 
 	// Towns – playable factions that have a town (skip neutral / special)
 	{
@@ -404,7 +492,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			}
 			categoryEntries[iTown].push_back({
 				faction->getJsonKey(), faction->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("ITPA"), (size_t)(faction->town->clientInfo.icons[1][0] + 2), 0, std::nullopt },
+				WikiIconInfo{ AnimationPath::builtin("ITPA"), static_cast<size_t>(faction->town->clientInfo.icons[1][0]) + 2, 0, std::nullopt },
 				faction->getModScope(),
 				alignStr
 			});
@@ -422,7 +510,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			const std::string heroClassName = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 			categoryEntries[iHero].push_back({
 				hero->getJsonKey(), hero->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), (size_t)hero->getIconIndex(), 0, std::nullopt },
+				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), static_cast<size_t>(hero->getIconIndex()), 0, std::nullopt },
 				hero->getModScope(),
 				heroClassName
 			});
@@ -456,7 +544,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				const std::string factionName = (it != factionNameById.end()) ? it->second : "";
 				categoryEntries[iCreature].push_back({
 					creature->getJsonKey(), creature->getNameSingularTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), (size_t)creature->getIconIndex(), 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), static_cast<size_t>(creature->getIconIndex()), 0, std::nullopt },
 					creature->getModScope(),
 					factionName
 				});
@@ -475,7 +563,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					artifact->getJsonKey(),
 					artifact->getNameTranslated(),
 					artifact->getDescriptionTranslated(),
-					WikiIconInfo{ AnimationPath::builtin("Artifact"), (size_t)artifact->getIconIndex(), 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("Artifact"), static_cast<size_t>(artifact->getIconIndex()), 0, std::nullopt },
 					artifact->getModScope(), ""
 				});
 		std::sort(categoryEntries[iArtifact].begin(), categoryEntries[iArtifact].end(),
@@ -490,6 +578,21 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			{
 				// Build multi-level description (Basic / Advanced / Expert)
 				std::string desc;
+				// School(s) this spell belongs to
+				{
+					std::string schools;
+					spell->forEachSchool([&schools](const SpellSchool & schoolId, bool &)
+					{
+						const auto * schoolObj = LIBRARY->spellSchoolHandler->getById(schoolId);
+						if(schoolObj)
+						{
+							if(!schools.empty()) schools += ", ";
+							schools += schoolObj->getNameTranslated();
+						}
+					});
+					if(!schools.empty())
+						desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.spell.schools") + "}: " + schools;
+				}
 				for(int lvl = 1; lvl <= 3; lvl++)
 				{
 					const std::string ld = spell->getDescriptionTranslated(lvl);
@@ -502,7 +605,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				categoryEntries[iSpell].push_back({
 					spell->getJsonKey(),
 					spell->getNameTranslated(), desc,
-					WikiIconInfo{ AnimationPath::builtin("SpellInt"), (size_t)spell->getIndex() + 1, 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("SpellInt"), static_cast<size_t>(spell->getIndex()) + 1, 0, std::nullopt },
 					spell->getModScope(), ""
 				});
 			}
@@ -530,7 +633,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				categoryEntries[iSkill].push_back({
 					skill->getJsonKey(),
 					skill->getNameTranslated(), desc,
-					WikiIconInfo{ AnimationPath::builtin("SECSK32"), (size_t)(skill->getIndex() * 3 + 3), 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("SECSK32"), static_cast<size_t>(skill->getIndex() * 3 + 3), 0, std::nullopt },
 					skill->getModScope(), ""
 				});
 			}
@@ -559,8 +662,19 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					}
 				}
 				std::string desc;
+				// Movement cost
+				{
+					const std::string label = LIBRARY->generaltexth->translate("vcmi.wiki.terrain.moveCost");
+					const std::string value = (terrain->moveCost < 0)
+						? "-"
+						: std::to_string(terrain->moveCost) + "%";
+					desc = "{" + label + "}: " + value;
+				}
 				if(!nativeTowns.empty())
-					desc = "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}\n\n" + nativeTowns;
+				{
+					if(!desc.empty()) desc += "\n";
+					desc += "{" + LIBRARY->generaltexth->translate("vcmi.wiki.terrain.nativeTowns") + "}: " + nativeTowns;
+				}
 				categoryEntries[iTerrain].push_back({ terrain->getJsonKey(), terrain->getNameTranslated(), desc, colorIcon, terrain->getModScope(), "" });
 			}
 		std::sort(categoryEntries[iTerrain].begin(), categoryEntries[iTerrain].end(),
@@ -639,6 +753,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			Point(VP_W, VP_H),
 			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
 		modContentView->disable();
+
+		glossaryContentView = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+		glossaryContentView->disable();
 	}
 
 	// Mod-scope tag for non-viewport categories (artifact/spell/skill/terrain).
@@ -715,24 +835,14 @@ void WikiWindow::buildCategoryList()
 			? std::to_string(categoryEntries[idx].size()) : "";
 		auto item = std::make_shared<WikiListItem>(
 			idx, name, countStr,
-			[this](WikiListItem * clicked) {
-				// Deselect previously visible category item before updating the index
-				if(activeCategoryIndex >= 0 && categoryList)
-				{
-					auto old = std::dynamic_pointer_cast<WikiListItem>(
-						categoryList->getItem(activeCategoryIndex));
-					if(old && old.get() != clicked)
-						old->setSelected(false);
-				}
-				clicked->setSelected(true);
-				onCategoryClicked((int)clicked->index);
-			},
+			[this](WikiListItem * clicked){ onCatItemSelectedCallback(clicked); },
 			std::nullopt,
 			style == Style::BLUE,
-			COL1_LIST_W + SLIDER_W);
+			COL1_LIST_W + SLIDER_W,
+			/*hasSlider=*/(categoryNames.size() > VISIBLE_ITEMS));
 		item->pos.w = COL1_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
-		if((int)idx == activeCategoryIndex)
+		if(static_cast<int>(idx) == activeCategoryIndex)
 			item->setSelected(true);
 		return item;
 	};
@@ -768,7 +878,7 @@ void WikiWindow::buildCategoryList()
 	categoryList->setRedrawParent(true);
 }
 
-void WikiWindow::buildElementList(int categoryIndex)
+void WikiWindow::buildElementList(int categoryIndex) // NOSONAR
 {
 	// Remove the old list from parent before constructing a new one
 	elementList.reset();
@@ -778,7 +888,7 @@ void WikiWindow::buildElementList(int categoryIndex)
 	const std::string filter = searchBox ? searchBox->getText() : "";
 
 	const auto & allEntries =
-		(categoryIndex >= 0 && categoryIndex < (int)categoryEntries.size())
+		(categoryIndex >= 0 && categoryIndex < static_cast<int>(categoryEntries.size()))
 		? categoryEntries[categoryIndex]
 		: std::vector<WikiEntry>{};
 
@@ -793,28 +903,19 @@ void WikiWindow::buildElementList(int categoryIndex)
 	currentDisplayedEntries = entries;
 	size_t total = entries.size();
 
-	auto createElemItem = [this, entries](size_t idx) -> std::shared_ptr<CIntObject>
+	auto createElemItem = [this, entries, total](size_t idx) -> std::shared_ptr<CIntObject>
 	{
 		const std::string name = (idx < entries.size()) ? entries[idx].name : "";
 		const std::string subtitle = (idx < entries.size()) ? entries[idx].subtitle : "";
 		const std::optional<WikiIconInfo> icon = (idx < entries.size()) ? entries[idx].icon : std::nullopt;
 		auto item = std::make_shared<WikiListItem>(
 			idx, name, subtitle,
-			[this](WikiListItem * clicked) {
-				// Deselect previously visible element item before updating the index
-				if(activeElementIndex >= 0 && elementList)
-				{
-					auto old = std::dynamic_pointer_cast<WikiListItem>(
-						elementList->getItem(activeElementIndex));
-					if(old && old.get() != clicked)
-						old->setSelected(false);
-				}
-				clicked->setSelected(true);
-				onElementClicked((int)clicked->index);
-			}, icon, style == Style::BLUE, COL2_LIST_W);
+			[this](WikiListItem * clicked){ onElemItemSelectedCallback(clicked); },
+			icon, style == Style::BLUE, COL2_LIST_W + SLIDER_W,
+			/*hasSlider=*/(total > ELEM_VISIBLE_ITEMS));
 		item->pos.w = COL2_LIST_W + SLIDER_W;
 		item->pos.h = ITEM_H;
-		if((int)idx == activeElementIndex)
+		if(static_cast<int>(idx) == activeElementIndex)
 			item->setSelected(true);
 		return item;
 	};
@@ -862,7 +963,7 @@ void WikiWindow::clearElementList()
 	buildElementList(-1);
 }
 
-void WikiWindow::updateContent()
+void WikiWindow::updateContent() // NOSONAR
 {
 	if(!contentBox)
 		return;
@@ -883,7 +984,13 @@ void WikiWindow::updateContent()
 	const bool useModViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::MOD))
 	                          && (activeElementIndex >= 0)
 	                          && modContentView;
-	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport;
+	const bool useGlossaryViewport = (activeCategoryIndex == static_cast<int>(WikiCategory::GLOSSARY))
+	                               && (activeElementIndex >= 0)
+	                               && glossaryContentView;
+	// A "mod-custom" category uses its own per-category viewport (rendered as Markdown).
+	const bool isModCustomCategory = (activeCategoryIndex >= static_cast<int>(WikiCategory::COUNT));
+	const bool useModCustomViewport = isModCustomCategory && (activeElementIndex >= 0);
+	const bool useCustomViewport = useTownViewport || useCreatureViewport || useHeroViewport || useArtifactViewport || useModViewport || useGlossaryViewport || useModCustomViewport;
 
 	// Toggle viewport / textbox visibility
 	if(townContentView)
@@ -896,6 +1003,11 @@ void WikiWindow::updateContent()
 		artifactContentView->setEnabled(useArtifactViewport);
 	if(modContentView)
 		modContentView->setEnabled(useModViewport);
+	if(glossaryContentView)
+		glossaryContentView->setEnabled(useGlossaryViewport);
+	// Hide all custom-category viewports; the active one is shown below.
+	for(const auto & [ci, view] : customCategoryViews)
+		if(view) view->setEnabled(false);
 	contentBox->setEnabled(!useCustomViewport);
 
 	// Standalone mod-scope label – only for non-viewport categories (textbox path).
@@ -952,9 +1064,41 @@ void WikiWindow::updateContent()
 			if(modId != currentModId)
 				rebuildModViewport(modId);
 		}
+		else if(useGlossaryViewport)
+		{
+			const std::string & entryName = currentDisplayedEntries[activeElementIndex].identifier;
+			if(entryName != currentGlossaryEntryName)
+				rebuildGlossaryViewport(entryName);
+			else if(!pendingAnchor.empty())
+			{
+				// Same page, just scroll to the anchor without a full rebuild.
+				const auto anchorIt = glossaryAnchorMap.find(pendingAnchor);
+				if(anchorIt != glossaryAnchorMap.end())
+					glossaryContentView->scrollToY(anchorIt->second);
+				pendingAnchor.clear();
+			}
+		}
+		else if(useModCustomViewport)
+		{
+			const int ci = activeCategoryIndex;
+			const std::string & entryName = currentDisplayedEntries[activeElementIndex].identifier;
+			const std::string & currentEntry = customCategoryCurrentEntry[ci];
+			if(entryName != currentEntry)
+				rebuildCustomCategoryViewport(ci, entryName);
+			else if(!pendingAnchor.empty())
+			{
+				const auto anchorIt = customCategoryAnchorMaps[ci].find(pendingAnchor);
+				if(anchorIt != customCategoryAnchorMaps[ci].end())
+					customCategoryViews[ci]->scrollToY(anchorIt->second);
+				pendingAnchor.clear();
+			}
+			// Ensure this viewport is visible.
+			if(customCategoryViews.count(ci) && customCategoryViews[ci])
+				customCategoryViews[ci]->setEnabled(true);
+		}
 	}
 	else if(activeCategoryIndex < 0 || activeElementIndex < 0
-	     || activeElementIndex >= (int)currentDisplayedEntries.size())
+	     || activeElementIndex >= static_cast<int>(currentDisplayedEntries.size()))
 	{
 		contentBox->setText(LIBRARY->generaltexth->translate("vcmi.wiki.content.placeholder"));
 	}
@@ -1215,13 +1359,154 @@ void WikiWindow::rebuildModViewport(const std::string & modId)
 	applyScrollBounds();
 }
 
+void WikiWindow::rebuildGlossaryViewport(const std::string & entryName)
+{
+	currentGlossaryEntryName = entryName;
+	glossaryContentWidgets.clear();
+	glossaryAnchorMap.clear();
+
+	const auto iGlossary = static_cast<int>(WikiCategory::GLOSSARY);
+	const auto & entries = categoryEntries[iGlossary];
+	const auto it = std::find_if(entries.begin(), entries.end(),
+		[&entryName](const WikiEntry & e){ return e.identifier == entryName; });
+	if(it == entries.end())
+		return;
+
+	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
+	rebuildMarkdownViewport(glossaryContentView, glossaryContentWidgets, glossaryAnchorMap, markdownText);
+}
+
+// ============================================================================
+// WikiWindow – custom (mod-defined) category viewport
+// ============================================================================
+
+void WikiWindow::rebuildCustomCategoryViewport(int catIdx, const std::string & entryName)
+{
+	customCategoryCurrentEntry[catIdx] = entryName;
+	customCategoryWidgets[catIdx].clear();
+	customCategoryAnchorMaps[catIdx].clear();
+
+	if(catIdx < 0 || catIdx >= static_cast<int>(categoryEntries.size()))
+		return;
+	const auto & entries = categoryEntries[catIdx];
+	const auto it = std::find_if(entries.begin(), entries.end(),
+		[&entryName](const WikiEntry & e){ return e.identifier == entryName; });
+	if(it == entries.end())
+		return;
+
+	const std::string markdownText = "# " + it->name + "\n\n" + it->description;
+	rebuildMarkdownViewport(customCategoryViews[catIdx], customCategoryWidgets[catIdx],
+		customCategoryAnchorMaps[catIdx], markdownText);
+	customCategoryViews[catIdx]->setEnabled(true);
+}
+
+// ============================================================================
+// WikiWindow – shared Markdown viewport helpers
+// ============================================================================
+
+std::function<void(const std::string &)> WikiWindow::makeLinkCallback()
+{
+	return [this](const std::string & target){ handleWikiLink(target); };
+}
+
+void WikiWindow::handleWikiLink(const std::string & target)
+{
+	static const std::string PREFIX = "wiki:";
+	if(target.size() <= PREFIX.size() || target.substr(0, PREFIX.size()) != PREFIX)
+		return;
+	const std::string rest = target.substr(PREFIX.size());
+	const auto slash = rest.find('/');
+	if(slash == std::string::npos) return;
+	const std::string catStr = rest.substr(0, slash);
+	const std::string idFull = rest.substr(slash + 1);
+	const auto hashPos       = idFull.find('#');
+	const std::string id     = (hashPos == std::string::npos) ? idFull : idFull.substr(0, hashPos);
+	const std::string anchor = (hashPos == std::string::npos) ? std::string{} : idFull.substr(hashPos + 1);
+
+	// Built-in categories
+	const auto builtinIt = BUILTIN_CATEGORY_MAP.find(catStr);
+	if(builtinIt != BUILTIN_CATEGORY_MAP.end())
+	{
+		navigateTo(WikiEntryKey{builtinIt->second, id, anchor});
+		return;
+	}
+	// Mod-defined custom categories
+	const auto ccIt = customCategoryIds.find(catStr);
+	if(ccIt != customCategoryIds.end())
+	{
+		navigateTo(WikiEntryKey{static_cast<WikiCategory>(ccIt->second), id, anchor});
+		return;
+	}
+}
+
+void WikiWindow::onCatItemSelectedCallback(WikiListItem * clicked)
+{
+	if(activeCategoryIndex >= 0 && categoryList)
+	{
+		auto old = std::dynamic_pointer_cast<WikiListItem>(
+			categoryList->getItem(activeCategoryIndex));
+		if(old && old.get() != clicked)
+			old->setSelected(false);
+	}
+	clicked->setSelected(true);
+	onCategoryClicked(static_cast<int>(clicked->index));
+}
+
+void WikiWindow::onElemItemSelectedCallback(WikiListItem * clicked)
+{
+	if(activeElementIndex >= 0 && elementList)
+	{
+		auto old = std::dynamic_pointer_cast<WikiListItem>(
+			elementList->getItem(activeElementIndex));
+		if(old && old.get() != clicked)
+			old->setSelected(false);
+	}
+	clicked->setSelected(true);
+	onElementClicked(static_cast<int>(clicked->index));
+}
+
+void WikiWindow::rebuildMarkdownViewport(
+	std::shared_ptr<CViewport> & view,
+	std::vector<std::shared_ptr<CIntObject>> & widgets,
+	std::map<std::string, int> & anchorMap,
+	const std::string & markdownText)
+{
+	static constexpr int VP_W = COL3_W - 6;
+	static constexpr int VP_H = CONTENT_H - 6;
+
+	view.reset();
+	{
+		OBJECT_CONSTRUCTION;
+		view = std::make_shared<CViewport>(
+			Rect(COL3_X + 3, CONTENT_TOP + 3, VP_W, VP_H),
+			Point(VP_W, VP_H),
+			(style == Style::BLUE) ? CSlider::BLUE : CSlider::BROWN);
+	}
+
+	auto moreWidgets = buildMarkdownContent(*view, markdownText,
+		VP_W - CViewport::SLIDER_W, (style == Style::BLUE), makeLinkCallback(), &anchorMap);
+	widgets.insert(widgets.end(), moreWidgets.begin(), moreWidgets.end());
+	view->fitContentSize();
+
+	if(!pendingAnchor.empty())
+	{
+		const auto anchorIt = anchorMap.find(pendingAnchor);
+		if(anchorIt != anchorMap.end())
+			view->scrollToY(anchorIt->second);
+		pendingAnchor.clear();
+	}
+
+	applyScrollBounds();
+	ENGINE->windows().totalRedraw();
+}
+
 // ============================================================================
 // WikiWindow – mod-scope helper
 // ============================================================================
 
 void WikiWindow::injectModScopeLabel(CViewport & vp, std::vector<std::shared_ptr<CIntObject>> & widgets, int vpW)
 {
-	const std::string & ms = (activeElementIndex >= 0 && activeElementIndex < (int)currentDisplayedEntries.size())
+	const std::string & ms = (activeElementIndex >= 0 && activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
 	                        ? currentDisplayedEntries[activeElementIndex].modScope : "";
 	if(ms.empty() || ms == "core")
 		return;
@@ -1256,7 +1541,7 @@ void WikiWindow::onElementClicked(int index)
 {
 	// Push current entry onto navigation history so the back button works
 	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
-		&& activeElementIndex < (int)currentDisplayedEntries.size())
+		&& activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
 	{
 		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
 		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].identifier});
@@ -1267,11 +1552,14 @@ void WikiWindow::onElementClicked(int index)
 	updateContent();
 }
 
-void WikiWindow::navigateTo(const WikiEntryKey & key)
+void WikiWindow::navigateTo(const WikiEntryKey & key) // NOSONAR
 {
 	const int catIdx = static_cast<int>(key.category);
-	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
+	if(catIdx < 0 || catIdx >= static_cast<int>(categoryNames.size()))
 		return;
+
+	// Store the anchor to be consumed by rebuildGlossaryViewport().
+	pendingAnchor = key.anchor;
 
 	// Deselect old highlighting before changing category/element
 	if(categoryList && activeCategoryIndex >= 0)
@@ -1287,7 +1575,7 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 
 	// Push current entry onto navigation history (if we have a valid selection)
 	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
-		&& activeElementIndex < (int)currentDisplayedEntries.size())
+		&& activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
 	{
 		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
 		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].identifier});
@@ -1296,6 +1584,7 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		backButton->setEnabled(!navHistory.empty());
 
 	activeCategoryIndex = catIdx;
+	activeElementIndex = -1; // reset before rebuild to prevent stale pre-selection
 	buildElementList(activeCategoryIndex);
 
 	// Select the category item visually
@@ -1307,26 +1596,37 @@ void WikiWindow::navigateTo(const WikiEntryKey & key)
 		categoryList->scrollTo(activeCategoryIndex);
 	}
 
-	// Find the entry by identifier and select it
-	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+	// Find the entry by identifier and select it (exact match first, then scope-stripped fallback)
 	{
-		if(currentDisplayedEntries[i].identifier == key.entryName)
+		int foundIdx = -1;
+		for(int i = 0; i < static_cast<int>(currentDisplayedEntries.size()); ++i)
+			if(currentDisplayedEntries[i].identifier == key.entryName)
+				{ foundIdx = i; break; }
+		// Fallback: "imp" matches "core:imp" (strip mod-scope prefix)
+		if(foundIdx < 0 && !key.entryName.empty())
+			for(int i = 0; i < static_cast<int>(currentDisplayedEntries.size()); ++i)
+			{
+				const auto & id = currentDisplayedEntries[i].identifier;
+				const auto colon = id.find(':');
+				if(colon != std::string::npos && id.substr(colon + 1) == key.entryName)
+					{ foundIdx = i; break; }
+			}
+		if(foundIdx >= 0)
 		{
-			activeElementIndex = i;
+			activeElementIndex = foundIdx;
 			if(elementList)
 			{
-				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(i));
+				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(foundIdx));
 				if(elemItem)
 					elemItem->setSelected(true);
-				elementList->scrollTo(i);
+				elementList->scrollTo(foundIdx);
 			}
-			break;
 		}
 	}
 	updateContent();
 }
 
-void WikiWindow::navigateBack()
+void WikiWindow::navigateBack() // NOSONAR
 {
 	if(navHistory.empty())
 		return;
@@ -1339,7 +1639,7 @@ void WikiWindow::navigateBack()
 
 	// Navigate without pushing to history (direct implementation to avoid recursive push)
 	const int catIdx = static_cast<int>(prev.category);
-	if(catIdx < 0 || catIdx >= (int)categoryNames.size())
+	if(catIdx < 0 || catIdx >= static_cast<int>(categoryNames.size()))
 		return;
 
 	// Deselect old highlighting before restoring previous state
@@ -1355,6 +1655,7 @@ void WikiWindow::navigateBack()
 	}
 
 	activeCategoryIndex = catIdx;
+	activeElementIndex = -1; // reset before rebuild to prevent stale pre-selection
 	buildElementList(activeCategoryIndex);
 
 	if(categoryList)
@@ -1365,19 +1666,30 @@ void WikiWindow::navigateBack()
 		categoryList->scrollTo(activeCategoryIndex);
 	}
 
-	for(int i = 0; i < (int)currentDisplayedEntries.size(); ++i)
+	// Find the entry by identifier (exact match first, then scope-stripped fallback)
 	{
-		if(currentDisplayedEntries[i].identifier == prev.entryName)
+		int foundIdx = -1;
+		for(int i = 0; i < static_cast<int>(currentDisplayedEntries.size()); ++i)
+			if(currentDisplayedEntries[i].identifier == prev.entryName)
+				{ foundIdx = i; break; }
+		if(foundIdx < 0 && !prev.entryName.empty())
+			for(int i = 0; i < static_cast<int>(currentDisplayedEntries.size()); ++i)
+			{
+				const auto & id = currentDisplayedEntries[i].identifier;
+				const auto colon = id.find(':');
+				if(colon != std::string::npos && id.substr(colon + 1) == prev.entryName)
+					{ foundIdx = i; break; }
+			}
+		if(foundIdx >= 0)
 		{
-			activeElementIndex = i;
+			activeElementIndex = foundIdx;
 			if(elementList)
 			{
-				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(i));
+				auto elemItem = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(foundIdx));
 				if(elemItem)
 					elemItem->setSelected(true);
-				elementList->scrollTo(i);
+				elementList->scrollTo(foundIdx);
 			}
-			break;
 		}
 	}
 	updateContent();

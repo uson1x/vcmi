@@ -85,11 +85,12 @@ public:
 	std::string text;
 	size_t index = 0;
 
-	WikiListItem(size_t index, std::string text, std::string subtitle,
+	WikiListItem(size_t index, std::string text, std::string subtitle, // NOSONAR (8 params needed for widget configuration)
 	             std::function<void(WikiListItem *)> callback,
 	             std::optional<WikiIconInfo> iconInfo = std::nullopt,
 	             bool blueStyle = false,
-	             int itemWidth = 100);
+	             int itemWidth = 100,
+	             bool hasSlider = false);
 
 	void clickPressed(const Point & cursorPosition) override;
 	void showPopupWindow(const Point & cursorPosition) override;
@@ -104,6 +105,9 @@ struct WikiEntryKey
 {
 	WikiCategory category; ///< Which category tab to open
 	std::string entryName; ///< Entity identifier / JSON key (used for lookup, not a translated string)
+	/// Optional anchor to scroll to after the entry is displayed.
+	/// Corresponds to the id/name attribute of an <a id="name" /> tag in the entry's Markdown.
+	std::string anchor = {};
 };
 
 /// In-game Glossary / Wiki - 800x600 stub window
@@ -175,6 +179,23 @@ private:
 	std::vector<std::shared_ptr<CIntObject>> modContentWidgets;
 	std::string currentModId;
 
+	std::shared_ptr<CViewport> glossaryContentView; ///< scrollable viewport for Glossary (markdown renderer)
+	std::vector<std::shared_ptr<CIntObject>> glossaryContentWidgets;
+	std::string currentGlossaryEntryName; ///< identifier of the Glossary entry currently shown
+	std::map<std::string, int> glossaryAnchorMap; ///< anchor name -> Y offset for the current glossary entry
+	std::string pendingAnchor; ///< anchor to scroll to on the next rebuildGlossaryViewport() call
+
+	/// Custom mod-defined categories: string id -> index in categoryNames / categoryEntries
+	std::map<std::string, int> customCategoryIds;
+	/// Per-custom-category viewport, keyed by category index
+	std::map<int, std::shared_ptr<CViewport>> customCategoryViews;
+	/// Per-custom-category content widgets, keyed by category index
+	std::map<int, std::vector<std::shared_ptr<CIntObject>>> customCategoryWidgets;
+	/// Per-custom-category anchor maps, keyed by category index
+	std::map<int, std::map<std::string, int>> customCategoryAnchorMaps;
+	/// Identifier of the entry currently shown for each custom category
+	std::map<int, std::string> customCategoryCurrentEntry;
+
 	// --- navigation history -----------------------------------------------
 	std::vector<WikiEntryKey> navHistory; ///< back-navigation stack
 	std::shared_ptr<CButton> backButton;
@@ -211,6 +232,30 @@ private:
 	void rebuildArtifactViewport(const std::string & artKey);
 	/// Rebuilds the mod viewport content for the given mod ID.
 	void rebuildModViewport(const std::string & modId);
+	/// Rebuilds the glossary viewport by rendering the entry description as Markdown.
+	void rebuildGlossaryViewport(const std::string & entryName);
+	/// Rebuilds a custom-category viewport for the given category index and entry.
+	void rebuildCustomCategoryViewport(int catIdx, const std::string & entryName);
+
+	/// Shared core: (re-)creates a CViewport, renders markdownText into it, handles
+	/// pendingAnchor, calls applyScrollBounds + totalRedraw.
+	void rebuildMarkdownViewport(std::shared_ptr<CViewport> & view,
+	                             std::vector<std::shared_ptr<CIntObject>> & widgets,
+	                             std::map<std::string, int> & anchorMap,
+	                             const std::string & markdownText);
+
+	/// Returns a link callback suitable for buildMarkdownContent that resolves
+	/// "wiki:category/entry[#anchor]" links using BUILTIN_CATEGORY_MAP and customCategoryIds.
+	std::function<void(const std::string &)> makeLinkCallback();
+
+	/// Handles a resolved "wiki:category/entry[#anchor]" link, called from makeLinkCallback.
+	void handleWikiLink(const std::string & target);
+
+	/// Shared callback logic when a category list item is clicked.
+	void onCatItemSelectedCallback(WikiListItem * clicked);
+
+	/// Shared callback logic when an element list item is clicked.
+	void onElemItemSelectedCallback(WikiListItem * clicked);
 
 	/// Inserts a mod-scope label as the first widget in a viewport when the
 	/// current entry belongs to a non-core mod.

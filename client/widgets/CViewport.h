@@ -89,4 +89,9 @@ public:
 	/// Sets content size to tight bounding box of all children, then
 	/// re-evaluates scrollbars.  Call after populating via content().
 	void fitContentSize();
+
+	/// Scrolls the viewport so that content at vertical pixel offset @p y
+	/// is visible at the top of the viewport.  Does nothing if there is no
+	/// vertical slider or the content fits without scrolling.
+	void scrollToY(int y);
 };

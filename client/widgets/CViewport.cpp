@@ -234,6 +234,12 @@ void CViewport::fitContentSize()
 	setContentSize(Point(maxX, maxY));
 }
 
+void CViewport::scrollToY(int y)
+{
+	if(vSlider && !vSlider->isDisabled())
+		vSlider->scrollTo(std::max(0, y));
+}
+
 void CViewport::onScrollV(int val)
 {
 	const int delta = val - scrollY;

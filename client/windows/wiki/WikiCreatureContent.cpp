@@ -42,7 +42,7 @@ static constexpr int CELL_T = 2;
 // buildCreatureContent – main entry point
 // ─────────────────────────────────────────────────────────────────────────────
 
-std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
+std::vector<std::shared_ptr<CIntObject>> buildCreatureContent( // NOSONAR (complex by nature – many creature attributes)
 	CViewport & viewport,
 	const CCreature * creature,
 	int viewportWidth,
@@ -156,7 +156,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 		const int colLbl = tableW / 2;
 		const int rowCnt = static_cast<int>(stats.size());
 
-		widgets.push_back(wikiMakeTableGrid(MARGIN, curY, tableW, {colLbl, tableW - colLbl}, 0, rowH, rowCnt, blueStyle));
+		widgets.push_back(std::make_shared<WikiTableGrid>(MARGIN, curY, tableW, std::vector<int>{colLbl, tableW - colLbl}, 0, rowH, rowCnt, blueStyle));
 
 		for(int i = 0; i < rowCnt; ++i)
 		{
@@ -186,7 +186,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
 				LIBRARY->generaltexth->translate("vcmi.wiki.creature.section.cost")));
 			curY += 20;
-			wikiAddResourceCost(widgets, cost, MARGIN, curY, W - MARGIN * 2);
+			widgets.push_back(std::make_shared<WikiResourceCost>(cost, MARGIN, curY, W - MARGIN * 2));
 			curY += 18 + GAP;
 		}
 	}
@@ -196,7 +196,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 		std::vector<const CCreature *> upgrades;
 		for(const CreatureID uid : creature->upgrades)
 		{
-			if(uid.getNum() >= 0 && uid.getNum() < (int)LIBRARY->creh->objects.size())
+			if(uid.getNum() >= 0 && uid.getNum() < static_cast<int>(LIBRARY->creh->objects.size()))
 			{
 				if(const auto & up = LIBRARY->creh->objects[uid.getNum()])
 					upgrades.push_back(up.get());
@@ -282,17 +282,22 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent(
 			ImagePath   icon;
 		};
 		std::vector<AbilityRow> abilityRows;
-		std::set<std::pair<int,int>> seen;
+		std::set<std::tuple<int, int, std::string>> seen;
 
 		auto bonusList = creature->getBonuses(Selector::all);
 		for(const auto & b : *bonusList)
 		{
 			if(b->hidden) continue;
-			const std::string text = LIBRARY->bth->bonusToString(b);
+			const std::string text = !b->description.empty()
+				? b->description.toString()
+				: LIBRARY->bth->bonusToString(b, creature);
 			if(text.empty()) continue;
-			const auto key = std::make_pair((int)b->type, b->subtype.getNum());
+			const auto key = std::make_tuple(static_cast<int>(b->type), b->subtype.getNum(), text);
 			if(!seen.insert(key).second) continue;
-			abilityRows.push_back(AbilityRow{text, LIBRARY->bth->bonusToGraphics(b)});
+			const ImagePath icon = !b->customIconPath.empty()
+				? b->customIconPath
+				: LIBRARY->bth->bonusToGraphics(b);
+			abilityRows.push_back(AbilityRow{text, icon});
 		}
 
 		if(!abilityRows.empty())

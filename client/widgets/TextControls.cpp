@@ -358,6 +358,8 @@ Rect CMultiLineLabel::getTextLocation()
 	case ETextAlignment::CENTERRIGHT:  return Rect(pos.topLeft() + Point(textOffset.x, textOffset.y / 2), textSizeComputed);
 	case ETextAlignment::BOTTOMRIGHT:  return Rect(pos.topLeft() + textOffset, textSizeComputed);
 	case ETextAlignment::BOTTOMCENTER: return Rect(pos.topLeft() + Point(textOffset.x / 2, textOffset.y), textSizeComputed);
+	case ETextAlignment::TOPRIGHT:     return Rect(pos.topLeft() + Point(textOffset.x, 0), textSizeComputed);
+	case ETextAlignment::BOTTOMLEFT:   return Rect(pos.topLeft() + Point(0, textOffset.y), textSizeComputed);
 	}
 	assert(0);
 	return Rect();

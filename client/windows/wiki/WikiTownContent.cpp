@@ -241,7 +241,7 @@ static void addBuildingsTable(
 	std::sort(bldRows.begin(), bldRows.end(),
 		[](const CBuilding * a, const CBuilding * b){ return a->bid < b->bid; });
 
-	widgets.push_back(wikiMakeTableGrid(
+	widgets.push_back(std::make_shared<WikiTableGrid>(
 		TABLE_MARGIN, curY, tableW, cols,
 		headerH, rowH, (int)bldRows.size(), blueStyle));
 
@@ -268,10 +268,10 @@ static void addBuildingsTable(
 			FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 			bld->getNameTranslated()));
 
-		wikiAddResourceCost(widgets, bld->resources,
+		widgets.push_back(std::make_shared<WikiResourceCost>(bld->resources,
 			TABLE_MARGIN + colIcon + colHalf + CELL_PAD_L,
 			curY + CELL_PAD_T,
-			cols[2] - CELL_PAD_L * 2);
+			cols[2] - CELL_PAD_L * 2));
 
 		std::string desc = bld->getDescriptionTranslated();
 		if(!desc.empty())
@@ -326,7 +326,7 @@ static void addCreaturesTable(
 				crRows.push_back({cr, tier + 1, ci > 0});
 		}
 
-	widgets.push_back(wikiMakeTableGrid(
+	widgets.push_back(std::make_shared<WikiTableGrid>(
 		TABLE_MARGIN, curY, tableW, cols,
 		headerH, rowH, (int)crRows.size(), blueStyle));
 
@@ -385,10 +385,10 @@ static void addCreaturesTable(
 			FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
 			tierStr + row.creature->getNameSingularTranslated()));
 
-		wikiAddResourceCost(widgets, row.creature->getFullRecruitCost(),
+		widgets.push_back(std::make_shared<WikiResourceCost>(row.creature->getFullRecruitCost(),
 			TABLE_MARGIN + colIcon + nameW + CELL_PAD_L,
 			curY + CELL_PAD_T,
-			costW - CELL_PAD_L * 2);
+			costW - CELL_PAD_L * 2));
 
 		{
 			int sx = TABLE_MARGIN + colIcon + nameW + costW;
@@ -504,7 +504,7 @@ static void addHeroesTable(
 	{
 		if(rows.empty()) return;
 
-		widgets.push_back(wikiMakeTableGrid(
+		widgets.push_back(std::make_shared<WikiTableGrid>(
 			TABLE_MARGIN, curY, tableW2, heroCols,
 			heroHeaderH, heroRowH, (int)rows.size(), blueStyle));
 		widgets.push_back(std::make_shared<CLabel>(
