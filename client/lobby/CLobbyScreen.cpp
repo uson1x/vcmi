@@ -46,7 +46,12 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 
 	auto initLobby = [&]()
 	{
-		tabSel->callOnSelect = std::bind(&IServerAPI::setMapInfo, &GAME->server(), _1, nullptr);
+		tabSel->callOnSelect = [this](std::shared_ptr<CMapInfo> mapInfo)
+		{
+			GAME->server().setMapInfo(mapInfo, nullptr);
+			if(curTab != tabBattleOnlyMode)
+				updateStartButtonState();
+		};
 
 		buttonSelect = std::make_shared<CButton>(Point(411, 80), AnimationPath::builtin("GSPBUTT.DEF"), LIBRARY->generaltexth->zelp[45], 0, EShortcut::LOBBY_SELECT_SCENARIO);
 		buttonSelect->addCallback([this]()

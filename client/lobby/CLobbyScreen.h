@@ -16,14 +16,6 @@ class GraphicalPrimitiveCanvas;
 
 class CLobbyScreen final : public CSelectionBase
 {
-	bool waitingForPlayersMessageShown = false;
-	bool compatibilityFilterInitialized = false;
-	size_t lastRequiredHumanPlayers = 0;
-
-	bool canStartLobbyGame() const;
-	void updateHostLobbyChatState();
-	void updateStartButtonState();
-
 public:
 	std::shared_ptr<CButton> buttonChat;
 	std::shared_ptr<GraphicalPrimitiveCanvas> blackScreen;
@@ -43,4 +35,13 @@ public:
 	const StartInfo * getStartInfo() final;
 
 	std::shared_ptr<CBonusSelection> bonusSel;
+
+private:
+	bool waitingForPlayersMessageShown = false;
+	bool compatibilityFilterInitialized = false;
+	size_t lastRequiredHumanPlayers = 0;
+
+	bool canStartLobbyGame() const;
+	void updateHostLobbyChatState();
+	void updateStartButtonState();
 };

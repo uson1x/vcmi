@@ -490,7 +490,7 @@ CMultiMode::CMultiMode(ESelectionScreen ScreenType)
 	textTitleIp = std::make_shared<CTextBox>("", Rect(7, 38, 440, 50), 0, FONT_TINY, ETextAlignment::CENTER, Colors::WHITE);
 	textTitleIp->setText(LIBRARY->generaltexth->translate("vcmi.mainMenu.ipAddress") + ": " + (addresses.empty() ? LIBRARY->generaltexth->translate("vcmi.mainMenu.ipAddressUnknown") : (addresses.front() + ":" + std::to_string(GAME->server().getLocalPort()))));
 
-	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 422, 440, 18), 7, 422));
+	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 423, 440, 18), 7, 423));
 
 	buttonHotseat = std::make_shared<CButton>(Point(373, 78 + 57 * 0), AnimationPath::builtin("MUBHOT.DEF"), LIBRARY->generaltexth->zelp[266], std::bind(&CMultiMode::hostTCP, this, EShortcut::MAIN_MENU_HOTSEAT), EShortcut::MAIN_MENU_HOTSEAT);
 	buttonLobby = std::make_shared<CButton>(Point(373, 78 + 57 * 1), AnimationPath::builtin("MUBONL.DEF"), LIBRARY->generaltexth->zelp[265], std::bind(&CMultiMode::openLobby, this), EShortcut::MAIN_MENU_LOBBY);
@@ -559,7 +559,7 @@ JoinScreen::JoinScreen(ESelectionScreen ScreenType, std::vector<std::string> Pla
 	textTitle = std::make_shared<CTextBox>("", Rect(7, 18, 440, 50), 0, FONT_BIG, ETextAlignment::CENTER, Colors::WHITE);
 	textTitle->setText(LIBRARY->generaltexth->translate("vcmi.mainMenu.chooseAvailableServers"));
 
-	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 422, 440, 18), 7, 422));
+	statusBar = CGStatusBar::create(std::make_shared<CPicture>(background->getSurface(), Rect(7, 423, 440, 18), 7, 423));
 
 	buttonSearch = std::make_shared<CButton>(Point(373, 78 + 57 * 0), AnimationPath::builtin("MUBSRCH.DEF"), LIBRARY->generaltexth->zelp[273], [this](){
 		auto savedScreenType = screenType;

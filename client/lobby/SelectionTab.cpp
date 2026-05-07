@@ -611,7 +611,7 @@ void SelectionTab::filter(int size, bool selectFirst)
 		buttonDeleteMode->setEnabled(tabType != ESelectionScreen::newGame || showRandom);
 
 	size_t hiddenIncompatibleMaps = 0;
-	size_t requiredHumanPlayers = getRequiredHumanPlayers();
+	size_t requiredHumanPlayersCount = getRequiredHumanPlayers();
 
 	for(auto elem : allItems)
 	{
@@ -660,7 +660,7 @@ void SelectionTab::filter(int size, bool selectFirst)
 	{
 		MetaString warningText;
 		warningText.appendTextID("vcmi.lobby.system.hidingIncompatibleMaps");
-		warningText.replaceNumber(requiredHumanPlayers);
+		warningText.replaceNumber(requiredHumanPlayersCount);
 		const std::string warningTextFormatted = warningText.toString();
 
 		if(lastCompatibilityNotice != warningTextFormatted)
