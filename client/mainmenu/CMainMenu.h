@@ -60,6 +60,7 @@ public:
 
 	void activate() override;
 	void show(Canvas & to) override;
+	void keyPressed(EShortcut key) override;
 
 	void switchToTab(size_t index);
 	void switchToTab(std::string name);

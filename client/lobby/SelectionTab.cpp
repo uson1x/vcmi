@@ -332,6 +332,7 @@ SelectionTab::SelectionTab(ESelectionScreen Type)
 	labelTabTitle = std::make_shared<CLabel>(205, 28, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, tabTitle);
 	slider = std::make_shared<CSlider>(Point(372, 86 + (enableUiEnhancements ? 30 : 0)), (tabType != ESelectionScreen::saveGame ? 480 : 430) - (enableUiEnhancements ? 30 : 0), std::bind(&SelectionTab::sliderMove, this, _1), positionsToShow, (int)curItems.size(), 0, Orientation::VERTICAL, CSlider::BLUE);
 	slider->setPanningStep(24);
+	slider->setInertiaEnabled(true);
 
 	// create scroll bounds that encompass all area in this UI element to the left of slider (including area of slider itself)
 	// entire screen can't be used in here since map description might also have slider
