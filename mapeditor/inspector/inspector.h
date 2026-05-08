@@ -25,6 +25,8 @@
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/ResourceSet.h"
 
+VCMI_LIB_USING_NAMESPACE
+
 #define DECLARE_OBJ_TYPE(x) void initialize(x*);
 #define DECLARE_OBJ_PROPERTY_METHODS(x) \
 void updateProperties(x*); \

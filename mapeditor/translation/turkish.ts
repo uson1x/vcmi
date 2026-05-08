@@ -648,7 +648,7 @@
     </message>
 </context>
 <context>
-    <name>MainWindow</name>
+    <name>EditorMainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="14"/>
         <location filename="../mainwindow.cpp" line="415"/>
