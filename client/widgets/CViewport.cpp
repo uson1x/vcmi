@@ -78,6 +78,10 @@ void CViewport::remakeVSlider(int length)
 	}
 	vSlider->setScrollStep(20);
 	vSlider->setPanningStep(1);
+	// This slider's GESTURE events are handled exclusively by CViewport::gesturePanning.
+	// Without this, both the slider (via Scrollable::gesturePanning) and the viewport
+	// would scroll on every touch-panning event, causing double (over-)scroll speed.
+	vSlider->removeUsedEvents(GESTURE);
 }
 
 void CViewport::remakeHSlider(int length)
@@ -98,6 +102,8 @@ void CViewport::remakeHSlider(int length)
 	}
 	hSlider->setScrollStep(20);
 	hSlider->setPanningStep(1);
+	// Same reason as vSlider: gesture events are handled by CViewport, not the slider.
+	hSlider->removeUsedEvents(GESTURE);
 }
 
 void CViewport::updateSliders()
@@ -306,8 +312,8 @@ void CViewport::gesture(bool on, const Point & initialPosition, const Point & fi
 void CViewport::gesturePanning(const Point & initialPosition, const Point & currentPosition, const Point & lastUpdateDistance)
 {
 	const uint32_t ts = ENGINE->input().getTicks();
-	const int deltaX = -lastUpdateDistance.x;
-	const int deltaY =  lastUpdateDistance.y;
+	const int deltaX = lastUpdateDistance.x;
+	const int deltaY = lastUpdateDistance.y;
 
 	smoothH.addStep(deltaX, ts);
 	smoothV.addStep(deltaY, ts);
