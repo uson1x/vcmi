@@ -16,12 +16,6 @@
 #include "../../../lib/filesystem/ResourcePath.h"
 #include "../../../lib/TerrainHandler.h"
 
-#include <functional>
-#include <memory>
-#include <optional>
-#include <string>
-#include <vector>
-
 class Canvas;
 
 // ─────────────────────────────────────────────────────────────────────────────
