@@ -86,8 +86,10 @@ int CStackWindow::StackExperienceDetailsWindow::getStackExperienceTierFromCreatu
 
 int CStackWindow::StackExperienceDetailsWindow::calculateDynamicTableRowCount(const CStackInstance * stack, const CCreature * creature)
 {
+	// Matches asset generator semantics: image suffix N means
+	// table renders N data rows + 1 header row.
 	if(!stack || !creature || !GAME->interface())
-		return 8;
+		return 7;
 
 	struct BonusKey
 	{
@@ -117,14 +119,14 @@ int CStackWindow::StackExperienceDetailsWindow::calculateDynamicTableRowCount(co
 	}
 
 	const int minBonusRows = 1;
-	const int maxDataRows = 8; // keep dialog within 800x600
-	const int dataRows = std::clamp(1 + std::max(minBonusRows, static_cast<int>(uniqueBonuses.size())), minBonusRows + 1, maxDataRows); // Experience + bonus rows
-	return dataRows; // table data rows (header handled by background template)
+	const int maxRowsWithoutHeader = 7; // keep dialog within 800x600
+	const int rowsWithoutHeader = std::clamp(1 + std::max(minBonusRows, static_cast<int>(uniqueBonuses.size())), 1, maxRowsWithoutHeader); // Experience + bonus rows
+	return rowsWithoutHeader;
 }
 
 ImagePath CStackWindow::StackExperienceDetailsWindow::getDialogBackground(int rowCount)
 {
-	const int clampedRowCount = std::clamp(rowCount - 1, 1, 7);
+	const int clampedRowCount = std::clamp(rowCount, 1, 7);
 	return ImagePath::builtin("stackExperienceDialogRows" + std::to_string(clampedRowCount));
 }
 
@@ -217,6 +219,18 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 	addLongInfo(0, LIBRARY->generaltexth->translate("vcmi.stackExperience.popup.maxRecruits"), std::to_string(maxNewRecruits));
 	addLongInfo(1, LIBRARY->generaltexth->translate("vcmi.stackExperience.popup.maxRecruitsRank10"), std::to_string(maxRecruitsAtRank10));
 
+	auto makeTooltipAndPopupText = [](const std::string & descriptionText)
+	{
+		std::string tooltip = descriptionText;
+		std::string popup = descriptionText;
+		boost::replace_all(tooltip, "\n\n", ": ");
+		boost::replace_all(tooltip, "\n", ": ");
+		boost::replace_all(popup, "\n", "\n\n");
+		return std::pair<std::string, std::string>{tooltip, popup};
+	};
+
+	const auto [experienceTooltip, experiencePopup] = makeTooltipAndPopupText(LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.experience"));
+
 	std::vector<NumericRow> rows = {
 		{LIBRARY->generaltexth->translate("vcmi.stackExperience.table.experience"), [&rankThresholds](const CStackInstance & stackInst)
 			{
@@ -224,7 +238,7 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 				return static_cast<int>(rankThresholds[std::min(rank, static_cast<int>(rankThresholds.size()) - 1)]);
 		},
 		[](const CStackInstance &){ return true; },
-		ImagePath::builtin("stackExperienceIconExperience"), true, -1, LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.experience"), LIBRARY->generaltexth->translate("vcmi.stackExperience.desc.experience"), false, false, false, false, true},
+		ImagePath::builtin("stackExperienceIconExperience"), true, -1, experienceTooltip, experiencePopup, false, false, false, false, true},
 	};
 
 	struct BonusKey
@@ -308,11 +322,7 @@ CStackWindow::StackExperienceDetailsWindow::StackExperienceDetailsWindow(const C
 		const auto selector = selectorOverride.value_or(makeStackExpSelector(key));
 		const ImagePath iconPath = iconOverride.value_or(sourceStack->bonusToGraphics(std::const_pointer_cast<Bonus>(bonus)));
 		const bool allowPresenceFallback = bonus->val == 0;
-		std::string tooltip = descriptionText;
-		std::string popup = descriptionText;
-		boost::replace_all(tooltip, "\n\n", ": ");
-		boost::replace_all(tooltip, "\n", ": ");
-		boost::replace_all(popup, "\n", "\n\n");
+		auto [tooltip, popup] = makeTooltipAndPopupText(descriptionText);
 		rows.push_back({label, [selector, binary, valueGetterOverride](const CStackInstance & stackInst)
 			{
 				if(valueGetterOverride.has_value())
