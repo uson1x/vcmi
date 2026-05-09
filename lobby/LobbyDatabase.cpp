@@ -156,7 +156,7 @@ void LobbyDatabase::prepareStatements()
 		SELECT grp.roomID
 		FROM gameRoomPlayers grp
 		LEFT JOIN gameRooms gr ON gr.roomID = grp.roomID
-		WHERE accountID = ? AND status IN (1, 2, 3)
+		WHERE accountID = ? AND status >= 1 AND status <= 3
 		LIMIT 1
 	)");
 
@@ -170,7 +170,7 @@ void LobbyDatabase::prepareStatements()
 		SELECT roomID, hostAccountID, displayName, description, status, playerLimit, version, strftime('%s',CURRENT_TIMESTAMP)- strftime('%s',gr.creationTime)  AS secondsElapsed
 		FROM gameRooms gr
 		LEFT JOIN accounts a ON gr.hostAccountID = a.accountID
-		WHERE status IN (1, 2, 3)
+		WHERE status >= 1 AND status <= 3
 		ORDER BY secondsElapsed ASC
 	)");
 
@@ -275,7 +275,7 @@ void LobbyDatabase::prepareStatements()
 		SELECT COUNT(accountID)
 		FROM gameRoomPlayers grp
 		LEFT JOIN gameRooms gr ON gr.roomID = grp.roomID
-		WHERE accountID = ? AND status IN (1, 2, 3)
+		WHERE accountID = ? AND status >= 1 AND status <= 3
 	)");
 
 	isAccountIDExistsStatement = database->prepare(R"(
