@@ -50,6 +50,7 @@
 #include "../../../lib/texts/TextOperations.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "../../../lib/json/JsonNode.h"
+#include "../../../lib/CConfigHandler.h"
 #include "../../../lib/json/JsonUtils.h"
 
 // ============================================================================
@@ -97,45 +98,36 @@ WikiListItem::WikiListItem(size_t itemIndex, std::string itemText, std::string i
 
 	if(iconInfo)
 	{
-		if(iconInfo->colorFill)
+		// Query native image size to compute aspect-correct rendered height and center it.
+		auto refImg = ENGINE->renderHandler().loadImage(
+			iconInfo->path, static_cast<int>(iconInfo->frame), static_cast<int>(iconInfo->group), EImageBlitMode::COLORKEY);
+		const Point nativeSz = refImg ? refImg->dimensions() : Point(ICON_SIZE, ICON_SIZE);
+		// "Contain" scaling: fit the larger dimension to ICON_SIZE, preserve aspect.
+		int iconW2, iconH2;
+		if(nativeSz.x <= 0 || nativeSz.y <= 0)
 		{
-			// Solid colour square (used for terrain) – always square, no aspect issue
-			colorFillIcon = iconInfo->colorFill;
-			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
+			iconW2 = ICON_SIZE; iconH2 = ICON_SIZE;
+		}
+		else if(nativeSz.y > nativeSz.x)
+		{
+			// Portrait: height is the larger dimension
+			iconH2 = ICON_SIZE;
+			iconW2 = std::max(1, ICON_SIZE * nativeSz.x / nativeSz.y);
 		}
 		else
 		{
-			// Query native image size to compute aspect-correct rendered height and center it.
-			auto refImg = ENGINE->renderHandler().loadImage(
-				iconInfo->path, static_cast<int>(iconInfo->frame), static_cast<int>(iconInfo->group), EImageBlitMode::COLORKEY);
-			const Point nativeSz = refImg ? refImg->dimensions() : Point(ICON_SIZE, ICON_SIZE);
-			// "Contain" scaling: fit the larger dimension to ICON_SIZE, preserve aspect.
-			int iconW2, iconH2;
-			if(nativeSz.x <= 0 || nativeSz.y <= 0)
-			{
-				iconW2 = ICON_SIZE; iconH2 = ICON_SIZE;
-			}
-			else if(nativeSz.y > nativeSz.x)
-			{
-				// Portrait: height is the larger dimension
-				iconH2 = ICON_SIZE;
-				iconW2 = std::max(1, ICON_SIZE * nativeSz.x / nativeSz.y);
-			}
-			else
-			{
-				// Landscape or square
-				iconW2 = ICON_SIZE;
-				iconH2 = std::max(1, ICON_SIZE * nativeSz.y / nativeSz.x);
-			}
-			const int iconX2 = MARGIN_L + (ICON_SIZE - iconW2) / 2;
-			const int iconY2 = (ITEM_H - iconH2) / 2;
-			icon = std::make_shared<CAnimImage>(
-				iconInfo->path,
-				iconInfo->frame,
-				Rect(iconX2, iconY2, iconW2, iconH2),
-				iconInfo->group);
-			labelOffsetX = MARGIN_L + ICON_SIZE + 5;
+			// Landscape or square
+			iconW2 = ICON_SIZE;
+			iconH2 = std::max(1, ICON_SIZE * nativeSz.y / nativeSz.x);
 		}
+		const int iconX2 = MARGIN_L + (ICON_SIZE - iconW2) / 2;
+		const int iconY2 = (ITEM_H - iconH2) / 2;
+		icon = std::make_shared<CAnimImage>(
+			iconInfo->path,
+			iconInfo->frame,
+			Rect(iconX2, iconY2, iconW2, iconH2),
+			iconInfo->group);
+		labelOffsetX = MARGIN_L + ICON_SIZE + 5;
 	}
 
 	// itemWidth = full item pos.w (slider area included).
@@ -242,12 +234,6 @@ void WikiListItem::showAll(Canvas & to) // NOSONAR
 			clipArea.w -= 16; // slider width
 		CanvasClipRectGuard guard(to, clipArea);
 
-		// Draw solid-colour terrain icon square (before CIntObject children)
-		if(colorFillIcon)
-		{
-			const int iconY = pos.y + (ITEM_H - ICON_SIZE) / 2;
-			to.drawColorBlended(Rect(pos.x + MARGIN_L, iconY, ICON_SIZE, ICON_SIZE), *colorFillIcon);
-		}
 		if(selected && !text.empty())
 		{
 			const int contentW = (lb && lb->getSlider()) ? (pos.w - 16) : pos.w;
@@ -492,7 +478,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			}
 			categoryEntries[iTown].push_back({
 				faction->getJsonKey(), faction->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("ITPA"), static_cast<size_t>(faction->town->clientInfo.icons[1][0]) + 2, 0, std::nullopt },
+				WikiIconInfo{ AnimationPath::builtin("ITPA"), static_cast<size_t>(faction->town->clientInfo.icons[1][0]) + 2, 0 },
 				faction->getModScope(),
 				alignStr
 			});
@@ -510,7 +496,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			const std::string heroClassName = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 			categoryEntries[iHero].push_back({
 				hero->getJsonKey(), hero->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), static_cast<size_t>(hero->getIconIndex()), 0, std::nullopt },
+				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), static_cast<size_t>(hero->getIconIndex()), 0 },
 				hero->getModScope(),
 				heroClassName
 			});
@@ -544,7 +530,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				const std::string factionName = (it != factionNameById.end()) ? it->second : "";
 				categoryEntries[iCreature].push_back({
 					creature->getJsonKey(), creature->getNameSingularTranslated(), "",
-					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), static_cast<size_t>(creature->getIconIndex()), 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("CPRSMALL"), static_cast<size_t>(creature->getIconIndex()), 0 },
 					creature->getModScope(),
 					factionName
 				});
@@ -563,7 +549,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 					artifact->getJsonKey(),
 					artifact->getNameTranslated(),
 					artifact->getDescriptionTranslated(),
-					WikiIconInfo{ AnimationPath::builtin("Artifact"), static_cast<size_t>(artifact->getIconIndex()), 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("Artifact"), static_cast<size_t>(artifact->getIconIndex()), 0 },
 					artifact->getModScope(), ""
 				});
 		std::sort(categoryEntries[iArtifact].begin(), categoryEntries[iArtifact].end(),
@@ -605,7 +591,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				categoryEntries[iSpell].push_back({
 					spell->getJsonKey(),
 					spell->getNameTranslated(), desc,
-					WikiIconInfo{ AnimationPath::builtin("SpellInt"), static_cast<size_t>(spell->getIndex()) + 1, 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("SpellInt"), static_cast<size_t>(spell->getIndex()) + 1, 0 },
 					spell->getModScope(), ""
 				});
 			}
@@ -633,7 +619,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				categoryEntries[iSkill].push_back({
 					skill->getJsonKey(),
 					skill->getNameTranslated(), desc,
-					WikiIconInfo{ AnimationPath::builtin("SECSK32"), static_cast<size_t>(skill->getIndex() * 3 + 3), 0, std::nullopt },
+					WikiIconInfo{ AnimationPath::builtin("SECSK32"), static_cast<size_t>(skill->getIndex() * 3 + 3), 0 },
 					skill->getModScope(), ""
 				});
 			}
@@ -641,14 +627,13 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
-	// Terrain types – minimap colour as icon, list native towns as description
+	// Terrain types – tile image (or minimap colour fallback) as icon, list native towns as description
 	{
 		const int iTerrain = static_cast<int>(WikiCategory::TERRAIN);
 		for(const auto & terrain : LIBRARY->terrainTypeHandler->objects)
 			if(terrain)
 			{
-				WikiIconInfo colorIcon;
-				colorIcon.colorFill = terrain->minimapUnblocked;
+				WikiIconInfo colorIcon = terrainIconInfo(terrain.get());
 
 				// List towns whose native terrain this is
 				std::string nativeTowns;
@@ -761,10 +746,9 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		glossaryContentView->disable();
 	}
 
-	// Mod-scope tag for non-viewport categories (artifact/spell/skill/terrain).
-	// x is adjusted dynamically in updateContent() based on scrollbar presence.
+	// Mod name shown right-aligned just below the content area (between content and close button).
 	modScopeLabel = std::make_shared<CLabel>(
-		COL3_X + COL3_W - 8, CONTENT_TOP + 4,
+		COL3_X + COL3_W - 8, CONTENT_BOT + 4,
 		FONT_SMALL, ETextAlignment::TOPRIGHT,
 		ColorRGBA(0, 200, 0, 255), "");
 	modScopeLabel->setEnabled(false);
@@ -790,9 +774,56 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 	// Apply scroll-wheel bounds after center() so pos is finalised
 	applyScrollBounds();
 
-	// Navigate to a specific entry if requested
+	// Restore in-memory session state (kept while the game runs, not persisted to disk)
+	const JsonNode & ws = settings["session"]["wiki"];
+	for(const JsonNode & h : ws["history"].Vector())
+	{
+		navHistory.push_back(WikiEntryKey{
+			static_cast<WikiCategory>(h["cat"].Integer()),
+			h["entry"].String(),
+			h["anchor"].String()
+		});
+	}
+	if(backButton)
+		backButton->setEnabled(!navHistory.empty());
+
+	if(!initialEntry && !ws["lastPage"]["entry"].String().empty())
+		navigateTo(WikiEntryKey{
+			static_cast<WikiCategory>(ws["lastPage"]["cat"].Integer()),
+			ws["lastPage"]["entry"].String(),
+			ws["lastPage"]["anchor"].String()
+		});
+
+	// Navigate to a specific entry if requested (restores history first, then adds this page on top)
 	if(initialEntry)
 		navigateTo(*initialEntry);
+}
+
+// ============================================================================
+// WikiWindow – destructor (saves session state)
+// ============================================================================
+
+WikiWindow::~WikiWindow()
+{
+	if(activeCategoryIndex < 0 || activeElementIndex < 0
+		|| activeElementIndex >= static_cast<int>(currentDisplayedEntries.size()))
+		return;
+
+	Settings ws = settings.write["session"]["wiki"];
+
+	ws["history"].setType(JsonNode::JsonType::DATA_VECTOR);
+	for(const WikiEntryKey & k : navHistory)
+	{
+		JsonNode h;
+		h["cat"].Integer() = static_cast<int>(k.category);
+		h["entry"].String() = k.entryName;
+		h["anchor"].String() = k.anchor;
+		ws["history"].Vector().push_back(std::move(h));
+	}
+
+	ws["lastPage"]["cat"].Integer() = activeCategoryIndex;
+	ws["lastPage"]["entry"].String() = currentDisplayedEntries[activeElementIndex].identifier;
+	ws["lastPage"]["anchor"].String() = {};
 }
 
 // ============================================================================
@@ -1010,24 +1041,28 @@ void WikiWindow::updateContent() // NOSONAR
 		if(view) view->setEnabled(false);
 	contentBox->setEnabled(!useCustomViewport);
 
-	// Standalone mod-scope label – only for non-viewport categories (textbox path).
-	// Viewports inject their own label directly into the content.
+	// Mod name label shown below the content area for all non-glossary entries.
 	{
 		const bool isGlossary = (activeCategoryIndex == static_cast<int>(WikiCategory::GLOSSARY));
 		const bool hasEntry = (activeElementIndex >= 0)
 		                   && (activeElementIndex < static_cast<int>(currentDisplayedEntries.size()));
 		const std::string & ms = hasEntry ? currentDisplayedEntries[activeElementIndex].modScope : "";
-		const bool showScope = !isGlossary && !useCustomViewport && !ms.empty() && ms != "core";
+		const bool showScope = !isGlossary && !ms.empty();
 		if(modScopeLabel)
 		{
 			modScopeLabel->setEnabled(showScope);
 			if(showScope)
 			{
-				const auto dot = ms.find('.');
-				modScopeLabel->setText(dot != std::string::npos ? ms.substr(0, dot) : ms);
-				// Shift left only when the textbox already has an active scrollbar
-				const bool hasSlider = contentBox && contentBox->slider;
-				modScopeLabel->pos.x = pos.x + COL3_X + COL3_W - 8 - (hasSlider ? SLIDER_W : 0);
+				std::string displayName;
+				if(ms == "core")
+					displayName = LIBRARY->generaltexth->translate("vcmi.wiki.modName.core");
+				else
+				{
+					const auto dot = ms.find('.');
+					const std::string topModId = dot != std::string::npos ? ms.substr(0, dot) : ms;
+					displayName = LIBRARY->modh->getModInfo(topModId).getName();
+				}
+				modScopeLabel->setText(displayName);
 			}
 		}
 	}
@@ -1167,7 +1202,6 @@ void WikiWindow::rebuildTownViewport(const std::string & factionIdentifier)
 	{
 		navigateTo(WikiEntryKey{cat, name});
 	};
-	injectModScopeLabel(*townContentView, townContentWidgets, VP_W);
 	{
 		auto moreWidgets = buildTownContent(*townContentView, faction,
 			VP_W - CViewport::SLIDER_W, isBlue, navCb);
@@ -1214,7 +1248,6 @@ void WikiWindow::rebuildCreatureViewport(const std::string & creatureIdentifier)
 	{
 		navigateTo(WikiEntryKey{WikiCategory::CREATURE, name});
 	};
-	injectModScopeLabel(*creatureContentView, creatureContentWidgets, VP_W);
 	{
 		auto moreWidgets = buildCreatureContent(*creatureContentView, creature,
 			VP_W - CViewport::SLIDER_W, isBlue, navCb);
@@ -1266,7 +1299,6 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 	{
 		navigateTo(WikiEntryKey{cat, name});
 	};
-	injectModScopeLabel(*heroContentView, heroContentWidgets, VP_W);
 	{
 		auto moreWidgets = buildHeroContent(*heroContentView, hero,
 			VP_W - CViewport::SLIDER_W, isBlue, navCb);
@@ -1313,7 +1345,6 @@ void WikiWindow::rebuildArtifactViewport(const std::string & artKey)
 	{
 		navigateTo(WikiEntryKey{cat, name});
 	};
-	injectModScopeLabel(*artifactContentView, artifactContentWidgets, VP_W);
 	{
 		auto moreWidgets = buildArtifactContent(*artifactContentView, art,
 			VP_W - CViewport::SLIDER_W, isBlue, navCb);
@@ -1498,25 +1529,6 @@ void WikiWindow::rebuildMarkdownViewport(
 
 	applyScrollBounds();
 	ENGINE->windows().totalRedraw();
-}
-
-// ============================================================================
-// WikiWindow – mod-scope helper
-// ============================================================================
-
-void WikiWindow::injectModScopeLabel(CViewport & vp, std::vector<std::shared_ptr<CIntObject>> & widgets, int vpW)
-{
-	const std::string & ms = (activeElementIndex >= 0 && activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
-	                        ? currentDisplayedEntries[activeElementIndex].modScope : "";
-	if(ms.empty() || ms == "core")
-		return;
-	const auto dot = ms.find('.');
-	const std::string text = dot != std::string::npos ? ms.substr(0, dot) : ms;
-	OBJECT_CONSTRUCTION_TARGETED(vp.content());
-	widgets.push_back(std::make_shared<CLabel>(
-		vpW - CViewport::SLIDER_W - 4, 4,
-		FONT_SMALL, ETextAlignment::TOPRIGHT,
-		ColorRGBA(0, 200, 0, 255), text));
 }
 
 // ============================================================================

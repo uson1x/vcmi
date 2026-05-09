@@ -9,10 +9,9 @@
  */
 #pragma once
 
+#include "WikiCommon.h"
 #include "../CWindowObject.h"
 #include "../../widgets/CViewport.h"
-#include "../../../lib/filesystem/ResourcePath.h"
-#include "../../../lib/Color.h"
 
 class CButton;
 class CLabel;
@@ -39,15 +38,6 @@ enum class WikiCategory : int
 	COUNT     = 9
 };
 
-/// Optional icon descriptor for a WikiListItem row
-struct WikiIconInfo
-{
-	AnimationPath path;    ///< empty when colorFill is used
-	size_t frame = 0;
-	size_t group = 0;
-	std::optional<ColorRGBA> colorFill; ///< drawn as solid square when set (no CAnimImage)
-};
-
 /// A single wiki entry – identifier (JSON key), name (translated), optional description and optional icon
 struct WikiEntry
 {
@@ -69,7 +59,6 @@ class WikiListItem : public CIntObject
 
 	// Private members
 	std::shared_ptr<CAnimImage>  icon;
-	std::optional<ColorRGBA>     colorFillIcon; ///< used for terrain (solid color square)
 	std::shared_ptr<CLabel>      label;
 	std::shared_ptr<CLabel>      sublabel;       ///< second line (hero class / faction / alignment / count)
 	ColorRGBA                    sublabelColor;  ///< hint colour picked once in ctor (blue or brown)
@@ -257,10 +246,7 @@ private:
 	/// Shared callback logic when an element list item is clicked.
 	void onElemItemSelectedCallback(WikiListItem * clicked);
 
-	/// Inserts a mod-scope label as the first widget in a viewport when the
-	/// current entry belongs to a non-core mod.
-	void injectModScopeLabel(CViewport & vp, std::vector<std::shared_ptr<CIntObject>> & widgets, int vpW);
-
 public:
 	explicit WikiWindow(Style style = Style::BROWN, std::optional<WikiEntryKey> initialEntry = std::nullopt);
+	~WikiWindow() override;
 };

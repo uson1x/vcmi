@@ -475,11 +475,9 @@ static void addHeroesTable(
 	const int colName2  = tableW2 - colPort - colGend - colSpecIcon - colSpec2;
 	const std::vector<int> heroCols = {colPort, colName2, colGend, colSpecIcon, colSpec2};
 
-	// Gender: always use ♂/♀ glyphs, colored blue/pink
+	// Gender: ♂/♀ Unicode glyphs if supported, else translatable fallback
 	auto genderStr = [](const CHero * h) -> std::string {
-		return (h->gender == EHeroGender::FEMALE)
-			? "{#FF69B4|\xe2\x99\x80}"
-			: "{#5080FF|\xe2\x99\x82}";
+		return wikiGenderSpan(h->gender == EHeroGender::FEMALE);
 	};
 	const int heroHeaderH = 18;
 	const int heroRowH    = 36;
