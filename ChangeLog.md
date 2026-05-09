@@ -1,5 +1,87 @@
 # VCMI Project Changelog
 
+## 1.7.3 -> 1.7.4
+
+* Added in-game Wiki that can be opened via F1 or from adventure map options menu
+* Weblate integrated for translations. Czech, German, Polish, Spanish, Swedish, Turkish and Ukrainian are now fully translated
+* Tutorial map is now correctly imported from gog.com installer
+* Discord integration is now available on all desktop systems
+
+### Stability
+
+* Fixed crash when high-level hero is defeated by neutrals in combat
+* Fixed crash on attempt to load save game with dot in its file name
+* Fixed crash on attempt to start a campaign with game set to Japanese language
+* Fixed crash on loading campaign in VCMI format located in .zip archive
+* Fixed crash on accessing battle-only mode after disabling mod that provides skill used by preconfigured hero
+* Fixed crash on winning scenario by building specified structure when there is enemy player with owned town on a map
+* Fixed crash on macOS when scenario finishes during AI turn
+* Fixed crash on iOS on connecting external display
+
+### Mechanics
+
+* Basic Dimension Door now correctly allows two spell casts
+* Invincible units like Couatls can no longer be targeted by area attacks by Magogs and Power Liches
+* Fixed Cornucopia not providing its bonuses if artifact was assembled mid-game
+* Removed transfer of troops from 2nd to 3rd mission of Dragon Slayer campaign
+
+### Interface
+
+* Fixed move reminder dialog not displaying when player presses end turn while having heroes with set path
+* Split unit stack dialog now automatically selects 1 unit to split off when opened
+* Spellbook is now correctly recolored to color of current player
+* Turn options button no longer shows up on Scenario Information screen during gameplay
+* Clearing creature bank will now correctly show name of creatures received as a reward in reward message
+* Rally Flag and Oasis now use correct description messages on right-click
+* Hero invite window now uses list view instead of table view
+* Added indication of artifact held by a unit on creature icon in army view
+* Fixed buttons on statistics screen incorrectly using selected state
+* Fixed swapped messages in Altar of Sacrifice
+* Description and popup window of Spell Shrines now matches H3
+* Shooting is no longer shown as valid action for blocked units
+* Creature window now correctly uses singular form for single-unit stacks
+* Buying War Machine in Blacksmith or War Machine Factory will now show warning if player has a different machine in a slot
+* Added buttons to access wiki and map search from adventure options window
+* Added dedicated spell research dialog
+* Added dedicated stack experience dialog
+
+## AI
+
+* Fixed MMAI walking into moat without attacking during sieges
+* Reworked Battle AI spellcasting logic to improve performance
+* Improved Batle AI targeting selection for spells like Inferno
+* Battle AI is now less likely to cast spells like Firewall and Force Field
+
+### Launcher
+
+* Fixed bug where it was not possible to enable installed mod if mod version available in repository is not compatible with local version of VCMI
+* Fixed display of mod descriptions containing HTML tags
+* Launcher will now correctly preserve state of submods when updating a mod
+* Heroes 3 installed using Ubisoft Launcher will now be correctly detected on first launch
+* Mod search filter now also looks up untranslated mod name
+* Added option to extract Content.zip from downloaded mods on install
+* Fixed local server port always resetting to 3030 on starting Launcher
+
+### Map Editor
+
+* Fixed crash on clicking on random artifacts
+* Added UI for configuring disposed heroes
+
+### Lobby
+
+* Added basic public API functionality available at <https://api.vcmi.eu>
+
+### Modding
+
+* `combatCastEvent` now correctly activates for units with move-and-cast ability
+* `canCastOnlyOnSelf` spell flag no longer also allows targeting corpses
+* It is now possible to configure number of days in a week and number of weeks in a month
+* Added new adventure spell type, `reinforcements` that implements spell with same name from newer HoMM games
+* Bonuses with `UNTIL_BEING_ATTACKED` duration are now removed after counter-attack
+* Game will now generate background for recruitment dialog for 4-6 creatures
+* Added `--translate-mod` switch to VCMI server that correctly exports all texts for all submods, taking into account any string overrides
+* Added `LONG_WEAPON`bonus that allows unit to perform a melee attack from two hexes away if there is exactly one empty hex between attacker and target
+
 ## 1.7.2 -> 1.7.3
 
 ### Stability
@@ -56,7 +138,7 @@
 * Game will no longer report adventure map animation as missing if only .json for that animation exists
 * Game will no longer report files that are present in parent mod as missing when validation submod of a submod
 * It is now possibly to define mines for mod resources in RMG zone configuration without dependency on mod that provides the resource
-* Spell mastery is now correctly loaded from config for ON_COMBAT_EVENT bonus
+* Spell mastery is now correctly loaded from config for `ON_COMBAT_EVENT` bonus
 
 ## 1.7.1 -> 1.7.2
 
