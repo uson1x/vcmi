@@ -13,6 +13,7 @@
 
 #include "AdventureMapInterface.h"
 
+#include "../windows/wiki/WikiWindow.h"
 #include "../widgets/CComponent.h"
 #include "../widgets/Images.h"
 #include "../windows/CMessage.h"
@@ -32,6 +33,7 @@
 #include "../../lib/callback/CCallback.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/entities/hero/CHero.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/filesystem/Filesystem.h"
 
@@ -60,6 +62,16 @@ CInfoBar::VisibleHeroInfo::VisibleHeroInfo(const CGHeroInstance * hero)
 		heroTooltip = std::make_shared<CInteractableHeroTooltip>(Point(0,0), hero);
 	else
 		heroTooltip = std::make_shared<CHeroTooltip>(Point(0,0), hero);
+
+	{
+		const std::string heroKey = hero->getHeroType()->getJsonKey();
+		wikiPortrait = std::make_shared<LRClickableArea>(Rect(3, 2, 58, 64), [heroKey]()
+		{
+			ENGINE->windows().createAndPushWindow<WikiWindow>(
+				WikiWindow::Style::BROWN,
+				WikiEntryKey{WikiCategory::HERO, heroKey});
+		});
+	}
 }
 
 CInfoBar::VisibleTownInfo::VisibleTownInfo(const CGTownInstance * town)
