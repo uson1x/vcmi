@@ -157,6 +157,7 @@ void GlobalLobbyClient::receiveOperationFailed(const JsonNode & json)
 void GlobalLobbyClient::receiveClientLoginSuccess(const JsonNode & json)
 {
 	accountLoggedIn = true;
+	setAccountID(getAccountID());
 	setAccountDisplayName(json["displayName"].String());
 	setAccountCookie(json["accountCookie"].String());
 
@@ -282,15 +283,20 @@ GlobalLobbyRoom::GlobalLobbyRoom(const JsonNode & jsonEntry)
 void GlobalLobbyClient::receiveUpdateGameRoom(const JsonNode & json)
 {
 	GlobalLobbyRoom updatedRoom(json["room"]);
+	bool roomExists = false;
 
 	for(auto & room : activeRooms)
 	{
 		if (room.gameRoomID == updatedRoom.gameRoomID)
 		{
 			room = std::move(updatedRoom);
+			roomExists = true;
 			break;
 		}
 	}
+
+	if (!roomExists)
+		activeRooms.push_back(updatedRoom);
 
 	auto lobbyWindowPtr = lobbyWindow.lock();
 	if(lobbyWindowPtr)

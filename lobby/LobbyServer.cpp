@@ -648,7 +648,6 @@ void LobbyServer::receiveServerLogin(const NetworkConnectionPtr & connection, co
 
 		activeGameRooms[connection] = gameRoomID;
 		sendServerLoginSuccess(connection, accountCookie);
-		broadcastActiveGameRooms();
 	}
 }
 
@@ -742,7 +741,7 @@ void LobbyServer::receiveActivateGameRoom(const NetworkConnectionPtr & connectio
 
 	database->updateRoomPlayerLimit(gameRoomID, playerLimit);
 	database->insertPlayerIntoGameRoom(accountID, gameRoomID);
-	broadcastGameRoomDescription(gameRoomID);
+	broadcastActiveGameRooms(); //FIXME: use broadcastGameRoomDescription when there are no 1.7.3 clients
 	sendJoinRoomSuccess(connection, gameRoomID, false);
 }
 
@@ -777,7 +776,7 @@ void LobbyServer::receiveJoinGameRoom(const NetworkConnectionPtr & connection, c
 	sendAccountJoinsRoom(targetRoom, accountID);
 	//No reply to client - will be sent once match server establishes proxy connection with lobby
 
-	broadcastGameRoomDescription(gameRoomID);
+	broadcastActiveGameRooms(); //FIXME: use broadcastGameRoomDescription when there are no 1.7.3 clients
 }
 
 void LobbyServer::receiveChangeRoomDescription(const NetworkConnectionPtr & connection, const JsonNode & json)
@@ -807,7 +806,7 @@ void LobbyServer::receiveLeaveGameRoom(const NetworkConnectionPtr & connection, 
 
 	database->deletePlayerFromGameRoom(accountID, gameRoomID);
 
-	broadcastGameRoomDescription(gameRoomID);
+	broadcastActiveGameRooms(); //FIXME: use broadcastGameRoomDescription when there are no 1.7.3 clients
 }
 
 void LobbyServer::receiveSendInvite(const NetworkConnectionPtr & connection, const JsonNode & json)
@@ -832,7 +831,7 @@ void LobbyServer::receiveSendInvite(const NetworkConnectionPtr & connection, con
 
 	database->insertGameRoomInvite(accountID, gameRoomID);
 	sendInviteReceived(targetAccountConnection, senderName, gameRoomID);
-	broadcastGameRoomDescription(gameRoomID);
+	broadcastActiveGameRooms(); //FIXME: use broadcastGameRoomDescription when there are no 1.7.3 clients
 }
 
 LobbyServer::~LobbyServer() = default;
