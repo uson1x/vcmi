@@ -784,17 +784,30 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 			h["anchor"].String()
 		});
 	}
+
+	const JsonNode & lastPageNode = ws["lastPage"];
+	const bool hasLastPage = !lastPageNode["entry"].String().empty();
+
+	if(initialEntry && hasLastPage)
+	{
+		// Push lastPage so Back returns to it after the shortcut entry
+		navHistory.push_back(WikiEntryKey{
+			static_cast<WikiCategory>(lastPageNode["cat"].Integer()),
+			lastPageNode["entry"].String(),
+			lastPageNode["anchor"].String()
+		});
+	}
+
 	if(backButton)
 		backButton->setEnabled(!navHistory.empty());
 
-	if(!initialEntry && !ws["lastPage"]["entry"].String().empty())
+	if(!initialEntry && hasLastPage)
 		navigateTo(WikiEntryKey{
-			static_cast<WikiCategory>(ws["lastPage"]["cat"].Integer()),
-			ws["lastPage"]["entry"].String(),
-			ws["lastPage"]["anchor"].String()
+			static_cast<WikiCategory>(lastPageNode["cat"].Integer()),
+			lastPageNode["entry"].String(),
+			lastPageNode["anchor"].String()
 		});
 
-	// Navigate to a specific entry if requested (restores history first, then adds this page on top)
 	if(initialEntry)
 		navigateTo(*initialEntry);
 }
@@ -1537,6 +1550,20 @@ void WikiWindow::rebuildMarkdownViewport(
 
 void WikiWindow::onCategoryClicked(int index)
 {
+	// Push current entry to history before leaving the category
+	if(index != activeCategoryIndex
+		&& activeCategoryIndex >= 0 && activeElementIndex >= 0
+		&& activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
+	{
+		WikiEntryKey cur{static_cast<WikiCategory>(activeCategoryIndex), currentDisplayedEntries[activeElementIndex].identifier};
+		if(navHistory.empty() || !(navHistory.back() == cur))
+		{
+			navHistory.push_back(cur);
+			if(backButton)
+				backButton->setEnabled(true);
+		}
+	}
+
 	activeCategoryIndex = index;
 	activeElementIndex  = -1;
 
@@ -1552,14 +1579,18 @@ void WikiWindow::onCategoryClicked(int index)
 void WikiWindow::onElementClicked(int index)
 {
 	// Push current entry onto navigation history so the back button works
-	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
+	if(index != activeElementIndex
+		&& activeCategoryIndex >= 0 && activeElementIndex >= 0
 		&& activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
 	{
-		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
-		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].identifier});
+		WikiEntryKey cur{static_cast<WikiCategory>(activeCategoryIndex), currentDisplayedEntries[activeElementIndex].identifier};
+		if(navHistory.empty() || !(navHistory.back() == cur))
+		{
+			navHistory.push_back(cur);
+			if(backButton)
+				backButton->setEnabled(true);
+		}
 	}
-	if(backButton)
-		backButton->setEnabled(!navHistory.empty());
 	activeElementIndex = index;
 	updateContent();
 }
@@ -1589,8 +1620,9 @@ void WikiWindow::navigateTo(const WikiEntryKey & key) // NOSONAR
 	if(activeCategoryIndex >= 0 && activeElementIndex >= 0
 		&& activeElementIndex < static_cast<int>(currentDisplayedEntries.size()))
 	{
-		WikiCategory curCat = static_cast<WikiCategory>(activeCategoryIndex);
-		navHistory.push_back(WikiEntryKey{curCat, currentDisplayedEntries[activeElementIndex].identifier});
+		WikiEntryKey cur{static_cast<WikiCategory>(activeCategoryIndex), currentDisplayedEntries[activeElementIndex].identifier};
+		if(navHistory.empty() || !(navHistory.back() == cur))
+			navHistory.push_back(cur);
 	}
 	if(backButton)
 		backButton->setEnabled(!navHistory.empty());
