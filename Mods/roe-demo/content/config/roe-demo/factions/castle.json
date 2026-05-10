@@ -42,8 +42,7 @@
 				"dwellingUpLvl5": { "campaignBonus" : "null" },
 				"dwellingUpLvl6": { "campaignBonus" : "null" },
 				"dwellingUpLvl7": { "campaignBonus" : "null" }
-			},
-			"buildingsIcons" : "null"
+			}
 		}
 	}
 }
