@@ -710,6 +710,12 @@ void SelectionTab::filter(int size, bool selectFirst)
 					selectAbs(firstPos);
 				}
 			}
+			else if(selectedMapIt != curItems.end())
+			{
+				const int selectedPos = static_cast<int>(selectedMapIt - curItems.begin());
+				callOnSelect(curItems[selectedPos]);
+				selectAbs(selectedPos);
+			}
 		}
 	}
 	else

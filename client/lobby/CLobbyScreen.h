@@ -30,6 +30,7 @@ public:
 	void toggleChat();
 
 	void updateAfterStateChange();
+	void onRemoteClientLobbyStateChanged();
 
 	const CMapInfo * getMapInfo() final;
 	const StartInfo * getStartInfo() final;

@@ -346,7 +346,8 @@ bool CServerHandler::hasRemoteClientInLobby() const
 {
 	for(const auto & playerEntry : playerNames)
 	{
-		if(playerEntry.second.connection != hostClientId)
+		const auto connectionId = playerEntry.second.connection;
+		if(connectionId != GameConnectionID::INVALID && connectionId != hostClientId)
 			return true;
 	}
 
