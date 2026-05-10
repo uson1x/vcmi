@@ -71,6 +71,11 @@ public:
 		return widget<CLabel>("labelMapSizes");
 	}
 
+	std::shared_ptr<CToggleGroup> mapSizeFilterGroup() const
+	{
+		return widget<CToggleGroup>("groupMapSizeFilters");
+	}
+
 	void setMapSizeLabelVisible(bool visible) const
 	{
 		if(auto label = mapSizeFilterLabel())
@@ -218,6 +223,13 @@ SelectionTab::SelectionTab(ESelectionScreen Type)
 
 		scenarioTabConfigurable = std::make_shared<ScenarioTabConfigurable>(*this);
 		addChild(scenarioTabConfigurable.get(), false);
+		if(ENGINE->isRoeData())
+		{
+			if(auto group = scenarioTabConfigurable->mapSizeFilterGroup())
+				group->moveBy(Point(-36, 0));
+			if(auto label = scenarioTabConfigurable->mapSizeFilterLabel())
+				label->moveBy(Point(-18, 0));
+		}
 		scenarioTabConfigurable->setMapSizeLabelVisible(!CResourceHandler::get()->existsResource(AnimationPath::builtin("SCGTBUT.DEF")));
 
 		std::array xpos = {23, 55, 88, 121, 306, 339};
