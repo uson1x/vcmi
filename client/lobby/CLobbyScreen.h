@@ -17,9 +17,6 @@ class GraphicalPrimitiveCanvas;
 class CLobbyScreen final : public CSelectionBase
 {
 public:
-	std::shared_ptr<CButton> buttonChat;
-	std::shared_ptr<GraphicalPrimitiveCanvas> blackScreen;
-
 	CLobbyScreen(ESelectionScreen type, bool hideScreen = false);
 	~CLobbyScreen();
 	void toggleTab(std::shared_ptr<CIntObject> tab) final;
@@ -38,6 +35,9 @@ public:
 	std::shared_ptr<CBonusSelection> bonusSel;
 
 private:
+	std::shared_ptr<CButton> buttonChat;
+	std::shared_ptr<GraphicalPrimitiveCanvas> blackScreen;
+
 	bool waitingForPlayersMessageShown = false;
 	bool compatibilityFilterInitialized = false;
 	size_t lastRequiredHumanPlayers = 0;
