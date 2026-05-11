@@ -1649,14 +1649,18 @@ void CCastleInterface::recreateIcons()
 	fastArmyPurchase->setOverlay(std::make_shared<CAnimImage>(AnimationPath::builtin("itmcl"), imageIndex));
 
 	fastMarket = std::make_shared<LRClickableArea>(Rect(163, 410, 64, 42), [this]() { builds->enterAnyMarket(); });
-	fastTavern = std::make_shared<LRClickableArea>(Rect(15, 387, 58, 64), [&]()
 	{
-		if(town->hasBuilt(BuildingID::TAVERN))
-			GAME->interface()->showTavernWindow(town, nullptr, QueryID::NONE);
-	}, [this]{
-		if(!town->getFaction()->getDescriptionTranslated().empty())
-			CRClickPopup::createAndPush(town->getFaction()->getDescriptionTranslated());
-	});
+		const std::string factionKey = town->getTown()->faction->getJsonKey();
+		fastWiki = std::make_shared<LRClickableArea>(Rect(15, 387, 58, 64), [factionKey]()
+		{
+			ENGINE->windows().createAndPushWindow<WikiWindow>(
+				WikiWindow::Style::BROWN,
+				WikiEntryKey{WikiCategory::TOWN, factionKey});
+		}, [this]{
+			if(!town->getFaction()->getDescriptionTranslated().empty())
+				CRClickPopup::createAndPush(town->getFaction()->getDescriptionTranslated());
+		});
+	}
 
 	creainfo.clear();
 

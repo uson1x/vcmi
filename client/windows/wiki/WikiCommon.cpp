@@ -14,10 +14,17 @@
 #include "../../widgets/TextControls.h"
 #include "../../render/Canvas.h"
 #include "../../render/Colors.h"
+#include "../../render/EFont.h"
+#include "../../render/IFont.h"
+#include "../../render/IRenderHandler.h"
 #include "../../GameEngine.h"
 #include "../../eventsSDL/InputHandler.h"
 
 #include "../../../lib/filesystem/ResourcePath.h"
+#include "../../../lib/GameLibrary.h"
+#include "../../../lib/texts/CGeneralTextHandler.h"
+#include "../../../lib/TerrainHandler.h"
+#include "../../../lib/mapping/MapEditUtils.h"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WikiClickable
@@ -186,4 +193,56 @@ WikiResourceCost::WikiResourceCost(
 
 	pos.w = relX;
 	pos.h = 16;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// terrainIconInfo
+// ─────────────────────────────────────────────────────────────────────────────
+
+WikiIconInfo terrainIconInfo(const TerrainType * terrain)
+{
+	size_t frame = 0;
+	if(terrain)
+	{
+		// Use the same frame selection as the battle terrain selector (BattleOnlyModeTab):
+		// find the "n1" (plain/normal) pattern and use its first mapped frame index.
+		const auto & patterns = LIBRARY->terviewh->getTerrainViewPatterns(terrain->getId());
+		for(const auto & p : patterns)
+			if(!p.empty() && p[0].id == "n1" && !p[0].mapping.empty())
+				{ frame = static_cast<size_t>(p[0].mapping[0].first); break; }
+	}
+	return WikiIconInfo{terrain ? terrain->tilesFilename : AnimationPath{}, frame, 0};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// wikiGenderSpan
+// ─────────────────────────────────────────────────────────────────────────────
+
+std::string wikiGenderSpan(bool isFemale)
+{
+	// Check once whether FONT_SMALL can render ♂ (U+2642, UTF-8: e2 99 82).
+	static std::optional<bool> glyphSupported;
+	if(!glyphSupported)
+	{
+		auto font = ENGINE->renderHandler().loadFont(EFonts::FONT_SMALL);
+		const char maleGlyph[] = "\xe2\x99\x82";
+		glyphSupported = font && font->canRepresentCharacter(maleGlyph);
+	}
+
+	const char * femaleColor = "#FF69B4";
+	const char * maleColor   = "#5080FF";
+	const char * color = isFemale ? femaleColor : maleColor;
+
+	if(*glyphSupported)
+	{
+		const char * glyph = isFemale ? "\xe2\x99\x80" : "\xe2\x99\x82";
+		return std::string("{") + color + "|" + glyph + "}";
+	}
+	else
+	{
+		const std::string fallback = isFemale
+			? LIBRARY->generaltexth->translate("vcmi.wiki.gender.female")
+			: LIBRARY->generaltexth->translate("vcmi.wiki.gender.male");
+		return std::string("{") + color + "|" + fallback + "}";
+	}
 }

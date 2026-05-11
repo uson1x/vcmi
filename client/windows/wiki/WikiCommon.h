@@ -13,13 +13,31 @@
 #include "../../widgets/GraphicalPrimitiveCanvas.h"
 #include "../../../lib/Color.h"
 #include "../../../lib/ResourceSet.h"
-
-#include <functional>
-#include <memory>
-#include <optional>
-#include <vector>
+#include "../../../lib/filesystem/ResourcePath.h"
+#include "../../../lib/TerrainHandler.h"
 
 class Canvas;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WikiIconInfo – optional icon descriptor for a wiki list row
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Optional icon descriptor for a WikiListItem row
+struct WikiIconInfo
+{
+	AnimationPath path;
+	size_t frame = 0;
+	size_t group = 0;
+};
+
+/// Returns a WikiIconInfo for the given terrain type.
+/// Prefers the first tile of terrain's tile animation; falls back to minimapUnblocked color.
+WikiIconInfo terrainIconInfo(const TerrainType * terrain);
+
+/// Returns a colored gender span string ({#RRGGBB|glyph}) for inline label markup.
+/// Uses ♂/♀ Unicode glyphs when FONT_SMALL supports them; otherwise falls back
+/// to the translatable "vcmi.wiki.gender.male" / "vcmi.wiki.gender.female" keys.
+std::string wikiGenderSpan(bool isFemale);
 
 /// Returns the outer border colour for the given wiki theme (brown / blue).
 inline ColorRGBA wikiBorderColor(bool blue) noexcept

@@ -77,10 +77,8 @@ std::vector<std::shared_ptr<CIntObject>> buildHeroContent(
 	curY += 26;
 
 	{
-		// Gender: always use ♂/♀ Unicode glyphs, colored blue/pink
-		const std::string genderSpan = (hero->gender == EHeroGender::FEMALE)
-			? "{#FF69B4|\xe2\x99\x80}"
-			: "{#5080FF|\xe2\x99\x82}";
+		// Gender: ♂/♀ Unicode glyphs if supported by font, else translatable fallback
+		const std::string genderSpan = wikiGenderSpan(hero->gender == EHeroGender::FEMALE);
 
 		const std::string className = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 

@@ -594,10 +594,19 @@ CStackWindow::MainSection::MainSection(CStackWindow * owner, int yOffset, bool s
 	};
 
 	animation = std::make_shared<CCreaturePic>(5, 41, parent->info->creature);
-	animationArea = std::make_shared<LRClickableArea>(Rect(5, 41, 100, 130), nullptr, [&]{
-		if(!parent->info->creature->getDescriptionTranslated().empty())
-			CRClickPopup::createAndPush(parent->info->creature->getDescriptionTranslated());
-	});
+	{
+		const CCreature * cre = parent->info->creature;
+		animationArea = std::make_shared<LRClickableArea>(Rect(5, 41, 100, 130), [cre]()
+		{
+			if(cre)
+				ENGINE->windows().createAndPushWindow<WikiWindow>(
+					WikiWindow::Style::BROWN,
+					WikiEntryKey{WikiCategory::CREATURE, cre->getJsonKey()});
+		}, [&]{
+			if(!parent->info->creature->getDescriptionTranslated().empty())
+				CRClickPopup::createAndPush(parent->info->creature->getDescriptionTranslated());
+		});
+	}
 
 
 	if(parent->info->stackNode != nullptr && parent->info->commander == nullptr)

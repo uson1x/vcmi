@@ -196,34 +196,6 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 		curY += iRowH;
 	};
 
-	// Helper like addIconRow but with a colored square instead of an animation
-	auto addColorRow = [&](
-		ColorRGBA fillColor, int iRowH,
-		const std::string & name,
-		WikiCategory cat, const std::string & key)
-	{
-		const int iconSz = iRowH - 4;
-		auto sq = std::make_shared<GraphicalPrimitiveCanvas>(
-			Rect(MARGIN + 2, curY + 2, iconSz, iconSz));
-		sq->addBox(Point(0, 0), Point(iconSz, iconSz), fillColor);
-		widgets.push_back(std::move(sq));
-
-		widgets.push_back(std::make_shared<CLabel>(
-			MARGIN + iRowH + CELL_L, curY + iRowH / 2 - 5,
-			FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE, name));
-
-		std::function<void()> lclick;
-		if(navigateCallback)
-		{
-			const std::string k = key;
-			lclick = [navigateCallback, cat, k](){ navigateCallback(cat, k); };
-		}
-		widgets.push_back(std::make_shared<WikiClickable>(
-			Rect(MARGIN, curY, tableW, iRowH),
-			std::move(lclick), nullptr, blueStyle, clipRect));
-		curY += iRowH;
-	};
-
 	// ── Towns ─────────────────────────────────────────────────────────
 	{
 		std::vector<const CFaction *> entries;
@@ -443,10 +415,10 @@ std::vector<std::shared_ptr<CIntObject>> buildModContent(
 				std::vector<int>{iIconW, iNameW}, 0, iRowH, (int)entries.size(), blueStyle));
 
 			for(const TerrainType * t : entries)
-				addColorRow(
-					t->minimapUnblocked, iRowH,
-					t->getNameTranslated(),
-					WikiCategory::TERRAIN, t->getJsonKey());
+			{
+				WikiIconInfo icon = terrainIconInfo(t);
+				addIconRow(icon.path, icon.frame, iIconW, iRowH, t->getNameTranslated(), WikiCategory::TERRAIN, t->getJsonKey(), "");
+			}
 			curY += GAP;
 		}
 	}
