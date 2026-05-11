@@ -136,7 +136,7 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent( // NOSONAR (compl
 		if(creature->getHorde() > 0)
 			stats.push_back({tr("vcmi.wiki.creature.stat.hordegrowth"), std::to_string(creature->getHorde())});
 		if(creature->isDoubleWide())
-			stats.push_back({tr("vcmi.wiki.creature.stat.doublewide"), "Yes"});
+			stats.push_back({tr("vcmi.wiki.creature.stat.doublewide"), tr("vcmi.wiki.creature.stat.yes")});
 
 		const int mapMin = creature->getAdvMapAmountMin();
 		const int mapMax = creature->getAdvMapAmountMax();
