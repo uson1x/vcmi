@@ -171,6 +171,30 @@ bool CLobbyScreen::isLanOrOnlineMultiplayerHost() const
 	return buttonChat && isMultiplayerHost() && (GAME->server().serverMode == EServerMode::LOCAL || GAME->server().serverMode == EServerMode::LOBBY_HOST);
 }
 
+void CLobbyScreen::updateCompatibilityNotice(size_t requiredHumanPlayers)
+{
+	const size_t hiddenIncompatibleMaps = tabSel->getHiddenIncompatibleMapsCount();
+	if(hiddenIncompatibleMaps && screenType == ESelectionScreen::newGame && GAME->server().loadMode == ELoadMode::MULTI)
+	{
+		MetaString warningText;
+		warningText.appendTextID("vcmi.lobby.system.hidingIncompatibleMaps");
+		warningText.replaceNumber(requiredHumanPlayers);
+		const std::string warningTextFormatted = warningText.toString();
+
+		if(lastCompatibilityNotice != warningTextFormatted)
+		{
+			logGlobal->info("%s", warningTextFormatted);
+			if(!GAME->server().hotseatMode)
+				GAME->server().getGameChat().onNewLobbyMessageReceived("System", warningTextFormatted);
+			lastCompatibilityNotice = warningTextFormatted;
+		}
+	}
+	else
+	{
+		lastCompatibilityNotice.clear();
+	}
+}
+
 void CLobbyScreen::updateHostLobbyChatState()
 {
 	if(!isLanOrOnlineMultiplayerHost())
@@ -354,6 +378,7 @@ void CLobbyScreen::updateAfterStateChange()
 		tabSel->rememberCurrentSelection();
 		tabSel->filter(-1, requiredHumanPlayers);
 		tabSel->restoreLastSelection();
+		updateCompatibilityNotice(requiredHumanPlayers);
 		compatibilityFilterInitialized = true;
 		lastRequiredHumanPlayers = requiredHumanPlayers;
 	}

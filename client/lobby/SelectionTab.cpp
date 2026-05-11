@@ -616,8 +616,7 @@ void SelectionTab::filter(int size, bool selectFirst)
 	if(buttonDeleteMode)
 		buttonDeleteMode->setEnabled(tabType != ESelectionScreen::newGame || showRandom);
 
-	size_t hiddenIncompatibleMaps = 0;
-	size_t requiredHumanPlayersCount = getRequiredHumanPlayers();
+	hiddenIncompatibleMapsCount = 0;
 
 	for(auto elem : allItems)
 	{
@@ -625,7 +624,7 @@ void SelectionTab::filter(int size, bool selectFirst)
 		{
 			if(!isMapCompatibleWithLobbyPlayerCount(*elem))
 			{
-				++hiddenIncompatibleMaps;
+				++hiddenIncompatibleMapsCount;
 				continue;
 			}
 
@@ -662,25 +661,6 @@ void SelectionTab::filter(int size, bool selectFirst)
 		}
 	}
 
-	if(hiddenIncompatibleMaps && tabType == ESelectionScreen::newGame && GAME->server().loadMode == ELoadMode::MULTI)
-	{
-		MetaString warningText;
-		warningText.appendTextID("vcmi.lobby.system.hidingIncompatibleMaps");
-		warningText.replaceNumber(requiredHumanPlayersCount);
-		const std::string warningTextFormatted = warningText.toString();
-
-		if(lastCompatibilityNotice != warningTextFormatted)
-		{
-			logGlobal->info("%s", warningTextFormatted);
-			if(!GAME->server().hotseatMode)
-				GAME->server().getGameChat().onNewLobbyMessageReceived("System", warningTextFormatted);
-			lastCompatibilityNotice = warningTextFormatted;
-		}
-	}
-	else
-	{
-		lastCompatibilityNotice.clear();
-	}
 
 	if(curItems.size())
 	{
@@ -877,8 +857,10 @@ void SelectionTab::selectFileName(std::string fname)
 		if(boost::to_upper_copy(allItems[i]->fileURI) == fname)
 		{
 			auto [folderName, baseFolder, parentExists, fileInFolder] = checkSubfolder(allItems[i]->originalFileURI);
-			curFolder = baseFolder != "" ? baseFolder + "/" : "";
+			// Keep scenario selection on the root list: random maps are accessed via dedicated UI path.
+			curFolder = (baseFolder != "" && baseFolder != "RandomMaps") ? baseFolder + "/" : "";
 		}
+
 	}
 
 	filter(-1);

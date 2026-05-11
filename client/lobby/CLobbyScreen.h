@@ -41,11 +41,13 @@ private:
 	bool waitingForPlayersMessageShown = false;
 	bool compatibilityFilterInitialized = false;
 	size_t lastRequiredHumanPlayers = 0;
+	std::string lastCompatibilityNotice;
 
 	bool isMultiplayerNetworkLobby() const;
 	bool isMultiplayerHost() const;
 	bool canStartLobbyGame() const;
 	bool isLanOrOnlineMultiplayerHost() const;
+	void updateCompatibilityNotice(size_t requiredHumanPlayers);
 	void updateHostLobbyChatState();
 	void updateStartButtonState();
 };

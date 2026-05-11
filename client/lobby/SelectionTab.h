@@ -90,8 +90,9 @@ public:
 	bool sortModeAscending;
 	int currentMapSizeFilter = 0;
 	bool showRandom;
-	std::string lastCompatibilityNotice;
 	size_t requiredHumanPlayers = 1;
+	size_t hiddenIncompatibleMapsCount = 0;
+	size_t getHiddenIncompatibleMapsCount() const;
 
 	std::shared_ptr<CTextInput> inputName;
 
