@@ -73,7 +73,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		}
 	};
 
-	if(screenType != ESelectionScreen::campaignList && GAME->server().loadMode == ELoadMode::MULTI && !GAME->server().hotseatMode)
+	if(screenType != ESelectionScreen::campaignList && isMultiplayerNetworkLobby())
 	{
 		buttonChat = std::make_shared<CButton>(Point(619, 105), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[48], std::bind(&CLobbyScreen::toggleChat, this), EShortcut::LOBBY_TOGGLE_CHAT);
 		buttonChat->setTextOverlay(card->showChat ? LIBRARY->generaltexth->allTexts[531] : LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
@@ -135,7 +135,7 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 		blackScreen->addBox(Point(0, 0), pos.dimensions(), Colors::BLACK);
 	}
 
-	updateHostLobbyChatState();
+	onRemoteClientLobbyStateChanged();
 }
 
 CLobbyScreen::~CLobbyScreen()
@@ -145,45 +145,39 @@ CLobbyScreen::~CLobbyScreen()
 		GAME->server().sendClientDisconnecting();
 }
 
+bool CLobbyScreen::isMultiplayerNetworkLobby() const
+{
+	return GAME->server().loadMode == ELoadMode::MULTI && !GAME->server().hotseatMode;
+}
+
+bool CLobbyScreen::isMultiplayerHost() const
+{
+	return isMultiplayerNetworkLobby() && GAME->server().isHost();
+}
+
 bool CLobbyScreen::canStartLobbyGame() const
 {
 	if(GAME->server().isGuest() || GAME->server().mi == nullptr)
 		return false;
 
-	const bool isMultiplayerHost = GAME->server().loadMode == ELoadMode::MULTI
-		&& !GAME->server().hotseatMode
-		&& GAME->server().isHost();
-
-	if(isMultiplayerHost && !GAME->server().hasRemoteClientInLobby())
+	if(isMultiplayerHost() && !GAME->server().hasRemoteClientInLobby())
 		return false;
 
 	return true;
 }
 
+bool CLobbyScreen::isLanOrOnlineMultiplayerHost() const
+{
+	return buttonChat && isMultiplayerHost() && (GAME->server().serverMode == EServerMode::LOCAL || GAME->server().serverMode == EServerMode::LOBBY_HOST);
+}
+
 void CLobbyScreen::updateHostLobbyChatState()
 {
-	const bool isLanMultiplayerHost = buttonChat
-		&& GAME->server().loadMode == ELoadMode::MULTI
-		&& GAME->server().serverMode == EServerMode::LOCAL
-		&& !GAME->server().hotseatMode
-		&& GAME->server().isHost();
-
-	if(!isLanMultiplayerHost)
+	if(!isLanOrOnlineMultiplayerHost())
 		return;
 
 	buttonChat->setTextOverlay(card->showChat ? LIBRARY->generaltexth->allTexts[531] : LIBRARY->generaltexth->allTexts[532], FONT_SMALL, Colors::WHITE);
 
-	if(GAME->server().hasRemoteClientInLobby())
-	{
-		waitingForPlayersMessageShown = false;
-		return;
-	}
-
-	if(!waitingForPlayersMessageShown)
-	{
-		GAME->server().getGameChat().onNewLobbyMessageReceived("System", LIBRARY->generaltexth->translate("vcmi.lobby.system.waitingForPlayers"));
-		waitingForPlayersMessageShown = true;
-	}
 }
 
 void CLobbyScreen::updateStartButtonState()
@@ -193,8 +187,25 @@ void CLobbyScreen::updateStartButtonState()
 
 void CLobbyScreen::onRemoteClientLobbyStateChanged()
 {
-	if(GAME->server().hasRemoteClientInLobby())
+	if(!isLanOrOnlineMultiplayerHost())
+	{
+		updateHostLobbyChatState();
+		return;
+	}
+
+	const bool hasRemoteClient = GAME->server().hasRemoteClientInLobby();
+
+	if(hasRemoteClient)
+	{
 		waitingForPlayersMessageShown = false;
+	}
+	else if(!waitingForPlayersMessageShown)
+	{
+		// Show this message exactly once per "everyone disconnected" event,
+		// regardless of how many state refreshes the lobby screen performs.
+		GAME->server().getGameChat().onNewLobbyMessageReceived("System", LIBRARY->generaltexth->translate("vcmi.lobby.system.waitingForPlayers"));
+		waitingForPlayersMessageShown = true;
+	}
 
 	updateHostLobbyChatState();
 }
@@ -335,14 +346,14 @@ void CLobbyScreen::toggleChat()
 void CLobbyScreen::updateAfterStateChange()
 {
 	OBJECT_CONSTRUCTION;
-	updateHostLobbyChatState();
+	onRemoteClientLobbyStateChanged();
 	const bool shouldFilterByPlayerCount = screenType == ESelectionScreen::newGame && GAME->server().loadMode == ELoadMode::MULTI;
 	const size_t requiredHumanPlayers = shouldFilterByPlayerCount ? std::max<size_t>(2, GAME->server().playerNames.size()) : 0;
-	tabSel->setRequiredHumanPlayers(requiredHumanPlayers);
-
 	if(!compatibilityFilterInitialized || (shouldFilterByPlayerCount && requiredHumanPlayers != lastRequiredHumanPlayers))
 	{
-		tabSel->filter(-1);
+		tabSel->rememberCurrentSelection();
+		tabSel->filter(-1, requiredHumanPlayers);
+		tabSel->restoreLastSelection();
 		compatibilityFilterInitialized = true;
 		lastRequiredHumanPlayers = requiredHumanPlayers;
 	}

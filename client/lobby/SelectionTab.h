@@ -105,6 +105,7 @@ public:
 	bool receiveEvent(const Point & position, int eventType) const override;
 
 	void filter(int size, bool selectFirst = false); //0 - all
+	void filter(int size, size_t requiredHumanPlayers, bool selectFirst = false);
 	void sortBy(int criteria);
 	void sort();
 	void select(int position); //position: <0 - positions>  position on the screen

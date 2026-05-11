@@ -599,6 +599,12 @@ auto SelectionTab::checkSubfolder(std::string path)
 
 // A new size filter (Small, Medium, ...) has been selected. Populate
 // selMaps with the relevant data.
+void SelectionTab::filter(int size, size_t requiredHumanPlayersCount, bool selectFirst)
+{
+	setRequiredHumanPlayers(requiredHumanPlayersCount);
+	filter(size, selectFirst);
+}
+
 void SelectionTab::filter(int size, bool selectFirst)
 {
 	if(size == -1)
@@ -689,32 +695,6 @@ void SelectionTab::filter(int size, bool selectFirst)
 				slider->scrollTo(firstPos);
 				callOnSelect(curItems[firstPos]);
 				selectAbs(firstPos);
-			}
-		}
-		else if(tabType == ESelectionScreen::newGame || tabType == ESelectionScreen::campaignList)
-		{
-			const std::string selectedMapFileURI = GAME->server().mi ? GAME->server().mi->fileURI : "";
-			const bool selectedRandomMap = tabType == ESelectionScreen::newGame	&& GAME->server().mi && GAME->server().mi->isRandomMap;
-			auto selectedMapIt = boost::range::find_if(curItems, [&selectedMapFileURI](std::shared_ptr<ElementInfo> e)
-			{
-				return !e->isFolder && e->fileURI == selectedMapFileURI;
-			});
-
-			if(selectedMapIt == curItems.end() && !selectedRandomMap)
-			{
-				int firstPos = boost::range::find_if(curItems, [](std::shared_ptr<ElementInfo> e) { return !e->isFolder; }) - curItems.begin();
-				if(firstPos < curItems.size())
-				{
-					slider->scrollTo(firstPos);
-					callOnSelect(curItems[firstPos]);
-					selectAbs(firstPos);
-				}
-			}
-			else if(selectedMapIt != curItems.end())
-			{
-				const int selectedPos = static_cast<int>(selectedMapIt - curItems.begin());
-				callOnSelect(curItems[selectedPos]);
-				selectAbs(selectedPos);
 			}
 		}
 	}
@@ -913,7 +893,16 @@ void SelectionTab::selectFileName(std::string fname)
 		}
 	}
 
-	selectAbs(-1);
+	int firstPos = boost::range::find_if(curItems, [](std::shared_ptr<ElementInfo> e) { return !e->isFolder; }) - curItems.begin();
+	if(firstPos < curItems.size())
+	{
+		slider->scrollTo(firstPos);
+		selectAbs(firstPos);
+	}
+	else if(callOnSelect)
+	{
+		callOnSelect(nullptr);
+	}
 
 	if(tabType == ESelectionScreen::saveGame && inputName->getText().empty())
 		inputName->setText(LIBRARY->generaltexth->translate("core.genrltxt.11"));
@@ -939,24 +928,25 @@ std::shared_ptr<ElementInfo> SelectionTab::getSelectedMapInfo() const
 
 void SelectionTab::rememberCurrentSelection()
 {
-	if(getSelectedMapInfo()->isFolder)
+	const auto selectedMapInfo = getSelectedMapInfo();
+	if(!selectedMapInfo || selectedMapInfo->isFolder)
 		return;
 		
 	// TODO: this can be more elegant
 	if(tabType == ESelectionScreen::newGame)
 	{
 		Settings lastMap = settings.write["general"]["lastMap"];
-		lastMap->String() = getSelectedMapInfo()->fileURI;
+		lastMap->String() = selectedMapInfo->fileURI;
 	}
 	else if(tabType == ESelectionScreen::loadGame)
 	{
 		Settings lastSave = settings.write["general"]["lastSave"];
-		lastSave->String() = getSelectedMapInfo()->fileURI;
+		lastSave->String() = selectedMapInfo->fileURI;
 	}
 	else if(tabType == ESelectionScreen::campaignList)
 	{
 		Settings lastCampaign = settings.write["general"]["lastCampaign"];
-		lastCampaign->String() = getSelectedMapInfo()->fileURI;
+		lastCampaign->String() = selectedMapInfo->fileURI;
 	}
 }
 
