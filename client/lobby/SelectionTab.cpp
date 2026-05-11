@@ -995,7 +995,7 @@ bool SelectionTab::isMapCompatibleWithLobbyPlayerCount(const ElementInfo & info)
 	if(tabType != ESelectionScreen::newGame || GAME->server().loadMode != ELoadMode::MULTI || !info.mapHeader)
 		return true;
 
-	const auto requiredHumanPlayers = getRequiredHumanPlayers();
+	const auto requiredHumanPlayersCount = getRequiredHumanPlayers();
 	size_t supportedHumanPlayers = 0;
 
 	for(const auto & player : info.mapHeader->players)
@@ -1004,7 +1004,7 @@ bool SelectionTab::isMapCompatibleWithLobbyPlayerCount(const ElementInfo & info)
 			++supportedHumanPlayers;
 	}
 
-	return supportedHumanPlayers >= requiredHumanPlayers;
+	return supportedHumanPlayers >= requiredHumanPlayersCount;
 }
 
 size_t SelectionTab::getRequiredHumanPlayers() const
