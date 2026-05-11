@@ -999,6 +999,11 @@ void SelectionTab::setRequiredHumanPlayers(size_t players)
 	requiredHumanPlayers = players;
 }
 
+size_t SelectionTab::getHiddenIncompatibleMapsCount() const
+{
+	return hiddenIncompatibleMapsCount;
+}
+
 void SelectionTab::parseMaps(const std::unordered_set<ResourcePath> & files)
 {
 	logGlobal->debug("Parsing %d maps", files.size());
