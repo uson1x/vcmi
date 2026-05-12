@@ -153,6 +153,9 @@ CBonusSelection::CBonusSelection()
 		buttonExtraOptions = std::make_shared<CButton>(Point(643, 431), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[46], [this]{ tabExtraOptions->setEnabled(!tabExtraOptions->isActive()); ENGINE->windows().totalRedraw(); }, EShortcut::LOBBY_EXTRA_OPTIONS);
 		buttonExtraOptions->setTextOverlay(LIBRARY->generaltexth->translate("vcmi.optionsTab.extraOptions.hover"), FONT_SMALL, Colors::WHITE);
 	}
+
+	// Ensure campaign map info is synchronized even if player doesn't click any region manually.
+	GAME->server().setCampaignMap(GAME->server().campaignMap);
 }
 
 void CBonusSelection::createBonusesIcons()

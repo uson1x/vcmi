@@ -38,6 +38,7 @@ void AssetGenerator::initialize()
 
 	imageFiles[ImagePath::builtin("AdventureOptionsBackgroundClear.png")] = [this](){ return createAdventureOptionsCleanBackground();};
 	imageFiles[ImagePath::builtin("SpellBookLarge.png")] = [this](){ return createBigSpellBook();};
+	imageFiles[ImagePath::builtin("MuPopUpCustom.png")] = [this](){ return createMuPopUpCustom();};
 
 	imageFiles[ImagePath::builtin("combatUnitNumberWindowDefault.png")]  = [this](){ return createCombatUnitNumberWindow(0.6f, 0.2f, 1.0f);};
 	imageFiles[ImagePath::builtin("combatUnitNumberWindowNeutral.png")]  = [this](){ return createCombatUnitNumberWindow(1.0f, 1.0f, 2.0f);};
@@ -300,6 +301,20 @@ AssetGenerator::CanvasPtr AssetGenerator::createBigSpellBook() const
 	canvas.draw(img, Point(481, 465), Rect(354, 406, 37, 41));
 	canvas.draw(img, Point(575, 465), Rect(417, 406, 37, 45));
 	canvas.draw(img, Point(667, 465), Rect(478, 406, 37, 47));
+
+	return image;
+}
+
+AssetGenerator::CanvasPtr AssetGenerator::createMuPopUpCustom() const
+{
+	auto locator = ImageLocator(ImagePath::builtin("MUPOPUP"), EImageBlitMode::OPAQUE);
+	std::shared_ptr<IImage> img = ENGINE->renderHandler().loadImage(locator);
+
+	auto image = ENGINE->renderHandler().createImage(Point(454, 449), CanvasScalingPolicy::IGNORE);
+	Canvas canvas = image->getCanvas();
+
+	canvas.draw(img, Point(0, 0), Rect(0, 0, 454, 449));
+	canvas.draw(img, Point(0, 420), Rect(0, img->dimensions().y - 29, 454, 29));
 
 	return image;
 }

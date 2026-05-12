@@ -84,6 +84,7 @@ private:
 	CanvasPtr createGateListColored(PlayerColor color, PlayerColor backColor) const;
 	CanvasPtr createHeroSlotsColored(PlayerColor backColor) const;
 	CanvasPtr createStackArtifactIndicator(const Point & size) const;
+	CanvasPtr createMuPopUpCustom() const;
 	CanvasPtr createStackExperienceIcon(const std::string & iconId) const;
 	CanvasPtr createStackExperienceInactiveOverlay() const;
 	CanvasPtr createAdventureOptionsBackground(PlayerColor color) const;

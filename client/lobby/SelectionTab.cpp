@@ -16,6 +16,7 @@
 
 #include "../CPlayerInterface.h"
 #include "../CServerHandler.h"
+#include "../GameChatHandler.h"
 #include "../GameEngine.h"
 #include "../GameInstance.h"
 #include "../gui/Shortcut.h"
@@ -598,6 +599,12 @@ auto SelectionTab::checkSubfolder(std::string path)
 
 // A new size filter (Small, Medium, ...) has been selected. Populate
 // selMaps with the relevant data.
+void SelectionTab::filter(int size, size_t requiredHumanPlayersCount, bool selectFirst)
+{
+	setRequiredHumanPlayers(requiredHumanPlayersCount);
+	filter(size, selectFirst);
+}
+
 void SelectionTab::filter(int size, bool selectFirst)
 {
 	if(size == -1)
@@ -609,10 +616,18 @@ void SelectionTab::filter(int size, bool selectFirst)
 	if(buttonDeleteMode)
 		buttonDeleteMode->setEnabled(tabType != ESelectionScreen::newGame || showRandom);
 
+	hiddenIncompatibleMapsCount = 0;
+
 	for(auto elem : allItems)
 	{
 		if((elem->mapHeader && (!size || elem->mapHeader->width == size)) || tabType == ESelectionScreen::campaignList)
 		{
+			if(!isMapCompatibleWithLobbyPlayerCount(*elem))
+			{
+				++hiddenIncompatibleMapsCount;
+				continue;
+			}
+
 			if(showRandom)
 				curFolder = "RandomMaps/";
 
@@ -645,6 +660,7 @@ void SelectionTab::filter(int size, bool selectFirst)
 				curItems.push_back(elem);
 		}
 	}
+
 
 	if(curItems.size())
 	{
@@ -841,8 +857,10 @@ void SelectionTab::selectFileName(std::string fname)
 		if(boost::to_upper_copy(allItems[i]->fileURI) == fname)
 		{
 			auto [folderName, baseFolder, parentExists, fileInFolder] = checkSubfolder(allItems[i]->originalFileURI);
-			curFolder = baseFolder != "" ? baseFolder + "/" : "";
+			// Keep scenario selection on the root list: random maps are accessed via dedicated UI path.
+			curFolder = (baseFolder != "" && baseFolder != "RandomMaps") ? baseFolder + "/" : "";
 		}
+
 	}
 
 	filter(-1);
@@ -857,7 +875,16 @@ void SelectionTab::selectFileName(std::string fname)
 		}
 	}
 
-	selectAbs(-1);
+	int firstPos = boost::range::find_if(curItems, [](std::shared_ptr<ElementInfo> e) { return !e->isFolder; }) - curItems.begin();
+	if(firstPos < curItems.size())
+	{
+		slider->scrollTo(firstPos);
+		selectAbs(firstPos);
+	}
+	else if(callOnSelect)
+	{
+		callOnSelect(nullptr);
+	}
 
 	if(tabType == ESelectionScreen::saveGame && inputName->getText().empty())
 		inputName->setText(LIBRARY->generaltexth->translate("core.genrltxt.11"));
@@ -883,24 +910,25 @@ std::shared_ptr<ElementInfo> SelectionTab::getSelectedMapInfo() const
 
 void SelectionTab::rememberCurrentSelection()
 {
-	if(getSelectedMapInfo()->isFolder)
+	const auto selectedMapInfo = getSelectedMapInfo();
+	if(!selectedMapInfo || selectedMapInfo->isFolder)
 		return;
 		
 	// TODO: this can be more elegant
 	if(tabType == ESelectionScreen::newGame)
 	{
 		Settings lastMap = settings.write["general"]["lastMap"];
-		lastMap->String() = getSelectedMapInfo()->fileURI;
+		lastMap->String() = selectedMapInfo->fileURI;
 	}
 	else if(tabType == ESelectionScreen::loadGame)
 	{
 		Settings lastSave = settings.write["general"]["lastSave"];
-		lastSave->String() = getSelectedMapInfo()->fileURI;
+		lastSave->String() = selectedMapInfo->fileURI;
 	}
 	else if(tabType == ESelectionScreen::campaignList)
 	{
 		Settings lastCampaign = settings.write["general"]["lastCampaign"];
-		lastCampaign->String() = getSelectedMapInfo()->fileURI;
+		lastCampaign->String() = selectedMapInfo->fileURI;
 	}
 }
 
@@ -942,6 +970,38 @@ bool SelectionTab::isMapSupported(const CMapInfo & info)
 			return LIBRARY->engineSettings()->getValue(EGameSettings::MAP_FORMAT_JSON_VCMI)["supported"].Bool();
 	}
 	return false;
+}
+
+bool SelectionTab::isMapCompatibleWithLobbyPlayerCount(const ElementInfo & info) const
+{
+	if(tabType != ESelectionScreen::newGame || GAME->server().loadMode != ELoadMode::MULTI || !info.mapHeader)
+		return true;
+
+	const auto requiredHumanPlayersCount = getRequiredHumanPlayers();
+	size_t supportedHumanPlayers = 0;
+
+	for(const auto & player : info.mapHeader->players)
+	{
+		if(player.canHumanPlay)
+			++supportedHumanPlayers;
+	}
+
+	return supportedHumanPlayers >= requiredHumanPlayersCount;
+}
+
+size_t SelectionTab::getRequiredHumanPlayers() const
+{
+	return requiredHumanPlayers;
+}
+
+void SelectionTab::setRequiredHumanPlayers(size_t players)
+{
+	requiredHumanPlayers = players;
+}
+
+size_t SelectionTab::getHiddenIncompatibleMapsCount() const
+{
+	return hiddenIncompatibleMapsCount;
 }
 
 void SelectionTab::parseMaps(const std::unordered_set<ResourcePath> & files)
