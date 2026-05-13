@@ -18,7 +18,16 @@ Beside the common parameters from [Map Object Format](../Map_Object_Format.md) t
 	/// displayed description of mine (for popup)
 	"description" : "description text",
 
-	/// Image showed on kingdom overview (animation; only frame 0 displayed)
+	/// Optional guards, uses the same stack format as other configurable guard lists.
+	"guards" : [
+		{ "type" : "core:marksman", "amount" : 40, "upgradeChance" : 50 }
+	],
+
+	/// Optional message shown when hero attempts to visit guarded non-abandoned mine.
+	/// Falls back to default abandoned messages when not set.
+	"onGuardedMessage" : "This mine is guarded.\n\nDo you wish to fight the guards?",
+
+	/// Optional image showed on kingdom overview (animation; only frame 0 displayed)
 	"kingdomOverviewImage" : "image.def"
 }
 ```
