@@ -108,6 +108,12 @@ void MineInstanceConstructor::initTypeData(const JsonNode & input)
 	if (!config["description"].isNull())
 		LIBRARY->generaltexth->registerString(config.getModScope(), getDescriptionTextID(), config["description"]);
 
+	if (!config["guards"].isNull())
+		guards = config["guards"];
+
+	if (!config["onGuardedMessage"].isNull())
+		LIBRARY->generaltexth->registerString(config.getModScope(), getOnGuardedMessageTextID(), config["onGuardedMessage"]);
+	
 	kingdomOverviewImage = AnimationPath::fromJson(config["kingdomOverviewImage"]);
 }
 
@@ -131,9 +137,26 @@ std::string MineInstanceConstructor::getDescriptionTranslated() const
 	return LIBRARY->generaltexth->translate(getDescriptionTextID());
 }
 
+std::string MineInstanceConstructor::getOnGuardedMessageTextID() const
+{
+	return TextIdentifier(getBaseTextID(), "onGuardedMessage").get();
+}
+
+std::string MineInstanceConstructor::getOnGuardedMessageTranslated() const
+{
+	return LIBRARY->generaltexth->translate(getOnGuardedMessageTextID());
+}
+
 AnimationPath MineInstanceConstructor::getKingdomOverviewImage() const
 {
 	return kingdomOverviewImage;
+}
+
+std::vector<CStackBasicDescriptor> MineInstanceConstructor::getGuards(IGameInfoCallback * cb, IGameRandomizer & gameRandomizer) const
+{
+	JsonRandom randomizer(cb, gameRandomizer);
+	JsonRandom::Variables emptyVariables;
+	return randomizer.loadCreatures(guards, emptyVariables);
 }
 
 void CTownInstanceConstructor::initTypeData(const JsonNode & input)
