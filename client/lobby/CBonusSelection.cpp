@@ -158,9 +158,11 @@ CBonusSelection::CBonusSelection()
 void CBonusSelection::createBonusesIcons()
 {
 	OBJECT_CONSTRUCTION;
+	groupBonusesLabels.clear();
 	const CampaignScenario & scenario = getCampaign()->scenario(GAME->server().campaignMap);
 	const std::vector<CampaignBonus> & bonDescs = scenario.travelOptions.bonusesToChoose;
 	groupBonuses = std::make_shared<CToggleGroup>(std::bind(&IServerAPI::setCampaignBonus, &GAME->server(), _1));
+	groupBonuses->setRedrawParent(true);
 
 	auto getBuildingID = [this](const CampaignBonusBuilding & bonusValue) -> std::pair<FactionID, BuildingID> {
 		FactionID faction;
@@ -393,6 +395,7 @@ void CBonusSelection::createBonusesIcons()
 			if(buttonStart->isActive() && !buttonStart->isBlocked())	
 				CBonusSelection::startMap();
 		});
+		bonusButton->setRedrawParent(true);
 
 		if(picNumber != -1)
 			bonusButton->setOverlay(std::make_shared<CAnimImage>(AnimationPath::builtin(picName), picNumber));
