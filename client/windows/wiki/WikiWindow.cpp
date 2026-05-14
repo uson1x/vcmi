@@ -1629,6 +1629,10 @@ void WikiWindow::navigateTo(const WikiEntryKey & key) // NOSONAR
 
 	activeCategoryIndex = catIdx;
 	activeElementIndex = -1; // reset before rebuild to prevent stale pre-selection
+	if(searchBox)
+		searchBox->setText("");
+	if(searchBoxHint)
+		searchBoxHint->setEnabled(true);
 	buildElementList(activeCategoryIndex);
 
 	// Select the category item visually
