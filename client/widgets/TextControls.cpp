@@ -456,6 +456,7 @@ void CTextBox::setText(const std::string & text)
 			label->pos.h, label->textSize.y, 0, Orientation::VERTICAL, CSlider::EStyle(sliderStyle));
 		slider->setScrollStep(fontPtr->getLineHeight());
 		slider->setPanningStep(1);
+		slider->setInertiaEnabled(true);
 		slider->setScrollBounds(pos - slider->pos.topLeft());
 		// The redraw triggered by label->setText() above fired before the slider
 		// was created, so the slider would not appear until the next interaction.
