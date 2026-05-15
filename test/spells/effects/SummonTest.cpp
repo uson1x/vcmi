@@ -116,7 +116,7 @@ TEST_P(SummonTest, Applicable)
 	EXPECT_CALL(mechanicsMock, calculateRawEffectValue(0, summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
 	EXPECT_CALL(mechanicsMock, applySpecificSpellBonus(summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
 
-	EXPECT_EQ(expectedApplicable, subject->applicable(problemMock, &mechanicsMock));
+	EXPECT_EQ(expectedApplicable, subject->applicableGeneral(problemMock, &mechanicsMock));
 }
 
 TEST_P(SummonTest, Transform)

@@ -43,7 +43,7 @@ bool Effects::applicable(Problem & problem, const Mechanics * m) const
 
 	auto callback = [&](const Effect * e, bool & stop)
 	{
-		if(e->applicable(problem, m))
+		if(e->applicableGeneral(problem, m))
 		{
 			oneEffectApplicable = true;
 		}
@@ -75,7 +75,7 @@ bool Effects::applicable(Problem & problem, const Mechanics * m, const Target & 
 
 		EffectTarget target = e->transformTarget(m, aimPoint, spellTarget);
 
-		if(e->applicable(problem, m, target))
+		if(e->applicableTarget(problem, m, target))
 		{
 			oneEffectApplicable = true;
 		}

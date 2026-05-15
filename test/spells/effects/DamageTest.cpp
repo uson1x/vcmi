@@ -50,7 +50,7 @@ TEST_F(DamageTest, ApplicableToAliveUnit)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(DamageTest, NotApplicableToDeadUnit)
@@ -64,7 +64,7 @@ TEST_F(DamageTest, NotApplicableToDeadUnit)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 class DamageApplyTest : public Test, public EffectFixture

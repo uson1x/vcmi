@@ -59,7 +59,7 @@ TEST_F(CloneTest, ApplicableToValidTarget)
 	EffectTarget target;
 	target.emplace_back(&unit);
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(CloneTest, CloneIsNotClonable)
@@ -74,7 +74,7 @@ TEST_F(CloneTest, CloneIsNotClonable)
 	EffectTarget target;
 	target.emplace_back(&unit);
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(CloneTest, SecondCloneRejected)
@@ -89,7 +89,7 @@ TEST_F(CloneTest, SecondCloneRejected)
 	EffectTarget target;
 	target.emplace_back(&unit);
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 class CloneApplyTest : public Test, public EffectFixture

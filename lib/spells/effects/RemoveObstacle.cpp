@@ -26,16 +26,16 @@ namespace spells
 namespace effects
 {
 
-bool RemoveObstacle::applicable(Problem & problem, const Mechanics * m) const
+bool RemoveObstacle::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
-	if (getTargets(m, EffectTarget(), true).empty())
+	if (getTargets(m,EffectTarget(), true).empty())
 	{
 		return m->adaptProblem(ESpellCastProblem::NO_APPROPRIATE_TARGET, problem);
 	}
 	return true;
 }
 
-bool RemoveObstacle::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool RemoveObstacle::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	return !getTargets(m, target, false).empty();
 }

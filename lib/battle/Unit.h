@@ -104,6 +104,8 @@ public:
 	virtual bool isShooter() const = 0;
 	bool isMeleeAttacker() const;
 	bool isSummoned() const;
+	bool hasImmunity(SpellID spell) const;
+	bool hasAbsoluteImmunity(SpellID spell) const;
 
 	/// returns initial size of this unit
 	virtual int32_t getCount() const = 0;

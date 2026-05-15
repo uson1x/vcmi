@@ -166,11 +166,7 @@ public:
 protected:
 	bool check(const Mechanics * m, const battle::Unit * target) const override
 	{
-		const auto & bonuses = target->getBonusesOfType(BonusType::SPELL_IMMUNITY, BonusSubtypeID(m->getSpellId()));
-		for (const auto & bonus : *bonuses)
-			if (bonus->parameters && bonus->parameters->toNumber() == 1)
-				return false;
-		return true;
+		return !target->hasAbsoluteImmunity(m->getSpellId());
 	}
 };
 
@@ -247,7 +243,7 @@ public:
 protected:
 	bool check(const Mechanics * m, const battle::Unit * target) const override
 	{
-		return !target->hasBonusOfType(BonusType::SPELL_IMMUNITY, BonusSubtypeID(m->getSpellId()));
+		return !target->hasImmunity(m->getSpellId());
 	}
 };
 

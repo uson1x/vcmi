@@ -47,10 +47,10 @@ void Teleport::adjustTargetTypes(std::vector<TargetType> & types) const
 	}
 }
 
-bool Teleport::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Teleport::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	if(target.size() == 1) //Assume, this is check only for selecting a unit
-		return UnitEffect::applicable(problem, m, target);
+		return UnitEffect::applicableTarget(problem, m, target);
 
 	if(target.size() != 2)
 		return m->adaptProblem(ESpellCastProblem::WRONG_SPELL_TARGET, problem);

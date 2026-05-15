@@ -23,7 +23,7 @@ namespace effects
 class Catapult : public LocationEffect
 {
 public:
-	bool applicable(Problem & problem, const Mechanics * m) const override;
+	bool applicableGeneral(Problem & problem, const Mechanics * m) const override;
 	void apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const override;
 
 protected:

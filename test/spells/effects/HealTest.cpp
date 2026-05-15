@@ -54,7 +54,7 @@ TEST_F(HealTest, NotApplicableToHealthyUnit)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, ApplicableToWoundedUnit)
@@ -71,7 +71,7 @@ TEST_F(HealTest, ApplicableToWoundedUnit)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, ApplicableIfActuallyResurrects)
@@ -98,7 +98,7 @@ TEST_F(HealTest, ApplicableIfActuallyResurrects)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, NotApplicableIfNotEnoughCasualties)
@@ -124,7 +124,7 @@ TEST_F(HealTest, NotApplicableIfNotEnoughCasualties)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, NotApplicableIfResurrectsLessThanRequired)
@@ -150,7 +150,7 @@ TEST_F(HealTest, NotApplicableIfResurrectsLessThanRequired)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, ApplicableToDeadUnit)
@@ -181,7 +181,7 @@ TEST_F(HealTest, ApplicableToDeadUnit)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, NotApplicableIfDeadUnitIsBlocked)
@@ -218,7 +218,7 @@ TEST_F(HealTest, NotApplicableIfDeadUnitIsBlocked)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, ApplicableWithAnotherDeadUnitInSamePosition)
@@ -255,7 +255,7 @@ TEST_F(HealTest, ApplicableWithAnotherDeadUnitInSamePosition)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(HealTest, NotApplicableIfEffectValueTooLow)
@@ -283,7 +283,7 @@ TEST_F(HealTest, NotApplicableIfEffectValueTooLow)
 	EffectTarget target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 class HealApplyTest : public TestWithParam<::testing::tuple<EHealLevel, EHealPower>>, public EffectFixture

@@ -47,13 +47,10 @@ void Sacrifice::adjustTargetTypes(std::vector<TargetType> & types) const
 	}
 }
 
-bool Sacrifice::applicable(Problem & problem, const Mechanics * m) const
+bool Sacrifice::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
-	auto mainFilter = std::bind(&UnitEffect::getStackFilter, this, m, true, _1);
-	auto predicate = std::bind(&UnitEffect::eraseByImmunityFilter, this, m, _1);
-
+	auto mainFilter = [this, m](const battle::Unit * unit){ return applicableUnit(m, unit, true, false);};
 	auto targets = m->battle()->battleGetUnitsIf(mainFilter);
-	vstd::erase_if(targets, predicate);
 
 	bool targetExists = false;
 	bool targetToSacrificeExists = false;
@@ -76,7 +73,7 @@ bool Sacrifice::applicable(Problem & problem, const Mechanics * m) const
 	return true;
 }
 
-bool Sacrifice::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Sacrifice::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	//TODO: support for multiple targets?
 
@@ -86,7 +83,7 @@ bool Sacrifice::applicable(Problem & problem, const Mechanics * m, const EffectT
 	EffectTarget healTarget;
 	healTarget.emplace_back(target.front());
 
-	if(!Heal::applicable(problem, m, healTarget))
+	if(!Heal::applicableTarget(problem, m, healTarget))
 		return false;
 
 	if(healTarget.front().unitValue->alive())
@@ -98,7 +95,7 @@ bool Sacrifice::applicable(Problem & problem, const Mechanics * m, const EffectT
 		if(!victim)
 			return false;
 
-		return victim->alive() && getStackFilter(m, false, victim) && isReceptive(m, victim);
+		return victim->alive() && applicableUnit(m, victim, false, false);
 	}
 
 	return true;
@@ -147,7 +144,7 @@ EffectTarget Sacrifice::transformTarget(const Mechanics * m, const Target & aimP
 	if(aimPoint.size() >= 2)
 	{
 		const auto *victim = aimPoint.at(1).unitValue;
-		if(victim && getStackFilter(m, false, victim) && isReceptive(m, victim))
+		if(victim && applicableUnit(m, victim, false, false))
 			res.emplace_back(victim);
 	}
 

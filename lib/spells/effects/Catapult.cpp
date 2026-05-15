@@ -30,7 +30,7 @@ namespace spells
 namespace effects
 {
 
-bool Catapult::applicable(Problem & problem, const Mechanics * m) const
+bool Catapult::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
 	const auto *town = m->battle()->battleGetDefendedTown();
 

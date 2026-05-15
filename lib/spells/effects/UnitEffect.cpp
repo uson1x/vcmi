@@ -13,9 +13,6 @@
 
 #include "../ISpellMechanics.h"
 
-#include "../../bonuses/BonusSelector.h"
-#include "../../bonuses/BonusList.h"
-#include "../../bonuses/BonusParameters.h"
 #include "../../battle/CBattleInfoCallback.h"
 #include "../../battle/Unit.h"
 #include "../../serializer/JsonSerializeFormat.h"
@@ -39,47 +36,43 @@ void UnitEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m
 		hexes.insert(destnation.hexValue);
 }
 
-bool UnitEffect::applicable(Problem & problem, const Mechanics * m) const
+bool UnitEffect::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
+	auto mainFilter = [this, m](const battle::Unit * unit){ return applicableUnit(m, unit, false, false);};
+
 	//stack effect is applicable in general if there is at least one smart target
-
-	auto mainFilter = std::bind(&UnitEffect::getStackFilter, this, m, false, _1);
-	auto predicate = std::bind(&UnitEffect::eraseByImmunityFilter, this, m, _1);
-
 	auto targets = m->battle()->battleGetUnitsIf(mainFilter);
-	vstd::erase_if(targets, predicate);
+
 	if(targets.empty())
 		return m->adaptProblem(ESpellCastProblem::NO_APPROPRIATE_TARGET, problem);
 
 	return true;
 }
 
-bool UnitEffect::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool UnitEffect::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	//stack effect is applicable if it affects at least one target (smartness should not be checked)
 	//assume target correctly transformed, just reapply filter
 
 	for(const auto & item : target)
 		if(item.unitValue)
-			if(getStackFilter(m, false, item.unitValue))
+			if(applicableUnit(m, item.unitValue, false, true))
 				return true;
 
 	return false;
 }
 
-bool UnitEffect::getStackFilter(const Mechanics * m, bool alwaysSmart, const battle::Unit * s) const
+bool UnitEffect::applicableUnit(const Mechanics * m, const battle::Unit * unit, bool alwaysSmart, bool alwaysReceptive) const
 {
-	return isValidTarget(m, s) && isSmartTarget(m, s, alwaysSmart);
-}
+	if (!isValidTarget(m, unit))
+		return false;
 
-bool UnitEffect::eraseByImmunityFilter(const Mechanics * m, const battle::Unit * s) const
-{
-	return !isReceptive(m, s);
-}
+	if (!alwaysReceptive && !isReceptive(m, unit))
+		return false;
 
-SpellEffectValue UnitEffect::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
-{
-	return {}; // no-op by default
+	const bool smart = m->isSmart() || alwaysSmart;
+	const bool ignoreOwner = !smart;
+	return ignoreOwner || m->ownerMatches(unit);
 }
 
 EffectTarget UnitEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
@@ -102,7 +95,7 @@ EffectTarget UnitEffect::transformTarget(const Mechanics * m, const Target & aim
 
 EffectTarget UnitEffect::transformTargetByRange(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
-	auto mainFilter = std::bind(&UnitEffect::getStackFilter, this, m, false, _1);
+	auto mainFilter = [this, m](const battle::Unit * unit){ return applicableUnit(m, unit, false, false);};
 
 	Target spellTargetCopy(spellTarget);
 
@@ -165,10 +158,6 @@ EffectTarget UnitEffect::transformTargetByRange(const Mechanics * m, const Targe
 			}
 		}
 	}
-
-	auto predicate = std::bind(&UnitEffect::eraseByImmunityFilter, this, m, _1);
-
-	vstd::erase_if(targets, predicate);
 
 	if(m->alwaysHitFirstTarget())
 	{
@@ -266,30 +255,17 @@ bool UnitEffect::isValidTarget(const Mechanics * m, const battle::Unit * unit) c
 
 bool UnitEffect::isReceptive(const Mechanics * m, const battle::Unit * unit) const
 {
-	if (m->isNegativeSpell() && unit->isInvincible())
+	if (unit->isInvincible() && m->isNegativeSpell())
 		return false;
 	if(ignoreImmunity)
 	{
 		//ignore all immunities, except specific absolute immunity(VCMI addition)
-
-		//SPELL_IMMUNITY absolute case
-		const auto & bonuses = unit->getBonusesOfType(BonusType::SPELL_IMMUNITY, BonusSubtypeID(m->getSpellId()));
-		for (const auto & bonus : *bonuses)
-			if (bonus->parameters && bonus->parameters->toNumber() == 1)
-				return false;
-		return true;
+		return !unit->hasAbsoluteImmunity(m->getSpellId());
 	}
 	else
 	{
 		return m->isReceptive(unit);
 	}
-}
-
-bool UnitEffect::isSmartTarget(const Mechanics * m, const battle::Unit * unit, bool alwaysSmart) const
-{
-	const bool smart = m->isSmart() || alwaysSmart;
-	const bool ignoreOwner = !smart;
-	return ignoreOwner || m->ownerMatches(unit);
 }
 
 void UnitEffect::serializeJsonEffect(JsonSerializeFormat & handler)

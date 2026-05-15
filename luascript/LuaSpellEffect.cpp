@@ -22,7 +22,7 @@
 #include "../lib/battle/CBattleInfoCallback.h"
 #include "../lib/serializer/JsonSerializeFormat.h"
 
-static const std::string APPLICABLE_GENERAL = "applicable";
+static const std::string APPLICABLE_GENERAL = "applicableGeneral";
 static const std::string APPLICABLE_TARGET = "applicableTarget";
 static const std::string TRANSFORM_TARGET = "transformTarget";
 static const std::string APPLY = "apply";
@@ -77,7 +77,12 @@ void LuaSpellEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics
 
 }
 
-bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
+SpellEffectValue LuaSpellEffect::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
+{
+	return {};
+}
+
+bool LuaSpellEffect::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 
@@ -86,7 +91,7 @@ bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
 	return result;
 }
 
-bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool LuaSpellEffect::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 

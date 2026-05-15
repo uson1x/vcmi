@@ -14,7 +14,7 @@
 #include "../CCreatureHandler.h"
 #include "../GameLibrary.h"
 #include "../texts/CGeneralTextHandler.h"
-
+#include "../bonuses/BonusParameters.h"
 #include "../serializer/JsonDeserializer.h"
 #include "../serializer/JsonSerializer.h"
 
@@ -62,6 +62,22 @@ bool Unit::isAmmoCart() const
 bool Unit::isSummoned() const
 {
 	return unitSlot() == SlotID::SUMMONED_SLOT_PLACEHOLDER;
+}
+
+
+bool Unit::hasImmunity(SpellID spell) const
+{
+	const auto & bonuses = getBonusesOfType(BonusType::SPELL_IMMUNITY, BonusSubtypeID(spell));
+	return !bonuses->empty();
+}
+
+bool Unit::hasAbsoluteImmunity(SpellID spell) const
+{
+	const auto & bonuses = getBonusesOfType(BonusType::SPELL_IMMUNITY, BonusSubtypeID(spell));
+		for (const auto & bonus : *bonuses)
+		if (bonus->parameters && bonus->parameters->toNumber() == 1)
+			return true;
+	return false;
 }
 
 bool Unit::isMeleeAttacker() const

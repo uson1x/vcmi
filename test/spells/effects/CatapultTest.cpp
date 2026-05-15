@@ -46,7 +46,7 @@ TEST_F(CatapultTest, NotApplicableWithoutTown)
 	EXPECT_CALL(mechanicsMock, isSmart()).WillRepeatedly(Return(true));
 	EXPECT_CALL(*battleFake, getWallState(_)).Times(0);
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock));
+	EXPECT_FALSE(subject->applicableGeneral(problemMock, &mechanicsMock));
 }
 
 TEST_F(CatapultTest, DISABLED_NotApplicableInVillage)
@@ -58,7 +58,7 @@ TEST_F(CatapultTest, DISABLED_NotApplicableInVillage)
 	EXPECT_CALL(mechanicsMock, isSmart()).WillRepeatedly(Return(true));
 	EXPECT_CALL(*battleFake, getWallState(_)).Times(0);
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock));
+	EXPECT_FALSE(subject->applicableGeneral(problemMock, &mechanicsMock));
 }
 
 TEST_F(CatapultTest, DISABLED_NotApplicableForDefenderIfSmart)
@@ -72,7 +72,7 @@ TEST_F(CatapultTest, DISABLED_NotApplicableForDefenderIfSmart)
 	EXPECT_CALL(mechanicsMock, isSmart()).WillRepeatedly(Return(true));
 	EXPECT_CALL(*battleFake, getWallState(_)).WillRepeatedly(Return(EWallState::INTACT));
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock));
+	EXPECT_FALSE(subject->applicableGeneral(problemMock, &mechanicsMock));
 }
 
 TEST_F(CatapultTest, DISABLED_ApplicableInTown)
@@ -85,7 +85,7 @@ TEST_F(CatapultTest, DISABLED_ApplicableInTown)
 	EXPECT_CALL(mechanicsMock, isSmart()).WillRepeatedly(Return(true));
 	EXPECT_CALL(*battleFake, getWallState(_)).WillRepeatedly(Return(EWallState::INTACT));
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock));
+	EXPECT_TRUE(subject->applicableGeneral(problemMock, &mechanicsMock));
 }
 
 class CatapultApplyTest : public Test, public EffectFixture

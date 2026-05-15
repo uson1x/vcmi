@@ -87,7 +87,7 @@ TEST_F(SacrificeTest, ApplicableForTwoTargets)
 
 	EffectTarget transformed = subject->transformTarget(&mechanicsMock, aimPoint, spellTarget);
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, transformed));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, transformed));
 }
 
 #if 0

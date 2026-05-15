@@ -41,7 +41,7 @@ end
 --- Returns true if spell can be casted in general
 --- if no valid targets exist, script needs to call `problem:add`
 --- to explain the reason to the player
-function Script.applicable(parameters, mechanics, problem)
+function Script.applicableGeneral(parameters, mechanics, problem)
 	local creature = LIBRARY:getCreatureByName(parameters.id)
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then

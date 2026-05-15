@@ -1090,21 +1090,18 @@ SpellEffectValUptr CBattleInfoCallback::getSpellEffectValue(
 	const spells::Target spellTarget = mech->canonicalizeTarget(aim);
 
 	mech->forEachEffect([&](const spells::effects::Effect &e){
-		if(const auto *ue = dynamic_cast<const spells::effects::UnitEffect*>(&e))
+		auto effTarget = e.transformTarget(mech.get(), aim, spellTarget);
+		// Cure-specific safety net: if empty, but hovering a healable friendly unit, evaluate just that unit
+		if(effTarget.empty() && hoveredUnit)
 		{
-			auto effTarget = ue->transformTarget(mech.get(), aim, spellTarget);
-			// Cure-specific safety net: if empty, but hovering a healable friendly unit, evaluate just that unit
-			if(effTarget.empty() && hoveredUnit)
-			{
-				spells::EffectTarget single;
-				single.emplace_back(spells::Destination(hoveredUnit));
-				*result += ue->getHealthChange(mech.get(), single);
-				return false;
-			}
-
-			if(!effTarget.empty())
-				*result += ue->getHealthChange(mech.get(), effTarget);
+			spells::EffectTarget single;
+			single.emplace_back(spells::Destination(hoveredUnit));
+			*result += e.getHealthChange(mech.get(), single);
+			return false;
 		}
+
+		if(!effTarget.empty())
+			*result += e.getHealthChange(mech.get(), effTarget);
 		return false; // continue iterating effects
 	});
 

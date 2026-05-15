@@ -113,15 +113,15 @@ void Obstacle::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, 
 	}
 }
 
-bool Obstacle::applicable(Problem & problem, const Mechanics * m) const
+bool Obstacle::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
-	if(hidden && !hideNative && m->battle()->battleHasNativeStack(m->battle()->otherSide(m->casterSide)))
+	if(hidden && hideNative && m->battle()->battleHasNativeStack(m->battle()->otherSide(m->casterSide)))
 		return m->adaptProblem(ESpellCastProblem::NO_APPROPRIATE_TARGET, problem);
 
-	return LocationEffect::applicable(problem, m);
+	return LocationEffect::applicableGeneral(problem, m);
 }
 
-bool Obstacle::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Obstacle::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	if(!m->isMassive())
 	{
@@ -145,7 +145,7 @@ bool Obstacle::applicable(Problem & problem, const Mechanics * m, const EffectTa
 		}
 	}
 
-	return LocationEffect::applicable(problem, m, target);
+	return LocationEffect::applicableTarget(problem, m, target);
 }
 
 EffectTarget Obstacle::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const

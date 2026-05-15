@@ -20,12 +20,12 @@ namespace spells
 namespace effects
 {
 
-bool Effect::applicable(Problem & problem, const Mechanics * m) const
+bool Effect::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
 	return true;
 }
 
-bool Effect::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Effect::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	return true;
 }
