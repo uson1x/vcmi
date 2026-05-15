@@ -471,7 +471,7 @@ private:
 		}
 
 		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
-		static auto C_KEY = api::Registry::get()->getTypeName<BaseConstType>();
+		static const auto C_KEY = api::Registry::get()->getTypeName<BaseConstType>();
 
 		void * raw = lua_touserdata(L, position);
 

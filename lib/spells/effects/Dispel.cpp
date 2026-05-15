@@ -30,7 +30,7 @@ namespace spells
 namespace effects
 {
 
-void Dispel::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Dispel::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	const bool describe = server->describeChanges();
 	SetStackEffect sse;

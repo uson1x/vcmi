@@ -1094,7 +1094,7 @@ SpellEffectValUptr CBattleInfoCallback::getSpellEffectValue(
 		// Cure-specific safety net: if empty, but hovering a healable friendly unit, evaluate just that unit
 		if(effTarget.empty() && hoveredUnit)
 		{
-			spells::EffectTarget single;
+			spells::Target single;
 			single.emplace_back(spells::Destination(hoveredUnit));
 			*result += e.getHealthChange(mech.get(), single);
 			return false;

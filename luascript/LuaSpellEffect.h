@@ -59,15 +59,15 @@ public:
 	void adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const override;
 
 	bool applicableGeneral(Problem & problem, const Mechanics * m) const override;
-	bool applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const override;
+	bool applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const override;
 
-	void apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const override;
+	void apply(ServerCallback * server, const Mechanics * m, const Target & target) const override;
 
-	EffectTarget filterTarget(const Mechanics * m, const EffectTarget & target) const override;
+	Target filterTarget(const Mechanics * m, const Target & target) const override;
 
-	EffectTarget transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const override;
+	Target transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const override;
 
-	SpellEffectValue getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const override;
+	SpellEffectValue getHealthChange(const Mechanics * m, const Target & spellTarget) const override;
 
 protected:
 	void serializeJsonEffect(JsonSerializeFormat & handler) override;

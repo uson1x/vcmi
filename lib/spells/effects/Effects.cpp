@@ -73,7 +73,7 @@ bool Effects::applicable(Problem & problem, const Mechanics * m, const Target & 
 		if(e->indirect)
 			return;
 
-		EffectTarget target = e->transformTarget(m, aimPoint, spellTarget);
+		Target target = e->transformTarget(m, aimPoint, spellTarget);
 
 		if(e->applicableTarget(problem, m, target))
 		{
@@ -119,7 +119,7 @@ Effects::EffectsToApply Effects::prepare(const Mechanics * m, const Target & aim
 
 		if(applyThis)
 		{
-			EffectTarget target = e->transformTarget(m, aimPoint, spellTarget);
+			Target target = e->transformTarget(m, aimPoint, spellTarget);
 			effectsToApply.push_back(std::make_pair(e, target));
 		}
 	};

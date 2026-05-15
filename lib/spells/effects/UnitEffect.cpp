@@ -49,7 +49,7 @@ bool UnitEffect::applicableGeneral(Problem & problem, const Mechanics * m) const
 	return true;
 }
 
-bool UnitEffect::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool UnitEffect::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
 	//stack effect is applicable if it affects at least one target (smartness should not be checked)
 	//assume target correctly transformed, just reapply filter
@@ -75,9 +75,9 @@ bool UnitEffect::applicableUnit(const Mechanics * m, const battle::Unit * unit, 
 	return ignoreOwner || m->ownerMatches(unit);
 }
 
-EffectTarget UnitEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
+Target UnitEffect::filterTarget(const Mechanics * m, const Target & target) const
 {
-	EffectTarget res;
+	Target res;
 	vstd::copy_if(target, std::back_inserter(res), [this, m](const Destination & d)
 	{
 		return d.unitValue && isValidTarget(m, d.unitValue) && isReceptive(m, d.unitValue);
@@ -85,7 +85,7 @@ EffectTarget UnitEffect::filterTarget(const Mechanics * m, const EffectTarget & 
 	return res;
 }
 
-EffectTarget UnitEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+Target UnitEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
 	if(chainLength > 1)
 		return transformTargetByChain(m, aimPoint, spellTarget);
@@ -93,7 +93,7 @@ EffectTarget UnitEffect::transformTarget(const Mechanics * m, const Target & aim
 		return transformTargetByRange(m, aimPoint, spellTarget);
 }
 
-EffectTarget UnitEffect::transformTargetByRange(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+Target UnitEffect::transformTargetByRange(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
 	auto mainFilter = [this, m](const battle::Unit * unit){ return applicableUnit(m, unit, false, false);};
 
@@ -166,7 +166,7 @@ EffectTarget UnitEffect::transformTargetByRange(const Mechanics * m, const Targe
 			targets.insert(aimPoint.front().unitValue);
 	}
 
-	EffectTarget effectTarget;
+	Target effectTarget;
 
 	for(const auto *s : targets)
 		effectTarget.push_back(Destination(s));
@@ -174,20 +174,20 @@ EffectTarget UnitEffect::transformTargetByRange(const Mechanics * m, const Targe
 	return effectTarget;
 }
 
-EffectTarget UnitEffect::transformTargetByChain(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+Target UnitEffect::transformTargetByChain(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
-	EffectTarget byRange = transformTargetByRange(m, aimPoint, spellTarget);
+	Target byRange = transformTargetByRange(m, aimPoint, spellTarget);
 
 	if(byRange.empty())
 	{
-		return EffectTarget();
+		return Target();
 	}
 
 	const Destination & mainDestination = byRange.front();
 
 	if(!mainDestination.hexValue.isValid())
 	{
-		return EffectTarget();
+		return Target();
 	}
 
 	BattleHexArray possibleHexes;
@@ -204,7 +204,7 @@ EffectTarget UnitEffect::transformTargetByChain(const Mechanics * m, const Targe
 	}
 
 	BattleHex destHex = mainDestination.hexValue;
-	EffectTarget effectTarget;
+	Target effectTarget;
 
 	for(int32_t targetIndex = 0; targetIndex < chainLength; ++targetIndex)
 	{

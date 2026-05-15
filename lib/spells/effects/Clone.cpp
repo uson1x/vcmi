@@ -25,7 +25,7 @@ namespace spells
 namespace effects
 {
 
-void Clone::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Clone::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	for(const Destination & dest : target)
 	{

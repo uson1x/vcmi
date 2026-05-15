@@ -56,7 +56,7 @@ TEST_F(CloneTest, ApplicableToValidTarget)
 	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtLeast(1)).WillRepeatedly(Return(true));
 
 	EXPECT_CALL(unit, getPosition()).WillOnce(Return(BattleHex(5, 5)));
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit);
 
 	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
@@ -71,7 +71,7 @@ TEST_F(CloneTest, CloneIsNotClonable)
 	EXPECT_CALL(unit, isClone()).Times(AtLeast(1)).WillRepeatedly(Return(true));
 
 	EXPECT_CALL(unit, getPosition()).WillOnce(Return(BattleHex(5, 5)));
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit);
 
 	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
@@ -86,7 +86,7 @@ TEST_F(CloneTest, SecondCloneRejected)
 	EXPECT_CALL(unit, isClone()).WillRepeatedly(Return(false));
 
 	EXPECT_CALL(unit, getPosition()).WillOnce(Return(BattleHex(5, 5)));
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit);
 
 	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
@@ -105,7 +105,7 @@ public:
 	const int32_t effectDuration = 6;
 	const BattleHex originalPosition = BattleHex(5,5);
 
-	EffectTarget target;
+	Target target;
 
 	CloneApplyTest()
 		: EffectFixture("core:clone")

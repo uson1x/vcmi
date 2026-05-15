@@ -25,7 +25,7 @@ bool Effect::applicableGeneral(Problem & problem, const Mechanics * m) const
 	return true;
 }
 
-bool Effect::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Effect::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
 	return true;
 }

@@ -77,7 +77,7 @@ void LuaSpellEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics
 
 }
 
-SpellEffectValue LuaSpellEffect::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
+SpellEffectValue LuaSpellEffect::getHealthChange(const Mechanics * m, const Target & spellTarget) const
 {
 	return {};
 }
@@ -91,7 +91,7 @@ bool LuaSpellEffect::applicableGeneral(Problem & problem, const Mechanics * m) c
 	return result;
 }
 
-bool LuaSpellEffect::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool LuaSpellEffect::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
@@ -103,19 +103,19 @@ bool LuaSpellEffect::applicableTarget(Problem & problem, const Mechanics * m, co
 	return result;
 }
 
-void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 
 	context->call<void>(APPLY, parameters, m, server, target);
 }
 
-EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
+Target LuaSpellEffect::filterTarget(const Mechanics * m, const Target & target) const
 {
-	return EffectTarget(target);
+	return Target(target);
 }
 
-EffectTarget LuaSpellEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+Target LuaSpellEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
 

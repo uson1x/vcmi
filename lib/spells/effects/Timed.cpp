@@ -65,7 +65,7 @@ static void describeEffect(std::vector<MetaString> & log, const Mechanics * m, c
 	}
 }
 
-void Timed::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Timed::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	const bool describe = server->describeChanges();
 	int32_t duration = m->getEffectDuration();

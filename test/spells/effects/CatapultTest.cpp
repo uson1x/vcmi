@@ -136,8 +136,8 @@ TEST_F(CatapultApplyTest, DISABLED_DamageToIntactPart)
 	EXPECT_CALL(*battleFake, setWallState(Eq(targetPart), Eq(EWallState::DAMAGED))).Times(1);
 	EXPECT_CALL(serverMock, apply(Matcher<CatapultAttack &>(_))).Times(1);
 
-    EffectTarget target;
-    target.emplace_back();
+	Target target;
+	target.emplace_back();
 
 	subject->apply(&serverMock, &mechanicsMock, target);
 }

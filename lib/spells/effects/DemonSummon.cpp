@@ -49,7 +49,7 @@ int DemonSummon::raisedCreatureAmount(const Mechanics * m, const battle::Unit * 
 	return finalAmount;
 }
 
-void DemonSummon::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void DemonSummon::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	BattleUnitsChanged pack;
 	pack.battleID = m->battle()->getBattle()->getBattleID();
@@ -101,7 +101,7 @@ void DemonSummon::apply(ServerCallback * server, const Mechanics * m, const Effe
 		server->apply(pack);
 }
 
-SpellEffectValue DemonSummon::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
+SpellEffectValue DemonSummon::getHealthChange(const Mechanics * m, const Target & spellTarget) const
 {
 	SpellEffectValue result;
 

@@ -26,11 +26,11 @@ public:
 	void adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const final;
 
 	bool applicableGeneral(Problem & problem, const Mechanics * m) const override;
-	bool applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const override;
+	bool applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const override;
 	bool applicableUnit(const Mechanics * m, const battle::Unit * s, bool alwaysSmart, bool alwaysReceptive) const;
 
-	EffectTarget filterTarget(const Mechanics * m, const EffectTarget & target) const final;
-	EffectTarget transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const override;
+	Target filterTarget(const Mechanics * m, const Target & target) const final;
+	Target transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const override;
 
 protected:
 	int32_t chainLength = 0;
@@ -45,8 +45,8 @@ protected:
 private:
 	bool ignoreImmunity = false;
 
-	EffectTarget transformTargetByRange(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const;
-	EffectTarget transformTargetByChain(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const;
+	Target transformTargetByRange(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const;
+	Target transformTargetByChain(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const;
 };
 
 }

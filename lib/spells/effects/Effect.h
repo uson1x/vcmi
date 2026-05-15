@@ -29,7 +29,6 @@ namespace vstd
 
 namespace spells
 {
-using EffectTarget = Target;
 
 namespace effects
 {
@@ -40,7 +39,7 @@ class SpellEffectService;
 
 using TargetType = spells::AimType;
 
-struct SpellEffectValue
+struct SpellEffectValue : public scripting::ApiSerializable<Destination>
 {
 	int64_t hpDelta = 0; // positive -> healed health points, negative -> damage
 	int64_t unitsDelta = 0; // positive -> resurrected / summoned (demons) / animated (undeads), negative -> kills
@@ -54,6 +53,14 @@ struct SpellEffectValue
 			unitType = rhs.unitType;
 
 		return *this;
+	}
+
+	template<typename Serializer>
+	void serializeScript(Serializer & s)
+	{
+		s("hpDelta", hpDelta);
+		s("unitsDelta", unitsDelta);
+		s("unitType", unitType);
 	}
 };
 
@@ -79,18 +86,18 @@ public:
 	virtual bool applicableGeneral(Problem & problem, const Mechanics * m) const;
 
 	/// Returns whether effect is valid and can be applied onto selected target
-	virtual bool applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const;
+	virtual bool applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const;
 
-	virtual void apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const = 0;
+	virtual void apply(ServerCallback * server, const Mechanics * m, const Target & target) const = 0;
 
 	/// Processes input target and generates subset-result that contains only valid targets
-	virtual EffectTarget filterTarget(const Mechanics * m, const EffectTarget & target) const = 0;
+	virtual Target filterTarget(const Mechanics * m, const Target & target) const = 0;
 
 	// TODO: document me
-	virtual EffectTarget transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const = 0;
+	virtual Target transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const = 0;
 
 	// Returns total damage or heal amount that this spell will result in when cast on unit
-	virtual SpellEffectValue getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const { return {};}
+	virtual SpellEffectValue getHealthChange(const Mechanics * m, const Target & spellTarget) const { return {};}
 
 	/// Serializes (or deserializes) parameters of Effect
 	void serializeJson(JsonSerializeFormat & handler);

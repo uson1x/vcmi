@@ -23,7 +23,7 @@ namespace effects
 class DLL_LINKAGE Effects
 {
 public:
-	using EffectsToApply = std::vector<std::pair<const Effect *, EffectTarget>>;
+	using EffectsToApply = std::vector<std::pair<const Effect *, Target>>;
 
 	using EffectsMap = std::map<std::string, std::shared_ptr<Effect>>;
 	using EffectData = std::array<EffectsMap, GameConstants::SPELL_SCHOOL_LEVELS>;

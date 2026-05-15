@@ -73,14 +73,14 @@ bool Sacrifice::applicableGeneral(Problem & problem, const Mechanics * m) const
 	return true;
 }
 
-bool Sacrifice::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Sacrifice::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
 	//TODO: support for multiple targets?
 
 	if(target.empty())
 		return false;
 
-	EffectTarget healTarget;
+	Target healTarget;
 	healTarget.emplace_back(target.front());
 
 	if(!Heal::applicableTarget(problem, m, healTarget))
@@ -101,7 +101,7 @@ bool Sacrifice::applicableTarget(Problem & problem, const Mechanics * m, const E
 	return true;
 }
 
-void Sacrifice::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Sacrifice::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	if(target.size() != 2)
 	{
@@ -117,7 +117,7 @@ void Sacrifice::apply(ServerCallback * server, const Mechanics * m, const Effect
 		return;
 	}
 
-	EffectTarget healTarget;
+	Target healTarget;
 	healTarget.emplace_back(target.front());
 
 	Heal::apply(calculateHealEffectValue(m, victim), server, m, healTarget);
@@ -133,9 +133,9 @@ bool Sacrifice::isValidTarget(const Mechanics * m, const battle::Unit * unit) co
 	return unit->isValidTarget(true);
 }
 
-EffectTarget Sacrifice::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+Target Sacrifice::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
-	EffectTarget res = Heal::transformTarget(m, aimPoint, spellTarget);
+	Target res = Heal::transformTarget(m, aimPoint, spellTarget);
 
 	//ignore spell range for now, arbitrary range support requires redesign
 	res.resize(1);
@@ -151,7 +151,7 @@ EffectTarget Sacrifice::transformTarget(const Mechanics * m, const Target & aimP
 	return res;
 }
 
-SpellEffectValue Sacrifice::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
+SpellEffectValue Sacrifice::getHealthChange(const Mechanics * m, const Target & spellTarget) const
 {
 	SpellEffectValue result{};
 

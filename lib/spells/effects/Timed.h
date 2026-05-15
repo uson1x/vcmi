@@ -31,7 +31,7 @@ public:
 	std::string battleLogMessagePlural;
 	std::vector<std::shared_ptr<Bonus>> bonus;
 
-	void apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const override;
+	void apply(ServerCallback * server, const Mechanics * m, const Target & target) const override;
 
 protected:
 	void serializeJsonUnitEffect(JsonSerializeFormat & handler) override final;

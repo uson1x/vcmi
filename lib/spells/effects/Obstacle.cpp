@@ -94,7 +94,7 @@ void ObstacleSideOptions::serializeJson(JsonSerializeFormat & handler)
 
 void Obstacle::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const
 {
-	EffectTarget effectTarget = transformTarget(m, spellTarget, spellTarget);
+	Target effectTarget = transformTarget(m, spellTarget, spellTarget);
 
 	const ObstacleSideOptions & options = sideOptions.at(m->casterSide);
 
@@ -121,7 +121,7 @@ bool Obstacle::applicableGeneral(Problem & problem, const Mechanics * m) const
 	return LocationEffect::applicableGeneral(problem, m);
 }
 
-bool Obstacle::applicableTarget(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool Obstacle::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
 	if(!m->isMassive())
 	{
@@ -148,11 +148,11 @@ bool Obstacle::applicableTarget(Problem & problem, const Mechanics * m, const Ef
 	return LocationEffect::applicableTarget(problem, m, target);
 }
 
-EffectTarget Obstacle::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+Target Obstacle::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
 	const ObstacleSideOptions & options = sideOptions.at(m->casterSide);
 
-	EffectTarget ret;
+	Target ret;
 
 	if(!m->isMassive())
 	{
@@ -173,7 +173,7 @@ EffectTarget Obstacle::transformTarget(const Mechanics * m, const Target & aimPo
 	return ret;
 }
 
-void Obstacle::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Obstacle::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	if(patchCount > 0)
 	{
@@ -193,7 +193,7 @@ void Obstacle::apply(ServerCallback * server, const Mechanics * m, const EffectT
 
 		availableTiles.shuffle(*server->getRNG());
 		const int patchesToPut = std::min(patchCount, static_cast<int>(availableTiles.size()));
-		EffectTarget randomTarget;
+		Target randomTarget;
 		randomTarget.reserve(patchesToPut);
 		for(int i = 0; i < patchesToPut; i++)
 			randomTarget.emplace_back(availableTiles.at(i));
@@ -265,7 +265,7 @@ bool Obstacle::noRoomToPlace(Problem & problem, const Mechanics * m)
 	return false;
 }
 
-void Obstacle::placeObstacles(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Obstacle::placeObstacles(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	const ObstacleSideOptions & options = sideOptions.at(m->casterSide);
 

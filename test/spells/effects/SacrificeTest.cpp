@@ -78,14 +78,14 @@ TEST_F(SacrificeTest, ApplicableForTwoTargets)
 	EXPECT_CALL(mechanicsMock, isReceptive(Eq(&victim))).Times(AtLeast(1)).WillRepeatedly(Return(true));
 
 
-	EffectTarget aimPoint;
+	Target aimPoint;
 	aimPoint.emplace_back(&unit, BattleHex());
 	aimPoint.emplace_back(&victim, BattleHex());
 
-	EffectTarget spellTarget;
+	Target spellTarget;
 	spellTarget.emplace_back(&unit, BattleHex());
 
-	EffectTarget transformed = subject->transformTarget(&mechanicsMock, aimPoint, spellTarget);
+	Target transformed = subject->transformTarget(&mechanicsMock, aimPoint, spellTarget);
 
 	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, transformed));
 }
@@ -116,10 +116,10 @@ TEST_F(SacrificeTest, NotApplicableWithoutVictim)
 	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).WillRepeatedly(Return(true));
 	EXPECT_CALL(mechanicsMock, isReceptive(Eq(&unit))).WillRepeatedly(Return(true));
 
-	EffectTarget aimPoint;
+	Target aimPoint;
 	aimPoint.emplace_back(&unit, BattleHex());
 
-	EffectTarget transformed = subject->transformTarget(&mechanicsMock, aimPoint, aimPoint);
+	Target transformed = subject->transformTarget(&mechanicsMock, aimPoint, aimPoint);
 
 	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, transformed));
 }
@@ -210,7 +210,7 @@ TEST_F(SacrificeApplyTest, ResurrectsTarget)
 
 	setupDefaultRNG();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&targetUnit, BattleHex());
 	target.emplace_back(&victim, BattleHex());
 
