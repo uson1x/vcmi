@@ -84,7 +84,7 @@ public:
 
 	void removeLastNode(const CGHeroInstance * h);
 	void erasePath(const CGHeroInstance * h);
-	void verifyPath(const CGHeroInstance * h);
+	bool verifyPath(const CGHeroInstance * h);
 
 	/// Returns currently selected object
 	const CGHeroInstance * getCurrentHero() const;
