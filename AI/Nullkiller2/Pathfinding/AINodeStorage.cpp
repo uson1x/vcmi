@@ -762,39 +762,26 @@ void HeroChainCalculationTask::calculateHeroChain(
 			}
 		}
 
-		// Retry with timeout to prevent livelock using exponential backoff
-		constexpr auto maxDelay = std::chrono::milliseconds(16);
-		auto currentDelay = std::chrono::milliseconds(1);
-		constexpr int maxRetries = 7;
-
-		for(int attempt = 0; attempt < maxRetries; ++attempt)
+		const auto exchangeResult = carrier->actor->tryExchangeNoLock(other->actor);
+		if(exchangeResult.lockAcquired)
 		{
-			const auto exchangeResult = carrier->actor->tryExchangeNoLock(other->actor);
-			if(exchangeResult.lockAcquired)
+			if (exchangeResult.actor)
 			{
-				if (exchangeResult.actor)
+				if(exchangeResult.actor->hero != carrier->actor->hero)
 				{
-					if(exchangeResult.actor->hero != carrier->actor->hero)
-					{
 #if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
-						logAi->trace(
-			"HeroChainCalculationTask::calculateHeroChain exchange direction mismatch: result=%s, carrier=%s, other=%s",
+					logAi->trace(
+		"HeroChainCalculationTask::calculateHeroChain exchange direction mismatch: result=%s, carrier=%s, other=%s",
 						exchangeResult.actor->toString(),
-							carrier->actor->toString(),
-							other->actor->toString());
+					carrier->actor->toString(),
+					other->actor->toString());
 #endif
-						return;
-					}
-					result.push_back(calculateExchange(exchangeResult.actor, carrier, other));
+					return;
 				}
-				return;
+				result.push_back(calculateExchange(exchangeResult.actor, carrier, other));
 			}
-
-			std::this_thread::sleep_for(currentDelay);
-			currentDelay = std::min(currentDelay * 2, maxDelay);
+			return;
 		}
-
-		logAi->warn("HeroChainCalculationTask::calculateHeroChain failed to lock actors");
 	}
 }
 
