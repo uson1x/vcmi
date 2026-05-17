@@ -261,6 +261,6 @@ void ApplyOnLobbyScreenNetPackVisitor::visitLobbyShowMessage(LobbyShowMessage & 
 
 void ApplyOnLobbyScreenNetPackVisitor::visitLobbySetBattleOnlyModeStartInfo(LobbySetBattleOnlyModeStartInfo & pack)
 {
-	if(lobby->tabBattleOnlyMode)
+	if(lobby && lobby->tabBattleOnlyMode)
 		lobby->tabBattleOnlyMode->applyStartInfo(pack.startInfo);
 }

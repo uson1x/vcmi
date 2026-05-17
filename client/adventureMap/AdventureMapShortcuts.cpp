@@ -307,11 +307,12 @@ void AdventureMapShortcuts::endTurn()
 		{
 			if(!GAME->interface()->localState->isHeroSleeping(hero) && hero->movementPointsRemaining() > 0)
 			{
+				GAME->interface()->localState->verifyPath(hero);
+
 				// Only show hero reminder if conditions are met:
 				// - There are still movement points
-				// - Hero doesn't have a path or there are no points for the first step on path
-
-				if(!GAME->interface()->localState->verifyPath(hero))
+				// - Hero doesn't have a path or there are enough points for the first step on path
+				if(!GAME->interface()->localState->hasPath(hero))
 				{
 					showMoveReminderDialog();
 					return;
