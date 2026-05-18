@@ -243,7 +243,7 @@ FactionID TownPlacer::getTownTypeFromHint(size_t hintIndex)
 		auto townTypesAllowed = zone.getTownTypes();
 		vstd::erase_if(townTypesAllowed, [townTerrain](FactionID type)
 		{
-			return (*LIBRARY->townh)[type]->getNativeTerrain() != townTerrain;
+			return !(*LIBRARY->townh)[type]->isNativeTerrain(townTerrain);
 		});
 		zone.setTownTypes(townTypesAllowed);
 		

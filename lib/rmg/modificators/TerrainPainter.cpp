@@ -60,7 +60,29 @@ void TerrainPainter::initTerrainType()
 	{
 		if(zone.isMatchTerrainToTown() && zone.getTownType() != ETownType::NEUTRAL)
 		{
-			auto terrainType = (*LIBRARY->townh)[zone.getTownType()]->nativeTerrain;
+			const auto & faction = (*LIBRARY->townh)[zone.getTownType()];
+			const auto & nativeTerrains = faction->nativeTerrains;
+			TerrainId terrainType = faction->nativeTerrain;
+
+			// If preferred native terrain is incompatible with zone level,
+			// try subsequent native terrains in declared order.
+			const auto isCompatibleWithLevel = [this](TerrainId terrainId)
+			{
+				const auto & terrain = LIBRARY->terrainTypeHandler->getById(terrainId);
+				return zone.isUnderground() ? terrain->isUnderground() : terrain->isSurface();
+			};
+
+			if (!isCompatibleWithLevel(terrainType))
+			{
+				for (const auto & alternativeTerrain : nativeTerrains)
+				{
+					if (isCompatibleWithLevel(alternativeTerrain))
+					{
+						terrainType = alternativeTerrain;
+						break;
+					}
+				}
+			}
 
 			if (terrainType <= ETerrainId::NONE)
 			{

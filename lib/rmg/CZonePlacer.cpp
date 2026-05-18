@@ -331,25 +331,44 @@ void CZonePlacer::prepareZones(TZoneMap &zones, TZoneVector &zonesVector, const 
 				zonesToPlace.push_back(zone);
 			else
 			{
-				auto & tt = (*LIBRARY->townh)[faction]->nativeTerrain;
-				if(tt == ETerrainId::NONE)
+				const auto & factionObject = (*LIBRARY->townh)[faction];
+				const auto & nativeTerrains = factionObject->nativeTerrains;
+				if(nativeTerrains.empty() || (nativeTerrains.size() == 1 && nativeTerrains.front() == ETerrainId::NONE))
 				{
 					//any / random
 					zonesToPlace.push_back(zone);
 				}
 				else
 				{
-					const auto & terrainType = LIBRARY->terrainTypeHandler->getById(tt);
-					if(terrainType->isUnderground() && !terrainType->isSurface())
+					bool hasUndergroundTerrain = false;
+					bool hasSurfaceTerrain = false;
+					for (const auto & terrainId : nativeTerrains)
 					{
-						//underground only
-						zonesOnLevel[1]++;
-						levels[zone.first] = 1;
+						const auto & terrainType = LIBRARY->terrainTypeHandler->getById(terrainId);
+						if (terrainType->isUnderground())
+							hasUndergroundTerrain = true;
+						if (terrainType->isSurface())
+							hasSurfaceTerrain = true;
+					}
+
+					if(hasUndergroundTerrain && !hasSurfaceTerrain)
+					{
+						// underground only
+						if (mapLevels > 1)
+						{
+							zonesOnLevel[1]++;
+							levels[zone.first] = 1;
+						}
+						else
+						{
+							levels[zone.first] = 0;
+						}
 					}
 					else
 					{
-						//surface
-						addZoneEqually(zone, true);
+						// surface-only or mixed surface+underground
+						// mixed should not be forced to surface
+						addZoneEqually(zone, !hasUndergroundTerrain);
 					}
 				}
 			}
