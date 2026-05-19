@@ -124,7 +124,7 @@ std::vector<AdventureMapShortcutState> AdventureMapShortcuts::getShortcuts()
 		{ EShortcut::ADVENTURE_SEARCH,           optionSidePanelActive(),[this]() { this->search(false); } },
 		{ EShortcut::ADVENTURE_SEARCH_CONTINUE,  optionSidePanelActive(),[this]() { this->search(true); } },
 		{ EShortcut::ADVENTURE_DISEMBARK,        optionCanDisembark(),   [this]() { this->enterDisembarkMode(); } },
-		{ EShortcut::MAIN_MENU_LOBBY,            optionSidePanelActive(),[    ]() { ENGINE->user().onGlobalLobbyInterfaceActivated(); } }
+		{ EShortcut::MAIN_MENU_LOBBY,            optionLobbyActive(),    [    ]() { ENGINE->user().onGlobalLobbyInterfaceActivated(); } }
 	};
 	return result;
 }
@@ -714,6 +714,11 @@ bool AdventureMapShortcuts::optionInWorldView()
 bool AdventureMapShortcuts::optionSidePanelActive()
 {
 	return state == EAdventureState::MAKING_TURN || state == EAdventureState::WORLD_VIEW;
+}
+
+bool AdventureMapShortcuts::optionLobbyActive()
+{
+	return optionSidePanelActive() && !ENGINE->isDemoData();
 }
 
 bool AdventureMapShortcuts::optionMapScrollingActive()

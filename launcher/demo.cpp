@@ -71,8 +71,10 @@ void DemoInstaller::startDownload(const QUrl & url)
 {
     dlManager = new CDownloadManager();
     
-    connect(dlManager, SIGNAL(downloadProgress(qint64, qint64)),
-        this, SLOT(downloadProgress(qint64, qint64)));
+    connect(dlManager, &CDownloadManager::downloadProgress,
+        this, [this](const QString &, qint64 current, qint64 max) {
+            downloadProgress(current, max);
+        });
 
     connect(dlManager, SIGNAL(finished(QStringList, QStringList, QStringList)),
         this, SLOT(downloadFinished(QStringList, QStringList, QStringList)));

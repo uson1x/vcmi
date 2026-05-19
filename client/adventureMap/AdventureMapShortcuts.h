@@ -103,6 +103,7 @@ public:
 	bool optionInMapView();
 	bool optionInWorldView();
 	bool optionSidePanelActive();
+	bool optionLobbyActive();
 	bool optionMapScrollingActive();
 	bool optionMapViewActive();
 	bool optionMarketplace();

@@ -127,6 +127,9 @@ void StartGameTab::refreshGameData()
 	bool demoDataPresent = CModListView::isDemoDataPresent();
 
 	ui->buttonInstallGame->setVisible(demoDataPresent);
+#ifdef ENABLE_EDITOR
+	ui->buttonGameEditor->setEnabled(!demoDataPresent);
+#endif
 
 	if (demoDataPresent)
 	{
