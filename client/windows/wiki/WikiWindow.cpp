@@ -487,12 +487,12 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
-	// Hero types – skip special (campaign-only) heroes
+	// Hero types – skip portrait only heroes
 	{
 		const int iHero = static_cast<int>(WikiCategory::HERO);
 		for(const auto & hero : LIBRARY->heroh->objects)
 		{
-			if(!hero || hero->special) continue;
+			if(!hero || hero->getNameTranslated().empty()) continue;
 			const std::string heroClassName = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 			categoryEntries[iHero].push_back({
 				hero->getJsonKey(), hero->getNameTranslated(), "",
