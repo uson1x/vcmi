@@ -315,6 +315,9 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 {
 	OBJECT_CONSTRUCTION;
 
+
+    addUsedEvents(KEYBOARD);
+
 	// Resize and centre
 	pos = Rect(pos.x, pos.y, WIN_W, WIN_H);
 	if(style == Style::BLUE)
@@ -1547,6 +1550,56 @@ void WikiWindow::rebuildMarkdownViewport(
 // ============================================================================
 // WikiWindow – event handlers
 // ============================================================================
+
+void WikiWindow::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::MOVE_LEFT)
+	{
+		if(activeElementIndex < 0)
+			return;
+		if(auto old = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(activeElementIndex)))
+			old->setSelected(false);
+		activeElementIndex = -1;
+		updateContent();
+		return;
+	}
+	if(key == EShortcut::MOVE_RIGHT)
+	{
+		if(activeElementIndex >= 0 || currentDisplayedEntries.empty())
+			return;
+		onElementClicked(0);
+		elementList->scrollTo(0);
+		if(auto item = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(0)))
+			item->setSelected(true);
+		return;
+	}
+
+	int moveBy = 0;
+	switch(key)
+	{
+	case EShortcut::MOVE_UP:   moveBy = -1; break;
+	case EShortcut::MOVE_DOWN: moveBy = +1; break;
+	default: return;
+	}
+
+	const bool inElements = activeElementIndex >= 0;
+	CListBox * list = inElements ? elementList.get() : categoryList.get();
+	int & activeIndex = inElements ? activeElementIndex : activeCategoryIndex;
+	const int total = inElements ? (int)currentDisplayedEntries.size() : (int)categoryNames.size();
+
+	const int newIndex = std::clamp(activeIndex + moveBy, 0, total - 1);
+	if(newIndex == activeIndex || total == 0)
+		return;
+	if(auto old = std::dynamic_pointer_cast<WikiListItem>(list->getItem(activeIndex)))
+		old->setSelected(false);
+	if(inElements)
+		onElementClicked(newIndex);
+	else
+		onCategoryClicked(newIndex);
+	list->scrollTo(newIndex);
+	if(auto item = std::dynamic_pointer_cast<WikiListItem>(list->getItem(newIndex)))
+		item->setSelected(true);
+}
 
 void WikiWindow::onCategoryClicked(int index)
 {

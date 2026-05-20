@@ -251,4 +251,6 @@ private:
 public:
 	explicit WikiWindow(Style style = Style::BROWN, std::optional<WikiEntryKey> initialEntry = std::nullopt);
 	~WikiWindow() override;
+
+	void keyPressed(EShortcut key) override;
 };
