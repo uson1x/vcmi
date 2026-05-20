@@ -124,6 +124,7 @@ AdventureOptions::AdventureOptions()
 
 		scrollBar->setScrollBounds(Rect(-228, 0, 228 + 16, MAX_VISIBLE * BUTTON_STEP));
 		scrollBar->setPanningStep(BUTTON_STEP);
+		scrollBar->setInertiaEnabled(true);
 	}
 
 	exit = std::make_shared<CButton>(Point(203, 313), AnimationPath::builtin("IOK6432.DEF"), CButton::tooltip(), std::bind(&AdventureOptions::close, this), EShortcut::GLOBAL_RETURN);

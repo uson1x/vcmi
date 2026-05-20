@@ -12,6 +12,7 @@ set(editor_SRCS
 		mapview.cpp
 		objectbrowser.cpp
 		mapsettings/abstractsettings.cpp
+		mapsettings/heroessettings.cpp
 		mapsettings/mapsettings.cpp
 		mapsettings/generalsettings.cpp
 		mapsettings/modsettings.cpp
@@ -83,6 +84,7 @@ set(editor_HEADERS
 		mapsettings/abstractsettings.h
 		mapsettings/mapsettings.h
 		mapsettings/generalsettings.h
+		mapsettings/heroessettings.h
 		mapsettings/modsettings.h
 		mapsettings/timedevent.h
 		mapsettings/victoryconditions.h
@@ -146,6 +148,7 @@ set(editor_FORMS
 		generatorprogress.ui
 		mapsettings/mapsettings.ui
 		mapsettings/generalsettings.ui
+		mapsettings/heroessettings.ui
 		mapsettings/modsettings.ui
 		mapsettings/timedevent.ui
 		mapsettings/victoryconditions.ui

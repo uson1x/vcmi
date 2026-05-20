@@ -83,6 +83,7 @@ class AdventureMapShortcuts
 	void search(bool next);
 	void moveHeroDirectional(const Point & direction);
 	void enterDisembarkMode();
+	void showWiki();
 
 public:
 	explicit AdventureMapShortcuts(AdventureMapInterface & owner);

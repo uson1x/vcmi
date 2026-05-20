@@ -58,6 +58,7 @@
 		"adventureSearch":          "Ctrl+F",
 		"adventureSearchContinue":  "Alt+F",
 		"adventureDisembark":       "Shift+D",
+		"adventureOpenWiki":        "F1",
 		"battleAutocombat":         "A",
 		"battleAutocombatEnd":      "Q",
 		"battleCastSpell":          "C",

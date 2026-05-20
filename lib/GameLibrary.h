@@ -127,10 +127,11 @@ public:
 	/// Returns true if game is running with demo data files
 	bool isDemoData() const;
 
-private:
 	GameDataMode gameDataMode = GameDataMode::SOD;
 	// basic initialization. should be called before init(). Can also extract original H3 archives
 	void loadFilesystem(bool extractArchives);
+
+	// loads filesystems of all mods
 	void loadModFilesystem();
 };
 
