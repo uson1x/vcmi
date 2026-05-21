@@ -29,6 +29,10 @@
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "../InfoWindows.h"
 
+#include "../../../lib/mapObjectConstructors/CObjectClassesHandler.h"
+#include "../../../lib/mapObjectConstructors/DwellingInstanceConstructor.h"
+#include "../../../lib/mapObjects/ObjectTemplate.h"
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Layout constants
 // ─────────────────────────────────────────────────────────────────────────────
@@ -349,6 +353,90 @@ std::vector<std::shared_ptr<CIntObject>> buildCreatureContent( // NOSONAR (compl
 					nullptr,
 					[popupText](){ CRClickPopup::createAndPush(popupText); },
 					blueStyle, clipRect));
+
+				curY += rowH + 2;
+			}
+			curY += GAP - 2;
+		}
+	}
+
+	// ── Dwellings ─────────────────────────────────────────────────────────────
+	{
+		// Collect all dwelling handlers that produce this creature
+		struct DwellingEntry
+		{
+			const DwellingInstanceConstructor * handler;
+			AnimationPath icon;
+		};
+		std::vector<DwellingEntry> dwellings;
+
+		static constexpr std::array<int, 4> dwellingObjTypes = {
+			Obj::CREATURE_GENERATOR1, Obj::CREATURE_GENERATOR2,
+			Obj::CREATURE_GENERATOR3, Obj::CREATURE_GENERATOR4
+		};
+		for(const int objTypeId : dwellingObjTypes)
+		{
+			const MapObjectID objType(objTypeId);
+			for(const MapObjectSubID subtype : LIBRARY->objtypeh->knownSubObjects(objType))
+			{
+				auto baseHandler = LIBRARY->objtypeh->getHandlerFor(objType, subtype);
+				auto handler = std::dynamic_pointer_cast<const DwellingInstanceConstructor>(baseHandler);
+				if(!handler || !handler->producesCreature(creature))
+					continue;
+
+				AnimationPath icon = handler->getKingdomOverviewImage();
+				if(icon.empty())
+				{
+					const auto templates = handler->getTemplates();
+					if(!templates.empty())
+						icon = templates[0]->animationFile;
+				}
+				dwellings.push_back({handler.get(), icon});
+			}
+		}
+
+		if(!dwellings.empty())
+		{
+			curY += 16;
+			widgets.push_back(std::make_shared<CLabel>(
+				W / 2, curY,
+				FONT_MEDIUM, ETextAlignment::CENTER, Colors::YELLOW,
+				LIBRARY->generaltexth->translate("vcmi.wiki.creature.section.dwellings")));
+			curY += 20;
+
+			static constexpr int DW_ICON_W = 42;
+			static constexpr int DW_ICON_H = 42;
+
+			const int tableW = W - MARGIN * 2;
+			const ColorRGBA bdr = wikiBorderColor(blueStyle);
+
+			for(const auto & dw : dwellings)
+			{
+				const int nameW = tableW - DW_ICON_W - CELL_L * 2;
+
+				auto nameLabel = std::make_shared<CMultiLineLabel>(
+					Rect(MARGIN + DW_ICON_W + CELL_L, curY + CELL_T, nameW, 4000),
+					FONT_SMALL, ETextAlignment::TOPLEFT, Colors::WHITE,
+					dw.handler->getNameTranslated());
+				const int textH = nameLabel->textSize.y;
+
+				const int rowH = std::max(DW_ICON_H + CELL_T * 2, textH + CELL_T * 2);
+
+				nameLabel->pos.h = rowH - CELL_T * 2;
+
+				auto rowBg = std::make_shared<GraphicalPrimitiveCanvas>(
+					Rect(MARGIN, curY, tableW, rowH));
+				rowBg->addRectangle(Point(0, 0), Point(tableW, rowH), bdr);
+				widgets.push_back(rowBg);
+
+				// Dwelling icon
+				if(!dw.icon.empty())
+					widgets.push_back(std::make_shared<CAnimImage>(
+						dw.icon, 0,
+						Rect(MARGIN + 2, curY + (rowH - DW_ICON_H) / 2, DW_ICON_W - 4, DW_ICON_H),
+						0, CShowableAnim::MAP_OBJECT_MODE));
+
+				widgets.push_back(nameLabel);
 
 				curY += rowH + 2;
 			}
