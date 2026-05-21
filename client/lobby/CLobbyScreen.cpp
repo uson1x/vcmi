@@ -125,15 +125,18 @@ CLobbyScreen::CLobbyScreen(ESelectionScreen screenType, bool hideScreen)
 	}, EShortcut::GLOBAL_CANCEL);
 
 	// Make sure scenario selection is centered
-	if(screenType == ESelectionScreen::newGame || screenType == ESelectionScreen::loadGame)
+	if(settings["general"]["enableUiEnhancements"].Bool())
 	{
-		const Point contentOffset(19, 0);
-		for(CIntObject * child : children)
+		if(screenType == ESelectionScreen::newGame || screenType == ESelectionScreen::loadGame)
 		{
-			if(!child || child == background.get())
-				continue;
-
-			child->moveBy(contentOffset);
+			const Point contentOffset(19, 0);
+			for(CIntObject * child : children)
+			{
+				if(!child || child == background.get())
+					continue;
+	
+				child->moveBy(contentOffset);
+			}
 		}
 	}
 
@@ -289,8 +292,11 @@ void CLobbyScreen::updateAfterStateChange()
 		tabBattleOnlyMode->setEnabled(false);
 
 		// Make sure scenario selection is centered
-		if(screenType == ESelectionScreen::newGame || screenType == ESelectionScreen::loadGame)
-			tabBattleOnlyMode->moveBy(Point(19, 0));
+		if(settings["general"]["enableUiEnhancements"].Bool())
+		{
+			if(screenType == ESelectionScreen::newGame || screenType == ESelectionScreen::loadGame)
+				tabBattleOnlyMode->moveBy(Point(19, 0));
+		}
 
 		if(GAME->server().battleMode)
 			toggleTab(tabBattleOnlyMode);
