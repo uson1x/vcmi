@@ -99,10 +99,16 @@ void CGMine::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroInstance *
 		BlockingDialog ynd(true,false);
 		ynd.player = h->tempOwner;
 		const auto guardedMessageTranslated = getResourceHandler()->getOnGuardedMessageTranslated();
-		if(!isAbandoned() && !guardedMessageTranslated.empty())
+
+		if(isAbandoned())
+			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, 84);
+		else if(tempOwner != PlayerColor::NEUTRAL)
+			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, 187);
+		else if(!guardedMessageTranslated.empty())
 			ynd.text.appendRawString(guardedMessageTranslated);
 		else
-			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, isAbandoned() ? 84 : 187);
+			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, 187);
+
 		gameEvents.showBlockingDialog(this, &ynd);
 		return;
 	}
