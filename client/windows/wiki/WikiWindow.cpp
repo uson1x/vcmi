@@ -19,6 +19,8 @@
 #include "../../gui/Shortcut.h"
 #include "../../gui/WindowHandler.h"
 #include "../../GameEngine.h"
+#include "../../GameInstance.h"
+#include "../../mapView/mapHandler.h"
 #include "../../widgets/Buttons.h"
 #include "../../widgets/CViewport.h"
 #include "../../widgets/GraphicalPrimitiveCanvas.h"
@@ -52,6 +54,8 @@
 #include "../../../lib/json/JsonNode.h"
 #include "../../../lib/CConfigHandler.h"
 #include "../../../lib/json/JsonUtils.h"
+#include "../../../lib/mapping/CMap.h"
+#include "../../../lib/mapObjects/CGHeroInstance.h"
 
 // ============================================================================
 // Built-in category string-id → WikiCategory mapping
@@ -496,10 +500,16 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		for(const auto & hero : LIBRARY->heroh->objects)
 		{
 			if(!hero || hero->getNameTranslated().empty()) continue;
+			const auto * mapHero = findMapHero(hero->getId());
+			const auto name = (mapHero && !mapHero->nameCustomTextId.empty())
+				? mapHero->getNameTranslated() : hero->getNameTranslated();
+			const auto iconFrame = (mapHero && mapHero->customPortraitSource.isValid())
+				? (size_t)mapHero->getPortraitSource().toHeroType()->getIconIndex()
+				: (size_t)hero->getIconIndex();
 			const std::string heroClassName = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 			categoryEntries[iHero].push_back({
-				hero->getJsonKey(), hero->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), static_cast<size_t>(hero->getIconIndex()), 0 },
+				hero->getJsonKey(), name, "",
+				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), iconFrame, 0 },
 				hero->getModScope(),
 				heroClassName
 			});
@@ -845,6 +855,15 @@ WikiWindow::~WikiWindow()
 // ============================================================================
 // WikiWindow – helpers
 // ============================================================================
+
+const CGHeroInstance * WikiWindow::findMapHero(HeroTypeID id) const
+{
+	if(!GAME || !GAME->interface())
+		return nullptr;
+	if(const auto * map = GAME->map().getMap())
+		return map->getHero(id);
+	return nullptr;
+}
 
 void WikiWindow::applyScrollBounds()
 {
@@ -1298,6 +1317,9 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 	if(!hero || !heroContentView)
 		return;
 
+	// Find CGHeroInstance on current map with matching hero type for custom name/bio/portrait
+	const auto * mapHero = findMapHero(hero->getId());
+
 	static constexpr int VP_W = COL3_W - 6;
 	static constexpr int VP_H = CONTENT_H - 6;
 
@@ -1317,7 +1339,7 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 	};
 	{
 		auto moreWidgets = buildHeroContent(*heroContentView, hero,
-			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+			VP_W - CViewport::SLIDER_W, isBlue, navCb, mapHero);
 		heroContentWidgets.insert(heroContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
 	}
 	heroContentView->fitContentSize();
