@@ -194,6 +194,7 @@ set(editor_TS
 	"${translationsDir}/belarusian.ts"
 	"${translationsDir}/bulgarian.ts"
 	"${translationsDir}/chinese.ts"
+	"${translationsDir}/tchinese.ts"
 	"${translationsDir}/czech.ts"
 	"${translationsDir}/dutch.ts"
 	"${translationsDir}/filipino.ts"

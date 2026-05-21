@@ -112,6 +112,7 @@ set(launcher_TS
 	"${translationsDir}/serbian.ts"
 	"${translationsDir}/spanish.ts"
 	"${translationsDir}/swedish.ts"
+	"${translationsDir}/tchinese.ts"
 	"${translationsDir}/turkish.ts"
 	"${translationsDir}/ukrainian.ts"
 	"${translationsDir}/vietnamese.ts"
