@@ -135,14 +135,6 @@
         <translation>Los cambios no guardados se perderán. Está usted seguro ?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Menos escenarios que regiones</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">Tienes menos escenarios que regiones. Esto solo se permite si los escenarios que faltan aparecen en las últimas regiones, no en el medio ni al principio.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation>Nivel 5</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">Formulario</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Héroes prohibidos</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation>Los cambios no guardados se perderán. Está usted seguro ?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Superficie</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">Subterráneo</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Nivel - %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1362,10 +1365,6 @@
         <translation>Relleno pulsado</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="vanished">Ver superficie</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>No se han seleccionado objetos</translation>
@@ -1531,7 +1530,7 @@ Do you want to do that now ?</source>
         <translation>Héroes</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation>Aceptar</translation>
     </message>
@@ -4098,17 +4097,9 @@ Guardia: %3</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="vanished">¡Muy pocas plantillas!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation>Debe permanecer al menos una plantilla tras eliminar.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Error</translation>
     </message>
 </context>
 <context>
@@ -4554,34 +4545,6 @@ Guardia: %3</translation>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation>Selector de terreno</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation>Selector de hechizo</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation>Selector de artefacto</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation>Selector de habilidad</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation>Selector de tipo de héroe</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4878,10 +4841,6 @@ Guardia: %3</translation>
         <translation>Tamaño personalizado</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="vanished">Subterráneo</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation>Humanos</translation>
@@ -5030,6 +4989,34 @@ Guardia: %3</translation>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation>Eliminar archivos originales, por los que se han separado / convertido.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Selector de terreno</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Selector de hechizo</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Selector de artefacto</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Selector de habilidad</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Selector de tipo de héroe</translation>
     </message>
 </context>
 </TS>

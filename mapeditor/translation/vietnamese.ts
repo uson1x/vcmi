@@ -135,14 +135,6 @@
         <translation>Thay đổi chưa lưu sẽ bị mất, bạn có chắc chắn?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Ít kịch bản hơn số vùng</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">Bạn có ít kịch bản hơn số vùng. Điều này chỉ được phép nếu các kịch bản bị thiếu nằm ở các vùng cuối, không phải ở giữa hoặc đầu.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation type="unfinished">Cấp 5</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">Biểu mẫu</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Anh hùng bị cấm</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation>Thay đổi chưa lưu sẽ bị mất, bạn có chắc chắn?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Bề mặt</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">Tầng hầm</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Tầng - %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1362,10 +1365,6 @@
         <translation type="unfinished">Đã nhấn Tô</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="vanished">Xem bề mặt</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Không mục tiêu được chọn</translation>
@@ -1532,7 +1531,7 @@ Bạn có muốn làm điều đó ngay bây giờ không?</translation>
         <translation>Tướng</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation>Đồng ý</translation>
     </message>
@@ -4098,17 +4097,9 @@ Lính gác: %3</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="obsolete">Quá ít mẫu!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">Sau khi xóa phải còn lại ít nhất một mẫu.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Lỗi</translation>
     </message>
 </context>
 <context>
@@ -4554,34 +4545,6 @@ Lính gác: %3</translation>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">Bộ chọn địa hình</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">Bộ chọn phép</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">Bộ chọn báu vật</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">Bộ chọn kỹ năng</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">Bộ chọn loại anh hùng</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4878,10 +4841,6 @@ Lính gác: %3</translation>
         <translation type="unfinished">Kích thước tùy chỉnh</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="obsolete">Tầng hầm</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation type="unfinished">Người chơi</translation>
@@ -5030,6 +4989,34 @@ Lính gác: %3</translation>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation>Xóa các tập tin gốc đã được phân chia / chuyển đổi.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Bộ chọn địa hình</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Bộ chọn phép</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Bộ chọn báu vật</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Bộ chọn kỹ năng</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Bộ chọn loại anh hùng</translation>
     </message>
 </context>
 </TS>

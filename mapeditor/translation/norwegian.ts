@@ -135,14 +135,6 @@
         <translation type="unfinished">Ulagrede endringer vil gå tapt, er du sikker?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Færre scenarioer enn regioner</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">Du har færre scenarioer enn regioner. Dette er bare tillatt hvis de manglende scenarioene finnes i de siste regionene, ikke i midten eller i begynnelsen.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation type="unfinished">Nivå 5</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">Skjema</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Forbudte helter</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation type="unfinished">Ulagrede endringer vil gå tapt, er du sikker?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Overflate</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">Underjordisk</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Nivå – %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1362,10 +1365,6 @@
         <translation type="unfinished">Fyll klikket</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="obsolete">Vis overflate</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation type="unfinished">Ingen objekter valgt</translation>
@@ -1532,7 +1531,7 @@ Vil du gjøre det nå?</translation>
         <translation type="unfinished">Helter</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation type="unfinished">Ok</translation>
     </message>
@@ -4099,17 +4098,9 @@ Vakt: %3</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="obsolete">For få maler!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">Minst én mal må bli igjen etter fjerning.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Feil</translation>
     </message>
 </context>
 <context>
@@ -4555,34 +4546,6 @@ Vakt: %3</translation>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">Terrengvelger</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">Trylleformel-velger</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">Artefakt-velger</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">Ferdighets-velger</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">Helttype-velger</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4879,10 +4842,6 @@ Vakt: %3</translation>
         <translation type="unfinished">Egendefinert størrelse</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="obsolete">Underjordisk</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation type="unfinished">Mennesker</translation>
@@ -5031,6 +4990,34 @@ Vakt: %3</translation>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation type="unfinished">Slett originalfiler for de som ble delt eller konvertert.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Terrengvelger</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Trylleformel-velger</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Artefakt-velger</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Ferdighets-velger</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Helttype-velger</translation>
     </message>
 </context>
 </TS>
