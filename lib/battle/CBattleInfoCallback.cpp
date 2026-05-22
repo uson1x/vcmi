@@ -1286,7 +1286,7 @@ bool CBattleInfoCallback::handleObstacleTriggersForUnit(SpellCastEnvironment & s
 		if(!unit.alive())
 			return false;
 
-		if(obstacle->stopsMovement())
+		if(obstacle->stopsMovement() && !unit.hasBonusOfType(BonusType::FLYING))
 			movementStopped = true;
 	}
 
