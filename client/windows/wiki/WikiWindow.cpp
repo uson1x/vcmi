@@ -19,6 +19,8 @@
 #include "../../gui/Shortcut.h"
 #include "../../gui/WindowHandler.h"
 #include "../../GameEngine.h"
+#include "../../GameInstance.h"
+#include "../../mapView/mapHandler.h"
 #include "../../widgets/Buttons.h"
 #include "../../widgets/CViewport.h"
 #include "../../widgets/GraphicalPrimitiveCanvas.h"
@@ -52,6 +54,8 @@
 #include "../../../lib/json/JsonNode.h"
 #include "../../../lib/CConfigHandler.h"
 #include "../../../lib/json/JsonUtils.h"
+#include "../../../lib/mapping/CMap.h"
+#include "../../../lib/mapObjects/CGHeroInstance.h"
 
 // ============================================================================
 // Built-in category string-id → WikiCategory mapping
@@ -315,6 +319,9 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 {
 	OBJECT_CONSTRUCTION;
 
+
+    addUsedEvents(KEYBOARD);
+
 	// Resize and centre
 	pos = Rect(pos.x, pos.y, WIN_W, WIN_H);
 	if(style == Style::BLUE)
@@ -487,16 +494,22 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
-	// Hero types – skip special (campaign-only) heroes
+	// Hero types – skip portrait only heroes
 	{
 		const int iHero = static_cast<int>(WikiCategory::HERO);
 		for(const auto & hero : LIBRARY->heroh->objects)
 		{
-			if(!hero || hero->special) continue;
+			if(!hero || hero->getNameTranslated().empty()) continue;
+			const auto * mapHero = findMapHero(hero->getId());
+			const auto name = (mapHero && !mapHero->nameCustomTextId.empty())
+				? mapHero->getNameTranslated() : hero->getNameTranslated();
+			const auto iconFrame = (mapHero && mapHero->customPortraitSource.isValid())
+				? (size_t)mapHero->getPortraitSource().toHeroType()->getIconIndex()
+				: (size_t)hero->getIconIndex();
 			const std::string heroClassName = hero->heroClass ? hero->heroClass->getNameTranslated() : "";
 			categoryEntries[iHero].push_back({
-				hero->getJsonKey(), hero->getNameTranslated(), "",
-				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), static_cast<size_t>(hero->getIconIndex()), 0 },
+				hero->getJsonKey(), name, "",
+				WikiIconInfo{ AnimationPath::builtin("PortraitsSmall"), iconFrame, 0 },
 				hero->getModScope(),
 				heroClassName
 			});
@@ -842,6 +855,15 @@ WikiWindow::~WikiWindow()
 // ============================================================================
 // WikiWindow – helpers
 // ============================================================================
+
+const CGHeroInstance * WikiWindow::findMapHero(HeroTypeID id) const
+{
+	if(!GAME || !GAME->interface())
+		return nullptr;
+	if(const auto * map = GAME->map().getMap())
+		return map->getHero(id);
+	return nullptr;
+}
 
 void WikiWindow::applyScrollBounds()
 {
@@ -1295,6 +1317,9 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 	if(!hero || !heroContentView)
 		return;
 
+	// Find CGHeroInstance on current map with matching hero type for custom name/bio/portrait
+	const auto * mapHero = findMapHero(hero->getId());
+
 	static constexpr int VP_W = COL3_W - 6;
 	static constexpr int VP_H = CONTENT_H - 6;
 
@@ -1314,7 +1339,7 @@ void WikiWindow::rebuildHeroViewport(const std::string & heroIdentifier)
 	};
 	{
 		auto moreWidgets = buildHeroContent(*heroContentView, hero,
-			VP_W - CViewport::SLIDER_W, isBlue, navCb);
+			VP_W - CViewport::SLIDER_W, isBlue, navCb, mapHero);
 		heroContentWidgets.insert(heroContentWidgets.end(), moreWidgets.begin(), moreWidgets.end());
 	}
 	heroContentView->fitContentSize();
@@ -1547,6 +1572,56 @@ void WikiWindow::rebuildMarkdownViewport(
 // ============================================================================
 // WikiWindow – event handlers
 // ============================================================================
+
+void WikiWindow::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::MOVE_LEFT)
+	{
+		if(activeElementIndex < 0)
+			return;
+		if(auto old = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(activeElementIndex)))
+			old->setSelected(false);
+		activeElementIndex = -1;
+		updateContent();
+		return;
+	}
+	if(key == EShortcut::MOVE_RIGHT)
+	{
+		if(activeElementIndex >= 0 || currentDisplayedEntries.empty())
+			return;
+		onElementClicked(0);
+		elementList->scrollTo(0);
+		if(auto item = std::dynamic_pointer_cast<WikiListItem>(elementList->getItem(0)))
+			item->setSelected(true);
+		return;
+	}
+
+	int moveBy = 0;
+	switch(key)
+	{
+	case EShortcut::MOVE_UP:   moveBy = -1; break;
+	case EShortcut::MOVE_DOWN: moveBy = +1; break;
+	default: return;
+	}
+
+	const bool inElements = activeElementIndex >= 0;
+	CListBox * list = inElements ? elementList.get() : categoryList.get();
+	int & activeIndex = inElements ? activeElementIndex : activeCategoryIndex;
+	const int total = inElements ? (int)currentDisplayedEntries.size() : (int)categoryNames.size();
+
+	const int newIndex = std::clamp(activeIndex + moveBy, 0, total - 1);
+	if(newIndex == activeIndex || total == 0)
+		return;
+	if(auto old = std::dynamic_pointer_cast<WikiListItem>(list->getItem(activeIndex)))
+		old->setSelected(false);
+	if(inElements)
+		onElementClicked(newIndex);
+	else
+		onCategoryClicked(newIndex);
+	list->scrollTo(newIndex);
+	if(auto item = std::dynamic_pointer_cast<WikiListItem>(list->getItem(newIndex)))
+		item->setSelected(true);
+}
 
 void WikiWindow::onCategoryClicked(int index)
 {
