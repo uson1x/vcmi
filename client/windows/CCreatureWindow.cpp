@@ -24,7 +24,7 @@
 #include "../widgets/Images.h"
 #include "../widgets/TextControls.h"
 #include "../widgets/ObjectLists.h"
-#include "../windows/GUIClasses.h"
+#include "GUIClasses.h"
 #include "InfoWindows.h"
 #include "../gui/WindowHandler.h"
 #include "../GameEngine.h"
