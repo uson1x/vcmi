@@ -22,6 +22,7 @@
 #include "../../lib/CPlayerState.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 
+#include "abilitieswidget.h"
 #include "townbuildingswidget.h"
 #include "towneventswidget.h"
 #include "townspellswidget.h"
@@ -448,10 +449,19 @@ void Inspector::updateProperties(CGCreature * o)
 
 void Inspector::updateProperties(CRewardableObject * o)
 {
-	if(!o) return;
+	if(!o)
+		return;
 
-	auto * delegate = new RewardsDelegate(*controller.map(), *o);
-	addProperty(QObject::tr("Reward"), PropertyEditorPlaceholder(), delegate, false);
+	if(o->ID == MapObjectID::WITCH_HUT)
+	{
+		auto * delegate = new AbilitiesDelegate(controller, *o);
+		addProperty(QObject::tr("Abilities"), PropertyEditorPlaceholder(), delegate, false);
+	}
+	else
+	{
+		auto * delegate = new RewardsDelegate(*controller.map(), *o);
+		addProperty(QObject::tr("Reward"), PropertyEditorPlaceholder(), delegate, false);
+	}
 }
 
 void Inspector::updateProperties(CGPandoraBox * o)

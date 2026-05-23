@@ -127,6 +127,7 @@ set(lib_MAIN_SRCS
 
 	json/JsonBonus.cpp
 	json/JsonRandom.cpp
+	json/JsonKeyExtractor.cpp
 
 	gameState/CGameState.cpp
 	gameState/CGameStateCampaign.cpp
@@ -562,6 +563,7 @@ set(lib_MAIN_HEADERS
 
 	json/JsonBonus.h
 	json/JsonRandom.h
+	json/JsonKeyExtractor.h
 
 	gameState/CGameState.h
 	gameState/CGameStateCampaign.h
