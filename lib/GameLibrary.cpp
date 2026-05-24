@@ -17,6 +17,7 @@
 #include "RoadHandler.h"
 #include "RiverHandler.h"
 #include "TerrainHandler.h"
+#include "MapLayerHandler.h"
 #include "spells/CSpellHandler.h"
 #include "spells/SpellSchoolHandler.h"
 #include "spells/effects/Registry.h"
@@ -39,7 +40,7 @@
 #include "mapObjectConstructors/CObjectClassesHandler.h"
 #include "mapObjects/ObstacleSetHandler.h"
 #include "mapping/CMapEditManager.h"
-#include "ScriptHandler.h"
+#include "scripting/ScriptHandler.h"
 #include "BattleFieldHandler.h"
 #include "ObstacleHandler.h"
 #include "GameSettings.h"
@@ -80,12 +81,10 @@ const ResourceTypeService * GameLibrary::resources() const
 	return resourceTypeHandler.get();
 }
 
-#if SCRIPTING_ENABLED
 const scripting::Service * GameLibrary::scripts() const
 {
 	return scriptHandler.get();
 }
-#endif
 
 const spells::Service * GameLibrary::spells() const
 {
@@ -167,6 +166,38 @@ void GameLibrary::initializeFilesystem(bool extractArchives)
 	persistentStorage.init("config/persistentStorage.json", "");
 	keyBindingsConfig.init("config/keyBindingsConfig.json", "");
 	loadModFilesystem();
+
+	// Detect game data mode after filesystem is loaded
+	gameDataMode = GameDataMode::SOD;
+	if(CGeneralTextHandler::isRoEData())
+	{
+		if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
+			gameDataMode = GameDataMode::DEMO_ROE;
+		else
+			gameDataMode = GameDataMode::ROE;
+	}
+	else if(CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M")))
+		gameDataMode = GameDataMode::DEMO_SOD;
+
+	if(gameDataMode == GameDataMode::DEMO_ROE || gameDataMode == GameDataMode::DEMO_SOD)
+		logGlobal->info("Game started with demo data");
+	if(gameDataMode == GameDataMode::ROE || gameDataMode == GameDataMode::DEMO_ROE)
+		logGlobal->info("Game started with RoE data");
+}
+
+GameLibrary::GameDataMode GameLibrary::getGameDataMode() const
+{
+	return gameDataMode;
+}
+
+bool GameLibrary::isRoeData() const
+{
+	return gameDataMode == GameDataMode::ROE || gameDataMode == GameDataMode::DEMO_ROE;
+}
+
+bool GameLibrary::isDemoData() const
+{
+	return gameDataMode == GameDataMode::DEMO_ROE || gameDataMode == GameDataMode::DEMO_SOD;
 }
 
 void GameLibrary::initializeLibrary()
@@ -193,24 +224,16 @@ void GameLibrary::initializeLibrary()
 	createHandler(terviewh);
 	createHandler(campaignRegions);
 	createHandler(tplh); //templates need already resolved identifiers (refactor?)
-#if SCRIPTING_ENABLED
 	createHandler(scriptHandler);
-#endif
 	createHandler(battlefieldsHandler);
 	createHandler(obstacleHandler);
+	createHandler(mapLayerHandler);
 
 	modh->load();
 	modh->afterLoad();
 
 	createHandler(mapFormat);
 }
-
-#if SCRIPTING_ENABLED
-void GameLibrary::scriptsLoaded()
-{
-	scriptHandler->performRegistration(this);
-}
-#endif
 
 GameLibrary::GameLibrary() = default;
 GameLibrary::~GameLibrary() = default;

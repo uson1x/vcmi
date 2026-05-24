@@ -80,7 +80,7 @@ git clone --recursive https://github.com/vcmi/vcmi.git %VCMI_DIR%/source
     - for Powershell: `source\conan-msvc\conanrun.ps1`. If it gives an error, also run `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted`
 4. Create VS solution: `cmake -S source -B build --toolchain source\conan-msvc\conan_toolchain.cmake`
 
-\* This script sets up `PATH` required for Qt tools (`moc`, `uic` etc.) that run during CMake configure and build steps. Those tools depend on `zlib.dll` that was built with Conan, therefore its directory must be in `PATH`.
+\* This script sets up `PATH` required for Qt tools (`moc`, `uic` etc.) that run during CMake configure and build steps. Those tools depend on `zlib.dll` that was built with Conan, therefore its directory must be in `PATH`. As an alternative to modifying `PATH` you may try [this workaround](https://github.com/kambala-decapitator/ExeWrapper).
 
 #### Build solution
 
@@ -188,9 +188,9 @@ git clone https://github.com/microsoft/vcpkg.git %VCMI_DIR%/vcpkg
 - Run
 `%VCMI_DIR%/vcpkg/bootstrap-vcpkg.bat`
 - For 32-bit build run:
-`%VCMI_DIR%/vcpkg/vcpkg.exe install tbb:x64-windows fuzzylite:x64-windows sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows sdl2-mixer[mpg123]:x64-windows boost:x64-windows qt5-base:x64-windows ffmpeg:x64-windows luajit:x64-windows`
+`%VCMI_DIR%/vcpkg/vcpkg.exe install tbb:x64-windows sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows sdl2-mixer[mpg123]:x64-windows boost:x64-windows qt5-base:x64-windows ffmpeg:x64-windows luajit:x64-windows`
 - For 64-bit build run:
-`%VCMI_DIR%/vcpkg/vcpkg.exe install install tbb:x86-windows fuzzylite:x86-windows sdl2:x86-windows sdl2-image:x86-windows sdl2-ttf:x86-windows sdl2-mixer[mpg123]:x86-windows boost:x86-windows qt5-base:x86-windows ffmpeg:x86-windows luajit:x86-windows`
+`%VCMI_DIR%/vcpkg/vcpkg.exe install install tbb:x86-windows sdl2:x86-windows sdl2-image:x86-windows sdl2-ttf:x86-windows sdl2-mixer[mpg123]:x86-windows boost:x86-windows qt5-base:x86-windows ffmpeg:x86-windows luajit:x86-windows`
 
 For the list of the packages used you can also consult [vcmi-deps-windows readme](https://github.com/vcmi/vcmi-deps-windows) in case this article gets outdated a bit.
 

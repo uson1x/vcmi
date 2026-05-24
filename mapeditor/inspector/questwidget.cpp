@@ -11,16 +11,16 @@
 #include "questwidget.h"
 #include "ui_questwidget.h"
 #include "../mapcontroller.h"
-#include "../lib/GameLibrary.h"
-#include "../lib/CSkillHandler.h"
-#include "../lib/spells/CSpellHandler.h"
-#include "../lib/CCreatureHandler.h"
-#include "../lib/constants/StringConstants.h"
-#include "../lib/entities/artifact/CArtHandler.h"
-#include "../lib/entities/ResourceTypeHandler.h"
-#include "../lib/mapping/CMap.h"
-#include "../lib/mapObjects/CGHeroInstance.h"
-#include "../lib/mapObjects/CGCreature.h"
+#include "../../lib/GameLibrary.h"
+#include "../../lib/CSkillHandler.h"
+#include "../../lib/spells/CSpellHandler.h"
+#include "../../lib/CCreatureHandler.h"
+#include "../../lib/constants/StringConstants.h"
+#include "../../lib/entities/artifact/CArtHandler.h"
+#include "../../lib/entities/ResourceTypeHandler.h"
+#include "../../lib/mapping/CMap.h"
+#include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/mapObjects/CGCreature.h"
 
 #include <vcmi/HeroTypeService.h>
 #include <vcmi/HeroType.h>
@@ -35,7 +35,6 @@ QuestWidget::QuestWidget(MapController & _controller, CQuest & _sh, QWidget *par
 {
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	ui->setupUi(this);
-
 	ui->lDayOfWeek->addItem(tr("None"));
 	for(int i = 1; i <= 7; ++i)
 		ui->lDayOfWeek->addItem(tr("Day %1").arg(i));
@@ -342,9 +341,9 @@ void QuestWidget::on_lKillTargetSelect_clicked()
 		return false;
 	};
 	
-	for(int lvl : {0, 1})
+	for(MapScene * level : controller.getScenes())
 	{
-		auto & l = controller.scene(lvl)->objectPickerView;
+		auto & l = level->objectPickerView;
 		l.highlight(pred);
 		l.update();
 		QObject::connect(&l, &ObjectPickerLayer::selectionMade, this, &QuestWidget::onTargetPicked);
@@ -357,9 +356,9 @@ void QuestWidget::onTargetPicked(const CGObjectInstance * obj)
 {
 	show();
 	
-	for(int lvl : {0, 1})
+	for(MapScene * level : controller.getScenes())
 	{
-		auto & l = controller.scene(lvl)->objectPickerView;
+		auto & l = level->objectPickerView;
 		l.clear();
 		l.update();
 		QObject::disconnect(&l, &ObjectPickerLayer::selectionMade, this, &QuestWidget::onTargetPicked);

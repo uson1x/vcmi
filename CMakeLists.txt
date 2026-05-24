@@ -11,7 +11,6 @@ project(VCMI)
 # - Consider to remove M_DATA_DIR, DM_BIN_DIR, DM_LIB_DIR and not use them in code as well
 # - Try to get rid of FOLDER override with define_property
 # It's used currently to make sure that 3rd-party dependencies in git submodules get proper FOLDER property
-# - Make FindFuzzyLite check for the right version and disable FORCE_BUNDLED_FL by default
 
 if(APPLE AND NOT IOS)
 	set(MACOS 1)
@@ -19,6 +18,9 @@ endif()
 
 if(POLICY CMP0142)
   cmake_policy(SET CMP0142 NEW)
+endif()
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
 endif()
 if(POLICY CMP0177)
   cmake_policy(SET CMP0177 NEW)
@@ -38,8 +40,6 @@ endif()
 # Platform-independent options
 
 option(ENABLE_CLIENT "Enable compilation of game client" ON)
-option(ENABLE_ERM "Enable compilation of ERM scripting module" OFF)
-option(ENABLE_LUA "Enable compilation of LUA scripting module" OFF)
 option(ENABLE_VIDEO "Enable video support using ffmpeg" ON)
 option(ENABLE_TRANSLATIONS "Enable generation of translations for launcher and editor" ON)
 option(ENABLE_MINIMAL_LIB "Build only core parts of vcmi library that are required for game lobby" OFF)
@@ -47,7 +47,6 @@ option(ENABLE_GOLDMASTER "Build in public release mode in which some debug routi
 
 # AI libraries. Empty AI is always on
 
-option(ENABLE_NULLKILLER_AI "Enable compilation of NullkillerAI library" ON)
 option(ENABLE_NULLKILLER2_AI "Enable compilation of Nullkiller2AI library" ON)
 option(ENABLE_STUPID_AI "Enable compilation of StupidAI library" ON)
 option(ENABLE_BATTLE_AI "Enable compilation of BattleAI library" ON)
@@ -81,14 +80,22 @@ if(IOS)
 	set(APP_DISPLAY_NAME "VCMI" CACHE STRING "App name on the home screen")
 endif()
 
+include(CMakeDependentOption)
+
 if(IOS OR ANDROID)
 	set(ENABLE_MONOLITHIC_INSTALL OFF)
 	set(ENABLE_SINGLE_APP_BUILD ON)
-	set(ENABLE_EDITOR OFF)
+	if(IOS)
+		set(ENABLE_EDITOR OFF)
+	else()
+		option(ENABLE_EDITOR "Enable compilation of map editor" ON)
+		cmake_dependent_option(ENABLE_TEMPLATE_EDITOR "Enable template editor inside map editor" ON "ENABLE_EDITOR" OFF)
+	endif()
 	set(ENABLE_TEST OFF)
 	set(ENABLE_LOBBY OFF)
 	set(ENABLE_SERVER OFF)
 	set(COPY_CONFIG_ON_BUILD OFF)
+	set(ENABLE_DISCORD OFF)
 else()
 	option(ENABLE_MONOLITHIC_INSTALL "Install everything in single directory on Linux and Mac" OFF) # Used for Snap packages and also useful for debugging
 	option(COPY_CONFIG_ON_BUILD "Copies config folder into output directory at building phase" ON)
@@ -97,11 +104,31 @@ else()
 	option(ENABLE_SINGLE_APP_BUILD "Builds client and launcher as single executable" OFF)
 	option(ENABLE_TEST "Enable compilation of unit tests" OFF)
 	option(ENABLE_LOBBY "Enable compilation of lobby server" OFF)
-endif()
 
-# ERM depends on LUA implicitly
-if(ENABLE_ERM AND NOT ENABLE_LUA)
-	set(ENABLE_LUA ON)
+	include(CheckCXXCompilerFlag)
+	if(MSVC)
+		check_cxx_compiler_flag("/std:c++23" COMPILER_SUPPORTS_CXX23)
+		if(NOT COMPILER_SUPPORTS_CXX23)
+			check_cxx_compiler_flag("/std:c++23preview" COMPILER_SUPPORTS_CXX23_PREVIEW)
+			set(COMPILER_SUPPORTS_CXX23 ${COMPILER_SUPPORTS_CXX23_PREVIEW})
+		endif()
+	else()
+		check_cxx_compiler_flag("-std=c++23" COMPILER_SUPPORTS_CXX23)
+	endif()
+
+	option(ENABLE_DISCORD "Enable compilation of discord integration" ON)
+
+	# Determine if Glaze can be used
+	set(DISCORD_RPC_NO_GLAZE OFF)
+	if(
+		(MACOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "10.15")
+		OR
+		(IOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.0")
+		OR
+		(NOT COMPILER_SUPPORTS_CXX23)
+	)
+		set(DISCORD_RPC_NO_GLAZE ON)
+	endif()
 endif()
 
 include(CMakeDependentOption)
@@ -155,18 +182,35 @@ if(ENABLE_CCACHE)
 endif()
 
 if(ENABLE_CCACHE AND XCODE)
-	# https://stackoverflow.com/a/36515503/2278742
-	# Set up wrapper scripts
-	configure_file(xcode/launch-c.in   xcode/launch-c)
-	configure_file(xcode/launch-cxx.in xcode/launch-cxx)
-	execute_process(COMMAND chmod a+rx
-											"${CMAKE_BINARY_DIR}/xcode/launch-c"
-											"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
-	# Set Xcode project attributes to route compilation through our scripts
-	set(CMAKE_XCODE_ATTRIBUTE_CC         	"${CMAKE_BINARY_DIR}/xcode/launch-c")
-	set(CMAKE_XCODE_ATTRIBUTE_CXX        	"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
-	set(CMAKE_XCODE_ATTRIBUTE_LD         	"${CMAKE_BINARY_DIR}/xcode/launch-c")
-	set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS 	"${CMAKE_BINARY_DIR}/xcode/launch-cxx")
+	set(compilerLauncherPermissions FILE_PERMISSIONS
+		OWNER_READ OWNER_WRITE OWNER_EXECUTE
+		GROUP_READ GROUP_EXECUTE
+		WORLD_READ WORLD_EXECUTE
+	)
+	set(compilerLauncherTemplate "xcode/compiler-launcher.in")
+	set(compilerLauncherC "${CMAKE_BINARY_DIR}/xcode/launch-c")
+	set(compilerLauncherCXX "${CMAKE_BINARY_DIR}/xcode/launch-cxx")
+
+	set(xcodeCompiler "clang")
+	configure_file(${compilerLauncherTemplate} ${compilerLauncherC} ${compilerLauncherPermissions})
+
+	set(xcodeCompiler "clang++")
+	configure_file(${compilerLauncherTemplate} ${compilerLauncherCXX} ${compilerLauncherPermissions})
+
+	if(XCODE_VERSION VERSION_GREATER_EQUAL 26)
+		set(compilerLauncherXcode26 "${CMAKE_BINARY_DIR}/xcode/launch-xc26")
+
+		set(xcodeCompiler)
+		configure_file(${compilerLauncherTemplate} ${compilerLauncherXcode26} ${compilerLauncherPermissions})
+
+		set(CMAKE_XCODE_ATTRIBUTE_C_COMPILER_LAUNCHER   ${compilerLauncherXcode26})
+		set(CMAKE_XCODE_ATTRIBUTE_CXX_COMPILER_LAUNCHER ${compilerLauncherXcode26})
+	else()
+		set(CMAKE_XCODE_ATTRIBUTE_CC  ${compilerLauncherC})
+		set(CMAKE_XCODE_ATTRIBUTE_CXX ${compilerLauncherCXX})
+	endif()
+	set(CMAKE_XCODE_ATTRIBUTE_LD         ${compilerLauncherC})
+	set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS ${compilerLauncherCXX})
 endif()
 
 # Allow to pass package name from Travis CI
@@ -182,7 +226,7 @@ include(VersionDefinition)
 vcmi_print_important_variables()
 
 # Options to enable folders in CMake generated projects for Visual Studio, Xcode, etc
-# Very useful to put 3rd-party libraries such as GoogleTest and FuzzyLite in their own folders
+# Very useful to put 3rd-party libraries such as GoogleTest in their own folders
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
 # Make FOLDER property inheritable
 # So when we set FOLDER property on AI directory all and targets inside will inherit it
@@ -287,9 +331,6 @@ if(ENABLE_GOLDMASTER)
 	add_definitions(-DENABLE_GOLDMASTER)
 endif()
 
-if(ENABLE_NULLKILLER_AI)
-	add_definitions(-DENABLE_NULLKILLER_AI)
-endif()
 if(ENABLE_NULLKILLER2_AI)
 	add_definitions(-DENABLE_NULLKILLER2_AI)
 endif()
@@ -306,7 +347,6 @@ endif()
 
 if(IOS)
 	set(CMAKE_MACOSX_RPATH 1)
-	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
 
 	if(NOT USING_CONAN)
 		list(APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_PREFIX_PATH}") # required for Boost
@@ -326,12 +366,6 @@ if(MACOS)
 endif()
 
 if(MINGW OR MSVC)
-	# Windows Vista or newer for FuzzyLite 6 to compile
-	# Except for conan which already has this definition in its profile
-	if(NOT USING_CONAN)
-		add_definitions(-D_WIN32_WINNT=0x0600)
-	endif()
-
 	#delete lib prefix for dlls (libvcmi -> vcmi)
 	set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
@@ -415,7 +449,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR NOT WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch")             # large number of false-positives, disabled
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")            # large number of noise, low chance of any significant issues
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")       # low chance of any significant issues
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-varargs")            # emitted in fuzzylite headers, disabled
 
 	if(ENABLE_STRICT_COMPILATION)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
@@ -446,10 +479,6 @@ endif()
 # Check if some platform-specific libraries are needed for linking
 if(HAIKU)
 	set(SYSTEM_LIBS ${SYSTEM_LIBS} network)
-endif()
-
-if(ENABLE_LUA)
-	add_definitions(-DSCRIPTING_ENABLED=1)
 endif()
 
 ############################################
@@ -536,9 +565,6 @@ endif()
 
 if(NOT ENABLE_MINIMAL_LIB)
 	find_package(TBB REQUIRED)
-endif()
-
-if(ENABLE_LUA)
 	find_package(luajit)
 
 	if(TARGET luajit::luajit)
@@ -546,13 +572,13 @@ if(ENABLE_LUA)
 	else()
 		message(STATUS "Cannot find LuaJIT! Fallback to using usual Lua.")
 		find_package(Lua REQUIRED)
-		if(Lua_FOUND)
-			add_library(luajit::luajit UNKNOWN IMPORTED)
-			set_target_properties(luajit::luajit PROPERTIES
-				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}")
-			set_target_properties(luajit::luajit PROPERTIES
-				IMPORTED_LOCATION "${LUA_LIBRARIES}")
-		endif()
+		if(Lua_FOUND AND NOT TARGET Lua::Lua)
+			add_library(Lua::Lua INTERFACE IMPORTED)
+			set_target_properties(Lua::Lua PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}"
+				INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}"
+			)
+	    endif()
 	endif()
 endif()
 
@@ -668,12 +694,8 @@ if (ENABLE_CLIENT OR ENABLE_SERVER)
 	add_subdirectory(server)
 endif()
 
-if(ENABLE_ERM)
-	add_subdirectory(scripting/erm)
-endif()
-
-if(ENABLE_LUA)
-	add_subdirectory(scripting/lua)
+if(NOT ENABLE_MINIMAL_LIB)
+	add_subdirectory(luascript)
 endif()
 
 if(ENABLE_LAUNCHER OR ENABLE_EDITOR)
@@ -721,17 +743,15 @@ if(ANDROID)
 		vcmi_install_libs_symlink("${CMAKE_SYSROOT}/usr/lib/${ANDROID_SYSROOT_LIB_SUBDIR}/${stlLibName}")
 	endif()
 else()
+	install(DIRECTORY scripts DESTINATION ${DATA_DIR})
 	install(DIRECTORY config DESTINATION ${DATA_DIR})
 	if (ENABLE_CLIENT OR ENABLE_SERVER)
 		install(DIRECTORY Mods DESTINATION ${DATA_DIR})
 	endif()
 endif()
-if(ENABLE_LUA)
-	install(DIRECTORY scripts DESTINATION ${DATA_DIR})
-endif()
 
 # that script is useless for Windows / iOS / Android
-if(NOT WIN32 AND NOT IOS AND NOT ANDROID)
+if(NOT WIN32 AND NOT IOS AND NOT ANDROID AND NOT ENABLE_MINIMAL_LIB)
 	install(FILES vcmibuilder DESTINATION ${BIN_DIR} PERMISSIONS
 		OWNER_WRITE OWNER_READ OWNER_EXECUTE
 					GROUP_READ GROUP_EXECUTE
@@ -864,8 +884,21 @@ elseif(MACOS AND NOT ENABLE_MONOLITHIC_INSTALL)
 
 	install(FILES "${CMAKE_SOURCE_DIR}/osx/vcmi.icns" DESTINATION ${APP_BUNDLE_RESOURCES_DIR})
 
-	configure_file("${CMAKE_SOURCE_DIR}/osx/Info.plist.in" "${CMAKE_BINARY_DIR}/Info.plist")
-	install(FILES "${CMAKE_BINARY_DIR}/Info.plist" DESTINATION ${APP_BUNDLE_CONTENTS_DIR})
+	set(infoPlist "${CMAKE_BINARY_DIR}/Info.plist")
+	configure_file("${CMAKE_SOURCE_DIR}/osx/Info.plist.in" ${infoPlist})
+	if(CMAKE_OSX_DEPLOYMENT_TARGET)
+		set(deploymentTargetPlistKey ":LSMinimumSystemVersion")
+		execute_process(COMMAND
+			/usr/libexec/PlistBuddy ${infoPlist} -c "Add ${deploymentTargetPlistKey} string ${CMAKE_OSX_DEPLOYMENT_TARGET}"
+			RESULT_VARIABLE addPlistEntryReturnCode
+		)
+		if(NOT addPlistEntryReturnCode EQUAL 0)
+			execute_process(COMMAND
+				/usr/libexec/PlistBuddy ${infoPlist} -c "Set ${deploymentTargetPlistKey} ${CMAKE_OSX_DEPLOYMENT_TARGET}"
+			)
+		endif()
+	endif()
+	install(FILES ${infoPlist} DESTINATION ${APP_BUNDLE_CONTENTS_DIR})
 
 	# Bundle fixing code must be in separate directory to be executed after all other install code
 	add_subdirectory(osx)

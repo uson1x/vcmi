@@ -16,7 +16,7 @@
 
 #include "../modManager/cmodlistview_moc.h"
 #include "../helper.h"
-#include "../vcmiqt/jsonutils.h"
+#include "../../vcmiqt/jsonutils.h"
 #include "../languages.h"
 
 #include <QFileInfo>
@@ -141,10 +141,6 @@ void CSettingsView::fillValidAdventureAILibraries(QComboBox * comboBox, QString 
 	comboBox->blockSignals(true);
 	comboBox->clear();
 
-#ifdef ENABLE_NULLKILLER_AI
-	comboBox->addItem(tr("Nullkiller (superseded by Nullkiller2)"), "Nullkiller");
-#endif
-
 #ifdef ENABLE_NULLKILLER2_AI
 	comboBox->addItem(tr("Nullkiller2 (default, recommended)"), "Nullkiller2");
 #endif
@@ -199,8 +195,6 @@ void CSettingsView::loadSettings()
 	ui->labelHapticFeedback->hide();
 	ui->labelResetTutorialTouchscreen->hide();
 	ui->pushButtonResetTutorialTouchscreen->hide();
-	ui->labelAllowPortrait->hide();
-	ui->buttonAllowPortrait->hide();
 	if (settings["video"]["realFullscreen"].Bool())
 		ui->comboBoxFullScreen->setCurrentIndex(2);
 	else
@@ -213,6 +207,11 @@ void CSettingsView::loadSettings()
 #ifndef VCMI_IOS
 	ui->labelIgnoreMuteSwitch->hide();
 	ui->buttonIgnoreMuteSwitch->hide();
+#endif
+
+#ifndef ENABLE_DISCORD
+	ui->labelDiscordRichPresence->hide();
+	ui->buttonEnableDiscordRichPresence->hide();
 #endif
 
 	fillValidScalingRange();
@@ -228,7 +227,7 @@ void CSettingsView::loadSettings()
 	ui->spinBoxFramerateLimit->setDisabled(settings["video"]["vsync"].Bool());
 	ui->sliderReservedArea->setValue(std::round(settings["video"]["reservedWidth"].Float() * 100));
 
-	ui->spinBoxNetworkPort->setValue(settings["server"]["localPort"].Integer());
+	ui->spinBoxNetworkPort->setValue(settings["server"]["port"].Integer());
 
 	ui->lineEditRepositoryDefault->setText(QString::fromStdString(settings["launcher"]["defaultRepositoryURL"].String()));
 	ui->lineEditRepositoryExtra->setText(QString::fromStdString(settings["launcher"]["extraRepositoryURL"].String()));
@@ -288,6 +287,7 @@ void CSettingsView::loadToggleButtonSettings()
 	setCheckbuttonState(ui->buttonShowIntro, settings["video"]["showIntro"].Bool());
 	setCheckbuttonState(ui->buttonAllowPortrait, settings["video"]["allowPortrait"].Bool());
 	setCheckbuttonState(ui->buttonAutoCheck, settings["launcher"]["autoCheckRepositories"].Bool());
+	setCheckbuttonState(ui->buttonFullModExtraction, settings["launcher"]["fullModExtraction"].Bool());
 
 	setCheckbuttonState(ui->buttonRepositoryDefault, settings["launcher"]["defaultRepositoryEnabled"].Bool());
 	setCheckbuttonState(ui->buttonRepositoryExtra, settings["launcher"]["extraRepositoryEnabled"].Bool());
@@ -303,6 +303,8 @@ void CSettingsView::loadToggleButtonSettings()
 	setCheckbuttonState(ui->buttonHandleBackRightMouseButton, settings["input"]["handleBackRightMouseButton"].Bool());
 
 	setCheckbuttonState(ui->buttonIgnoreMuteSwitch, settings["general"]["ignoreMuteSwitch"].Bool());
+
+	setCheckbuttonState(ui->buttonEnableDiscordRichPresence, settings["general"]["enableDiscordRichPresence"].Bool());
 
 	setCheckbuttonState(ui->buttonSaveBeforeVisit, settings["general"]["saveBeforeVisit"].Bool());
 
@@ -521,6 +523,13 @@ void CSettingsView::on_buttonAutoCheck_toggled(bool value)
 	Settings node = settings.write["launcher"]["autoCheckRepositories"];
 	node->Bool() = value;
 	updateCheckbuttonText(ui->buttonAutoCheck);
+}
+
+void CSettingsView::on_buttonFullModExtraction_toggled(bool value)
+{
+	Settings node = settings.write["launcher"]["fullModExtraction"];
+	node->Bool() = value;
+	updateCheckbuttonText(ui->buttonFullModExtraction);
 }
 
 void CSettingsView::on_comboBoxDisplayIndex_currentIndexChanged(int index)
@@ -972,4 +981,11 @@ void CSettingsView::on_buttonIgnoreMuteSwitch_toggled(bool checked)
 	Settings node = settings.write["general"]["ignoreMuteSwitch"];
 	node->Bool() = checked;
 	updateCheckbuttonText(ui->buttonIgnoreMuteSwitch);
+}
+
+void CSettingsView::on_buttonEnableDiscordRichPresence_toggled(bool checked)
+{
+	Settings node = settings.write["general"]["enableDiscordRichPresence"];
+	node->Bool() = checked;
+	updateCheckbuttonText(ui->buttonEnableDiscordRichPresence);
 }

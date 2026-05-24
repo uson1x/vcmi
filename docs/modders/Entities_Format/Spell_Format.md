@@ -67,6 +67,7 @@
 		// rising - (Deprecated?) rising spell (implicitly sets positive)
 		// special - this spell can not be present in mage guild, or leared by hero, and can only be received explicitly, e.g. from bonus SPELL
 		// nonMagical - this spell is not affected by Sorcery or magic resistance. School resistances (if any) apply.
+		// persistent - this spell can not be removed from unit, such as by dispel effect (e.g. Disrupting Ray)
 		"flags" : {
 			"positive": true,
 		},
@@ -643,7 +644,18 @@ Value of all bonuses can be affected by following bonuses:
 	"type": "core:timed",
 
 	// if set to true, recasting same spell will accumulate (and prolong) effects of previous spellcast
-	"cumulative" : false
+	"cumulative" : false,
+
+	// Optional, localizable battle log message displayed when this effect is applied.
+	// The text should contain a %s placeholder which will be replaced with the affected creature's name.
+	// Singular form is used for stacks with 1 creature, plural for stacks with multiple creatures.
+	// Text IDs for translation are auto-generated as:
+	//   spell.<modName>.<spellName>.<effectName>.battleLogMessage.singular
+	//   spell.<modName>.<spellName>.<effectName>.battleLogMessage.plural
+	// Values starting with @ reference an existing text ID instead of registering a new string.
+	"battleLogMessage" : { "singular" : "The %s is frozen solid.", "plural" : "The %s are frozen solid." },
+	// OR referencing existing text IDs:
+	// "battleLogMessage" : { "singular" : "@core.genrltxt.558", "plural" : "@core.genrltxt.559" },
 	
 	// List of bonuses granted by this spell
 	"bonus" : {

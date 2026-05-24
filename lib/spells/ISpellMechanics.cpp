@@ -76,7 +76,7 @@ protected:
 	void loadEffects(const JsonNode & config, const int level)
 	{
 		JsonDeserializer deser(nullptr, config);
-		effects->serializeJson(LIBRARY->spellEffects(), deser, level);
+		effects->serializeJson(LIBRARY->spellEffects(), deser, level, spell->modScope, spell->identifier);
 	}
 private:
 	std::shared_ptr<IReceptiveCheck> targetCondition;
@@ -256,65 +256,6 @@ bool BattleCast::castIfPossible(ServerCallback * server, Target target)
 		return true;
 	}
 	return false;
-}
-
-std::vector<Target> BattleCast::findPotentialTargets(bool fast) const
-{
-	//TODO: for more than 2 destinations per target much more efficient algorithm is required
-
-	auto m = spell->battleMechanics(this);
-
-	auto targetTypes = m->getTargetTypes();
-
-
-	if(targetTypes.empty() || targetTypes.size() > 2)
-	{
-		return std::vector<Target>();
-	}
-	else
-	{
-		std::vector<Target> previous;
-		std::vector<Target> next;
-
-		for(size_t index = 0; index < targetTypes.size(); index++)
-		{
-			std::swap(previous, next);
-			next.clear();
-
-			std::vector<Destination> destinations;
-
-			if(previous.empty())
-			{
-				Target empty;
-				destinations = m->getPossibleDestinations(index, targetTypes.at(index), empty, fast);
-
-				for(auto & destination : destinations)
-				{
-					Target target;
-					target.emplace_back(destination);
-					next.push_back(target);
-				}
-			}
-			else
-			{
-				for(const Target & current : previous)
-				{
-					destinations = m->getPossibleDestinations(index, targetTypes.at(index), current, fast);
-
-					for(auto & destination : destinations)
-					{
-						Target target = current;
-						target.emplace_back(destination);
-						next.push_back(target);
-					}
-				}
-			}
-
-			if(next.empty())
-				break;
-		}
-		return next;
-	}
 }
 
 ///ISpellMechanicsFactory
@@ -525,6 +466,11 @@ bool BaseMechanics::isPositiveSpell() const
 	return owner->isPositive();
 }
 
+bool BaseMechanics::isNeutralSpell() const
+{
+	return owner->isNeutral();
+}
+
 bool BaseMechanics::isMagicalEffect() const
 {
 	return owner->isMagical();
@@ -595,6 +541,11 @@ PlayerColor BaseMechanics::getCasterColor() const
 	return caster->getCasterOwner();
 }
 
+const CGHeroInstance * BaseMechanics::getHeroCaster() const
+{
+	return caster->getHeroCaster();
+}
+
 std::vector<AimType> BaseMechanics::getTargetTypes() const
 {
 	std::vector<AimType> ret;
@@ -620,12 +571,10 @@ const CreatureService * BaseMechanics::creatures() const
 	return LIBRARY->creatures(); //todo: redirect
 }
 
-#if SCRIPTING_ENABLED
 const scripting::Service * BaseMechanics::scripts() const
 {
 	return LIBRARY->scripts(); //todo: redirect
 }
-#endif
 
 const Service * BaseMechanics::spells() const
 {
@@ -637,6 +586,10 @@ const CBattleInfoCallback * BaseMechanics::battle() const
 	return cb;
 }
 
+BattleID BaseMechanics::getBattleID() const
+{
+	return cb->getBattle()->getBattleID();
+}
 
 } //namespace spells
 

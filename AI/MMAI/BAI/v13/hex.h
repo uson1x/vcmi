@@ -19,8 +19,6 @@
 #include "BAI/v13/stack.h"
 #include "schema/v13/types.h"
 
-#include <memory>
-
 namespace MMAI::BAI::V13
 {
 using HexAction = Schema::V13::HexAction;
@@ -77,10 +75,10 @@ public:
 
 	std::string name() const;
 	int attr(HexAttribute a) const;
+	void finalize();
 
 private:
 	void setattr(HexAttribute a, int value);
-	void finalize();
 
 	void setStateMask(EAccessibility accessibility, const std::vector<std::shared_ptr<const CObstacleInstance>> & obstacles, BattleSide side);
 

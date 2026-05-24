@@ -163,6 +163,12 @@ std::string CSpell::getDescriptionTranslated(int32_t level) const
 	return LIBRARY->generaltexth->translate(getDescriptionTextID(level));
 }
 
+std::string CSpell::getAdventureEffectTextID(const std::string & effectType, const std::string & field) const
+{
+	TextIdentifier textID("spell", modScope, identifier, "adventureEffect", effectType, field);
+	return textID.get();
+}
+
 std::string CSpell::getJsonKey() const
 {
 	return modScope + ':' + identifier;
@@ -221,6 +227,11 @@ bool CSpell::isNegative() const
 bool CSpell::isNeutral() const
 {
 	return positiveness == NEUTRAL;
+}
+
+bool CSpell::isPersistent() const
+{
+	return persistent;
 }
 
 boost::logic::tribool CSpell::getPositiveness() const
@@ -629,9 +640,12 @@ std::vector<JsonNode> CSpellHandler::loadLegacyData()
 
     //TODO: maybe move to config
 	//clone Acid Breath attributes for Acid Breath damage effect
-	JsonNode temp = legacyData[SpellID::ACID_BREATH_DEFENSE];
-	temp["index"].Integer() = SpellID::ACID_BREATH_DAMAGE;
-	legacyData.push_back(temp);
+	if(legacyData.size() > SpellID::ACID_BREATH_DEFENSE) // not for RoE
+	{
+		JsonNode temp = legacyData[SpellID::ACID_BREATH_DEFENSE];
+		temp["index"].Integer() = SpellID::ACID_BREATH_DAMAGE;
+		legacyData.push_back(temp);
+	}
 
 	objects.resize(legacyData.size());
 
@@ -797,8 +811,9 @@ std::shared_ptr<CSpell> CSpellHandler::loadFromJson(const std::string & scope, c
 	//by default all flags are set to false in constructor
 
 	spell->damage = flags["damage"].Bool(); //do this before "offensive"
-
 	spell->nonMagical = flags["nonMagical"].Bool();
+	spell->persistent = flags["persistent"].Bool();
+
 
 	if(flags["offensive"].Bool())
 	{
@@ -993,9 +1008,43 @@ std::shared_ptr<CSpell> CSpellHandler::loadFromJson(const std::string & scope, c
 
 		levelObject.adventureEffect = levelNode["adventureEffect"];
 
+		if(levelObject.adventureEffect["type"].String() == "reinforcements")
+		{
+			auto registerField = [&](const std::string & field)
+			{
+				const std::string & value = levelObject.adventureEffect[field].String();
+				if(!value.empty() && value.front() != '@')
+					LIBRARY->generaltexth->registerString(scope, spell->getAdventureEffectTextID("reinforcements", field), levelObject.adventureEffect[field]);
+			};
+
+			registerField("casterInTown");
+			registerField("selectTownTitle");
+			registerField("selectTownDescription");
+			registerField("garrisonTitle");
+		}
+
 		if(!levelNode["battleEffects"].Struct().empty())
 		{
 			levelObject.battleEffects = levelNode["battleEffects"];
+
+			for(const auto & effectEntry : levelNode["battleEffects"].Struct())
+			{
+				const JsonNode & msgNode = effectEntry.second["battleLogMessage"];
+				if(msgNode.isStruct())
+				{
+					auto registerField = [&](const std::string & field)
+					{
+						const std::string & value = msgNode[field].String();
+						if(!value.empty() && value.at(0) != '@')
+						{
+							TextIdentifier textID("spell", scope, identifier, effectEntry.first, "battleLogMessage", field);
+							LIBRARY->generaltexth->registerString(scope, textID, msgNode[field]);
+						}
+					};
+					registerField("singular");
+					registerField("plural");
+				}
+			}
 
 			if(!levelObject.cumulativeEffects.empty() || !levelObject.effects.empty() || spell->isOffensive())
 				logGlobal->error("Mixing %s special effects with old format effects gives unpredictable result", spell->getNameTranslated());
