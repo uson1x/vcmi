@@ -699,7 +699,8 @@ void CServerHandler::startGameplay(std::shared_ptr<CGameState> gameState)
 		throw std::runtime_error("Invalid mode");
 	}
 
-	ENGINE->discord().setPlayingStatus(si, &gameState->getMap(), howManyPlayerInterfaces());
+	if(ENGINE)
+		ENGINE->discord().setPlayingStatus(si, &gameState->getMap(), howManyPlayerInterfaces());
 
 	// After everything initialized we can accept CPackToClient netpacks
 	setState(EClientState::GAMEPLAY);
@@ -745,7 +746,8 @@ void CServerHandler::endGameplay()
 		GAME->mainmenu()->makeActiveInterface();
 	}
 
-	ENGINE->discord().setStatus("", "", {0, 0});
+	if(ENGINE)
+		ENGINE->discord().setStatus("", "", {0, 0});
 }
 
 std::optional<std::string> CServerHandler::canQuickLoadGame(const std::string & path) const
@@ -1030,7 +1032,7 @@ void CServerHandler::waitForServerShutdown()
 	{
 		// Release interfaceMutex while waiting for server thread to finish
 		// to avoid blocking the GUI thread (same pattern as endNetwork())
-		auto unlockInterface = vstd::makeUnlockGuard(ENGINE->interfaceMutex);
+		auto unlockInterface = unlockInterfaceIfPresent();
 		serverRunner->wait();
 	}
 	int exitCode = serverRunner->exitCode();
