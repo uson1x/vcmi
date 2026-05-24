@@ -20,6 +20,7 @@
 #include "constants/StringConstants.h"
 #include "bonuses/Limiters.h"
 #include "bonuses/Updaters.h"
+#include "bonuses/BonusParameters.h"
 #include "json/JsonBonus.h"
 #include "serializer/JsonDeserializer.h"
 #include "serializer/JsonUpdater.h"
@@ -553,11 +554,14 @@ std::vector<JsonNode> CCreatureHandler::loadLegacyData()
 		parser.endLine();
 	}
 
+	const bool isRoe = LIBRARY->isRoeData();
+
 	for (size_t i=0; i<dataSize; i++)
 	{
 		//loop till non-empty line
 		while (parser.isNextEntryEmpty())
-			parser.endLine();
+			if(!parser.endLine())
+				break;
 
 		JsonNode data;
 
@@ -586,8 +590,9 @@ std::vector<JsonNode> CCreatureHandler::loadLegacyData()
 		if (float shots = parser.readNumber())
 			data["shots"].Float() = shots;
 
-		if (float spells = parser.readNumber())
-			data["spellPoints"].Float() = spells;
+		if(!isRoe)
+			if (float spells = parser.readNumber())
+				data["spellPoints"].Float() = spells;
 
 		data["advMapAmount"]["min"].Float() = parser.readNumber();
 		data["advMapAmount"]["max"].Float() = parser.readNumber();
@@ -655,12 +660,6 @@ std::shared_ptr<CCreature> CCreatureHandler::loadFromJson(const std::string & sc
 	loadStackExperience(cre.get(), node["stackExperience"]);
 	loadJsonAnimation(cre.get(), node["graphics"]);
 	loadCreatureJson(cre.get(), node);
-
-	for(const auto & extraName : node["extraNames"].Vector())
-	{
-		for(const auto & type_name : getTypeNames())
-			registerObject(scope, type_name, extraName.String(), cre->getIndex());
-	}
 
 	if (!cre->special &&
 		!CResourceHandler::get()->existsResource(cre->animDefName) &&
@@ -786,7 +785,6 @@ void CCreatureHandler::loadCrExpBon(CBonusSystemNode & globalEffects)
 		b.duration = BonusDuration::PERMANENT;
 		b.valType = BonusValueType::ADDITIVE_VALUE;
 		b.effectRange = BonusLimitEffect::NO_LIMIT;
-		b.additionalInfo = 0;
 		b.turnsRemain = 0;
 		BonusList bl;
 
@@ -983,7 +981,9 @@ void CCreatureHandler::loadStackExperience(CCreature * creature, const JsonNode 
 	for (const JsonNode &exp : input.Vector())
 	{
 		const JsonVector &values = exp["values"].Vector();
-		int lowerLimit = 1;//, upperLimit = 255;
+		// RankRangeLimiter uses strict bounds (rank > minRank), so level 1 bonus
+		// must start from 0 to map values[0] -> rank 1 and values[9] -> rank 10.
+		int lowerLimit = 0;//, upperLimit = 255;
 		if (values[0].getType() == JsonNode::JsonType::DATA_BOOL)
 		{
 			for (const JsonNode &val : values)
@@ -1140,42 +1140,34 @@ void CCreatureHandler::loadStackExp(Bonus & b, BonusList & bl, CLegacyConfigPars
 			case 'B': //Blind
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::BLIND));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'H': //Hypnotize
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::HYPNOTIZE));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'I': //Implosion
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::IMPLOSION));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'K': //Berserk
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::BERSERK));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'M': //Meteor Shower
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::METEOR_SHOWER));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'N': //dispel beneficial spells
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::DISPEL_HELPFUL_SPELLS));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'R': //Armageddon
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::ARMAGEDDON));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case 'S': //Slow
 				b.type = BonusType::SPELL_IMMUNITY;
 				b.subtype = BonusSubtypeID(SpellID(SpellID::SLOW));
-				b.additionalInfo = 0;//normal immunity
 				break;
 			case '6':
 			case '7':
@@ -1273,7 +1265,7 @@ void CCreatureHandler::loadStackExp(Bonus & b, BonusList & bl, CLegacyConfigPars
 	case 'J':
 		b.type = BonusType::SPELL_BEFORE_ATTACK;
 		b.subtype = BonusSubtypeID(SpellID(stringToNumber(mod)));
-		b.additionalInfo = 3; //always expert?
+		b.parameters = std::make_shared<BonusParameters>(3); //always expert?
 		break;
 	case 'r':
 		b.type = BonusType::HP_REGENERATION;

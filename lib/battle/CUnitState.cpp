@@ -15,6 +15,7 @@
 
 #include "../CCreatureHandler.h"
 
+#include "../bonuses/BonusParameters.h"
 #include "../serializer/JsonDeserializer.h"
 #include "../serializer/JsonSerializer.h"
 
@@ -614,8 +615,8 @@ uint8_t CUnitState::getRangedFullDamageDistance() const
 	if(hasBonusOfType(BonusType::LIMITED_SHOOTING_RANGE))
 	{
 		auto bonus = this->getBonus(Selector::type()(BonusType::LIMITED_SHOOTING_RANGE));
-		if(bonus != nullptr && bonus->additionalInfo != CAddInfo::NONE)
-			return bonus->additionalInfo[0];
+		if(bonus != nullptr && bonus->parameters)
+			return bonus->parameters->toNumber();
 	}
 
 	if (hasBonusOfType(BonusType::NO_DISTANCE_PENALTY))
@@ -691,7 +692,7 @@ BattlePhases::Type CUnitState::battleQueuePhase(int turn) const
 		else
 			return BattlePhases::WAIT;
 	}
-	else if(creatureIndex() == CreatureID::CATAPULT || isTurret()) //catapult and turrets are first
+	else if(isCatapult() || isTurret()) //catapult and turrets are first
 	{
 		return BattlePhases::SIEGE;
 	}
@@ -851,12 +852,13 @@ void CUnitState::reset()
 	position = BattleHex::INVALID;
 }
 
-void CUnitState::save(JsonNode & data)
+JsonNode CUnitState::save()
 {
+	JsonNode data;
 	//TODO: use instance resolver
-	data.clear();
 	JsonSerializer ser(nullptr, data);
 	ser.serializeStruct("state", *this);
+	return data;
 }
 
 void CUnitState::load(const JsonNode & data)
@@ -931,6 +933,7 @@ void CUnitState::afterGetsTurn(BattleUnitTurnReason reason)
 	{
 		hadMorale = true;
 		castSpellThisTurn = false;
+		movedThisRound = false;
 	}
 }
 

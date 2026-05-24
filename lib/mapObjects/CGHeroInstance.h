@@ -54,7 +54,7 @@ protected:
 };
 
 
-class DLL_LINKAGE CGHeroInstance : public CArmedInstance, public IBoatGenerator, public CArtifactSet, public spells::Caster, public AFactionMember, public ICreatureUpgrader, public IOwnableObject
+class DLL_LINKAGE CGHeroInstance : public CArmedInstance, public IBoatGenerator, public CArtifactSet, public spells::Caster, public AFactionMember, public ICreatureUpgrader, public IOwnableObject, public scripting::ApiRawPointer<CGHeroInstance>
 {
 	// We serialize heroes into JSON for crossover
 	friend class CampaignState;
@@ -82,7 +82,7 @@ public:
 	//          8 4
 	//          765
 	ui8 moveDir;
-	mutable ui8 tacticFormationEnabled;
+	bool tacticFormationEnabled;
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +128,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	BoatId getBoatType() const override; //0 - evil (if a ship can be evil...?), 1 - good, 2 - neutral
+	EPathfindingLayer getBoatLayer() const override;
 	void getOutOffsets(std::vector<int3> &offsets) const override; //offsets to obj pos when we boat can be placed
 	const IObjectInterface * getObject() const override;
 
@@ -150,6 +151,9 @@ public:
 	const CGBoat * getBoat() const;
 	void setBoat(CGBoat * getBoat);
 
+	/// Returns ID of existing war machine that will be replaced if hero were to purchase new war machine
+	/// If there is no replaced war machine (for example slot is empty), method will return empty ArtifactID
+	ArtifactID getReplacedWarMachine(ArtifactID newWarMachine) const;
 	bool hasSpellbook() const;
 	int maxSpellLevel() const;
 	void addSpellToSpellbook(const SpellID & spell);
@@ -187,9 +191,6 @@ public:
 	/// Returns true if hero has lower level than should upon his experience.
 	bool gainsLevel() const;
 
-	/// Selects 0-2 skills for player to select on levelup
-	std::vector<SecondarySkill> getLevelupSkillCandidates(IGameRandomizer & gameRandomizer) const;
-
 	ui8 getSecSkillLevel(const SecondarySkill & skill) const; //0 - no skill
 	int getPrimSkillLevel(PrimarySkill id) const;
 
@@ -204,9 +205,9 @@ public:
 
 	void setMovementPoints(int points);
 	int movementPointsRemaining() const;
-	int movementPointsLimit(bool onLand) const;
+	int movementPointsLimit() const;
 	//cached version is much faster, TurnInfo construction is costly
-	int movementPointsLimitCached(bool onLand, const TurnInfo * ti) const;
+	int movementPointsLimitCached(const EPathfindingLayer & layer, const TurnInfo * ti) const;
 
 	int movementPointsAfterEmbark(int MPsBefore, int basicCost, bool disembark, const TurnInfo * ti) const;
 
@@ -356,6 +357,8 @@ public:
 		h & spells;
 		h & patrol;
 		h & moveDir;
+		if (h.hasFeature(Handler::Version::DISABLE_TACTICS))
+			h & tacticFormationEnabled;
 		if (!h.hasFeature(Handler::Version::RANDOMIZATION_REWORK))
 		{
 			ui8 magicSchoolCounter = 0;

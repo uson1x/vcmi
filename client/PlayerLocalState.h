@@ -51,7 +51,7 @@ class PlayerLocalState
 
 	SpellID currentSpell;
 
-	void syncronizeState();
+	void synchronizeState();
 public:
 
 	explicit PlayerLocalState(CPlayerInterface & owner);
@@ -77,7 +77,7 @@ public:
 	void swapWanderingHero(size_t pos1, size_t pos2);
 
 	void setPath(const CGHeroInstance * h, const CGPath & path);
-	bool setPath(const CGHeroInstance * h, const int3 & destination);
+	bool setPath(const CGHeroInstance * h, const int3 & destination, const EPathfindingLayer & layer);
 
 	const CGPath & getPath(const CGHeroInstance * h) const;
 	bool hasPath(const CGHeroInstance * h) const;
@@ -101,4 +101,5 @@ public:
 
 	/// Changes currently selected object
 	void setSelection(const CArmedInstance *sel);
+	void setSelection(const CArmedInstance *sel, bool force);
 };
