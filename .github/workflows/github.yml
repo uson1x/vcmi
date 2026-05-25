@@ -1,4 +1,4 @@
-name: VCMI
+name: Daily Builds and Tests
 
 on:
   push:
@@ -414,8 +414,7 @@ jobs:
       id: upload_artifact
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}
-        compression-level: 9
+        archive: false
         path: |
           ${{github.workspace}}/out/build/${{matrix.preset}}/${{ env.VCMI_PACKAGE_FILE_NAME }}.${{ matrix.extension }}
 
@@ -424,8 +423,7 @@ jobs:
       if: ${{ startsWith(matrix.platform, 'android') && github.ref == 'refs/heads/master' }}
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}-aab
-        compression-level: 9
+        archive: false
         path: |
           ${{github.workspace}}/out/build/${{matrix.preset}}/${{ env.VCMI_PACKAGE_FILE_NAME }}.aab
 
@@ -511,8 +509,7 @@ jobs:
           id: upload_source
           uses: actions/upload-artifact@v7
           with:
-            name: ${{ env.VCMI_PACKAGE_FILE_NAME }}
-            compression-level: 9
+            archive: false
             path: |
               ./release.tar.gz
 
@@ -692,8 +689,7 @@ jobs:
       id: upload_artifact
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}lobby
-        compression-level: 0
+        archive: false
         path: ${{github.workspace}}/${{ env.VCMI_PACKAGE_FILE_NAME }}.deb
 
   windows-installer:
@@ -758,13 +754,8 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@v8
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}
+        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}.zip
         path: ${{github.workspace}}/artifact
-
-    - name: Extract Artifact
-      run: |
-        mkdir artifact/extracted
-        unzip "artifact/${{ env.VCMI_PACKAGE_FILE_NAME }}.zip" -d artifact/extracted
 
     - name: Ensure Inno Setup is installed
       run: |
@@ -780,7 +771,7 @@ jobs:
         "${{ matrix.arch }}"
         "VCMI ${{ env.VCMI_PACKAGE_NAME_SUFFIX }}"
         "${{ env.VCMI_PACKAGE_FILE_NAME }}"
-        "${{ github.workspace }}\artifact\extracted"
+        "${{ github.workspace }}\artifact"
         "${{ github.workspace }}\ucrt"
       shell: cmd
 
@@ -788,8 +779,7 @@ jobs:
       id: upload_installer
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}-installer
-        compression-level: 9
+        archive: false
         path: |
           ${{ github.workspace }}/CI/wininstaller/Output/*.exe
 
