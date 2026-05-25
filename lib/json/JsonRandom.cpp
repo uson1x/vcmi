@@ -159,7 +159,7 @@ SecondarySkill JsonRandom::loadSecondary(const JsonNode & value, const Variables
 {
 	std::set<SecondarySkill> defaultSkills;
 	for(const auto & skill : LIBRARY->skillh->objects)
-		if(cb->isAllowed(skill->getId()) && !skill->special)
+		if(cb->isAllowed(skill->getId()) && !skill->isSpecial())
 			defaultSkills.insert(skill->getId());
 
 	std::set<SecondarySkill> potentialPicks = jsonKeyExtractor.filterKeys(value, defaultSkills, variables);
@@ -181,7 +181,7 @@ std::map<SecondarySkill, si32> JsonRandom::loadSecondaries(const JsonNode & valu
 	{
 		std::set<SecondarySkill> defaultSkills;
 		for(const auto & skill : LIBRARY->skillh->objects)
-			if(cb->isAllowed(skill->getId()) && !skill->special)
+			if(cb->isAllowed(skill->getId()) && !skill->isSpecial())
 				defaultSkills.insert(skill->getId());
 
 		for(const auto & element : value.Vector())

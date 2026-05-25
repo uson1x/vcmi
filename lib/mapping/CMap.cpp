@@ -748,7 +748,7 @@ void CMap::banWaterSkills()
 {
 	vstd::erase_if(allowedAbilities, [&](SecondarySkill skill)
 	{
-		return skill.toSkill()->onlyOnWaterMap && !isWaterMap();
+		return skill.toSkill()->isOnlyOnWaterMap() && !isWaterMap();
 	});
 }
 
