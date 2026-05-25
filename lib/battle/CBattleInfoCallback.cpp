@@ -852,12 +852,15 @@ bool CBattleInfoCallback::battleCanAttackHex(const BattleHexArray & availableHex
 		//if the movement ends in an obstacle, check if the obstacle allows attacking from that position
 		if (attacker->getPosition() != fromHex)
 		{
-			for (const auto & obstacle : battleGetAllObstacles())
+			if (!attacker->hasBonusOfType(BonusType::FLYING))
 			{
-				if (obstacle->getStoppingTile().contains(fromHex))
-					return false;
-				if (attacker->doubleWide() && obstacle->getStoppingTile().contains(attacker->occupiedHex(fromHex)))
-					return false;
+				for (const auto & obstacle : battleGetAllObstacles())
+				{
+					if (obstacle->getStoppingTile().contains(fromHex))
+						return false;
+					if (attacker->doubleWide() && obstacle->getStoppingTile().contains(attacker->occupiedHex(fromHex)))
+						return false;
+				}
 			}
 			const battle::Unit * defender = battleGetUnitByPos(position, false); //Do not allow to target corpses when standing on them (a WALK_AND_SPELLCAST action)
 			if (defender && defender->isDead() && defender->coversPos(fromHex))
