@@ -947,7 +947,7 @@ bool AINodeStorage::isDistanceLimitReached(const PathNodeInfo & source, CDestina
 	return false;
 }
 
-void AINodeStorage::setHeroes(std::map<const CGHeroInstance *, HeroRole> heroes)
+void AINodeStorage::setHeroes(HeroMap<HeroRole> heroes)
 {
 	playerID = aiNk->playerID;
 
@@ -1166,7 +1166,7 @@ struct TownPortalFinder
 template<class TVector>
 void AINodeStorage::calculateTownPortal(
 	const ChainActor * actor,
-	const std::map<const CGHeroInstance *, int> & maskMap,
+	const HeroMap<int> & maskMap,
 	const std::vector<CGPathNode *> & initialNodes,
 	TVector & output)
 {
@@ -1240,7 +1240,7 @@ void AINodeStorage::calculateTownPortalTeleportations(std::vector<CGPathNode *> 
 			actorsOfInitial.insert(aiNode->actor->baseActor);
 	}
 
-	std::map<const CGHeroInstance *, int> maskMap;
+	HeroMap<int> maskMap;
 
 	for(std::shared_ptr<ChainActor> basicActor : actors)
 	{
