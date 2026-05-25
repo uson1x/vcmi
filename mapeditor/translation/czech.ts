@@ -135,14 +135,6 @@
         <translation>Neuložené změny budou ztraceny, jste si jisti?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Méně scénářů než regionů</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">Máte méně scénářů než regionů. To je povoleno pouze tehdy, pokud chybějící scénáře jsou v posledních regionech, ne uprostřed nebo na začátku.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation>Úroveň 5</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">Formulář</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Zakázaní hrdinové</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation>Neuložené změny budou ztraceny, jste si jisti?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Povrch</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">Podzemí</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Úroveň - %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1362,10 +1365,6 @@
         <translation>Kliknuto na Výplň</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="vanished">Zobrazit povrch</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Nejsou vybrány žádné objekty</translation>
@@ -1531,7 +1530,7 @@ Chcete to udělat nyní?</translation>
         <translation>Hrdinové</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation>OK</translation>
     </message>
@@ -4099,17 +4098,9 @@ Stráž: %3</translation>
         <translation>Nedostatek šablon!</translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="vanished">Příliš málo šablon!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation>Po odebrání by měla zůstat alespoň jedna šablona.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Chyba</translation>
     </message>
 </context>
 <context>
@@ -4555,34 +4546,6 @@ Stráž: %3</translation>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation>Výběr terénu</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation>Výběr kouzel</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation>Výběr artefaktů</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation>Výběr dovedností</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation>Výběr typu hrdiny</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4879,10 +4842,6 @@ Stráž: %3</translation>
         <translation>Vlastní velikost</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="vanished">Podzemí</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation>Lidé</translation>
@@ -5031,6 +4990,34 @@ Stráž: %3</translation>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation>Odstranit původní soubory pro ty, které byly rozděleny nebo převedeny.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Výběr terénu</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Výběr kouzel</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Výběr artefaktů</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Výběr dovedností</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Výběr typu hrdiny</translation>
     </message>
 </context>
 </TS>

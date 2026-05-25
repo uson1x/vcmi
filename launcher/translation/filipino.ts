@@ -463,7 +463,6 @@ Please report this issue to developers</source>
         <translation type="unfinished">
             <numerusform>Matagumpay na na-import ang %n mapa.</numerusform>
             <numerusform></numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message>
@@ -1487,7 +1486,6 @@ Exe (%n byte):
             <numerusform>SHA1 hash ng mga ibinigay na file:
 Exe (%n bytes):
 %1</numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -1500,7 +1498,6 @@ Bin (%n bytes):
             <numerusform>
 Lalagyan ng basurahan (%n byte):
 %1</numerusform>
-            <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
     </message>
@@ -1563,127 +1560,132 @@ Lalagyan ng basurahan (%n byte):
         <translation type="unfinished">Czech</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="26"/>
-        <source>Chinese</source>
-        <translation type="unfinished">Tsino</translation>
-    </message>
-    <message>
-        <location filename="../languages.cpp" line="27"/>
+        <location filename="../languages.cpp" line="28"/>
         <source>Dutch</source>
         <translation type="unfinished">Olandes</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="28"/>
+        <location filename="../languages.cpp" line="29"/>
         <source>English</source>
         <translation type="unfinished">Ingles</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="29"/>
+        <location filename="../languages.cpp" line="30"/>
         <source>Filipino</source>
         <translation type="unfinished">Pilipino</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="30"/>
+        <location filename="../languages.cpp" line="31"/>
         <source>Finnish</source>
         <translation type="unfinished">Pinlandes</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="31"/>
+        <location filename="../languages.cpp" line="32"/>
         <source>French</source>
         <translation type="unfinished">Pranses</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="32"/>
+        <location filename="../languages.cpp" line="33"/>
         <source>German</source>
         <translation type="unfinished">Aleman</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="33"/>
+        <location filename="../languages.cpp" line="34"/>
         <source>Greek</source>
         <translation type="unfinished">Griyego</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="34"/>
+        <location filename="../languages.cpp" line="35"/>
         <source>Hungarian</source>
         <translation type="unfinished">Hungarian</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="35"/>
+        <location filename="../languages.cpp" line="36"/>
         <source>Italian</source>
         <translation type="unfinished">Italyano</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="36"/>
+        <location filename="../languages.cpp" line="37"/>
         <source>Japanese</source>
         <translation type="unfinished">Hapon</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="37"/>
+        <location filename="../languages.cpp" line="38"/>
         <source>Korean</source>
         <translation type="unfinished">Koreano</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="38"/>
+        <location filename="../languages.cpp" line="39"/>
         <source>Latvian</source>
         <translation type="unfinished">Latwiano</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="39"/>
+        <location filename="../languages.cpp" line="40"/>
         <source>Norwegian</source>
         <translation type="unfinished">Norwegian</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="40"/>
+        <location filename="../languages.cpp" line="41"/>
         <source>Polish</source>
         <translation type="unfinished">Polish</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="41"/>
+        <location filename="../languages.cpp" line="42"/>
         <source>Portuguese</source>
         <translation type="unfinished">Portuges</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="42"/>
+        <location filename="../languages.cpp" line="43"/>
         <source>Romanian</source>
         <translation type="unfinished">Romanian</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="43"/>
+        <location filename="../languages.cpp" line="44"/>
         <source>Russian</source>
         <translation type="unfinished">Ruso</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="45"/>
+        <location filename="../languages.cpp" line="46"/>
         <source>Spanish</source>
         <translation type="unfinished">Espanyol</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="44"/>
+        <location filename="../languages.cpp" line="45"/>
         <source>Serbian</source>
         <translation type="unfinished">Serbyo</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="46"/>
+        <location filename="../languages.cpp" line="26"/>
+        <source>Simplified Chinese</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../languages.cpp" line="27"/>
+        <source>Traditional Chinese</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../languages.cpp" line="47"/>
         <source>Swedish</source>
         <translation type="unfinished">Suweko</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="47"/>
+        <location filename="../languages.cpp" line="48"/>
         <source>Turkish</source>
         <translation type="unfinished">Turko</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="48"/>
+        <location filename="../languages.cpp" line="49"/>
         <source>Ukrainian</source>
         <translation type="unfinished">Ukranyano</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="49"/>
+        <location filename="../languages.cpp" line="50"/>
         <source>Vietnamese</source>
         <translation type="unfinished">Vietnamese</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="71"/>
+        <location filename="../languages.cpp" line="72"/>
         <source>Auto (%1)</source>
         <translation type="unfinished">Awtomatikong (%1)</translation>
     </message>
@@ -2085,7 +2087,6 @@ Reason: %2</source>
         <translation type="unfinished">
             <numerusform>I-update ang %n mod</numerusform>
             <numerusform></numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -2095,7 +2096,6 @@ Reason: %2</source>
         <translation type="unfinished">
             <numerusform>Mga Kronika ng mga Bayani:
 Naka-install ang %n/%1</numerusform>
-            <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
     </message>

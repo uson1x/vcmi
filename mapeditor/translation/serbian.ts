@@ -135,14 +135,6 @@
         <translation type="unfinished">Несачуване измене ће бити изгубљене, јеси ли сигуран/сигурна?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Мање сценарија него региона</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">Имате мање сценарија него региона. Ово је дозвољено само ако се сценарији који недостају јављају у последњим регионима, а не у средини или на почетку.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation type="unfinished">Ниво 5</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">Форма</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Забрањени хероји</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation type="unfinished">Несачуване измене ће бити изгубљене, јеси ли сигуран/сигурна?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Површина</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="obsolete">Подземље</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Ниво - %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1525,7 +1528,7 @@ Do you want to do that now ?</source>
         <translation type="unfinished">Хероји</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation type="unfinished">У реду</translation>
     </message>
@@ -4090,10 +4093,6 @@ Guard: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="obsolete">За неколико шаблона!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">Након уклањања треба да остане барем један шаблон.</translation>
@@ -4542,34 +4541,6 @@ Guard: %3</source>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">Селектор терена</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">Селектор правописа</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">Селектор артефаката</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">Селектор вештина</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">Селектор типа хероја</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -5014,6 +4985,34 @@ Guard: %3</source>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation type="unfinished">Обришите оригиналне датотеке, оне које су подељене / конвертоване.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Селектор терена</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Селектор правописа</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Селектор артефаката</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Селектор вештина</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Селектор типа хероја</translation>
     </message>
 </context>
 </TS>

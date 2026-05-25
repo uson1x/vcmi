@@ -135,14 +135,6 @@
         <translation type="unfinished">저장되지 않은 변경 사항이 손실됩니다. 계속하시겠습니까?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">지역보다 시나리오가 적음</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">지역 수보다 시나리오 수가 적습니다. 누락된 시나리오가 마지막 지역들에 있을 때만 허용되며, 중간이나 시작 부분에 있으면 허용되지 않습니다.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation type="unfinished">레벨 5</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">금지 영웅</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation type="unfinished">저장되지 않은 변경 사항이 손실됩니다. 계속하시겠습니까?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">지상</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">지하</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">레벨 - %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1362,10 +1365,6 @@
         <translation type="unfinished">채우기 클릭</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="obsolete">지상 보기</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation type="unfinished">선택된 오브젝트 없음</translation>
@@ -1532,7 +1531,7 @@ Do you want to do that now ?</source>
         <translation type="unfinished">영웅</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation type="unfinished">확인</translation>
     </message>
@@ -4098,17 +4097,9 @@ Guard: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="obsolete">템플릿이 너무 적습니다!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">삭제 후에도 최소 한 개의 템플릿을 남겨두세요.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">오류</translation>
     </message>
 </context>
 <context>
@@ -4554,34 +4545,6 @@ Guard: %3</source>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">지형 선택기</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">마법 선택기</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">유물 선택기</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">기술 선택기</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">영웅 유형 선택기</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4878,10 +4841,6 @@ Guard: %3</source>
         <translation type="unfinished">사용자 지정 크기</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="obsolete">지하</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation type="unfinished">인간</translation>
@@ -5030,6 +4989,34 @@ Guard: %3</source>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation type="unfinished">분할/변환된 파일에 대해 원본 파일을 삭제합니다.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">지형 선택기</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">마법 선택기</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">유물 선택기</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">기술 선택기</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">영웅 유형 선택기</translation>
     </message>
 </context>
 </TS>

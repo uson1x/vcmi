@@ -135,14 +135,6 @@
         <translation>Nem mentett változások el fognak veszni, biztos benne?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Kevesebb forgatókönyv, mint régió</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">Kevesebb forgatókönyve van, mint régiója. Ez csak akkor engedélyezett, ha a hiányzó forgatókönyvek az utolsó régiókban vannak, nem a közepén vagy az elején.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -597,6 +589,29 @@
         <location filename="../inspector/herospellwidget.ui" line="243"/>
         <source>Level 5</source>
         <translation>5. szint</translation>
+    </message>
+</context>
+<context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Tiltott hősök</translation>
     </message>
 </context>
 <context>
@@ -1168,18 +1183,6 @@
         <translation>Nem mentett változások el fognak veszni, biztos benne?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Felszín</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">Földalatti</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Szint - %1</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="455"/>
         <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
@@ -1362,10 +1365,6 @@
         <translation type="unfinished">Kitöltés megnyomva</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="vanished">Felszín megtekintése</translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Nincs kiválasztott objektum</translation>
@@ -1532,7 +1531,7 @@ Szeretnéd ezt most megtenni?</translation>
         <translation>Hősök</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation>Rendben</translation>
     </message>
@@ -4098,17 +4097,9 @@ B zóna: %2
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To few templates!</source>
-        <translation type="obsolete">Túl kevés sablon!</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">Eltávolítás után legalább egy sablonnak maradnia kell.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Hiba</translation>
     </message>
 </context>
 <context>
@@ -4554,34 +4545,6 @@ B zóna: %2
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">Terepválasztó</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">Varázslatválasztó</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">Ereklyeválasztó</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">Képességválasztó</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">Hőstípus-választó</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4878,10 +4841,6 @@ B zóna: %2
         <translation>Egyedi méret</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="vanished">Földalatti</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation>Emberek</translation>
@@ -5030,6 +4989,34 @@ B zóna: %2
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation>Az eredeti fájlokat törli azok helyett, amelyek szétbontásra/konvertálásra kerültek.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Terepválasztó</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Varázslatválasztó</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Ereklyeválasztó</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Képességválasztó</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Hőstípus-választó</translation>
     </message>
 </context>
 </TS>
