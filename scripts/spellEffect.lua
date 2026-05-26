@@ -19,7 +19,7 @@ end
 --- Returns true if spell can be casted in general
 --- if no valid targets exist, script needs to call `problem:add`
 --- to explain the reason to the player
-function Script.applicable(parameters, mechanics, problem)
+function Script.applicableGeneral(parameters, mechanics, problem)
 	return true
 end
 
@@ -34,6 +34,21 @@ end
 --- and return list of affected units
 function Script.transformTarget(parameters, mechanics, aimPoint, spellTarget)
 	return spellTarget
+end
+
+--- TODO
+function Script.getHealthChange(parameters, mechanics, problem, target)
+    return true
+end
+
+--- TODO
+function Script.adjustAffectedHexes(parameters, mechanics, problem, target)
+    return true
+end
+
+--- TODO
+function Script.adjustTargetTypes(parameters, mechanics, problem, target)
+    return true
 end
 
 return Script

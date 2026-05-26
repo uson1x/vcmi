@@ -151,17 +151,16 @@ public:
 		lua_setmetatable(L, -2);
 	}
 
+	template<typename T, std::size_t N>
+	void push(const boost::container::small_vector<T,N> & value)
+	{
+		pushArray(value);
+	}
+
 	template<typename T>
 	void push(const std::vector<T> & value)
 	{
-		lua_newtable(L);
-		int tableIndex = lua_gettop(L);
-
-		for (size_t i = 0; i < value.size(); ++i)
-		{
-			push(value[i]);
-			lua_rawseti(L, tableIndex, i + 1);
-		}
+		pushArray(value);
 	}
 
 	template<typename T>
@@ -419,6 +418,19 @@ public:
 
 private:
 	bool tryGetInteger(int position, lua_Integer & value);
+
+	template<typename T>
+	void pushArray(T & value)
+	{
+		lua_newtable(L);
+		int tableIndex = lua_gettop(L);
+
+		for (size_t i = 0; i < value.size(); ++i)
+		{
+			push(value[i]);
+			lua_rawseti(L, tableIndex, i + 1);
+		}
+	}
 
 	template<typename BaseType>
 	bool tryGetUData(int position, BaseType & value)

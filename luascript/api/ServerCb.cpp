@@ -28,6 +28,7 @@ const std::vector<ServerCbProxy::CustomRegType> ServerCbProxy::REGISTER_CUSTOM =
 {
 	{ "createUnit", LuaCallWrapper<&ServerCbProxy::createUnit>::invoke, false },
 	{ "updateUnit", LuaCallWrapper<&ServerCbProxy::updateUnit>::invoke, false },
+	{ "injureUnit", LuaCallWrapper<&ServerCbProxy::injureUnit>::invoke, false },
 	{ "healUnit", LuaCallWrapper<&ServerCbProxy::healUnit>::invoke, false },
 	{ "removeUnit", LuaCallWrapper<&ServerCbProxy::removeUnit>::invoke, false },
 };
@@ -90,6 +91,23 @@ int ServerCbProxy::updateUnit(lua_State * L)
 	uc.operation = UnitChanges::EOperation::UPDATE;
 
 	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data, uc.healthDelta))
+		throw LuaApiException("Invalid parameters passed into updateUnit!");
+
+	buc.changedStacks.push_back(uc);
+
+	object->apply(buc);
+	return S.retVoid();
+}
+
+int ServerCbProxy::injureUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	StacksInjured si;
+	BattleStackAttacked bsa;
+
+	if (!S.tryGetAll(1, object, si.battleID, bsa.attackerID, bsa.stackAttacked, uc.id, uc.data, uc.healthDelta))
 		throw LuaApiException("Invalid parameters passed into updateUnit!");
 
 	buc.changedStacks.push_back(uc);

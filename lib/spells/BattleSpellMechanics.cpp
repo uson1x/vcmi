@@ -675,7 +675,7 @@ std::vector<AimType> BattleSpellMechanics::getTargetTypes() const
 	{
 		effects->forEachEffect(getEffectLevel(), [&](const effects::Effect * e, bool & stop)
 		{
-			e->adjustTargetTypes(ret);
+			e->adjustTargetTypes(ret, this);
 			stop = ret.empty();
 		});
 	}

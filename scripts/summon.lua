@@ -46,7 +46,7 @@ function Script.applicableGeneral(parameters, mechanics, problem)
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then
 		print("SpellEffectSummon: zero summoned creatures!")
-		return problem:addGeneric(mechanics:getCasterNameTextID())
+		return problem:addGeneric(mechanics)
 	end
 
 	-- check if there are summoned creatures of other type
@@ -67,8 +67,8 @@ function Script.applicableGeneral(parameters, mechanics, problem)
 			end
 
 			if hero ~= nil then
-				problem:add({
-					append = "core.genrltxt.538",
+				problem:addCustom({
+					append = { "core.genrltxt.538" },
 					replace = {
 						hero:getNameTextID(),
 						elemental:getNamePluralTextID(),
@@ -76,8 +76,8 @@ function Script.applicableGeneral(parameters, mechanics, problem)
 					}
 				})
 			else
-				problem:add({
-					append = "core.genrltxt.538"
+				problem:addCustom({
+					append = { "core.genrltxt.538" }
 				})
 			end
 			print("SpellEffectSummon - summoning:", creature:getJsonKey(), " already summoned: ", elemental:getCreature():getJsonKey())

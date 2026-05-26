@@ -23,7 +23,9 @@ using ::spells::Problem;
 
 const std::vector<SpellProblemProxy::CustomRegType> SpellProblemProxy::REGISTER_CUSTOM =
 {
-	{"add", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
+	{"addCustom", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
+	{"addGeneric", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
+	{"addStandard", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
 };
 
 int SpellProblemProxy::add(lua_State * L)

@@ -25,11 +25,6 @@ namespace spells
 namespace effects
 {
 
-void UnitEffect::adjustTargetTypes(std::vector<TargetType> & types) const
-{
-
-}
-
 void UnitEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const
 {
 	for(const auto & destnation : spellTarget)

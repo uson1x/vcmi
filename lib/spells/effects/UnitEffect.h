@@ -22,7 +22,6 @@ namespace effects
 class UnitEffect : public Effect
 {
 public:
-	void adjustTargetTypes(std::vector<TargetType> & types) const override;
 	void adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const final;
 
 	bool applicableGeneral(Problem & problem, const Mechanics * m) const override;

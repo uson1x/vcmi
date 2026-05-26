@@ -20,11 +20,6 @@ namespace spells
 namespace effects
 {
 
-void LocationEffect::adjustTargetTypes(std::vector<TargetType> & types) const
-{
-
-}
-
 void LocationEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const
 {
 	for(const auto & destnation : spellTarget)

@@ -14,6 +14,7 @@ set(lualib_SRCS
 		api/adventure/StackInstance.cpp
 
 		api/battle/UnitProxy.cpp
+		api/battle/BattleHexArrayProxy.cpp
 		api/battle/BattleHexProxy.cpp
 
 		api/events/BattleEvents.cpp
@@ -56,6 +57,7 @@ set(lualib_HDRS
 		api/adventure/StackInstance.h
 
 		api/battle/UnitProxy.h
+		api/battle/BattleHexArrayProxy.h
 		api/battle/BattleHexProxy.h
 
 		api/events/BattleEvents.h

@@ -54,7 +54,7 @@ public:
 	LuaSpellEffect(const LuaScriptInstance * script_);
 	virtual ~LuaSpellEffect();
 
-	void adjustTargetTypes(std::vector<TargetType> & types) const override;
+	void adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const override;
 
 	void adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const override;
 

@@ -25,7 +25,7 @@ namespace spells
 namespace effects
 {
 
-void Sacrifice::adjustTargetTypes(std::vector<TargetType> & types) const
+void Sacrifice::adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const
 {
 	if(!types.empty())
 	{

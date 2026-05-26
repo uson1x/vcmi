@@ -25,7 +25,7 @@ namespace spells
 namespace effects
 {
 
-void Teleport::adjustTargetTypes(std::vector<TargetType> & types) const
+void Teleport::adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const
 {
 	if(!types.empty())
 	{

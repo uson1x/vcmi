@@ -21,7 +21,7 @@ namespace spells
 namespace effects
 {
 
-class Damage : public UnitEffect
+class Damage final : public UnitEffect
 {
 public:
 	void apply(ServerCallback * server, const Mechanics * m, const Target & target) const override;
@@ -31,11 +31,11 @@ public:
 protected:
 	bool isReceptive(const Mechanics * m, const battle::Unit * unit) const override;
 
-	void serializeJsonUnitEffect(JsonSerializeFormat & handler) override final;
+	void serializeJsonUnitEffect(JsonSerializeFormat & handler) final;
 
 	int64_t damageForTarget(size_t targetIndex, const Mechanics * m, const battle::Unit * target) const;
 
-	virtual void describeEffect(std::vector<MetaString> & log, const Mechanics * m, const battle::Unit * firstTarget, uint32_t kills, int64_t damage, bool multiple) const;
+	void describeEffect(std::vector<MetaString> & log, const Mechanics * m, const battle::Unit * firstTarget, uint32_t kills, int64_t damage, bool multiple) const;
 
 private:
 	bool killByPercentage = false;

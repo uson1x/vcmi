@@ -26,6 +26,7 @@ class Enums : public scripting::ApiSerializable<Enums>
 
 	EnumMap<EHealLevel> exportHealLevel() const;
 	EnumMap<EHealPower> exportHealPower() const;
+	EnumMap<ESpellCastProblem> exportSpellCastProblem() const;
 
 public:
 	template<typename Serializer>
@@ -33,6 +34,7 @@ public:
 	{
 		s("HealLevel", exportHealLevel());
 		s("HealPower", exportHealPower());
+		s("SpellCastProblem", exportSpellCastProblem());
 	}
 };
 

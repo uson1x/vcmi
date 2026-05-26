@@ -38,10 +38,6 @@ public:
 	template<typename ReturnType, typename... Args>
 	ReturnType call(const std::string & name, Args&& ... parameters);
 
-	/// Returns value of specified property from class stored in script
-	template<typename ReturnType>
-	ReturnType getProperty(const std::string & name);
-
 private:
 	std::mutex mutex;
 	lua_State * L;
@@ -119,21 +115,6 @@ ReturnType LuaContext::call(const std::string & name, Args&& ... parameters)
 		S.clear();
 		return;
 	}
-}
-
-template<typename ReturnType>
-ReturnType LuaContext::getProperty(const std::string & name)
-{
-	std::lock_guard guard(mutex);
-	LuaStack S(L);
-
-	scriptTable->push();			  // stack: (table)
-	lua_getfield(L, 1, name.c_str()); // stack: (table), (property)
-
-	ReturnType ret;
-	S.getOrThrow(2, ret);
-	S.balance();
-	return ret;
 }
 
 }

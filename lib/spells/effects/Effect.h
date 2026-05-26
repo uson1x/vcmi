@@ -39,7 +39,7 @@ class SpellEffectService;
 
 using TargetType = spells::AimType;
 
-struct SpellEffectValue : public scripting::ApiSerializable<Destination>
+struct SpellEffectValue : public scripting::ApiSerializable<SpellEffectValue>
 {
 	int64_t hpDelta = 0; // positive -> healed health points, negative -> damage
 	int64_t unitsDelta = 0; // positive -> resurrected / summoned (demons) / animated (undeads), negative -> kills
@@ -77,7 +77,7 @@ public:
 	virtual ~Effect() = default; //Required for child classes
 
 	// TODO: document me
-	virtual void adjustTargetTypes(std::vector<TargetType> & types) const = 0;
+	virtual void adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const {};
 
 	/// Generates list of hexes affected by spell, if spell were to cast at specified target
 	virtual void adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const = 0;
