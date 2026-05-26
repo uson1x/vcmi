@@ -30,9 +30,9 @@ Validator::Validator(const CMap * map, QWidget *parent) :
 	ui->setupUi(this);
 
 	screenGeometry = QApplication::primaryScreen()->availableGeometry();
-	
+
 	Helper::decorateDialog(this);
-	
+
 	showValidationResults(map);
 }
 
@@ -44,13 +44,13 @@ Validator::~Validator()
 std::set<Validator::Issue> Validator::validate(const CMap * map)
 {
 	std::set<Validator::Issue> issues;
-	
+
 	if(!map)
 	{
 		issues.insert({ tr("Map is not loaded"), true });
 		return issues;
 	}
-	
+
 	try
 	{
 		//check player settings
@@ -79,7 +79,7 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 			issues.insert({ tr("No human players allowed to play this map"), true });
 
 		std::set<const CHero * > allHeroesOnMap; //used to find hero duplicated
-		
+
 		//checking all objects in the map
 		for(auto o : map->objects)
 		{
@@ -122,14 +122,14 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 				{
 					if(map->allowedHeroes.count(ins->getHeroTypeID()) == 0)
 						issues.insert({ tr("Hero %1 is prohibited by map settings").arg(ins->getHeroType()->getNameTranslated().c_str()), false });
-					
+
 					if(!allHeroesOnMap.insert(ins->getHeroType()).second)
 						issues.insert({ tr("Hero %1 has duplicate on map").arg(ins->getHeroType()->getNameTranslated().c_str()), false });
 				}
 				else if(ins->ID != Obj::RANDOM_HERO)
 					issues.insert({ tr("Hero %1 has an empty type and must be removed").arg(ins->instanceName.c_str()), true });
 			}
-			
+
 			//checking for arts
 			if(auto * ins = dynamic_cast<CGArtifact *>(o.get()))
 			{
@@ -190,7 +190,7 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 			issues.insert({ tr("Map name is not specified"), false });
 		if(map->description.empty())
 			issues.insert({ tr("Map description is not specified"), false });
-		
+
 		//verification for mods
 		for(auto & mod : MapController::modAssessmentMap(*map))
 		{
@@ -206,7 +206,7 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 	{
 		issues.insert({ tr("Unknown exception occurs during validation"), true });
 	}
-	
+
 	return issues;
 }
 

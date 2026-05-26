@@ -773,7 +773,7 @@ void CMapFormatJson::serializePredefinedHeroes(JsonSerializeFormat & handler)
 void CMapFormatJson::serializeOptions(JsonSerializeFormat & handler)
 {
 	serializeRumors(handler);
-	
+
 	serializeTimedEvents(handler);
 
 	serializePredefinedHeroes(handler);
@@ -922,7 +922,7 @@ void CMapLoaderJson::readHeader(const bool complete)
 	}
 
 	mapHeader->version = EMapFormat::VCMI;//todo: new version field
-	
+
 	//loading mods
 	mapHeader->mods = ModVerificationInfo::jsonDeserializeList(header["mods"]);
 
@@ -1284,15 +1284,15 @@ void CMapLoaderJson::readTranslations()
 		if(isExistArchive(language.identifier + ".json"))
 			translationsFromFile.Struct()[language.identifier] = getFromArchive(language.identifier + ".json");
 	}
-	
+
 	// Register translations with map name prefix
 	if(!translationsFromFile.Struct().empty())
 	{
 		std::string actualMapName = TextOperations::convertMapName(mapName);
-		
+
 		std::string preferredLanguage = CGeneralTextHandler::getPreferredLanguage();
 		std::string baseLanguage = Languages::getLanguageOptions(Languages::ELanguages::ENGLISH).identifier;
-		
+
 		// Determine base language from translations with most strings
 		int maxStrings = 0;
 		for(auto & translation : translationsFromFile.Struct())
@@ -1303,14 +1303,14 @@ void CMapLoaderJson::readTranslations()
 				baseLanguage = translation.first;
 			}
 		}
-		
+
 		// Load base language translations
 		if(translationsFromFile.Struct().count(baseLanguage))
 		{
 			for(auto & str : translationsFromFile[baseLanguage].Struct())
 			{
 				// Keys in JSON don't have map name (e.g. "header.name"), add map name when registering: map.<mapName>.<identifier>
-				TextIdentifier fullIdentifier = runningInMapEditor 
+				TextIdentifier fullIdentifier = runningInMapEditor
 					? TextIdentifier(str.first)
 					: TextIdentifier("map", actualMapName, str.first);
 				mapRegisterLocalizedString("map", *mapHeader, fullIdentifier, str.second.String(), baseLanguage);
@@ -1323,7 +1323,7 @@ void CMapLoaderJson::readTranslations()
 			JsonNode translationOverrides;
 			for(auto & str : translationsFromFile[preferredLanguage].Struct())
 			{
-				TextIdentifier fullIdentifier = runningInMapEditor 
+				TextIdentifier fullIdentifier = runningInMapEditor
 					? TextIdentifier(str.first)
 					: TextIdentifier("map", actualMapName, str.first);
 				translationOverrides.Struct()[fullIdentifier.get()].String() = str.second.String();

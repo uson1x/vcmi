@@ -441,11 +441,11 @@ const CGObjectInstance * CMap::getObjectiveObjectFrom(const int3 & pos, Obj type
 void CMap::checkForObjectives()
 {
 	// NOTE: probably should be moved to MapFormatH3M.cpp
-	for (TriggeredEvent & event : triggeredEvents)
+	for(TriggeredEvent & event : triggeredEvents)
 	{
 		auto patcher = [&](EventCondition cond) -> EventExpression::Variant
 		{
-			switch (cond.condition)
+			switch(cond.condition)
 			{
 				case EventCondition::HAVE_ARTIFACT:
 					event.onFulfill.replaceTextID(cond.objectType.as<ArtifactID>().toEntity(LIBRARY)->getNameTextID());
@@ -484,25 +484,25 @@ void CMap::checkForObjectives()
 						}
 					}
 
-					if (cond.objectID != ObjectInstanceID::NONE)
+					if(cond.objectID != ObjectInstanceID::NONE)
 					{
 						const auto * town = dynamic_cast<const CGTownInstance *>(objects[cond.objectID].get());
-						if (town)
+						if(town)
 							event.onFulfill.replaceRawString(town->getNameTranslated());
 						const auto * hero = dynamic_cast<const CGHeroInstance *>(objects[cond.objectID].get());
-						if (hero)
+						if(hero)
 							event.onFulfill.replaceRawString(hero->getNameTranslated());
 					}
 					break;
 
 				case EventCondition::DESTROY:
-					if (isInTheMap(cond.position))
+					if(isInTheMap(cond.position))
 						cond.objectID = getObjectiveObjectFrom(cond.position, cond.objectType.as<MapObjectID>())->id;
 
-					if (cond.objectID != ObjectInstanceID::NONE)
+					if(cond.objectID != ObjectInstanceID::NONE)
 					{
 						const auto * hero = dynamic_cast<const CGHeroInstance *>(objects[cond.objectID].get());
-						if (hero)
+						if(hero)
 							event.onFulfill.replaceRawString(hero->getNameTranslated());
 					}
 					break;

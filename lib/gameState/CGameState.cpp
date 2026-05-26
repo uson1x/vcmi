@@ -1267,7 +1267,7 @@ EVictoryLossCheckResult CGameState::checkForVictoryAndLoss(const PlayerColor & p
 bool CGameState::checkForVictory(const PlayerColor & player, const EventCondition & condition) const
 {
 	const PlayerState *p = CGameInfoCallback::getPlayerState(player);
-	switch (condition.condition)
+	switch(condition.condition)
 	{
 		case EventCondition::STANDARD_WIN:
 		{
@@ -1286,12 +1286,12 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 			// NOTE: only heroes & towns are checked, in line with H3.
 			// Garrisons, mines, and guards of owned dwellings(!) are excluded
 			int totalCreatures = 0;
-			for (const auto & hero : p->getHeroes())
+			for(const auto & hero : p->getHeroes())
 				for(const auto & elem : hero->Slots()) //iterate through army
 					if(elem.second->getId() == condition.objectType.as<CreatureID>()) //it's searched creature
 						totalCreatures += elem.second->getCount();
 
-			for (const auto & town : p->getTowns())
+			for(const auto & town : p->getTowns())
 				for(const auto & elem : town->Slots()) //iterate through army
 					if(elem.second->getId() == condition.objectType.as<CreatureID>()) //it's searched creature
 						totalCreatures += elem.second->getCount();
@@ -1304,16 +1304,16 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		}
 		case EventCondition::HAVE_BUILDING:
 		{
-			if (condition.objectID != ObjectInstanceID::NONE) // specific town
+			if(condition.objectID != ObjectInstanceID::NONE) // specific town
 			{
 				const auto * t = getTown(condition.objectID);
 				return (t->tempOwner == player && t->hasBuilt(condition.objectType.as<BuildingID>()));
 			}
 			else // any town
 			{
-				for (const CGTownInstance * t : p->getTowns())
+				for(const CGTownInstance * t : p->getTowns())
 				{
-					if (t->hasBuilt(condition.objectType.as<BuildingID>()))
+					if(t->hasBuilt(condition.objectType.as<BuildingID>()))
 						return true;
 				}
 				return false;
@@ -1321,9 +1321,9 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		}
 		case EventCondition::DESTROY:
 		{
-			if (condition.objectID != ObjectInstanceID::NONE) // mode A - destroy specific object of this type
+			if(condition.objectID != ObjectInstanceID::NONE) // mode A - destroy specific object of this type
 			{
-				return p->destroyedObjects.count(condition.objectID);
+				return p->destroyedObjects.contains(condition.objectID);
 			}
 			else
 			{
@@ -1396,7 +1396,7 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		}
 		case EventCondition::DAYS_WITHOUT_TOWN:
 		{
-			if (p->daysWithoutCastle)
+			if(p->daysWithoutCastle)
 				return p->daysWithoutCastle >= condition.value;
 			else
 				return false;

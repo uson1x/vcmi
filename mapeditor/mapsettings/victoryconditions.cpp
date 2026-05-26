@@ -312,7 +312,7 @@ void VictoryConditions::update()
 				specialVictory.trigger = EventExpression(cond);
 				break;
 			}
-				
+
 			case 7: {
 				EventCondition cond(EventCondition::DESTROY);
 				assert(victoryTypeWidget);
@@ -348,7 +348,7 @@ void VictoryConditions::update()
 		}
 		controller->map()->triggeredEvents.push_back(specialVictory);
 	}
-	
+
 	if(customMessage)
 	{
 		controller->map()->victoryMessage = MetaString::createFromTextID(mapRegisterLocalizedString("map", *controller->map(), TextIdentifier("header", "victoryMessage"), ui->victoryMessageEdit->text().toStdString()));
@@ -436,7 +436,7 @@ void VictoryConditions::on_victoryComboBox_currentIndexChanged(int index)
 			victorySelectWidget->addItem(tr("Any town"), QVariant::fromValue(-1));
 			for(int i : getObjectIndexes<const CGTownInstance>(*controller->map()))
 				victorySelectWidget->addItem(getTownName(*controller->map(), i).c_str(), QVariant::fromValue(i));
-			
+
 			pickObjectButton = new QToolButton;
 			connect(pickObjectButton, &QToolButton::clicked, this, &VictoryConditions::onObjectSelect);
 			ui->victoryParamsLayout->addWidget(pickObjectButton);
@@ -470,7 +470,7 @@ void VictoryConditions::on_victoryComboBox_currentIndexChanged(int index)
 			ui->victoryParamsLayout->addWidget(victoryTypeWidget);
 			for(int i = 0; i < controller->map()->allowedArtifact.size(); ++i)
 				victoryTypeWidget->addItem(QString::fromStdString(LIBRARY->arth->objects[i]->getNameTranslated()), QVariant::fromValue(i));
-			
+
 			victorySelectWidget = new QComboBox;
 			ui->victoryParamsLayout->addWidget(victorySelectWidget);
 			for(int i : getObjectIndexes<const CGTownInstance>(*controller->map()))
@@ -480,7 +480,7 @@ void VictoryConditions::on_victoryComboBox_currentIndexChanged(int index)
 			ui->victoryParamsLayout->addWidget(pickObjectButton);
 			break;
 		}
-			
+
 		case 7: { //EventCondition::DESTROY (Obj::MONSTER)
 			victoryTypeWidget = new QComboBox;
 			ui->victoryParamsLayout->addWidget(victoryTypeWidget);
@@ -508,22 +508,22 @@ void VictoryConditions::onObjectSelect()
 				l.highlight<const CGTownInstance>();
 				break;
 			}
-				
+
 			case 4: { //EventCondition::CONTROL (Obj::TOWN)
 				l.highlight<const CGTownInstance>();
 				break;
 			}
-				
+
 			case 5: { //EventCondition::DESTROY (Obj::HERO)
 				l.highlight<const CGHeroInstance>();
 				break;
 			}
-				
+
 			case 6: { //EventCondition::TRANSPORT (Obj::ARTEFACT)
 				l.highlight<const CGTownInstance>();
 				break;
 			}
-				
+
 			case 7: { //EventCondition::DESTROY (Obj::MONSTER)
 				l.highlight<const CGCreature>();
 				break;
@@ -534,14 +534,14 @@ void VictoryConditions::onObjectSelect()
 		l.update();
 		QObject::connect(&l, &ObjectPickerLayer::selectionMade, this, &VictoryConditions::onObjectPicked);
 	}
-	
+
 	controller->settingsDialog->hide();
 }
 
 void VictoryConditions::onObjectPicked(const CGObjectInstance * obj)
 {
 	controller->settingsDialog->show();
-	
+
 	for(MapScene * level : controller->getScenes())
 	{
 		auto & l = level->objectPickerView;
@@ -549,20 +549,20 @@ void VictoryConditions::onObjectPicked(const CGObjectInstance * obj)
 		l.update();
 		QObject::disconnect(&l, &ObjectPickerLayer::selectionMade, this, &VictoryConditions::onObjectPicked);
 	}
-	
+
 	if(!obj) //discarded
 		return;
-	
+
 	int vicConditions = ui->victoryComboBox->currentIndex() - 1;
 	QComboBox * w = victoryTypeWidget;
 	if(vicConditions == 3 || vicConditions == 6)
 		w = victorySelectWidget;
-	
+
 	for(int i = 0; i < w->count(); ++i)
 	{
 		if(w->itemData(i).toInt() < 0)
 			continue;
-		
+
 		auto data = controller->map()->objects.at(w->itemData(i).toInt());
 		if(data.get() == obj)
 		{
