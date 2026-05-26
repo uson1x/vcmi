@@ -142,6 +142,8 @@ void Effects::serializeJson(JsonSerializeFormat & handler, const int level, cons
 		auto guard = handler.enterStruct(name);
 		SpellEffectID effectID(*LIBRARY->identifiers()->getIdentifier("spellEffect", p.second["type"]));
 
+		LIBRARY->spellEffects()->validateEffect(effectID, p.second, spellScope + ":" + spellIdentifier + " effect " + name);
+
 		auto effect = LIBRARY->spellEffects()->create(effectID);
 		if(effect)
 		{

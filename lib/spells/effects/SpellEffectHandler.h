@@ -45,6 +45,8 @@ public:
 
 	void registerFactory(const std::string & typeName, std::shared_ptr<ISpellEffectFactory> factory) override;
 
+	void validateEffect(SpellEffectID effectID, const JsonNode & data, const std::string & name) const override;
+
 	std::vector<JsonNode> loadLegacyData() override;
 
 	/// loads single object into game. Scope is namespace of this object, same as name of source mod

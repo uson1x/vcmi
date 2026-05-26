@@ -295,7 +295,7 @@ int LuaContext::loadModule()
 
 	auto *loader = scope.empty() ? CResourceHandler::get() : CResourceHandler::get(scope);
 
-	ScriptPath id = ScriptPath::builtinTODO(modulePath);
+	ScriptPath id = ScriptPath::builtinTODO(modulePath).addPrefix("SCRIPTS/");
 
 	if(!loader->existsResource(id))
 		return errorRetVoid("Module not found: "+modulePath);

@@ -14,6 +14,8 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+class JsonNode;
+
 namespace spells::effects
 {
 
@@ -34,6 +36,7 @@ public:
 	virtual ~SpellEffectService() = default;
 	virtual std::shared_ptr<Effect> create(SpellEffectID effectID) const = 0;
 	virtual void registerFactory(const std::string & typeName, std::shared_ptr<ISpellEffectFactory> factory) = 0;
+	virtual void validateEffect(SpellEffectID effectID, const JsonNode & data, const std::string & name) const = 0;
 
 };
 

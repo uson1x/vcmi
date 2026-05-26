@@ -11,6 +11,8 @@
 
 #include "SpellEffectHandler.h"
 
+#include "../../json/JsonUtils.h"
+
 #include "Catapult.h"
 #include "Clone.h"
 #include "Damage.h"
@@ -107,6 +109,13 @@ void SpellEffectHandler::loadObject(std::string scope, std::string name, const J
 void SpellEffectHandler::afterLoadFinalization()
 {
 
+}
+
+void SpellEffectHandler::validateEffect(SpellEffectID effectID, const JsonNode & data, const std::string & name) const
+{
+	const auto & schema = effectTypes.at(effectID.getNum()).validationSchema;
+	if (!schema.isNull())
+		JsonUtils::validate(data, schema, name);
 }
 
 }
