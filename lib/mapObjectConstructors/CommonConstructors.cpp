@@ -111,9 +111,27 @@ void MineInstanceConstructor::initTypeData(const JsonNode & input)
 	if (!config["guards"].isNull())
 		guards = config["guards"];
 
-	if (!config["onGuardedMessage"].isNull())
-		LIBRARY->generaltexth->registerString(config.getModScope(), getOnGuardedMessageTextID(), config["onGuardedMessage"]);
-	
+	auto registerAdventureMessage = [&](const JsonNode & inputNode, const std::string & textID)
+	{
+		if(inputNode.isNull())
+			return;
+
+		if(inputNode.isNumber())
+		{
+			JsonNode asString;
+			asString.String() = "@" + TextIdentifier("core.advevent", inputNode.Integer()).get();
+			LIBRARY->generaltexth->registerString(config.getModScope(), textID, asString);
+		}
+		else
+		{
+			LIBRARY->generaltexth->registerString(config.getModScope(), textID, inputNode);
+		}
+	};
+
+	registerAdventureMessage(config["onGuardedMessage"], getOnGuardedMessageTextID());
+	registerAdventureMessage(config["ownedGuardedMessage"], getOwnedGuardedMessageTextID());
+	registerAdventureMessage(config["message"], getMessageTextID());
+
 	kingdomOverviewImage = AnimationPath::fromJson(config["kingdomOverviewImage"]);
 }
 
@@ -145,6 +163,26 @@ std::string MineInstanceConstructor::getOnGuardedMessageTextID() const
 std::string MineInstanceConstructor::getOnGuardedMessageTranslated() const
 {
 	return LIBRARY->generaltexth->translate(getOnGuardedMessageTextID());
+}
+
+std::string MineInstanceConstructor::getOwnedGuardedMessageTextID() const
+{
+	return TextIdentifier(getBaseTextID(), "ownedGuardedMessage").get();
+}
+
+std::string MineInstanceConstructor::getOwnedGuardedMessageTranslated() const
+{
+	return LIBRARY->generaltexth->translate(getOwnedGuardedMessageTextID());
+}
+
+std::string MineInstanceConstructor::getMessageTextID() const
+{
+	return TextIdentifier(getBaseTextID(), "message").get();
+}
+
+std::string MineInstanceConstructor::getMessageTranslated() const
+{
+	return LIBRARY->generaltexth->translate(getMessageTextID());
 }
 
 AnimationPath MineInstanceConstructor::getKingdomOverviewImage() const

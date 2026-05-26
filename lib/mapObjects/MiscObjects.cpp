@@ -98,14 +98,19 @@ void CGMine::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroInstance *
 	{
 		BlockingDialog ynd(true,false);
 		ynd.player = h->tempOwner;
-		const auto guardedMessageTranslated = getResourceHandler()->getOnGuardedMessageTranslated();
+		// ownedGuardedMessage applies to any owned mine with guards.
+		const bool useOwnedGuardedMessage = tempOwner != PlayerColor::NEUTRAL;
+		auto guardedMessageTranslated = useOwnedGuardedMessage ? getResourceHandler()->getOwnedGuardedMessageTranslated() : getResourceHandler()->getOnGuardedMessageTranslated();
 
-		if(isAbandoned())
-			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, 84);
-		else if(tempOwner != PlayerColor::NEUTRAL)
-			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, 187);
-		else if(!guardedMessageTranslated.empty())
-			ynd.text.appendRawString(guardedMessageTranslated);
+		const bool missingConfiguredGuardedMessage = guardedMessageTranslated.empty() || guardedMessageTranslated == (useOwnedGuardedMessage ? getResourceHandler()->getOwnedGuardedMessageTextID() : getResourceHandler()->getOnGuardedMessageTextID());
+
+		if(!missingConfiguredGuardedMessage)
+		{
+			if(!guardedMessageTranslated.empty() && guardedMessageTranslated.front() == '@')
+				ynd.text.appendTextID(guardedMessageTranslated.substr(1));
+			else
+				ynd.text.appendRawString(guardedMessageTranslated);
+		}
 		else
 			ynd.text.appendLocalString(EMetaText::ADVOB_TXT, 187);
 
@@ -120,11 +125,6 @@ void CGMine::initObj(IGameRandomizer & gameRandomizer)
 {
 	if(isAbandoned())
 	{
-		//set default abandoned mine guardians
-		int howManyGuards = gameRandomizer.getDefault().nextInt(abandonedMineGuards.minAmount, abandonedMineGuards.maxAmount);
-		auto guards = std::make_unique<CStackInstance>(cb, abandonedMineGuards.creature, howManyGuards);
-		putStack(SlotID(0), std::move(guards));
-
 		assert(!abandonedMineResources.empty());
 		if (!abandonedMineResources.empty())
 		{
@@ -218,10 +218,13 @@ void CGMine::flagMine(IGameEventCallback & gameEvents, const PlayerColor & playe
 
 	InfoWindow iw;
 	iw.type = EInfoWindowMode::AUTO;
-	if(getResourceHandler()->getResourceType() == GameResID::NONE || getObjTypeIndex() < GameConstants::RESOURCE_QUANTITY)
-		iw.text.appendTextID(TextIdentifier("core.mineevnt", producedResource.getNum()).get()); //not use subID, abandoned mines uses default mine texts
+	const auto descriptionText = getResourceHandler()->getDescriptionTranslated();
+	if(!descriptionText.empty() && descriptionText.front() == '@')
+		iw.text.appendTextID(descriptionText.substr(1));
+	else if(!descriptionText.empty() && descriptionText != getResourceHandler()->getDescriptionTextID())
+		iw.text.appendRawString(descriptionText);
 	else
-		iw.text.appendRawString(getResourceHandler()->getDescriptionTranslated());
+		iw.text.appendTextID(TextIdentifier("core.mineevnt", producedResource.getNum()).get());
 	iw.player = player;
 	iw.components.emplace_back(ComponentType::RESOURCE_PER_DAY, producedResource, getProducedQuantity());
 	gameEvents.showInfoDialog(&iw);
@@ -258,7 +261,18 @@ void CGMine::battleFinished(IGameEventCallback & gameEvents, const CGHeroInstanc
 	{
 		if(isAbandoned())
 		{
-			hero->showInfoDialog(gameEvents, 85); //TODO: alternative text for custom guards
+			auto message = getResourceHandler()->getMessageTranslated();
+			if(!message.empty() && message != getResourceHandler()->getMessageTextID())
+			{
+				InfoWindow iw;
+				iw.type = EInfoWindowMode::AUTO;
+				iw.player = hero->tempOwner;
+				if(message.front() == '@')
+					iw.text.appendTextID(message.substr(1));
+				else
+					iw.text.appendRawString(message);
+				gameEvents.showInfoDialog(&iw);
+			}
 		}
 		flagMine(gameEvents, hero->tempOwner);
 	}

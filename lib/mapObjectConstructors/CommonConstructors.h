@@ -80,6 +80,10 @@ public:
 	std::string getDescriptionTranslated() const;
 	std::string getOnGuardedMessageTextID() const;
 	std::string getOnGuardedMessageTranslated() const;
+	std::string getOwnedGuardedMessageTextID() const;
+	std::string getOwnedGuardedMessageTranslated() const;
+	std::string getMessageTextID() const;
+	std::string getMessageTranslated() const;
 	AnimationPath getKingdomOverviewImage() const;
 	std::vector<CStackBasicDescriptor> getGuards(IGameInfoCallback * cb, IGameRandomizer & gameRandomizer) const;
 };
