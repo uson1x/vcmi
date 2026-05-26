@@ -1,3 +1,7 @@
+---
+# YAML header
+render_macros: false
+---
 # Translation Maintenance
 
 NOTE: Operations described here require admin access to either VCMI on Github or to Weblate and can only be done by VCMI Team
