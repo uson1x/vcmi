@@ -366,6 +366,8 @@ double getArtifactBonusRelevance(const CGHeroInstance * hero, const std::shared_
 			return hero->hasSpellbook() ? relevant : notRelevant;
 		case BonusType::LEARN_BATTLE_SPELL_CHANCE:
 			return hero->hasBonusOfType(BonusType::LEARN_BATTLE_SPELL_LEVEL_LIMIT) ? relevant : notRelevant;
+		case BonusType::LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE:
+			return hero->hasBonusOfType(BonusType::LEARN_BATTLE_SPELL_LEVEL_LIMIT_PRE_BATTLE) ? relevant : notRelevant;
 		case BonusType::NO_DISTANCE_PENALTY:
 		case BonusType::NO_WALL_PENALTY:
 			return getArmyPercentageWithBonus(BonusType::SHOOTER) * veryRelevant;
@@ -447,6 +449,8 @@ int32_t getArtifactBonusScoreImpl(const std::shared_ptr<Bonus> & bonus)
 		case BonusType::SIGHT_RADIUS:
 			return bonus->val * 1000;
 		case BonusType::LEARN_BATTLE_SPELL_CHANCE:
+			return 0; // irrelevant in gameplay
+		case BonusType::LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE:
 			return 0; // irrelevant in gameplay
 		case BonusType::STACK_HEALTH:
 			return bonus->val * 5000;

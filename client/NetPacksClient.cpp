@@ -586,6 +586,39 @@ void ApplyClientNetPackVisitor::visitSetAvailableCreatures(SetAvailableCreatures
 	callInterfaceIfPresent(cl, p, &IGameEventsReceiver::availableCreaturesChanged, dw);
 }
 
+void ApplyClientNetPackVisitor::visitChangeSpells(ChangeSpells & pack)
+{
+	if(!pack.learn || pack.spells.empty())
+		return;
+
+	const auto * hero = cl.gameInfo().getHero(pack.hid);
+	if(!hero)
+		return;
+
+	bool heroInBattle = false;
+	for(const auto & battlePtr : gs.currentBattles)
+	{
+		if(!battlePtr)
+			continue;
+
+		const auto * attackerHero = battlePtr->battleGetFightingHero(BattleSide::ATTACKER);
+		const auto * defenderHero = battlePtr->battleGetFightingHero(BattleSide::DEFENDER);
+		if((attackerHero && attackerHero->id == pack.hid) || (defenderHero && defenderHero->id == pack.hid))
+		{
+			heroInBattle = true;
+			break;
+		}
+	}
+
+	if(!heroInBattle)
+		return;
+
+	if(hero->valOfBonuses(BonusType::LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE) <= 0)
+		return;
+
+	callInterfaceIfPresent(cl, hero->tempOwner, &CGameInterface::showInfoDialog, EInfoWindowMode::AUTO,	UIHelper::getEagleEyeInfoWindowText(*hero, pack.spells), UIHelper::getSpellsComponents(pack.spells), soundBase::soundID(0));
+}
+
 void ApplyClientNetPackVisitor::visitSetHeroesInTown(SetHeroesInTown & pack)
 {
 	const CGTownInstance * t = gs.getTown(pack.tid);

@@ -233,6 +233,18 @@ Allows affected heroes to learn spell cast by enemy hero after battle
 
 - val: maximal level of spell that can be learned
 
+### LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE
+
+Determines chance for affected heroes to learn spells from enemy hero spellbook at battle start (before first turn)
+
+- val: chance to learn each spell, percentage
+
+### LEARN_BATTLE_SPELL_LEVEL_LIMIT_PRE_BATTLE
+
+Allows affected heroes to learn spells from enemy hero spellbook at battle start (before first turn)
+
+- val: maximal level of spell that can be learned
+
 ### LEARN_MEETING_SPELL_LIMIT
 
 Allows affected heroes to learn spells from each other during hero exchange
