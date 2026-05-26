@@ -51,9 +51,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"demonSummon" : { 
-		"type" : "builtin",
-		"script" : "DemonSummon",
+	"demonSummon" : {
+		"type" : "luaUnit",
+		"script" : "demonSummon",
 		"schema" : {
 			"properties" : {
 				"type" : {},

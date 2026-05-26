@@ -153,6 +153,19 @@ void LuaContext::cleanupGlobals()
 	S.clear();
 }
 
+bool LuaContext::hasFunction(const std::string & name)
+{
+	std::lock_guard guard(mutex);
+	if(!scriptTable)
+		return false;
+	LuaStack S(L);
+	scriptTable->push();
+	lua_getfield(L, -1, name.c_str());
+	bool result = S.isFunction(-1);
+	S.clear();
+	return result;
+}
+
 void LuaContext::initialize()
 {
 	std::lock_guard guard(mutex);

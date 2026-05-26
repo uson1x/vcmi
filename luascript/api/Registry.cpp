@@ -13,6 +13,7 @@
 
 #include "battle/UnitProxy.h"
 #include "battle/BattleHexProxy.h"
+#include "battle/BattleHexArrayProxy.h"
 #include "events/BattleEvents.h"
 #include "events/EventBusProxy.h"
 #include "events/GenericEvents.h"
@@ -54,6 +55,7 @@ Registry::Registry()
 	registerPrivate<StackInstanceProxy>("adventure.StackInstance");
 
 	registerPrivate<battle::BattleHexProxy>("battle.BattleHex");
+	registerPrivate<battle::BattleHexArrayProxy>("battle.BattleHexArray");
 	registerPrivate<battle::UnitProxy>("battle.Unit");
 	registerPrivate<SpellProblemProxy>("battle.SpellProblem");
 	registerPrivate<SpellsMechanicsProxy>("battle.SpellMechanics");

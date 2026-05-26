@@ -19,7 +19,7 @@ namespace spells
 namespace effects
 {
 
-class UnitEffect : public Effect
+class DLL_LINKAGE UnitEffect : public Effect
 {
 public:
 	void adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const final;

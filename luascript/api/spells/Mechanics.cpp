@@ -16,6 +16,7 @@
 #include "../../LuaCallWrapper.h"
 
 #include "../../../lib/battle/CBattleInfoCallback.h"
+#include "../../../lib/battle/Unit.h"
 #include "../../../lib/spells/Problem.h"
 #include "../../../lib/mapObjects/CGHeroInstance.h"
 
@@ -46,6 +47,8 @@ namespace scripting
 			{"getBattleID", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getBattleID), &Mechanics::getBattleID>::invoke, false},
 			{"calculateRawEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::calculateRawEffectValue), &Mechanics::calculateRawEffectValue>::invoke, false},
 			{"applySpecificSpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpecificSpellBonus), &Mechanics::applySpecificSpellBonus>::invoke, false},
+			{"applySpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpellBonus), &Mechanics::applySpellBonus>::invoke, false},
+			{"isReceptive", LuaMethodWrapper<Mechanics, decltype(&Mechanics::isReceptive), &Mechanics::isReceptive>::invoke, false},
 		};
 	}
 }

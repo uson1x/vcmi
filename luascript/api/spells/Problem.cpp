@@ -12,6 +12,7 @@
 #include "Problem.h"
 
 #include "../../../lib/json/JsonNode.h"
+#include "../../../lib/spells/ISpellMechanics.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -20,15 +21,16 @@ namespace scripting
 namespace api
 {
 using ::spells::Problem;
+using ::spells::Mechanics;
 
 const std::vector<SpellProblemProxy::CustomRegType> SpellProblemProxy::REGISTER_CUSTOM =
 {
-	{"addCustom", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
-	{"addGeneric", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
-	{"addStandard", LuaCallWrapper<&SpellProblemProxy::add>::invoke, false},
+	{"addCustom", LuaCallWrapper<&SpellProblemProxy::addCustom>::invoke, false},
+	{"addGeneric", LuaCallWrapper<&SpellProblemProxy::addGeneric>::invoke, false},
+	{"addStandard", LuaCallWrapper<&SpellProblemProxy::addStandard>::invoke, false},
 };
 
-int SpellProblemProxy::add(lua_State * L)
+int SpellProblemProxy::addCustom(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -48,6 +50,37 @@ int SpellProblemProxy::add(lua_State * L)
 	object->add(std::move(metaString));
 	return S.retVoid();
 }
+
+int SpellProblemProxy::addGeneric(lua_State * L)
+{
+	LuaStack S(L);
+
+	Problem * problem = nullptr;
+	const Mechanics * mechanics = nullptr;
+
+	S.getNonNullOrThrow(1, problem);
+	S.getNonNullOrThrow(2, mechanics);
+
+	mechanics->adaptGenericProblem(*problem);
+	return S.retVoid();
+}
+
+int SpellProblemProxy::addStandard(lua_State * L)
+{
+	LuaStack S(L);
+
+	Problem * problem = nullptr;
+	const Mechanics * mechanics = nullptr;
+	ESpellCastProblem spellProblem = ESpellCastProblem::OK;
+
+	S.getNonNullOrThrow(1, problem);
+	S.getNonNullOrThrow(2, mechanics);
+	S.getOrThrow(3, spellProblem);
+
+	mechanics->adaptProblem(spellProblem, *problem);
+	return S.retVoid();
+}
+
 }
 }
 

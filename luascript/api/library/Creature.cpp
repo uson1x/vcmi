@@ -34,6 +34,8 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"getMaxHealth", LuaMethodWrapper<Creature,decltype(&Creature::getMaxHealth), &Creature::getMaxHealth>::invoke, false},
 	{"getPluralName", LuaMethodWrapper<Creature, decltype(&Creature::getNamePluralTranslated), &Creature::getNamePluralTranslated>::invoke, false},
 	{"getSingularName", LuaMethodWrapper<Creature, decltype(&Creature::getNameSingularTranslated), &Creature::getNameSingularTranslated>::invoke, false},
+	{"getNamePluralTextID", LuaMethodWrapper<Creature, decltype(&Creature::getNamePluralTextID), &Creature::getNamePluralTextID>::invoke, false},
+	{"getNameSingularTextID", LuaMethodWrapper<Creature, decltype(&Creature::getNameSingularTextID), &Creature::getNameSingularTextID>::invoke, false},
 
 	{"getAdvMapAmountMin", LuaMethodWrapper<Creature, decltype(&Creature::getAdvMapAmountMin), &Creature::getAdvMapAmountMin>::invoke, false},
 	{"getAdvMapAmountMax", LuaMethodWrapper<Creature, decltype(&Creature::getAdvMapAmountMax), &Creature::getAdvMapAmountMax>::invoke, false},

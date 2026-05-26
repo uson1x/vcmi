@@ -8,6 +8,7 @@ set(lualib_SRCS
 		LuaContext.cpp
 		LuaScriptPool.cpp
 		LuaSpellEffect.cpp
+		LuaUnitEffect.cpp
 		LuaStack.cpp
 
 		api/adventure/HeroInstance.cpp
@@ -49,6 +50,7 @@ set(lualib_HDRS
 		LuaScriptInstance.h
 		LuaContext.h
 		LuaSpellEffect.h
+		LuaUnitEffect.h
 		LuaScriptPool.h
 		LuaStack.h
 		LuaWrapper.h

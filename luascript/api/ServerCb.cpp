@@ -103,16 +103,16 @@ int ServerCbProxy::injureUnit(lua_State * L)
 {
 	LuaStack S(L);
 
-	ServerCallback * object = nullptr;
-	StacksInjured si;
-	BattleStackAttacked bsa;
-
-	if (!S.tryGetAll(1, object, si.battleID, bsa.attackerID, bsa.stackAttacked, uc.id, uc.data, uc.healthDelta))
-		throw LuaApiException("Invalid parameters passed into updateUnit!");
-
-	buc.changedStacks.push_back(uc);
-
-	object->apply(buc);
+//	ServerCallback * object = nullptr;
+//	StacksInjured si;
+//	BattleStackAttacked bsa;
+//
+//	if (!S.tryGetAll(1, object, si.battleID, bsa.attackerID, bsa.stackAttacked, uc.id, uc.data, uc.healthDelta))
+//		throw LuaApiException("Invalid parameters passed into updateUnit!");
+//
+//	buc.changedStacks.push_back(uc);
+//
+//	object->apply(buc);
 	return S.retVoid();
 }
 
@@ -121,13 +121,17 @@ int ServerCbProxy::removeUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleUnitsChanged buc;
-	UnitChanges uc;
-	uc.operation = UnitChanges::EOperation::REMOVE;
+	BattleID battleID;
+	const battle::Unit * unit = nullptr;
 
-	if (!S.tryGetAll(1, object, buc.battleID, uc.id))
+	if (!S.tryGetAll(1, object, battleID, unit))
 		throw LuaApiException("Invalid parameters passed into removeUnit!");
 
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	buc.battleID = battleID;
+	uc.operation = UnitChanges::EOperation::REMOVE;
+	uc.id = unit->unitId();
 	buc.changedStacks.push_back(uc);
 
 	object->apply(buc);

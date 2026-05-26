@@ -46,7 +46,8 @@ function Script.applicableGeneral(parameters, mechanics, problem)
 
 	if summonedCreatureAmount(parameters, mechanics) == 0 then
 		print("SpellEffectSummon: zero summoned creatures!")
-		return problem:addGeneric(mechanics)
+		problem:addGeneric(mechanics)
+		return false
 	end
 
 	-- check if there are summoned creatures of other type
@@ -62,7 +63,7 @@ function Script.applicableGeneral(parameters, mechanics, problem)
 		if elemental ~= nil then
 			local hero = mechanics:getHeroCaster()
 			local himHer = "core.genrltxt.539"
-			if hero ~= nil and hero.isFemale() then
+			if hero ~= nil and hero:isFemale() then
 				himHer = "core.genrltxt.540"
 			end
 
@@ -71,7 +72,7 @@ function Script.applicableGeneral(parameters, mechanics, problem)
 					append = { "core.genrltxt.538" },
 					replace = {
 						hero:getNameTextID(),
-						elemental:getNamePluralTextID(),
+						elemental:getCreature():getNamePluralTextID(),
 						himHer
 					}
 				})

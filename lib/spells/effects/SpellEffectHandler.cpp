@@ -14,7 +14,6 @@
 #include "Catapult.h"
 #include "Clone.h"
 #include "Damage.h"
-#include "DemonSummon.h"
 #include "Dispel.h"
 #include "Effect.h"
 #include "Heal.h"
@@ -47,7 +46,6 @@ std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, 
 		{ "Catapult",       &makeEffect<Catapult> },
 		{ "Clone",          &makeEffect<Clone> },
 		{ "Damage",         &makeEffect<Damage> },
-		{ "DemonSummon",    &makeEffect<DemonSummon> },
 		{ "Dispel",         &makeEffect<Dispel> },
 		{ "Heal",           &makeEffect<Heal> },
 		{ "Moat",           &makeEffect<Moat> },

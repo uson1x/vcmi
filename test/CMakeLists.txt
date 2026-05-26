@@ -57,7 +57,8 @@ set(test_SRCS
  		spells/effects/DamageTest.cpp
  		spells/effects/DispelTest.cpp
  		spells/effects/HealTest.cpp
- 		spells/effects/SacrificeTest.cpp
+ 		spells/effects/DemonSummonTest.cpp
+		spells/effects/SacrificeTest.cpp
  		spells/effects/SummonTest.cpp
  		spells/effects/TeleportTest.cpp
  		spells/effects/TimedTest.cpp

@@ -31,6 +31,9 @@ public:
 	/// Runs script once to perform its initialization
 	void initialize();
 
+	/// Returns true if the script table defines a function with the given name
+	bool hasFunction(const std::string & name);
+
 	/// Runs specified function from class stored in script
 	/// parameters are converted to Lua and passed to script
 	///	return value (if any) converted from Lua and returned

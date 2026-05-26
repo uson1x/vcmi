@@ -30,14 +30,20 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getDefense", LuaMethodWrapper<Unit, decltype(&ACreature::getDefense), &ACreature::getDefense>::invoke, false},
 	{"isAlive", LuaMethodWrapper<Unit, decltype(&Unit::alive), &Unit::alive>::invoke, false},
 	{"isClone", LuaMethodWrapper<Unit, decltype(&Unit::isClone), &Unit::isClone>::invoke, false},
+	{"isDead", LuaMethodWrapper<Unit, decltype(&Unit::isDead), &Unit::isDead>::invoke, false},
+	{"isGhost", LuaMethodWrapper<Unit, decltype(&Unit::isGhost), &Unit::isGhost>::invoke, false},
 	{"isValidTarget", LuaMethodWrapper<Unit, decltype(&Unit::isValidTarget), &Unit::isValidTarget>::invoke, false},
 	{"isSummoned", LuaMethodWrapper<Unit, decltype(&Unit::isSummoned), &Unit::isSummoned>::invoke, false},
 	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
 	{"getPosition", LuaMethodWrapper<Unit, decltype(&Unit::getPosition), &Unit::getPosition>::invoke, false},
+	{"getTotalHealth", LuaMethodWrapper<Unit, decltype(&Unit::getTotalHealth), &Unit::getTotalHealth>::invoke, false},
+	{"coversPos", LuaMethodWrapper<Unit, decltype(&Unit::coversPos), &Unit::coversPos>::invoke, false},
 
 	{"heal", LuaFunctionWrapper<&UnitProxy::heal>::invoke, false},
-	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false },
+	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false},
+	{"getBaseAmount", LuaFunctionWrapper<&UnitProxy::getBaseAmount>::invoke, false},
+	{"getHexes", LuaFunctionWrapper<&UnitProxy::getHexes>::invoke, false},
 };
 
 void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower power)
@@ -48,6 +54,16 @@ void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower
 const Creature * UnitProxy::getCreature(const Unit * unit)
 {
 	return unit->creatureId().toEntity(LIBRARY);
+}
+
+int32_t UnitProxy::getBaseAmount(const Unit * unit)
+{
+	return unit->unitBaseAmount();
+}
+
+BattleHexArray UnitProxy::getHexes(const Unit * unit)
+{
+	return unit->getHexes();
 }
 
 }
