@@ -152,7 +152,7 @@ public:
 	explicit AISharedStorage(int3 sizes, int numChains, const CCallback & cc);
 	~AISharedStorage();
 
-	STRONG_INLINE
+	inline
 	boost::detail::multi_array::sub_array<AIPathNode, 1> get(int3 tile) const
 	{
 		return (*nodes)[tile.z][tile.x][tile.y];

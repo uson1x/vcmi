@@ -93,7 +93,7 @@ private:
 		{
 		}
 
-		STRONG_INLINE
+		inline
 		void operator()(E & event)
 		{
 			handler(event);
