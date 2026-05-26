@@ -49,6 +49,7 @@ namespace scripting
 			{"applySpecificSpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpecificSpellBonus), &Mechanics::applySpecificSpellBonus>::invoke, false},
 			{"applySpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpellBonus), &Mechanics::applySpellBonus>::invoke, false},
 			{"isReceptive", LuaMethodWrapper<Mechanics, decltype(&Mechanics::isReceptive), &Mechanics::isReceptive>::invoke, false},
+		{"getSpell", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getSpell), &Mechanics::getSpell>::invoke, false},
 		};
 	}
 }

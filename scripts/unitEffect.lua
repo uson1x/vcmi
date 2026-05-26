@@ -12,16 +12,26 @@ end
 
 --- Returns true if `unit` can be affected by this spell effect.
 --- Called for every candidate unit during target selection.
---- If not defined, C++ default applies: unit must be a valid, non-dead target.
---- function Script:isValidTarget(mechanics, unit)
----     return true
---- end
+function Script:isValidTarget(mechanics, unit)
+	return unit:isValidTarget(false)
+end
 
 --- Returns true if `unit` is receptive to this spell effect (not immune).
 --- Called for every candidate unit during target selection and filtering.
---- If not defined, C++ default applies: checks spell immunity bonuses on the unit.
---- function Script:isReceptive(mechanics, unit)
----     return true
---- end
+function Script:isReceptive(mechanics, unit)
+	if unit:isInvincible() and mechanics:isNegative() then
+		return false
+	end
+	if self.ignoreImmunity then
+		return not unit:hasAbsoluteImmunity(mechanics:getSpell())
+	else
+		return mechanics:isReceptive(unit)
+	end
+end
+
+--- Returns health change preview data for hover tooltip.
+function Script:getHealthChange(mechanics, spellTarget)
+	return { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+end
 
 return Script

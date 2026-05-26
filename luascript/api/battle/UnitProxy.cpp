@@ -33,6 +33,8 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"isDead", LuaMethodWrapper<Unit, decltype(&Unit::isDead), &Unit::isDead>::invoke, false},
 	{"isGhost", LuaMethodWrapper<Unit, decltype(&Unit::isGhost), &Unit::isGhost>::invoke, false},
 	{"isValidTarget", LuaMethodWrapper<Unit, decltype(&Unit::isValidTarget), &Unit::isValidTarget>::invoke, false},
+	{"isInvincible", LuaMethodWrapper<Unit, decltype(&Unit::isInvincible), &Unit::isInvincible>::invoke, false},
+	{"hasAbsoluteImmunity", LuaFunctionWrapper<&UnitProxy::hasAbsoluteImmunity>::invoke, false},
 	{"isSummoned", LuaMethodWrapper<Unit, decltype(&Unit::isSummoned), &Unit::isSummoned>::invoke, false},
 	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
@@ -64,6 +66,11 @@ int32_t UnitProxy::getBaseAmount(const Unit * unit)
 BattleHexArray UnitProxy::getHexes(const Unit * unit)
 {
 	return unit->getHexes();
+}
+
+bool UnitProxy::hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell)
+{
+	return unit->hasAbsoluteImmunity(spell->getId());
 }
 
 }
