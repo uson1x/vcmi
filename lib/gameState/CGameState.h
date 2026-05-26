@@ -212,10 +212,6 @@ public:
 		h & globalEffects;
 		h & currentRumor;
 		h & campaign;
-		if(h.hasFeature(Handler::Version::CONTROL_LOSS_TRACKING))
-			h & everControlledObjects;
-		else if(!h.saving)
-			everControlledObjects = {};
 		if (!h.hasFeature(Handler::Version::RANDOMIZATION_REWORK))
 		{
 			std::map<ArtifactID, int> allocatedArtifactsUnused;
@@ -239,7 +235,7 @@ private:
 	void initRandomFactionsForPlayers(vstd::RNG & randomGenerator);
 	void initOwnedObjects();
 	void randomizeMapObjects(IGameRandomizer & gameRandomizer);
-	void initializeTrackedControlLossObjects();
+	void rebuildObjectControlHistory();
 	void initPlayerStates();
 	void placeStartingHeroes(vstd::RNG & randomGenerator);
 	void placeStartingHero(const PlayerColor & playerColor, const HeroTypeID & heroTypeId, int3 townPos);
@@ -271,8 +267,6 @@ private:
 
 	// ---- data -----
 	Services * services;
-
-	std::array<std::set<ObjectInstanceID>, PlayerColor::PLAYER_LIMIT_I> everControlledObjects;
 
 	/// Pointer to campaign state manager. Nullptr for single scenarios
 	std::unique_ptr<CGameStateCampaign> campaign;

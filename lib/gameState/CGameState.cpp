@@ -234,7 +234,7 @@ void CGameState::init(const IMapService * mapService, StartInfo * si, IGameRando
 
 	logGlobal->debug("\tChecking objectives");
 	map->checkForObjectives(); //needs to be run when all objects are properly placed
-	initializeTrackedControlLossObjects();
+	rebuildObjectControlHistory();
 }
 
 void CGameState::updateEntity(Metatype metatype, int32_t index, const JsonNode & data)
@@ -524,22 +524,18 @@ void CGameState::randomizeMapObjects(IGameRandomizer & gameRandomizer)
 			map->eraseObject(obj->id);
 }
 
-void CGameState::initializeTrackedControlLossObjects()
+void CGameState::rebuildObjectControlHistory()
 {
-	for(const TriggeredEvent & event : map->triggeredEvents)
+	for(const auto & object : map->getObjects())
 	{
-		if(event.effect.type != EventEffect::DEFEAT)
+		if(!object)
 			continue;
 
-		const auto controlCondition = findSimpleControlLossCondition(event.trigger);
-		if(!controlCondition || controlCondition->objectID == ObjectInstanceID::NONE)
+		const auto owner = object->getOwner();
+		if(!owner.isValidPlayer())
 			continue;
 
-		for(const auto & [playerColor, _] : players)
-		{
-			if(checkForVictory(playerColor, *controlCondition))
-				markObjectControlled(playerColor, controlCondition->objectID);
-		}
+		markObjectControlled(owner, object->id);
 	}
 }
 
@@ -1489,6 +1485,37 @@ bool CGameState::checkForStandardLoss(const PlayerColor & player) const
 	return pState.checkVanquished();
 }
 
+void CGameState::markObjectControlled(PlayerColor player, ObjectInstanceID id)
+{
+	if(auto * playerState = getPlayerState(player))
+		playerState->markObjectControlled(id);
+}
+
+bool CGameState::hasEverControlled(PlayerColor player, ObjectInstanceID id) const
+{
+	const auto * playerState = getPlayerState(player);
+	return playerState && playerState->hasEverControlled(id);
+}
+
+bool CGameState::isControlLossTriggered(const PlayerColor & player, const EventCondition & cond) const
+{
+	if(cond.objectID == ObjectInstanceID::NONE)
+		return false;
+
+	const auto * team = CGameInfoCallback::getPlayerTeam(player);
+	if(!team)
+		return false;
+
+	const auto * object = getObjInstance(cond.objectID);
+	if(!object)
+		return hasEverControlled(player, cond.objectID);
+
+	if(team->players.count(object->getOwner()) != 0)
+		return false;
+
+	return hasEverControlled(player, cond.objectID);
+}
+
 void CGameState::obtainPlayersStats(SThievesGuildInfo & tgi, int level) const
 {
 	auto playerInactive = [&](const PlayerColor & color)
@@ -1642,7 +1669,7 @@ void CGameState::restoreBonusSystemTree()
 	if (campaign)
 		campaign->setGamestate(this);
 
-	initializeTrackedControlLossObjects();
+	rebuildObjectControlHistory();
 
 	// WORKAROUND FOR 1.6 SAVES
 	static_assert(ESerializationVersion::RELEASE_160 == ESerializationVersion::MINIMAL, "Please remove this code after dropping 1.6 save compat");

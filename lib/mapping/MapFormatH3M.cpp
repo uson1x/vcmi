@@ -451,7 +451,7 @@ void CMapLoaderH3M::readVictoryLossConditions()
 			}
 			case EVictoryConditionType::CAPTURECITY:
 			{
-				EventCondition cond(EventCondition::CONTROL);
+				EventCondition cond(EventCondition::CONTROL_CURRENT);
 				cond.objectType = MapObjectID(MapObjectID::TOWN);
 				cond.position = reader->readInt3();
 
@@ -479,8 +479,8 @@ void CMapLoaderH3M::readVictoryLossConditions()
 			case EVictoryConditionType::TAKEDWELLINGS:
 			{
 				EventExpression::OperatorAll oper;
-				oper.expressions.emplace_back(EventCondition(EventCondition::CONTROL, 0, Obj(Obj::CREATURE_GENERATOR1)));
-				oper.expressions.emplace_back(EventCondition(EventCondition::CONTROL, 0, Obj(Obj::CREATURE_GENERATOR4)));
+				oper.expressions.emplace_back(EventCondition(EventCondition::CONTROL_CURRENT, 0, Obj(Obj::CREATURE_GENERATOR1)));
+				oper.expressions.emplace_back(EventCondition(EventCondition::CONTROL_CURRENT, 0, Obj(Obj::CREATURE_GENERATOR4)));
 
 				specialVictory.effect.toOtherMessage.appendTextID("core.genrltxt.289");
 				specialVictory.onFulfill.appendTextID("core.genrltxt.288");
@@ -491,7 +491,7 @@ void CMapLoaderH3M::readVictoryLossConditions()
 			}
 			case EVictoryConditionType::TAKEMINES:
 			{
-				EventCondition cond(EventCondition::CONTROL);
+				EventCondition cond(EventCondition::CONTROL_CURRENT);
 				cond.objectType = MapObjectID(MapObjectID::MINE);
 
 				specialVictory.effect.toOtherMessage.appendTextID("core.genrltxt.291");
