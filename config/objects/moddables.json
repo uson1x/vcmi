@@ -382,7 +382,7 @@
 					}],
 				"onGuardedMessage" : 84,
 				"ownedGuardedMessage" : 187,
-				"message" : 85,
+				"onCaptureMessage" : 85,
 				"aiValue" : 3500,
 				"sounds" : {
 					"ambient" : ["LOOPCAVE"],
@@ -414,7 +414,7 @@
 				}],
 				"onGuardedMessage" : 84,
 				"ownedGuardedMessage" : 187,
-				"message" : 85
+				"onCaptureMessage" : 85
 			}
 		}
 	},
