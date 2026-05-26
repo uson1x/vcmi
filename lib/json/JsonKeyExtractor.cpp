@@ -1,11 +1,10 @@
 #include "StdInc.h"
 #include "JsonKeyExtractor.h"
 
-#include <entities/artifact/CArtHandler.h>
-
-#include <callback/IGameInfoCallback.h>
-
-#include <spells/CSpellHandler.h>
+#include "../entities/artifact/CArtHandler.h"
+#include "../callback/IGameInfoCallback.h"
+#include "../spells/CSpellHandler.h"
+#include "../CSkillHandler.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -87,6 +86,26 @@ std::set<ArtifactID> JsonKeyExtractor::filterKeysTyped(const JsonNode & value, c
 	}
 	return result;
 }
+
+std::set<SecondarySkill> JsonKeyExtractor::filterKeysTyped(const JsonNode & value, const std::set<SecondarySkill> & valuesSet)
+{
+	std::set<SecondarySkill> result = valuesSet;
+
+	if(!value["tag"].isNull())
+	{
+		std::string requiredTag = value["tag"].String();
+
+		vstd::erase_if(
+			result,
+			[&requiredTag](const SecondarySkill & skill)
+			{
+				return skill.toSkill()->hasTag(requiredTag);
+			}
+			);
+	}
+	return result;
+}
+
 
 std::set<SpellID> JsonKeyExtractor::filterKeysTyped(const JsonNode & value, const std::set<SpellID> & valuesSet)
 {

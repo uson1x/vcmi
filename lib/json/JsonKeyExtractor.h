@@ -31,8 +31,8 @@ private:
 	std::set<IdentifierType> filterKeysTyped(const JsonNode & value, const std::set<IdentifierType> & valuesSet);
 
 	std::set<ArtifactID> filterKeysTyped(const JsonNode & value, const std::set<ArtifactID> & valuesSet);
-
 	std::set<SpellID> filterKeysTyped(const JsonNode & value, const std::set<SpellID> & valuesSet);
+	std::set<SecondarySkill> filterKeysTyped(const JsonNode & value, const std::set<SecondarySkill> & valuesSet);
 
 	IGameInfoCallback * cb;
 };
