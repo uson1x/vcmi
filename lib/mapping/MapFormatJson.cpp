@@ -123,12 +123,13 @@ namespace HeaderDetail
 
 namespace TriggeredEventsDetail
 {
-	static const std::array conditionNames =
-	{
-		"haveArtifact", "haveCreatures",   "haveResources",   "haveBuilding",
-		"control",      "destroy",         "transport",       "daysPassed",
-		"isHuman",      "daysWithoutTown", "standardWin",     "constValue"
-	};
+		static const std::array conditionNames =
+		{
+			"haveArtifact", "haveCreatures",   "haveResources",   "haveBuilding",
+			"control",      "destroy",         "transport",       "daysPassed",
+			"isHuman",      "daysWithoutTown", "standardWin",     "constValue",
+			"controlCurrent"
+		};
 
 	static const std::array typeNames = { "victory", "defeat" };
 
@@ -177,6 +178,7 @@ namespace TriggeredEventsDetail
 						event.objectType = BuildingID(BuildingID::decode(data["type"].String()));
 					break;
 				case EventCondition::CONTROL:
+					case EventCondition::CONTROL_CURRENT:
 				case EventCondition::DESTROY:
 					if (data["type"].isNumber()) // compatibility
 						event.objectType = MapObjectID(data["type"].Integer());

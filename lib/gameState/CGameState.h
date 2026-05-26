@@ -142,7 +142,6 @@ public:
 
 	void markObjectControlled(PlayerColor player, ObjectInstanceID id);
 	bool hasEverControlled(PlayerColor player, ObjectInstanceID id) const;
-	bool isControlLossTriggered(const PlayerColor & player, const EventCondition & cond) const;
 
 	//fills tgi with info about other players that is available at given level of thieves' guild
 	void obtainPlayersStats(SThievesGuildInfo & tgi, int level) const;

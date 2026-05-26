@@ -119,7 +119,8 @@ void VictoryConditions::initialize(MapController & c)
 							break;
 						}
 
-						case EventCondition::CONTROL: {
+							case EventCondition::CONTROL:
+							case EventCondition::CONTROL_CURRENT: {
 							ui->victoryComboBox->setCurrentIndex(5);
 							assert(victoryTypeWidget);
 							auto mapObject = MapObjectID::decode(json["objectType"].String());
@@ -276,7 +277,7 @@ void VictoryConditions::update()
 			}
 
 			case 4: {
-				EventCondition cond(EventCondition::CONTROL);
+					EventCondition cond(EventCondition::CONTROL_CURRENT);
 				assert(victoryTypeWidget);
 				cond.objectType = Obj(Obj::TOWN);
 				int townIdx = victoryTypeWidget->currentData().toInt();

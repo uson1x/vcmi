@@ -416,16 +416,6 @@ const CGObjectInstance * CMap::getObjectiveObjectFrom(const int3 & pos, Obj type
 	}
 
 	logGlobal->error("Failed to find object of type %d at %s", type.getNum(), pos.toString());
-
-	// Hero special case: this often means a placeholder hero used.
-	// OH3 treats such conditions as inactive if the hero doesn't actually exist on the map,
-	// so don't try to substitute some random other hero as it will trigger insta-loss.
-	if(type == Obj::HERO)
-	{
-		logGlobal->warn("Hero objective at %s has no actual hero instance; treating as placeholder / inactive.", pos.toString());
-		return nullptr;
-	}
-
 	logGlobal->error("Will try to find closest matching object");
 
 	CGObjectInstance * bestMatch = nullptr;
@@ -477,11 +467,21 @@ void CMap::checkForObjectives()
 					break;
 
 				case EventCondition::CONTROL:
-					if (isInTheMap(cond.position))
+					if(event.effect.type == EventEffect::VICTORY)
+						cond.condition = EventCondition::CONTROL_CURRENT;
+					[[fallthrough]];
+				case EventCondition::CONTROL_CURRENT:
+					if(isInTheMap(cond.position))
 					{
-						const auto * objective = getObjectiveObjectFrom(cond.position, cond.objectType.as<MapObjectID>());
-						if(objective)
-							cond.objectID = objective->id; // otherwise leave as NONE (placeholder / missing)
+						for(const auto & objID : getTile(cond.position).visitableObjects)
+						{
+							const auto * object = getObject(objID);
+							if(object->ID == cond.objectType.as<MapObjectID>())
+							{
+								cond.objectID = object->id;
+								break;
+							}
+						}
 					}
 
 					if (cond.objectID != ObjectInstanceID::NONE)

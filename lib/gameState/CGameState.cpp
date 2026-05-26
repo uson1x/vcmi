@@ -77,8 +77,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 std::shared_mutex CGameState::mutex;
 
-static std::optional<EventCondition> findSimpleControlLossCondition(const EventExpression & expr);
-
 const Services * GameStateEnvironment::services() const
 {
 	return LIBRARY;
@@ -1224,47 +1222,6 @@ bool CGameState::isVisibleFor(const CGObjectInstance * obj, PlayerColor player) 
 	);
 }
 
-static std::optional<EventCondition> findSimpleControlLossCondition(const EventExpression & expr)
-{
-	using Expr    = EventExpression;
-	using Value   = Expr::Value;
-	using All     = Expr::OperatorAll;
-	using None    = Expr::OperatorNone;
-	using Variant = Expr::Variant;
-
-	std::function<std::optional<EventCondition>(const Variant &)> impl;
-	impl = [&](const Variant & var) -> std::optional<EventCondition>
-	{
-		if(const auto * none = std::get_if<None>(&var))
-		{
-			if(none->expressions.size() != 1)
-				return std::nullopt;
-
-			const auto * cond = std::get_if<Value>(&none->expressions.front());
-			if(!cond || cond->condition != EventCondition::CONTROL)
-				return std::nullopt;
-
-			return *cond;
-		}
-
-		if(const auto * all = std::get_if<All>(&var))
-		{
-			if(all->expressions.size() != 2)
-				return std::nullopt;
-
-			const auto * first = std::get_if<Value>(&all->expressions.front());
-			if(!first || first->condition != EventCondition::IS_HUMAN)
-				return std::nullopt;
-
-			return impl(all->expressions[1]);
-		}
-
-		return std::nullopt;
-	};
-
-	return impl(expr.get());
-}
-
 EVictoryLossCheckResult CGameState::checkForVictoryAndLoss(const PlayerColor & player) const
 {
 	const MetaString messageWonSelf = MetaString::createFromTextID("core.genrltxt.659");
@@ -1295,18 +1252,6 @@ EVictoryLossCheckResult CGameState::checkForVictoryAndLoss(const PlayerColor & p
 		}
 		else if(event.effect.type == EventEffect::DEFEAT)
 		{
-			// Special handling for "lose town/hero" style conditions:
-			// triggers built as NONE(CONTROL(...)), optionally wrapped into ALL(IS_HUMAN, ...).
-			if(auto ctrlOpt = findSimpleControlLossCondition(event.trigger))
-			{
-				if(isControlLossTriggered(player, *ctrlOpt))
-					return EVictoryLossCheckResult::defeat(event.onFulfill, event.effect.toOtherMessage);
-
-				// If our custom logic says "no loss yet", do NOT fall through to generic .test()
-				continue;
-			}
-
-			// All other defeat events: generic evaluation
 			if(event.trigger.test(evaluateEvent))
 				return EVictoryLossCheckResult::defeat(event.onFulfill, event.effect.toOtherMessage);
 		}
@@ -1392,28 +1337,46 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		}
 		case EventCondition::CONTROL:
 		{
-			// list of players that need to control object to fulfull condition
-			// NOTE: CGameInfoCallback specified explicitly in order to get const version
 			const auto * team = CGameInfoCallback::getPlayerTeam(player);
 
-			if (condition.objectID != ObjectInstanceID::NONE) // mode A - flag one specific object, like town
+			if(condition.objectID != ObjectInstanceID::NONE)
 			{
 				const auto * object = getObjInstance(condition.objectID);
 
-				if (!object)
-					return false;
-				return team->players.count(object->getOwner()) != 0;
+				if(!object)
+					return !hasEverControlled(player, condition.objectID);
+
+				if(team->players.contains(object->getOwner()))
+					return true;
+
+				return !hasEverControlled(player, condition.objectID);
 			}
-			else
+
+			for(const auto & elem : map->getObjects())
 			{
-				for(const auto & elem : map->getObjects()) // mode B - flag all objects of this type
-				{
-					 //check not flagged objs
-					if ( elem && elem->ID == condition.objectType.as<MapObjectID>() && team->players.count(elem->getOwner()) == 0 )
-						return false;
-				}
+				if(elem && elem->ID == condition.objectType.as<MapObjectID>() && !team->players.contains(elem->getOwner()))
+					return false;
+			}
+
 				return true;
 			}
+		case EventCondition::CONTROL_CURRENT:
+		{
+			const auto * team = CGameInfoCallback::getPlayerTeam(player);
+
+			if(condition.objectID != ObjectInstanceID::NONE)
+			{
+				const auto * object = getObjInstance(condition.objectID);
+				return object && team->players.contains(object->getOwner());
+			}
+
+			for(const auto & elem : map->getObjects())
+			{
+				if(elem && elem->ID == condition.objectType.as<MapObjectID>() && !team->players.contains(elem->getOwner()))
+					return false;
+			}
+
+			return true;
 		}
 		case EventCondition::TRANSPORT:
 		{
@@ -1495,25 +1458,6 @@ bool CGameState::hasEverControlled(PlayerColor player, ObjectInstanceID id) cons
 {
 	const auto * playerState = getPlayerState(player);
 	return playerState && playerState->hasEverControlled(id);
-}
-
-bool CGameState::isControlLossTriggered(const PlayerColor & player, const EventCondition & cond) const
-{
-	if(cond.objectID == ObjectInstanceID::NONE)
-		return false;
-
-	const auto * team = CGameInfoCallback::getPlayerTeam(player);
-	if(!team)
-		return false;
-
-	const auto * object = getObjInstance(cond.objectID);
-	if(!object)
-		return hasEverControlled(player, cond.objectID);
-
-	if(team->players.count(object->getOwner()) != 0)
-		return false;
-
-	return hasEverControlled(player, cond.objectID);
 }
 
 void CGameState::obtainPlayersStats(SThievesGuildInfo & tgi, int level) const
