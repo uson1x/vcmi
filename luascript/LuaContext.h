@@ -34,12 +34,12 @@ public:
 	/// Returns true if the script table defines a function with the given name
 	bool hasFunction(const std::string & name);
 
-	/// Runs specified function from class stored in script
-	/// parameters are converted to Lua and passed to script
-	///	return value (if any) converted from Lua and returned
-	/// for scripts that don't return values, use explicit specialization to void
+	/// Calls a method on the script class using OOP convention.
+	/// params is pushed as self (with __index = scriptTable), remaining args follow.
+	/// Return value (if any) is converted from Lua and returned.
+	/// For void return, use explicit ReturnType = void.
 	template<typename ReturnType, typename... Args>
-	ReturnType call(const std::string & name, Args&& ... parameters);
+	ReturnType callMethod(const std::string & name, const JsonNode & params, Args&&... args);
 
 private:
 	std::mutex mutex;
@@ -75,12 +75,12 @@ private:
 };
 
 template<typename ReturnType, typename... Args>
-ReturnType LuaContext::call(const std::string & name, Args&& ... parameters)
+ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & params, Args&&... args)
 {
 	std::lock_guard guard(mutex);
 	LuaStack S(L);
 
-	scriptTable->push(); 	           // stack: (table)
+	scriptTable->push();               // stack: (table)
 	lua_getfield(L, -1, name.c_str()); // stack: (table), (function)
 	lua_replace(L, 1);                 // stack: (function)
 
@@ -92,8 +92,16 @@ ReturnType LuaContext::call(const std::string & name, Args&& ... parameters)
 		throw LuaApiException(error);
 	}
 
-	int argc = sizeof...(Args);
-	(S << ... << parameters);
+	// Build self: push params as Lua table, set __index = scriptTable via metatable
+	S.push(params);                    // stack: (function), (self)
+	lua_newtable(L);                   // stack: (function), (self), (mt)
+	scriptTable->push();               // stack: (function), (self), (mt), (scriptTable)
+	lua_setfield(L, -2, "__index");    // mt.__index = scriptTable; stack: (function), (self), (mt)
+	lua_setmetatable(L, -2);           // setmetatable(self, mt); stack: (function), (self)
+
+	// push all params
+	int argc = 1 + sizeof...(Args);
+	(S << ... << args);
 
 	if(lua_pcall(L, argc, 1, 0))
 	{

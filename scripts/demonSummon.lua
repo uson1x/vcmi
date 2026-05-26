@@ -2,8 +2,9 @@ local Base = require("unitEffect")
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
 
-local function raisedCreatureAmount(parameters, mechanics, unit)
-	local creatureType = LIBRARY:getCreatureByName(parameters.id)
+--- Returns the number of demons that can be raised from a dead unit.
+function Script:raisedCreatureAmount(mechanics, unit)
+	local creatureType = LIBRARY:getCreatureByName(self.id)
 
 	local deadCount         = unit:getBaseAmount()
 	local deadTotalHealth   = unit:getTotalHealth()
@@ -19,7 +20,7 @@ end
 
 --- A unit is a valid target if it is a dead, non-ghost corpse whose hexes are
 --- not blocked by any alive unit, and our spellpower can raise at least one demon.
-function Script.isValidTarget(parameters, mechanics, unit)
+function Script:isValidTarget(mechanics, unit)
 	if not unit:isDead() then return false end
 
 	local hexes = unit:getHexes()
@@ -33,14 +34,14 @@ function Script.isValidTarget(parameters, mechanics, unit)
 
 	if unit:isGhost() then return false end
 
-	if raisedCreatureAmount(parameters, mechanics, unit) == 0 then return false end
+	if self:raisedCreatureAmount(mechanics, unit) == 0 then return false end
 
 	return mechanics:isReceptive(unit)
 end
 
 --- Raise demons from each target corpse and remove the corpse.
-function Script.apply(parameters, mechanics, server, target)
-	local creatureType = LIBRARY:getCreatureByName(parameters.id)
+function Script:apply(mechanics, server, target)
+	local creatureType = LIBRARY:getCreatureByName(self.id)
 
 	for _, dest in ipairs(target) do
 		local targetStack = dest.unit
@@ -61,7 +62,7 @@ function Script.apply(parameters, mechanics, server, target)
 			break
 		end
 
-		local finalAmount = raisedCreatureAmount(parameters, mechanics, targetStack)
+		local finalAmount = self:raisedCreatureAmount(mechanics, targetStack)
 
 		if finalAmount < 1 then
 			print("DemonSummon: raised zero creatures")
@@ -76,7 +77,7 @@ function Script.apply(parameters, mechanics, server, target)
 				type     = creatureType:getJsonKey(),
 				side     = mechanics:getCasterSide(),
 				position = hex:toInteger(),
-				summoned = not parameters.permanent
+				summoned = not self.permanent
 			}
 		)
 
@@ -85,12 +86,12 @@ function Script.apply(parameters, mechanics, server, target)
 end
 
 --- Returns the number of demons that would be raised for the hover preview.
-function Script.getHealthChange(parameters, mechanics, spellTarget)
-	local creatureType = LIBRARY:getCreatureByName(parameters.id)
+function Script:getHealthChange(mechanics, spellTarget)
+	local creatureType = LIBRARY:getCreatureByName(self.id)
 
 	for _, dest in ipairs(spellTarget) do
 		if dest.unit ~= nil then
-			local amount = raisedCreatureAmount(parameters, mechanics, dest.unit)
+			local amount = self:raisedCreatureAmount(mechanics, dest.unit)
 			return {
 				hpDelta    = 0,
 				unitsDelta = amount,

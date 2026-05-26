@@ -68,14 +68,14 @@ LuaUnitEffect::~LuaUnitEffect() = default;
 void LuaUnitEffect::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
-	context->call<void>(APPLY, parameters, m, server, target);
+	context->callMethod<void>(APPLY, parameters, m, server, target);
 }
 
 bool LuaUnitEffect::isReceptive(const Mechanics * m, const battle::Unit * unit) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 	if(context->hasFunction(IS_RECEPTIVE))
-		return context->call<bool>(IS_RECEPTIVE, parameters, m, unit);
+		return context->callMethod<bool>(IS_RECEPTIVE, parameters, m, unit);
 	return UnitEffect::isReceptive(m, unit);
 }
 
@@ -83,7 +83,7 @@ bool LuaUnitEffect::isValidTarget(const Mechanics * m, const battle::Unit * unit
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 	if(context->hasFunction(IS_VALID_TARGET))
-		return context->call<bool>(IS_VALID_TARGET, parameters, m, unit);
+		return context->callMethod<bool>(IS_VALID_TARGET, parameters, m, unit);
 	return UnitEffect::isValidTarget(m, unit);
 }
 
@@ -91,7 +91,7 @@ SpellEffectValue LuaUnitEffect::getHealthChange(const Mechanics * m, const Targe
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 	if(context->hasFunction(GET_HEALTH_CHANGE))
-		return context->call<SpellEffectValue>(GET_HEALTH_CHANGE, parameters, m, spellTarget);
+		return context->callMethod<SpellEffectValue>(GET_HEALTH_CHANGE, parameters, m, spellTarget);
 	return {};
 }
 
