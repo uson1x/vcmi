@@ -440,7 +440,7 @@ CStackWindow::ButtonsSection::ButtonsSection(CStackWindow * owner, int yOffset)
 		parent->switchButtons[parent->activeTab]->disable();
 	}
 
-	exit = std::make_shared<CButton>(Point(382, 5), AnimationPath::builtin("hsbtns.def"), LIBRARY->generaltexth->zelp[447], [this](){ parent->close(); }, EShortcut::GLOBAL_RETURN);
+	exit = std::make_shared<CButton>(Point(382, 5), AnimationPath::builtin("hsbtns.def"), LIBRARY->generaltexth->zelp[447], [this](){ parent->submitSelection(); }, EShortcut::GLOBAL_RETURN);
 }
 
 CStackWindow::CommanderMainSection::CommanderMainSection(CStackWindow * owner, int yOffset)
@@ -848,7 +848,7 @@ void CStackWindow::setCloseOnSelection(bool value)
 	closeOnSelection = value;
 }
 
-void CStackWindow::close()
+void CStackWindow::submitSelection()
 {
 	if(!selectionSubmitted)
 	{
@@ -863,6 +863,14 @@ void CStackWindow::close()
 			return;
 		}
 	}
+
+	close();
+}
+
+void CStackWindow::close()
+{
+	if(!selectionSubmitted && info->levelupInfo && !info->levelupInfo->skills.empty())
+		return;
 
 	CWindowObject::close();
 }

@@ -192,6 +192,7 @@ class CStackWindow : public CWindowObject
 
 	void initSections();
 	void initBonusesList();
+	void submitSelection();
 
 	void init();
 	void close() override;
