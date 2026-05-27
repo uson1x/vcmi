@@ -107,7 +107,7 @@ rett createAny(const boost::filesystem::path & libpath, const std::string & meth
 	if(!ret)
 		logGlobal->error("Cannot get AI!");
 
-	return std::move(ret);
+	return ret;
 #endif // STATIC_AI
 }
 
