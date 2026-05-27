@@ -136,6 +136,50 @@ void BattleFlowProcessor::onBattleStarted(const CBattleInfoCallback & battle)
 {
 	tryPlaceMoats(battle);
 
+	const auto tryLearnEnemySpellsPreBattle = [&](BattleSide side)
+	{
+		const auto * learner = battle.battleGetFightingHero(side);
+		const auto enemySide = side == BattleSide::ATTACKER ? BattleSide::DEFENDER : BattleSide::ATTACKER;
+		const auto * enemy = battle.battleGetFightingHero(enemySide);
+
+		if(!learner || !enemy || !learner->hasSpellbook())
+			return;
+
+		const auto eagleEyeLevel = learner->valOfBonuses(BonusType::LEARN_BATTLE_SPELL_LEVEL_LIMIT_PRE_BATTLE);
+		if(eagleEyeLevel <= 0)
+			return;
+
+		const auto eagleEyeChance = learner->valOfBonuses(BonusType::LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE);
+		if(eagleEyeChance <= 0)
+			return;
+
+		ChangeSpells learnedSpells;
+		learnedSpells.learn = true;
+		learnedSpells.hid = learner->id;
+
+		for(const auto spellID : enemy->getSpellsInSpellbook())
+		{
+			const auto * spell = spellID.toSpell();
+			if(!spell)
+				continue;
+
+			if(spell->getLevel() <= eagleEyeLevel
+				&& !learner->spellbookContainsSpell(spell->getId())
+				&& gameHandler->getRandomGenerator().nextInt(99) < eagleEyeChance)
+			{
+				learnedSpells.spells.insert(spell->getId());
+			}
+		}
+
+		if(!learnedSpells.spells.empty())
+			gameHandler->sendAndApply(learnedSpells);
+	};
+
+	tryLearnEnemySpellsPreBattle(BattleSide::ATTACKER);
+	tryLearnEnemySpellsPreBattle(BattleSide::DEFENDER);
+
+	tryPlaceMoats(battle);
+
 	gameHandler->turnTimerHandler->onBattleStart(battle.getBattle()->getBattleID());
 
 	if (battle.battleGetTacticDist() == 0)
