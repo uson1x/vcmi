@@ -48,4 +48,4 @@ If you are modder and wish to add your mod, please contact VCMI Team on Discord.
 
 ### Tides of War
 
-[![Tides of War translation status](https://weblate.vcmi.eu/widget/horn-of-the-abyss/multi-auto.svg)](https://weblate.vcmi.eu/engage/tides-of-war/)
+[![Tides of War translation status](https://weblate.vcmi.eu/widget/tides-of-war/multi-auto.svg)](https://weblate.vcmi.eu/engage/tides-of-war/)

@@ -1,4 +1,4 @@
-# Lua API Reference
+# Script Types
 
 ### Spell Effect
 
