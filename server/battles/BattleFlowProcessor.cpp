@@ -178,8 +178,6 @@ void BattleFlowProcessor::onBattleStarted(const CBattleInfoCallback & battle)
 	tryLearnEnemySpellsPreBattle(BattleSide::ATTACKER);
 	tryLearnEnemySpellsPreBattle(BattleSide::DEFENDER);
 
-	tryPlaceMoats(battle);
-
 	gameHandler->turnTimerHandler->onBattleStart(battle.getBattle()->getBattleID());
 
 	if (battle.battleGetTacticDist() == 0)
