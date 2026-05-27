@@ -49,3 +49,7 @@ If you are modder and wish to add your mod, please contact VCMI Team on Discord.
 ### Tides of War
 
 [![Tides of War translation status](https://weblate.vcmi.eu/widget/tides-of-war/multi-auto.svg)](https://weblate.vcmi.eu/engage/tides-of-war/)
+
+### Pavilion Town
+
+[![Pavilion Town translation status](https://weblate.vcmi.eu/widget/new-pavilion/multi-auto.svg)](https://weblate.vcmi.eu/engage/new-pavilion/)
