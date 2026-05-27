@@ -13,6 +13,7 @@
 #include "api/Registry.h"
 #include "../lib/constants/IdentifierBase.h"
 #include "vcmi/scripting/ApiTags.h"
+#include <boost/core/demangle.hpp>
 
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -380,9 +381,9 @@ public:
 		bool result = tryGet(position, value);
 		if (!result)
 		{
-			const char * expectedType = typeid(T).name();
-			const char * actualType = lua_typename(L, position);
-			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + " at position" + std::to_string(position) + ", but found " + actualType;
+			std::string expectedType = boost::core::demangle(typeid(T).name());
+			const char * actualType = lua_typename(L, lua_type(L, position));
+			std::string message = std::string("Invalid Lua value! Expected ") + expectedType + " at position " + std::to_string(position) + ", but found " + actualType;
 			throw LuaApiException( message );
 		}
 	}
@@ -393,8 +394,8 @@ public:
 		getOrThrow(position, value);
 		if (value == nullptr)
 		{
-			const char * expectedType = typeid(T).name();
-			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + " at position" + std::to_string(position) + ", but found nil value!";
+			std::string expectedType = boost::core::demangle(typeid(T).name());
+			std::string message = std::string("Invalid Lua value! Expected ") + expectedType + " at position " + std::to_string(position) + ", but found nil value!";
 			throw LuaApiException( message );
 		}
 	}
@@ -452,11 +453,10 @@ private:
 
 		if(!raw)
 		{
-			const char * expectedType = typeid(BaseType).name();
-			const char * actualType = lua_typename(L, position);
-			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + "at position" + std::to_string(position) + ", but found " + actualType;
+			std::string expectedType = boost::core::demangle(typeid(BaseType).name());
+			const char * actualType = lua_typename(L, lua_type(L, position));
+			std::string message = std::string("Invalid Lua value! Expected ") + expectedType + " at position " + std::to_string(position) + ", but found " + actualType;
 			throw LuaApiException( message );
-
 		}
 
 		if(lua_getmetatable(L, position) == 0)
@@ -472,7 +472,7 @@ private:
 		}
 
 		lua_pop(L, 2);
-		throw LuaApiException( "Failed to retrieve class " + std::string(typeid(BaseType).name()) + " from stack!");
+		throw LuaApiException( "Failed to retrieve class " + boost::core::demangle(typeid(BaseType).name()) + " from stack!");
 	}
 
 	template<typename BaseType, typename BaseConstType>
@@ -491,9 +491,9 @@ private:
 
 		if(!raw)
 		{
-			const char * expectedType = typeid(BaseType).name();
-			const char * actualType = lua_typename(L, position);
-			std::string message	= std::string("Invalid Lua value! Expected ") + expectedType + "at position" + std::to_string(position) + ", but found " + actualType;
+			std::string expectedType = boost::core::demangle(typeid(BaseType).name());
+			const char * actualType = lua_typename(L, lua_type(L, position));
+			std::string message = std::string("Invalid Lua value! Expected ") + expectedType + " at position " + std::to_string(position) + ", but found " + actualType;
 			throw LuaApiException( message );
 		}
 
@@ -525,7 +525,7 @@ private:
 		}
 
 		lua_pop(L, 2);
-		throw LuaApiException( "Failed to retrieve class " + std::string(typeid(BaseType).name()) + " from stack!");
+		throw LuaApiException( "Failed to retrieve class " + boost::core::demangle(typeid(BaseType).name()) + " from stack!");
 	}
 
 	/// Pushes copy of FinalType on top of Lua stack as userdata

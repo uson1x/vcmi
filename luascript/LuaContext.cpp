@@ -26,6 +26,42 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+static int luaError(lua_State * L)
+{
+	int level = (int)luaL_optinteger(L, 2, 1);
+
+	if(level > 0 && lua_isstring(L, 1))
+	{
+		luaL_where(L, level);
+		lua_pushvalue(L, 1);
+		lua_concat(L, 2);
+		lua_replace(L, 1);
+	}
+
+	const char * msg = lua_tostring(L, 1);
+	if(msg)
+		logScript->warn("%s", msg);
+
+	lua_settop(L, 1);
+	return lua_error(L);
+}
+
+static int luaAssert(lua_State * L)
+{
+	if(lua_toboolean(L, 1))
+		return lua_gettop(L);
+
+	luaL_where(L, 1);
+	lua_pushstring(L, luaL_optstring(L, 2, "assertion failed!"));
+	lua_concat(L, 2);
+
+	const char * msg = lua_tostring(L, -1);
+	if(msg)
+		logScript->warn("%s", msg);
+
+	return lua_error(L);
+}
+
 /// Custom text printing function for use in scripting
 /// based on luaB_print (part of Lua source code)
 /// adapted to C++ & VCMI logging facilities
@@ -132,6 +168,12 @@ void LuaContext::cleanupGlobals()
 	lua_pushcfunction(L, luaPrint);
 	lua_setglobal(L, "print");
 
+	lua_pushcfunction(L, luaError);
+	lua_setglobal(L, "error");
+
+	lua_pushcfunction(L, luaAssert);
+	lua_setglobal(L, "assert");
+
 	S.clear();
 
 	lua_getglobal(L, LUA_STRLIBNAME);
@@ -173,7 +215,7 @@ void LuaContext::initialize()
 
 	if(ret)
 	{
-		logScript->error("Script '%s' failed to load, error: %s", script->getIdentifier(), toStringRaw(-1));
+		logScript->error("Script '%s' failed to compile: %s", script->getIdentifier(), toStringRaw(-1));
 		popAll();
 		return;
 	}
@@ -186,11 +228,13 @@ void LuaContext::initialize()
 
 	if(ret)
 	{
-		logScript->error("Script '%s' failed to run, error: '%s'", script->getIdentifier(), toStringRaw(-1));
+		logScript->error("Script '%s' failed to run: %s", script->getIdentifier(), toStringRaw(-1));
 		popAll();
+		return;
 	}
 
-	if (!lua_istable(L, -1)) {
+	if(!lua_istable(L, -1))
+	{
 		logScript->error("Script '%s' did not return a table", script->getIdentifier());
 		popAll();
 		return;
@@ -201,7 +245,7 @@ void LuaContext::initialize()
 
 int LuaContext::errorRetVoid(const std::string & message)
 {
-	logGlobal->error(message);
+	logScript->error(message);
 	popAll();
 	return 0;
 }
@@ -256,11 +300,13 @@ int LuaContext::require(lua_State * L)
 	if(!self)
 	{
 		lua_pushstring(L, "internal error");
-		lua_error(L);
-		return 0;
+		return lua_error(L);
 	}
 
-	return self->loadModule();
+	int result = self->loadModule();
+	if(result < 0)
+		return lua_error(L); // error string was pushed by loadModule; its locals are already destroyed
+	return result;
 }
 
 int LuaContext::loadModule()
@@ -268,15 +314,24 @@ int LuaContext::loadModule()
 	int argc = lua_gettop(L);
 
 	if(argc != 1)
-		return errorRetVoid("Module name required");
+	{
+		lua_pushstring(L, "require: module name expected");
+		return -1;
+	}
 
 	if(!lua_isstring(L, 1))
-		return errorRetVoid("Module name must be string");
+	{
+		lua_pushstring(L, "require: module name must be a string");
+		return -1;
+	}
 
 	std::string resourceName = toStringRaw(1);
 
 	if(resourceName.empty())
-		return errorRetVoid("Module name is empty");
+	{
+		lua_pushstring(L, "require: module name is empty");
+		return -1;
+	}
 
 	auto temp = vstd::split(resourceName, ":");
 
@@ -293,33 +348,32 @@ int LuaContext::loadModule()
 		modulePath = temp.at(1);
 	}
 
-	auto *loader = scope.empty() ? CResourceHandler::get() : CResourceHandler::get(scope);
+	auto * loader = scope.empty() ? CResourceHandler::get() : CResourceHandler::get(scope);
 
 	ScriptPath id = ScriptPath::builtinTODO(modulePath).addPrefix("SCRIPTS/");
 
 	if(!loader->existsResource(id))
-		return errorRetVoid("Module not found: "+modulePath);
+	{
+		lua_pushfstring(L, "require: module not found: %s", modulePath.c_str());
+		return -1;
+	}
 
 	auto rawData = loader->load(id)->readAll();
 	auto sourceText = std::string(reinterpret_cast<char *>(rawData.first.get()), rawData.second);
 	int ret = luaL_loadbuffer(L, sourceText.c_str(), sourceText.size(), modulePath.c_str());
 
 	if(ret)
-		return errorRetVoid(toStringRaw(-1));
+		return -1; // error string already on stack from luaL_loadbuffer
 
 	ret = lua_pcall(L, 0, 1, 0);
 
 	if(ret)
-	{
-		logGlobal->error("Module '%s' failed to run, error: %s", modulePath, toStringRaw(-1));
-		popAll();
-		return 0;
-	}
+		return -1; // error string already on stack from lua_pcall
 
-	if (!lua_istable(L, -1)) {
-		logScript->error("Script '%s' did not return a table", modulePath);
-		popAll();
-		return 0;
+	if(!lua_istable(L, -1))
+	{
+		lua_pushfstring(L, "require: module '%s' did not return a table", modulePath.c_str());
+		return -1;
 	}
 
 	return 1;

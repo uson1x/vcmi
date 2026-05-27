@@ -73,6 +73,8 @@ private:
 	static int require(lua_State * L);
 
 	//require function implementation
+	// Returns 1 on success (module table on stack).
+	// Returns -1 on error (error string on stack).
 	int loadModule();
 };
 
@@ -80,6 +82,15 @@ template<typename ReturnType, typename... Args>
 ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & params, Args&&... args)
 {
 	std::lock_guard guard(mutex);
+
+	if(!scriptTable)
+	{
+		if constexpr (!std::is_void_v<ReturnType>)
+			return ReturnType{};
+		else
+			return;
+	}
+
 	LuaStack S(L);
 
 	scriptTable->push();               // stack: (table)
@@ -89,9 +100,11 @@ ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & par
 	if(!S.isFunction(-1))
 	{
 		S.clear();
-		std::string error = "Function with name " + name + " was not found";
-		logGlobal->error(error);
-		throw LuaApiException(error);
+		logScript->error("Script '%s': function '%s' not found", script->getIdentifier(), name);
+		if constexpr (!std::is_void_v<ReturnType>)
+			return ReturnType{};
+		else
+			return;
 	}
 
 	// Build self: push params as Lua table, set __index = scriptTable via metatable
@@ -109,17 +122,26 @@ ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & par
 	{
 		std::string error = lua_tostring(L, -1);
 		S.clear();
-
-		boost::format fmt("Lua function %s failed with message: %s");
-		fmt % name % error;
-		logGlobal->error(fmt.str());
-		throw LuaApiException(error);
+		logScript->error("Script '%s', function '%s': %s", script->getIdentifier(), name, error);
+		if constexpr (!std::is_void_v<ReturnType>)
+			return ReturnType{};
+		else
+			return;
 	}
 
 	if constexpr (!std::is_void_v<ReturnType>)
 	{
-		ReturnType ret;
-		S.getOrThrow(S.absindex(-1), ret);
+		ReturnType ret{};
+		try
+		{
+			S.getOrThrow(S.absindex(-1), ret);
+		}
+		catch(const LuaApiException & e)
+		{
+			S.clear();
+			logScript->error("Script '%s', function '%s' returned unexpected value: %s", script->getIdentifier(), name, e.what());
+			return ReturnType{};
+		}
 		S.balance();
 		return ret;
 	}
