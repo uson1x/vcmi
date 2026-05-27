@@ -12,6 +12,7 @@ set(editor_SRCS
 		mapview.cpp
 		objectbrowser.cpp
 		mapsettings/abstractsettings.cpp
+		mapsettings/heroessettings.cpp
 		mapsettings/mapsettings.cpp
 		mapsettings/generalsettings.cpp
 		mapsettings/modsettings.cpp
@@ -42,6 +43,7 @@ set(editor_SRCS
 		inspector/herospellwidget.cpp
 		inspector/PickObjectDelegate.cpp
 		inspector/portraitwidget.cpp
+		inspector/abilitieswidget.cpp
 		resourceExtractor/ResourceConverter.cpp
 		helper.cpp
 		campaigneditor/campaigneditor.cpp
@@ -83,6 +85,7 @@ set(editor_HEADERS
 		mapsettings/abstractsettings.h
 		mapsettings/mapsettings.h
 		mapsettings/generalsettings.h
+		mapsettings/heroessettings.h
 		mapsettings/modsettings.h
 		mapsettings/timedevent.h
 		mapsettings/victoryconditions.h
@@ -112,6 +115,7 @@ set(editor_HEADERS
 		inspector/PickObjectDelegate.h
 		inspector/portraitwidget.h
 		inspector/baseinspectoritemdelegate.h
+		inspector/abilitieswidget.h
 		resourceExtractor/ResourceConverter.h
 		mapeditorroles.h
 		helper.h
@@ -146,6 +150,7 @@ set(editor_FORMS
 		generatorprogress.ui
 		mapsettings/mapsettings.ui
 		mapsettings/generalsettings.ui
+		mapsettings/heroessettings.ui
 		mapsettings/modsettings.ui
 		mapsettings/timedevent.ui
 		mapsettings/victoryconditions.ui
@@ -167,8 +172,8 @@ set(editor_FORMS
 		inspector/heroartifactswidget.ui
 		inspector/artifactwidget.ui
 		inspector/heroskillswidget.ui
-		inspector/herospellwidget.ui
 		inspector/portraitwidget.ui
+		inspector/abilitieswidget.ui
 		campaigneditor/campaigneditor.ui
 		campaigneditor/campaignproperties.ui
 		campaigneditor/scenarioproperties.ui
@@ -196,6 +201,7 @@ set(editor_TS
 	"${translationsDir}/belarusian.ts"
 	"${translationsDir}/bulgarian.ts"
 	"${translationsDir}/chinese.ts"
+	"${translationsDir}/tchinese.ts"
 	"${translationsDir}/czech.ts"
 	"${translationsDir}/dutch.ts"
 	"${translationsDir}/filipino.ts"

@@ -614,10 +614,13 @@ void BattleStacksController::stackAttacking( const StackAttackInfo & info )
 
 	if(info.deathBlow)
 	{
-		owner.addToAnimationStage(EAnimationEvents::BEFORE_HIT, [this, defender, info]() {
-			owner.appendBattleLog(info.attacker->formatGeneralMessage(365));
-			owner.effectsController->displayEffect(EBattleEffect::DEATH_BLOW, AudioPath::builtin("DEATHBLO"), defender->getPosition());
-		});
+		if (defender)
+		{
+			owner.addToAnimationStage(EAnimationEvents::BEFORE_HIT, [this, defender, info]() {
+				owner.appendBattleLog(info.attacker->formatGeneralMessage(365));
+				owner.effectsController->displayEffect(EBattleEffect::DEATH_BLOW, AudioPath::builtin("DEATHBLO"), defender->getPosition());
+			});
+		}
 
 		for(auto elem : info.secondaryDefender)
 		{

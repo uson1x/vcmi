@@ -177,6 +177,7 @@ enum class EShortcut
 	ADVENTURE_SEARCH,
 	ADVENTURE_SEARCH_CONTINUE,
 	ADVENTURE_DISEMBARK,
+	ADVENTURE_OPEN_WIKI, // Opens the in-game Glossary / Wiki window
 
 	// Move hero one tile in specified direction. Bound to cursors & numpad buttons
 	ADVENTURE_MOVE_HERO_SW,

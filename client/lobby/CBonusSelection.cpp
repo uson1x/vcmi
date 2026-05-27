@@ -153,14 +153,19 @@ CBonusSelection::CBonusSelection()
 		buttonExtraOptions = std::make_shared<CButton>(Point(643, 431), AnimationPath::builtin("GSPBUT2.DEF"), LIBRARY->generaltexth->zelp[46], [this]{ tabExtraOptions->setEnabled(!tabExtraOptions->isActive()); ENGINE->windows().totalRedraw(); }, EShortcut::LOBBY_EXTRA_OPTIONS);
 		buttonExtraOptions->setTextOverlay(LIBRARY->generaltexth->translate("vcmi.optionsTab.extraOptions.hover"), FONT_SMALL, Colors::WHITE);
 	}
+
+	// Ensure campaign map info is synchronized even if player doesn't click any region manually.
+	GAME->server().setCampaignMap(GAME->server().campaignMap);
 }
 
 void CBonusSelection::createBonusesIcons()
 {
 	OBJECT_CONSTRUCTION;
+	groupBonusesLabels.clear();
 	const CampaignScenario & scenario = getCampaign()->scenario(GAME->server().campaignMap);
 	const std::vector<CampaignBonus> & bonDescs = scenario.travelOptions.bonusesToChoose;
 	groupBonuses = std::make_shared<CToggleGroup>(std::bind(&IServerAPI::setCampaignBonus, &GAME->server(), _1));
+	groupBonuses->setRedrawParent(true);
 
 	auto getBuildingID = [this](const CampaignBonusBuilding & bonusValue) -> std::pair<FactionID, BuildingID> {
 		FactionID faction;
@@ -393,6 +398,7 @@ void CBonusSelection::createBonusesIcons()
 			if(buttonStart->isActive() && !buttonStart->isBlocked())	
 				CBonusSelection::startMap();
 		});
+		bonusButton->setRedrawParent(true);
 
 		if(picNumber != -1)
 			bonusButton->setOverlay(std::make_shared<CAnimImage>(AnimationPath::builtin(picName), picNumber));

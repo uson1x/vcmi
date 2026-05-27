@@ -1404,7 +1404,8 @@ struct DLL_LINKAGE GarrisonDialog : public Query
 		h & objid;
 		h & hid;
 		h & removableUnits;
-		h & customTitle;
+		if (h.hasFeature(Handler::Version::CUSTOM_GARRISON_TITLE))
+			h & customTitle;
 	}
 };
 

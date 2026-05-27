@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 #include "CHeroWindow.h"
+#include "wiki/WikiWindow.h"
 
 #include "CCreatureWindow.h"
 #include "CHeroBackpackWindow.h"
@@ -118,6 +119,13 @@ CHeroWindow::CHeroWindow(const CGHeroInstance * hero)
 	portraitArea = std::make_shared<LRClickableAreaWText>(Rect(18, 18, 58, 64));
 	portraitImage = std::make_shared<CAnimImage>(AnimationPath::builtin("PortraitsLarge"), 0, 0, 19, 19);
 
+	portraitWikiArea = std::make_shared<LRClickableArea>(Rect(18, 18, 58, 64), [this]()
+	{
+		ENGINE->windows().createAndPushWindow<WikiWindow>(
+			WikiWindow::Style::BROWN,
+			WikiEntryKey{WikiCategory::HERO, curHero->getHeroType()->getJsonKey()});
+	});
+
 	for(int v = 0; v < GameConstants::PRIMARY_SKILLS; ++v)
 	{
 		auto area = std::make_shared<LRClickableAreaWTextComp>(Rect(30 + 70 * v, 109, 42, 64), ComponentType::PRIM_SKILL);
@@ -182,7 +190,16 @@ CHeroWindow::CHeroWindow(const CGHeroInstance * hero)
 	labels.push_back(std::make_shared<CLabel>(69, 232, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::YELLOW, LIBRARY->generaltexth->jktexts[6]));
 	labels.push_back(std::make_shared<CLabel>(213, 232, FONT_SMALL, ETextAlignment::TOPLEFT, Colors::YELLOW, LIBRARY->generaltexth->jktexts[7]));
 
+	addUsedEvents(KEYBOARD);
 	CHeroWindow::updateArtifacts();
+}
+
+void CHeroWindow::keyPressed(EShortcut key)
+{
+	if(key == EShortcut::ADVENTURE_OPEN_WIKI)
+		ENGINE->windows().createAndPushWindow<WikiWindow>(
+			WikiWindow::Style::BROWN,
+			WikiEntryKey{WikiCategory::HERO, curHero->getHeroType()->getJsonKey()});
 }
 
 void CHeroWindow::updateArtifacts()

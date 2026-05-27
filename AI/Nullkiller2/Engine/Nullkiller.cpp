@@ -678,9 +678,9 @@ void Nullkiller::tracePlayerStatus(bool beginning) const
 #endif
 }
 
-std::map<const CGHeroInstance *, HeroRole> Nullkiller::getHeroesForPathfinding() const
+HeroMap<HeroRole> Nullkiller::getHeroesForPathfinding() const
 {
-	std::map<const CGHeroInstance *, HeroRole> activeHeroes;
+	HeroMap<HeroRole> activeHeroes;
 	for(auto hero : cc->getHeroesInfo())
 	{
 		if(getHeroLockedReason(hero) == HeroLockedReason::DEFENCE)

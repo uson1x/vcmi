@@ -83,6 +83,7 @@ class AdventureMapShortcuts
 	void search(bool next);
 	void moveHeroDirectional(const Point & direction);
 	void enterDisembarkMode();
+	void showWiki();
 
 public:
 	explicit AdventureMapShortcuts(AdventureMapInterface & owner);
@@ -103,6 +104,7 @@ public:
 	bool optionInMapView();
 	bool optionInWorldView();
 	bool optionSidePanelActive();
+	bool optionLobbyActive();
 	bool optionMapScrollingActive();
 	bool optionMapViewActive();
 	bool optionMarketplace();

@@ -135,28 +135,20 @@
         <translation type="unfinished">未保存の変更は失われます。本当によろしいですか？</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">シナリオ数が地域数より少ない</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">シナリオ数が地域数より少ないです。欠けているシナリオが最後の地域にある場合のみ許可され、中間や最初にある場合は許可されません。</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation>キャンペーンを開けませんでした</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>Validation failed</source>
-        <translation type="unfinished"></translation>
+        <translation>検証に失敗しました</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>Campaign has no maps defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>キャンペーンにマップが定義されていません。</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="251"/>
@@ -600,6 +592,29 @@
     </message>
 </context>
 <context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">フォーム</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">禁止ヒーロー</translation>
+    </message>
+</context>
+<context>
     <name>LoseConditions</name>
     <message>
         <location filename="../mapsettings/loseconditions.ui" line="14"/>
@@ -651,7 +666,7 @@
     <name>EditorMainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="14"/>
-        <location filename="../mainwindow.cpp" line="415"/>
+        <location filename="../mainwindow.cpp" line="417"/>
         <source>VCMI Map Editor</source>
         <translation>VCMIマップエディター</translation>
     </message>
@@ -957,15 +972,15 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
-        <location filename="../mainwindow.cpp" line="1413"/>
+        <location filename="../mainwindow.cpp" line="1415"/>
         <source>Select map layer type</source>
-        <translation type="unfinished"></translation>
+        <translation>マップレイヤーの種類を選択してください</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
-        <location filename="../mainwindow.cpp" line="1322"/>
-        <location filename="../mainwindow.cpp" line="1326"/>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Update appearance</source>
         <translation type="unfinished">外観を更新</translation>
     </message>
@@ -1158,285 +1173,269 @@
         <translation type="unfinished">Ctrl+Shift+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Confirmation</source>
         <translation type="unfinished">確認</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation type="unfinished">保存されていない変更は失われます。よろしいですか？</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">地上</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">地下</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">レベル - %1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="453"/>
-        <location filename="../mainwindow.cpp" line="1430"/>
+        <location filename="../mainwindow.cpp" line="455"/>
+        <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>レベル %1: %2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="481"/>
         <source>Mods are required</source>
         <translation type="unfinished">必要なModがあります</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="487"/>
-        <location filename="../mainwindow.cpp" line="493"/>
+        <location filename="../mainwindow.cpp" line="489"/>
+        <location filename="../mainwindow.cpp" line="495"/>
         <source>Failed to open map</source>
         <translation type="unfinished">マップを開くのに失敗しました</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="524"/>
+        <location filename="../mainwindow.cpp" line="526"/>
         <source>Open map</source>
         <translation type="unfinished">マップを開く</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="528"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation type="unfinished">すべての対応マップ (*.vmap *.h3m);;VCMIマップ(*.vmap);;HoMM3マップ(*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="580"/>
+        <location filename="../mainwindow.cpp" line="582"/>
         <source>Recently Opened Files</source>
         <translation type="unfinished">最近開いたファイル</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="633"/>
+        <location filename="../mainwindow.cpp" line="635"/>
         <source>Map validation</source>
         <translation type="unfinished">マップの検証</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">マップに重大な問題があり、プレイできない可能性があります。マップメニューからバリデータを開いて問題を確認してください</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="637"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">マップにいくつかのエラーがあります。マップメニューからバリデータを開いて問題を確認してください</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="664"/>
+        <location filename="../mainwindow.cpp" line="666"/>
         <source>Failed to save map</source>
         <translation type="unfinished">マップの保存に失敗しました</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>Save map</source>
         <translation type="unfinished">マップを保存</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>VCMI maps (*.vmap)</source>
         <translation type="unfinished">VCMIマップ (*.vmap)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="885"/>
+        <location filename="../mainwindow.cpp" line="887"/>
         <source>Type</source>
         <translation type="unfinished">種類</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="898"/>
+        <location filename="../mainwindow.cpp" line="900"/>
         <source>Towns</source>
         <translation type="unfinished">町</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="899"/>
+        <location filename="../mainwindow.cpp" line="901"/>
         <source>Objects</source>
         <translation type="unfinished">オブジェクト</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="900"/>
+        <location filename="../mainwindow.cpp" line="902"/>
         <source>Heroes</source>
         <translation type="unfinished">ヒーロー</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="901"/>
+        <location filename="../mainwindow.cpp" line="903"/>
         <source>Artifacts</source>
         <translation type="unfinished">アーティファクト</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="902"/>
+        <location filename="../mainwindow.cpp" line="904"/>
         <source>Resources</source>
         <translation type="unfinished">資源</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="903"/>
+        <location filename="../mainwindow.cpp" line="905"/>
         <source>Banks</source>
         <translation type="unfinished">バンク</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="904"/>
+        <location filename="../mainwindow.cpp" line="906"/>
         <source>Dwellings</source>
         <translation type="unfinished">住居</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="905"/>
+        <location filename="../mainwindow.cpp" line="907"/>
         <source>Grounds</source>
         <translation type="unfinished">地形</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="906"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>Teleports</source>
         <translation type="unfinished">テレポート</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="907"/>
+        <location filename="../mainwindow.cpp" line="909"/>
         <source>Mines</source>
         <translation type="unfinished">鉱山</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="908"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>Triggers</source>
         <translation type="unfinished">トリガー</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="911"/>
         <source>Monsters</source>
         <translation type="unfinished">モンスター</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="910"/>
+        <location filename="../mainwindow.cpp" line="912"/>
         <source>Quests</source>
         <translation type="unfinished">クエスト</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="911"/>
+        <location filename="../mainwindow.cpp" line="913"/>
         <source>Wog Objects</source>
         <translation type="unfinished">Wogオブジェクト</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="912"/>
+        <location filename="../mainwindow.cpp" line="914"/>
         <source>Obstacles</source>
         <translation type="unfinished">障害物</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Other</source>
         <translation type="unfinished">その他</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Mods loading problem</source>
         <translation type="unfinished">Modの読み込み問題</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
         <translation type="unfinished">Mod読み込み中に重大なエラーが発生しました。無効なModを無効にして再起動してください。</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1056"/>
+        <location filename="../mainwindow.cpp" line="1058"/>
         <source>Undo clicked</source>
         <translation type="unfinished">「元に戻す」をクリック</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1067"/>
+        <location filename="../mainwindow.cpp" line="1069"/>
         <source>Redo clicked</source>
         <translation type="unfinished">「やり直し」をクリック</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1078"/>
+        <location filename="../mainwindow.cpp" line="1080"/>
         <source>Passability clicked</source>
         <translation type="unfinished">通行可否をクリック</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1091"/>
+        <location filename="../mainwindow.cpp" line="1093"/>
         <source>Grid clicked</source>
         <translation type="unfinished">グリッドをクリック</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1172"/>
+        <location filename="../mainwindow.cpp" line="1174"/>
         <source>Fill clicked</source>
         <translation type="unfinished">塗りつぶしをクリック</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="obsolete">地上を表示</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1322"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation type="unfinished">オブジェクトが選択されていません</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1326"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>This operation is irreversible. Do you want to continue?</source>
         <translation type="unfinished">この操作は元に戻せません。本当に続行しますか？</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Errors occurred. %1 objects were not updated</source>
         <translation type="unfinished">エラーが発生しました。%1 個のオブジェクトが更新されませんでした</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1414"/>
+        <location filename="../mainwindow.cpp" line="1416"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>種類：</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1469"/>
+        <location filename="../mainwindow.cpp" line="1471"/>
         <source>Save to image</source>
         <translation type="unfinished">画像として保存</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1501"/>
+        <location filename="../mainwindow.cpp" line="1503"/>
         <source>Select maps to convert</source>
         <translation type="unfinished">変換するマップを選択</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1503"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>HoMM3 maps(*.h3m)</source>
         <translation type="unfinished">HoMM3マップ (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1507"/>
+        <location filename="../mainwindow.cpp" line="1509"/>
         <source>Choose directory to save converted maps</source>
         <translation type="unfinished">変換されたマップを保存するディレクトリを選択</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Operation completed</source>
         <translation type="unfinished">操作が完了しました</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Successfully converted %1 maps</source>
         <translation type="unfinished">%1 個のマップが正常に変換されました</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1525"/>
+        <location filename="../mainwindow.cpp" line="1527"/>
         <source>Failed to convert the map. Abort operation</source>
         <translation type="unfinished">マップの変換に失敗しました。操作を中止します</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1531"/>
+        <location filename="../mainwindow.cpp" line="1533"/>
         <source>Select campaign to convert</source>
         <translation type="unfinished">変換するキャンペーンを選択</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1533"/>
+        <location filename="../mainwindow.cpp" line="1535"/>
         <source>HoMM3 campaigns (*.h3c)</source>
         <translation type="unfinished">HoMM3キャンペーン (*.h3c)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1537"/>
+        <location filename="../mainwindow.cpp" line="1539"/>
         <source>Select destination file</source>
         <translation type="unfinished">保存先ファイルを選択</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1539"/>
+        <location filename="../mainwindow.cpp" line="1541"/>
         <source>VCMI campaigns (*.vcmp)</source>
         <translation type="unfinished">VCMIキャンペーン (*.vcmp)</translation>
     </message>
@@ -1532,7 +1531,7 @@ Do you want to do that now ?</source>
         <translation type="unfinished">ヒーロー</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation type="unfinished">OK</translation>
     </message>
@@ -1640,7 +1639,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="30"/>
         <source>Required Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>必須のオブジェクト</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="40"/>
@@ -1762,7 +1761,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>カウント</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="226"/>
@@ -2005,8 +2004,8 @@ Do you want to do that now ?</source>
         <location filename="../inspector/inspector.cpp" line="357"/>
         <location filename="../inspector/inspector.cpp" line="358"/>
         <source>%n tile(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n タイル</numerusform>
         </translation>
     </message>
     <message>
@@ -2484,7 +2483,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="220"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation>キャンペーンを開くことができませんでした</translation>
     </message>
 </context>
 <context>
@@ -4018,37 +4017,37 @@ Guard: %3</source>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="649"/>
         <source>Validation failed!</source>
-        <translation type="unfinished"></translation>
+        <translation>検証に失敗しました！</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="654"/>
         <source>No player range defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>プレイヤー範囲が定義されていません。</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="661"/>
         <source>Invalid range for players.</source>
-        <translation type="unfinished"></translation>
+        <translation>プレイヤーの範囲が無効です。</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="669"/>
         <source>Invalid range for human players.</source>
-        <translation type="unfinished"></translation>
+        <translation>人間のプレイヤーには無効な範囲です。</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="684"/>
         <source>Connection references non-existing zone(s): %1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation>接続が存在しないゾーンを参照しています：%1 - %2</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="696"/>
         <source>Zone %1 has no connections.</source>
-        <translation type="unfinished"></translation>
+        <translation>ゾーン %1 には接続がありません。</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="720"/>
         <source>Player %1 must have exactly one player start zone (found %2).</source>
-        <translation type="unfinished"></translation>
+        <translation>プレイヤー %1 には、開始ゾーンが必ず1つだけ存在する必要があります（%2 に存在）。</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="757"/>
@@ -4094,17 +4093,13 @@ Guard: %3</source>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
-        <source>To few templates!</source>
-        <translation type="unfinished">テンプレートが少なすぎます！</translation>
+        <source>Too few templates!</source>
+        <translation>テンプレートが少なすぎます！</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">削除後も少なくとも 1 件のテンプレートを残してください。</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">エラー</translation>
     </message>
 </context>
 <context>
@@ -4550,34 +4545,6 @@ Guard: %3</source>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">地形セレクター</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">呪文セレクター</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">アーティファクトセレクター</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">スキルセレクター</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">ヒーロータイプセレクター</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4874,10 +4841,6 @@ Guard: %3</source>
         <translation type="unfinished">カスタムサイズ</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="obsolete">地下</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation type="unfinished">人間</translation>
@@ -5026,6 +4989,34 @@ Guard: %3</source>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation type="unfinished">分割／変換されたファイルの元ファイルを削除します。</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">地形セレクター</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">呪文セレクター</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">アーティファクトセレクター</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">スキルセレクター</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">ヒーロータイプセレクター</translation>
     </message>
 </context>
 </TS>

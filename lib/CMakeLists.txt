@@ -127,6 +127,7 @@ set(lib_MAIN_SRCS
 
 	json/JsonBonus.cpp
 	json/JsonRandom.cpp
+	json/JsonKeyExtractor.cpp
 
 	gameState/CGameState.cpp
 	gameState/CGameStateCampaign.cpp
@@ -562,6 +563,7 @@ set(lib_MAIN_HEADERS
 
 	json/JsonBonus.h
 	json/JsonRandom.h
+	json/JsonKeyExtractor.h
 
 	gameState/CGameState.h
 	gameState/CGameStateCampaign.h
@@ -849,8 +851,8 @@ endif()
 
 set_target_properties(vcmi PROPERTIES COMPILE_DEFINITIONS "VCMI_DLL=1")
 target_link_libraries(vcmi PUBLIC
-	minizip::minizip ZLIB::ZLIB
-	${SYSTEM_LIBS} Boost::boost Boost::filesystem Boost::program_options Boost::locale Boost::date_time
+	minizip::minizip ZLIB::ZLIB Iconv::Iconv
+	${SYSTEM_LIBS} Boost::boost Boost::filesystem Boost::program_options Boost::date_time
 )
 
 if (NOT ENABLE_MINIMAL_LIB)

@@ -135,14 +135,6 @@
         <translation>Несохранённые изменения будут потеряны. Вы уверены?</translation>
     </message>
     <message>
-        <source>Fewer Scenarios than regions</source>
-        <translation type="obsolete">Сценариев меньше, чем регионов</translation>
-    </message>
-    <message>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translation type="obsolete">У вас сценариев меньше, чем регионов. Это допускается только если отсутствующие сценарии находятся в последних регионах, а не в середине или в начале.</translation>
-    </message>
-    <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="66"/>
         <location filename="../campaigneditor/campaigneditor.cpp" line="405"/>
         <source>Failed to open campaign</source>
@@ -600,6 +592,29 @@
     </message>
 </context>
 <context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">Форма</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation type="unfinished">Запрещённые герои</translation>
+    </message>
+</context>
+<context>
     <name>LoseConditions</name>
     <message>
         <location filename="../mapsettings/loseconditions.ui" line="14"/>
@@ -651,7 +666,7 @@
     <name>EditorMainWindow</name>
     <message>
         <location filename="../mainwindow.ui" line="14"/>
-        <location filename="../mainwindow.cpp" line="415"/>
+        <location filename="../mainwindow.cpp" line="417"/>
         <source>VCMI Map Editor</source>
         <translation>Редактор карт VCMI</translation>
     </message>
@@ -957,15 +972,15 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1254"/>
-        <location filename="../mainwindow.cpp" line="1413"/>
+        <location filename="../mainwindow.cpp" line="1415"/>
         <source>Select map layer type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="1265"/>
-        <location filename="../mainwindow.cpp" line="1322"/>
-        <location filename="../mainwindow.cpp" line="1326"/>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Update appearance</source>
         <translation>Обновить вид</translation>
     </message>
@@ -1158,285 +1173,269 @@
         <translation>Ctrl+Shift+=</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Confirmation</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="391"/>
+        <location filename="../mainwindow.cpp" line="393"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation>Несохранённые изменения будут потеряны. Вы уверены?</translation>
     </message>
     <message>
-        <source>Surface</source>
-        <translation type="obsolete">Поверхность</translation>
-    </message>
-    <message>
-        <source>Underground</source>
-        <translation type="vanished">Подземелье</translation>
-    </message>
-    <message>
-        <source>Level - %1</source>
-        <translation type="obsolete">Уровень — %1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="453"/>
-        <location filename="../mainwindow.cpp" line="1430"/>
+        <location filename="../mainwindow.cpp" line="455"/>
+        <location filename="../mainwindow.cpp" line="1432"/>
         <source>Level %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="479"/>
+        <location filename="../mainwindow.cpp" line="481"/>
         <source>Mods are required</source>
         <translation type="unfinished">Требуются моды</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="487"/>
-        <location filename="../mainwindow.cpp" line="493"/>
+        <location filename="../mainwindow.cpp" line="489"/>
+        <location filename="../mainwindow.cpp" line="495"/>
         <source>Failed to open map</source>
         <translation type="unfinished">Не удалось открыть карту</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="524"/>
+        <location filename="../mainwindow.cpp" line="526"/>
         <source>Open map</source>
         <translation>Открыть карту</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="526"/>
+        <location filename="../mainwindow.cpp" line="528"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation>Все поддерживаемые карты  (*.vmap *.h3m);;Карты VCMI (*.vmap);;Карты Героев III (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="580"/>
+        <location filename="../mainwindow.cpp" line="582"/>
         <source>Recently Opened Files</source>
         <translation>Недавно открытые файлы</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="633"/>
+        <location filename="../mainwindow.cpp" line="635"/>
         <source>Map validation</source>
         <translation type="unfinished">Проверка карты</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="635"/>
+        <location filename="../mainwindow.cpp" line="637"/>
         <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">Карта содержит критические ошибки и, скорее всего, будет непригодна для игры. Откройте Валидатор в меню Карта, чтобы просмотреть найденные проблемы</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="637"/>
+        <location filename="../mainwindow.cpp" line="639"/>
         <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
         <translation type="unfinished">Карта содержит ошибки. Откройте Валидатор в меню Карта, чтобы просмотреть найденные проблемы</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="664"/>
+        <location filename="../mainwindow.cpp" line="666"/>
         <source>Failed to save map</source>
         <translation type="unfinished">Не удалось сохранить карту</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>Save map</source>
         <translation>Сохранить карту</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="677"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>VCMI maps (*.vmap)</source>
         <translation>Карты VCMI (*.vmap)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="885"/>
+        <location filename="../mainwindow.cpp" line="887"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="898"/>
+        <location filename="../mainwindow.cpp" line="900"/>
         <source>Towns</source>
         <translation>Города</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="899"/>
+        <location filename="../mainwindow.cpp" line="901"/>
         <source>Objects</source>
         <translation>Объекты</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="900"/>
+        <location filename="../mainwindow.cpp" line="902"/>
         <source>Heroes</source>
         <translation>Герои</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="901"/>
+        <location filename="../mainwindow.cpp" line="903"/>
         <source>Artifacts</source>
         <translation>Артефакты</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="902"/>
+        <location filename="../mainwindow.cpp" line="904"/>
         <source>Resources</source>
         <translation>Ресурсы</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="903"/>
+        <location filename="../mainwindow.cpp" line="905"/>
         <source>Banks</source>
         <translation>Банки</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="904"/>
+        <location filename="../mainwindow.cpp" line="906"/>
         <source>Dwellings</source>
         <translation>Жилища</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="905"/>
+        <location filename="../mainwindow.cpp" line="907"/>
         <source>Grounds</source>
         <translation>Покрытия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="906"/>
+        <location filename="../mainwindow.cpp" line="908"/>
         <source>Teleports</source>
         <translation>Телепорты</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="907"/>
+        <location filename="../mainwindow.cpp" line="909"/>
         <source>Mines</source>
         <translation>Шахты</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="908"/>
+        <location filename="../mainwindow.cpp" line="910"/>
         <source>Triggers</source>
         <translation>Триггеры</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="909"/>
+        <location filename="../mainwindow.cpp" line="911"/>
         <source>Monsters</source>
         <translation>Монстры</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="910"/>
+        <location filename="../mainwindow.cpp" line="912"/>
         <source>Quests</source>
         <translation>Квесты</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="911"/>
+        <location filename="../mainwindow.cpp" line="913"/>
         <source>Wog Objects</source>
         <translation>Объекты WoG</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="912"/>
+        <location filename="../mainwindow.cpp" line="914"/>
         <source>Obstacles</source>
         <translation>Препятствия</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="913"/>
+        <location filename="../mainwindow.cpp" line="915"/>
         <source>Other</source>
         <translation>Прочее</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Mods loading problem</source>
         <translation type="unfinished">Проблема загрузки модов</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1050"/>
+        <location filename="../mainwindow.cpp" line="1052"/>
         <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
         <translation type="unfinished">Критическая ошибка при загрузке модов. Отключите неверные моды и перезапустите.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1056"/>
+        <location filename="../mainwindow.cpp" line="1058"/>
         <source>Undo clicked</source>
         <translation type="unfinished">Нажато «Отменить»</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1067"/>
+        <location filename="../mainwindow.cpp" line="1069"/>
         <source>Redo clicked</source>
         <translation type="unfinished">Нажато «Повторить»</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1078"/>
+        <location filename="../mainwindow.cpp" line="1080"/>
         <source>Passability clicked</source>
         <translation type="unfinished">Нажата «Проходимость»</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1091"/>
+        <location filename="../mainwindow.cpp" line="1093"/>
         <source>Grid clicked</source>
         <translation type="unfinished">Нажата «Сетка»</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1172"/>
+        <location filename="../mainwindow.cpp" line="1174"/>
         <source>Fill clicked</source>
         <translation type="unfinished">Нажата «Заливка»</translation>
     </message>
     <message>
-        <source>View surface</source>
-        <translation type="vanished">Вид на поверхность</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1322"/>
+        <location filename="../mainwindow.cpp" line="1324"/>
         <source>No objects selected</source>
         <translation>Объекты не выбраны</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1326"/>
+        <location filename="../mainwindow.cpp" line="1328"/>
         <source>This operation is irreversible. Do you want to continue?</source>
         <translation>Эта операция необратима. Хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1384"/>
+        <location filename="../mainwindow.cpp" line="1386"/>
         <source>Errors occurred. %1 objects were not updated</source>
         <translation>Произошли ошибки. %1 объектов не было обновлено</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1414"/>
+        <location filename="../mainwindow.cpp" line="1416"/>
         <source>Type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1469"/>
+        <location filename="../mainwindow.cpp" line="1471"/>
         <source>Save to image</source>
         <translation>Сохранить как изображение</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1501"/>
+        <location filename="../mainwindow.cpp" line="1503"/>
         <source>Select maps to convert</source>
         <translation>Выберите карты для конвертации</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1503"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>HoMM3 maps(*.h3m)</source>
         <translation>Карты HoMM3 (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1507"/>
+        <location filename="../mainwindow.cpp" line="1509"/>
         <source>Choose directory to save converted maps</source>
         <translation>Выберите каталог для сохранения конвертированных карт</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Operation completed</source>
         <translation>Операция завершена</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1521"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Successfully converted %1 maps</source>
         <translation>Успешно конвертировано %1 карт</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1525"/>
+        <location filename="../mainwindow.cpp" line="1527"/>
         <source>Failed to convert the map. Abort operation</source>
         <translation>Не удалось конвертировать карту. Операция прервана</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1531"/>
+        <location filename="../mainwindow.cpp" line="1533"/>
         <source>Select campaign to convert</source>
         <translation type="unfinished">Выберите кампанию для конвертации</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1533"/>
+        <location filename="../mainwindow.cpp" line="1535"/>
         <source>HoMM3 campaigns (*.h3c)</source>
         <translation type="unfinished">Кампании HoMM3 (*.h3c)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1537"/>
+        <location filename="../mainwindow.cpp" line="1539"/>
         <source>Select destination file</source>
         <translation type="unfinished">Выберите файл назначения</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1539"/>
+        <location filename="../mainwindow.cpp" line="1541"/>
         <source>VCMI campaigns (*.vcmp)</source>
         <translation type="unfinished">Кампании VCMI (*.vcmp)</translation>
     </message>
@@ -1532,7 +1531,7 @@ Do you want to do that now ?</source>
         <translation>Герои</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation>ОК</translation>
     </message>
@@ -2486,7 +2485,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/campaigneditor.cpp" line="220"/>
         <source>Failed to open campaign</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Не удалось открыть кампанию</translation>
     </message>
 </context>
 <context>
@@ -4096,17 +4095,13 @@ Guard: %3</source>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
-        <source>To few templates!</source>
-        <translation type="unfinished">Слишком мало шаблонов!</translation>
+        <source>Too few templates!</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.cpp" line="915"/>
         <source>At least one template should remain after removing.</source>
         <translation type="unfinished">После удаления должен остаться хотя бы один шаблон.</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation type="obsolete">Ошибка</translation>
     </message>
 </context>
 <context>
@@ -4552,34 +4547,6 @@ Guard: %3</source>
     </message>
 </context>
 <context>
-    <name>Ts</name>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
-        <source>Terrain Selector</source>
-        <translation type="unfinished">Выбор ландшафта</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
-        <source>Spell Selector</source>
-        <translation type="unfinished">Выбор заклинаний</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
-        <source>Artifact Selector</source>
-        <translation type="unfinished">Выбор артефактов</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
-        <source>Skill Selector</source>
-        <translation type="unfinished">Выбор навыков</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
-        <source>Hero Type Selector</source>
-        <translation type="unfinished">Выбор типа героя</translation>
-    </message>
-</context>
-<context>
     <name>Validator</name>
     <message>
         <location filename="../validator.ui" line="17"/>
@@ -4876,10 +4843,6 @@ Guard: %3</source>
         <translation type="unfinished">Пользовательский размер</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translation type="obsolete">Подземелье</translation>
-    </message>
-    <message>
         <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
         <translation type="unfinished">Люди</translation>
@@ -5028,6 +4991,34 @@ Guard: %3</source>
         <location filename="../mainwindow.cpp" line="115"/>
         <source>Delete original files, for the ones split / converted.</source>
         <translation>Удалить оригиналы для преобразованных файлов.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <source>Terrain Selector</source>
+        <translation type="unfinished">Выбор ландшафта</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <source>Spell Selector</source>
+        <translation type="unfinished">Выбор заклинаний</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <source>Artifact Selector</source>
+        <translation type="unfinished">Выбор артефактов</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <source>Skill Selector</source>
+        <translation type="unfinished">Выбор навыков</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <source>Hero Type Selector</source>
+        <translation type="unfinished">Выбор типа героя</translation>
     </message>
 </context>
 </TS>

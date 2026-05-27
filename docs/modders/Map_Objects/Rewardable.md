@@ -450,7 +450,12 @@ Keep in mind, that all randomization is performed on map load and on object rese
         "noneOf" : ["necromancy", "leadership"],
         "amount" : 1
     },
-    {
+	{
+	    // Skill will be selected randomly from all allowed skills that have specified tag set in skill config
+		"tag" : ["spellSchool"],
+		"amount" : 1
+		},
+	{
         // Skill will be selected randomly from all allowed
         "amount" : 3
     }

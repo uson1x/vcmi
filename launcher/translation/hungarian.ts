@@ -434,84 +434,84 @@ Please report this issue to developers</source>
         <translation type="unfinished">Ki kell választania egy Heroes Chronicles telepítőfájlt!</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1156"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1163"/>
         <source>Installing mod %1</source>
         <translation>%1 mod telepítése</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1224"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1251"/>
         <source>Map exists</source>
         <translation type="unfinished">Térkép létezik</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1225"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1252"/>
         <source>Map &apos;%1&apos; already exists. Do you want to overwrite it?</source>
         <translation type="unfinished">A(z) &apos;%1&apos; térkép már létezik. Felül szeretnéd írni?</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1234"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1261"/>
         <source>Yes to All</source>
         <translation type="unfinished">Igen mindet</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1235"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1262"/>
         <source>No to All</source>
         <translation type="unfinished">Nem mindet</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1324"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1351"/>
         <source>Import complete</source>
         <translation type="unfinished">Importálás befejezve</translation>
     </message>
     <message numerus="yes">
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1324"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1351"/>
         <source>%n map(s) successfully imported.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1456"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1483"/>
         <source>Uninstall mod</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1456"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1483"/>
         <source>Are you sure you want to uninstall %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../modManager/cmodlistview_moc.cpp" line="974"/>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1354"/>
         <source>Import failed</source>
         <translation type="unfinished">Importálás sikertelen</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1327"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1354"/>
         <source>Failed to import the following maps:
 %1</source>
         <translation type="unfinished">A következő térképek importálása nem sikerült:
 %1</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1353"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1380"/>
         <source>Operation failed</source>
         <translation>Művelet sikertelen</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1354"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1381"/>
         <source>Encountered errors:
 </source>
         <translation>Talált hibák:
 </translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1406"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1433"/>
         <source>screenshots</source>
         <translation>képernyőképek</translation>
     </message>
     <message>
-        <location filename="../modManager/cmodlistview_moc.cpp" line="1412"/>
+        <location filename="../modManager/cmodlistview_moc.cpp" line="1439"/>
         <source>Screenshot %1</source>
         <translation>Képernyőkép %1</translation>
     </message>
@@ -1064,8 +1064,8 @@ Exkluzív teljes képernyő - a játék teljes képernyős módban fut, és az �
 <context>
     <name>File size</name>
     <message>
-        <location filename="../modManager/modstate.cpp" line="145"/>
-        <location filename="../modManager/modstatemodel.cpp" line="93"/>
+        <location filename="../modManager/modstate.cpp" line="159"/>
+        <location filename="../modManager/modstatemodel.cpp" line="101"/>
         <source>%1 MiB</source>
         <translation>%1 MiB</translation>
     </message>
@@ -1299,139 +1299,139 @@ Az offline telepítő két fájlból áll: &quot;.exe&quot; és &quot;.bin&quot;
         <translation>Adatok másolása a VCMI mappába?</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="404"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="405"/>
         <source>GOG file (*.*)</source>
         <translation>GOG fájl (*.*)</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="405"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="406"/>
         <source>File selection</source>
         <translation>Fájl kiválasztása</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="416"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="616"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="417"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="617"/>
         <source>GOG installer</source>
         <translation>GOG telepítő</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="509"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="510"/>
         <source>Heroes III: HD Edition files are not supported by VCMI.
 Please select the directory with Heroes III: Complete Edition or Heroes III: Shadow of Death.</source>
         <translation>A Heroes III: HD Edition fájlokat a VCMI nem támogatja.
 Kérjük, válassza ki a Heroes III: Complete Edition vagy Heroes III: Shadow of Death verzió könyvtárát.</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="511"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="512"/>
         <source>Unknown or unsupported Heroes III version found.
 Please select the directory with Heroes III: Complete Edition or Heroes III: Shadow of Death.</source>
         <translation>Ismeretlen vagy nem támogatott Heroes III verzió található.
 Kérjük, válassza ki a Heroes III: Complete Edition vagy Heroes III: Shadow of Death verzió könyvtárát.</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="432"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="629"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="433"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="630"/>
         <source>GOG data</source>
         <translation>GOG adatok</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="348"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="349"/>
         <source>Failed to open file: %1</source>
         <translation type="unfinished">Nem sikerült megnyitni a fájlt: %1</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="368"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="394"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="369"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="395"/>
         <source>You need to select a %1 file!</source>
         <comment>param is file extension</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="376"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="377"/>
         <source>Unknown installer selected.
 You need to select the offline GOG installer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="388"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="389"/>
         <source>You selected a GOG Galaxy installer. This file does not contain the game. Please download the offline backup game installer instead.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="417"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="418"/>
         <source>Select the offline GOG installer (.exe)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="426"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="619"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="427"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="620"/>
         <source>Invalid file selected</source>
         <translation type="unfinished">Érvénytelen fájl kiválasztva</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="433"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="434"/>
         <source>Select the offline GOG installer data file: %1</source>
         <comment>param is file name</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="453"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="632"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="454"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="633"/>
         <source>Invalid data file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="548"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="684"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="549"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="685"/>
         <source>Importing Heroes III data...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="581"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="582"/>
         <source>Preparing installer...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="641"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="642"/>
         <source>Extracting installer...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="668"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="669"/>
         <source>Extracting error!</source>
         <translation>Kicsomagolási hiba!</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="672"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="673"/>
         <source>Hash error!</source>
         <translation>Hash hiba!</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="676"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="677"/>
         <source>No Heroes III data!</source>
         <translation>Nincs Heroes III adat!</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="676"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="677"/>
         <source>Selected files do not contain Heroes III data!</source>
         <translation>A kiválasztott fájlok nem tartalmaznak Heroes III adatokat!</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="698"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="699"/>
         <source>Scanning selected folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="473"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="506"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="474"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="507"/>
         <source>Failed to detect valid Heroes III data in chosen directory.
 Please select the directory with installed Heroes III data.</source>
         <translation>Nem sikerült érvényes Heroes III adatokat találni a kiválasztott könyvtárban.
 Kérjük, válassza ki az installált Heroes III adatokat tartalmazó könyvtárat.</translation>
     </message>
     <message>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="473"/>
-        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="517"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="474"/>
+        <location filename="../firstLaunch/firstlaunch_moc.cpp" line="518"/>
         <source>Heroes III data not found!</source>
         <translation>Heroes III adatok nem találhatóak!</translation>
     </message>
@@ -1470,21 +1470,6 @@ Kérjük, válassza ki az installált Heroes III adatokat tartalmazó könyvtár
         <location filename="../modManager/imageviewer_moc.ui" line="20"/>
         <source>Image Viewer</source>
         <translation>Képnézegető</translation>
-    </message>
-    <message>
-        <location filename="../modManager/imageviewer_moc.ui" line="100"/>
-        <source>&lt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../modManager/imageviewer_moc.ui" line="138"/>
-        <source>&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../modManager/imageviewer_moc.ui" line="176"/>
-        <source>X</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1600,126 +1585,131 @@ Bin (%n bájt):
     </message>
     <message>
         <location filename="../languages.cpp" line="26"/>
-        <source>Chinese</source>
-        <translation>Kínai</translation>
+        <source>Simplified Chinese</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="27"/>
-        <source>Dutch</source>
+        <source>Traditional Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="28"/>
+        <source>Dutch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../languages.cpp" line="29"/>
         <source>English</source>
         <translation>Angol</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="29"/>
+        <location filename="../languages.cpp" line="30"/>
         <source>Filipino</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="30"/>
+        <location filename="../languages.cpp" line="31"/>
         <source>Finnish</source>
         <translation>Finn</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="31"/>
+        <location filename="../languages.cpp" line="32"/>
         <source>French</source>
         <translation>Francia</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="32"/>
+        <location filename="../languages.cpp" line="33"/>
         <source>German</source>
         <translation>Német</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="33"/>
+        <location filename="../languages.cpp" line="34"/>
         <source>Greek</source>
         <translation type="unfinished">Görög</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="34"/>
+        <location filename="../languages.cpp" line="35"/>
         <source>Hungarian</source>
         <translation>Magyar</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="35"/>
+        <location filename="../languages.cpp" line="36"/>
         <source>Italian</source>
         <translation>Olasz</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="36"/>
+        <location filename="../languages.cpp" line="37"/>
         <source>Japanese</source>
         <translation type="unfinished">Japán</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="37"/>
+        <location filename="../languages.cpp" line="38"/>
         <source>Korean</source>
         <translation>Koreai</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="38"/>
+        <location filename="../languages.cpp" line="39"/>
         <source>Latvian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="39"/>
+        <location filename="../languages.cpp" line="40"/>
         <source>Norwegian</source>
         <translation type="unfinished">Norvég</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="40"/>
+        <location filename="../languages.cpp" line="41"/>
         <source>Polish</source>
         <translation>Lengyel</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="41"/>
+        <location filename="../languages.cpp" line="42"/>
         <source>Portuguese</source>
         <translation>Portugál</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="42"/>
+        <location filename="../languages.cpp" line="43"/>
         <source>Romanian</source>
         <translation type="unfinished">Román</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="43"/>
+        <location filename="../languages.cpp" line="44"/>
         <source>Russian</source>
         <translation>Orosz</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="44"/>
+        <location filename="../languages.cpp" line="45"/>
         <source>Serbian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="45"/>
+        <location filename="../languages.cpp" line="46"/>
         <source>Spanish</source>
         <translation>Spanyol</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="46"/>
+        <location filename="../languages.cpp" line="47"/>
         <source>Swedish</source>
         <translation>Svéd</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="47"/>
+        <location filename="../languages.cpp" line="48"/>
         <source>Turkish</source>
         <translation>Török</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="48"/>
+        <location filename="../languages.cpp" line="49"/>
         <source>Ukrainian</source>
         <translation>Ukrán</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="49"/>
+        <location filename="../languages.cpp" line="50"/>
         <source>Vietnamese</source>
         <translation>Vietnami</translation>
     </message>
     <message>
-        <location filename="../languages.cpp" line="71"/>
+        <location filename="../languages.cpp" line="72"/>
         <source>Auto (%1)</source>
         <translation>Automatikus (%1)</translation>
     </message>
@@ -1770,12 +1760,12 @@ Bin (%n bájt):
 <context>
     <name>ModFields</name>
     <message>
-        <location filename="../modManager/modstateitemmodel_moc.cpp" line="192"/>
+        <location filename="../modManager/modstateitemmodel_moc.cpp" line="194"/>
         <source>Name</source>
         <translation>Név</translation>
     </message>
     <message>
-        <location filename="../modManager/modstateitemmodel_moc.cpp" line="195"/>
+        <location filename="../modManager/modstateitemmodel_moc.cpp" line="197"/>
         <source>Type</source>
         <translation>Típus</translation>
     </message>

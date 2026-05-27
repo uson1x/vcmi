@@ -668,7 +668,7 @@ BattleHex BattleFieldController::getHexAtPosition(Point hoverPos)
 
 	if (owner.defendingHero)
 	{
-		if (owner.attackingHero->pos.isInside(hoverPos))
+		if (owner.defendingHero->pos.isInside(hoverPos))
 			return BattleHex::HERO_DEFENDER;
 	}
 

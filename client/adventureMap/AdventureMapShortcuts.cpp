@@ -26,6 +26,7 @@
 #include "../windows/CMarketWindow.h"
 #include "../windows/GUIClasses.h"
 #include "../windows/InfoWindows.h"
+#include "../windows/wiki/WikiWindow.h"
 #include "../windows/settings/SettingsMainWindow.h"
 #include "AdventureMapInterface.h"
 #include "AdventureOptions.h"
@@ -124,7 +125,8 @@ std::vector<AdventureMapShortcutState> AdventureMapShortcuts::getShortcuts()
 		{ EShortcut::ADVENTURE_SEARCH,           optionSidePanelActive(),[this]() { this->search(false); } },
 		{ EShortcut::ADVENTURE_SEARCH_CONTINUE,  optionSidePanelActive(),[this]() { this->search(true); } },
 		{ EShortcut::ADVENTURE_DISEMBARK,        optionCanDisembark(),   [this]() { this->enterDisembarkMode(); } },
-		{ EShortcut::MAIN_MENU_LOBBY,            optionSidePanelActive(),[    ]() { ENGINE->user().onGlobalLobbyInterfaceActivated(); } }
+		{ EShortcut::ADVENTURE_OPEN_WIKI,        optionInMapView(),      [this]() { this->showWiki(); } },
+		{ EShortcut::MAIN_MENU_LOBBY,            optionLobbyActive(),    [    ]() { ENGINE->user().onGlobalLobbyInterfaceActivated(); } }
 	};
 	return result;
 }
@@ -172,6 +174,11 @@ void AdventureMapShortcuts::switchMapLevel()
 void AdventureMapShortcuts::showQuestlog()
 {
 	GAME->interface()->showQuestLog();
+}
+
+void AdventureMapShortcuts::showWiki()
+{
+	ENGINE->windows().createAndPushWindow<WikiWindow>();
 }
 
 void AdventureMapShortcuts::toggleTrackHero()
@@ -301,11 +308,12 @@ void AdventureMapShortcuts::endTurn()
 		{
 			if(!GAME->interface()->localState->isHeroSleeping(hero) && hero->movementPointsRemaining() > 0)
 			{
+				GAME->interface()->localState->verifyPath(hero);
+
 				// Only show hero reminder if conditions are met:
 				// - There are still movement points
-				// - Hero doesn't have a path or there are no points for the first step on path
-
-				if(!GAME->interface()->localState->verifyPath(hero))
+				// - Hero doesn't have a path or there are enough points for the first step on path
+				if(!GAME->interface()->localState->hasPath(hero))
 				{
 					showMoveReminderDialog();
 					return;
@@ -714,6 +722,11 @@ bool AdventureMapShortcuts::optionInWorldView()
 bool AdventureMapShortcuts::optionSidePanelActive()
 {
 	return state == EAdventureState::MAKING_TURN || state == EAdventureState::WORLD_VIEW;
+}
+
+bool AdventureMapShortcuts::optionLobbyActive()
+{
+	return optionSidePanelActive() && !ENGINE->isDemoData();
 }
 
 bool AdventureMapShortcuts::optionMapScrollingActive()
