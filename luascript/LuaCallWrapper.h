@@ -49,7 +49,8 @@ struct LuaClassMemberTraits<R(C::*)(Args...) const noexcept>
 	static constexpr bool isConst = true;
 };
 
-/// Wrapper to convert C++ method into a function with signature that can be called from Lua
+/// Adapts a C++ member function (from a proxy class) into a Lua C function with full exception-to-error translation.
+/// Automatically unpacks `self` and all arguments from the Lua stack using LuaStack type traits.
 template <typename ObjectType, typename MethodType, MethodType method>
 class LuaMethodWrapper
 {
@@ -145,7 +146,8 @@ struct LuaFunctionTraits<R(&)(Args...)> : LuaFunctionTraits<R(*)(Args...)> {};
 template<typename R, typename... Args>
 struct LuaFunctionTraits<R(Args...)> : LuaFunctionTraits<R(*)(Args...)> {};
 
-/// Wrapper to convert C++ functioninto a function with signature that can be called from Lua
+/// Adapts a C++ free function into a Lua C function, unpacking all arguments from the Lua stack.
+/// Use for static proxy methods that need adapted signatures (e.g. fixed extra parameters).
 template <auto func>
 class LuaFunctionWrapper
 {
@@ -203,7 +205,8 @@ public:
 	}
 };
 
-/// Wrapper to convert C++ functioninto a function with signature that can be called from Lua
+/// Thin wrapper for raw `int(lua_State*)` functions that translates C++ exceptions into Lua errors.
+/// Use when a method already has the correct Lua C function signature but needs safe exception handling.
 template <auto func>
 class LuaCallWrapper
 {

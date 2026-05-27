@@ -23,6 +23,7 @@ class int3;
 namespace scripting
 {
 
+/// Exception thrown by LuaStack when a type mismatch or missing value is detected while reading the Lua stack.
 class LuaApiException : public std::runtime_error
 {
 	using std::runtime_error::runtime_error;
@@ -30,6 +31,8 @@ class LuaApiException : public std::runtime_error
 
 class LuaStack;
 
+/// Typed helper for Lua stack operations: push/tryGet/getOrThrow for all VCMI types and API objects.
+/// Records the initial stack top on construction; call balance() to assert the stack is unchanged.
 class LuaStack
 {
 public:

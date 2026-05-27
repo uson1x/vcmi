@@ -22,6 +22,8 @@ namespace scripting
 
 class LuaReference;
 
+/// Manages a single running Lua state for one script; created per-script by LuaScriptPool and does not survive map restarts.
+/// Exposes the VCMI C++ API to the script and dispatches calls to script-defined functions via callMethod.
 class LuaContext final : public Context
 {
 public:

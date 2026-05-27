@@ -29,6 +29,7 @@ class LuaScriptPool;
 namespace spells::effects
 {
 
+/// Registered under the "luaUnit" effect type; loads Lua scripts on demand and creates LuaUnitEffect instances from them.
 class LuaUnitEffectFactory final : public ISpellEffectFactory
 {
 public:
@@ -45,6 +46,7 @@ private:
 	scripting::LuaModule & host;
 };
 
+/// Implements a unit-targeted spell effect (apply, receptivity, health change) by delegating to a Lua script.
 class LuaUnitEffect final : public UnitEffect
 {
 	using LuaScriptInstance = scripting::LuaScriptInstance;

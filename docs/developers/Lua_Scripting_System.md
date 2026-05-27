@@ -1,6 +1,6 @@
 # Lua Scripting System
 
-This page describes internal working of Lua scripting module. For usage of public API see modding documentation
+This page describes the internal working of the Lua scripting module. For usage of the public API see modding documentation.
 
 ## TODO
 
@@ -49,58 +49,222 @@ Global state of a Lua script must never change - script should not make assumpti
 - Library classes, such as Creature must be passed as pointer like `const Creature *`, not as identifier like `CreatureID`
 - If you need to expose identifier, prefer exposing its string form, like one provided via `getJsonKey`
 
-## Exposing class to Lua script
+## Script conventions
 
-1. Decide how this class should be passed into Lua
-   - As Lua table (POD type): inherit class from `scripting::ApiSerializable` and implement `void serializeScript(Serializer & s)` method. Skip all subsequent steps. This approach is preferred for POD types
-   - As copy: inherit class from `scripting::ApiCopyable`. This approach is preferred for small classes that don't use inheritance to avoid lifetime management
-   - As raw pointer: inherit class from `scripting::ApiRawPointer`. Preferred for classes that are guaranteed to exists longer than scripts or for interfaces
-   - As shared pointer: inherit class from `scripting::ApiSharedPointer`. Preferred for short-lived classes or for interfaces
-2. Create class named XXXProxy and place it into one of `luascript/api` subdirectories
-3. Provide all methods that needs to be exposed to a script in `REGISTER_CUSTOM` field:
-   - if method can be used as it, use `LuaMethodWrapper` or `LuaSharedMethodWrapper` adapters
-   - if method needs a simple adaptor, like provide a fixed parameter to a method, use `LuaFunctionWrapper` and implement static method with adapted signature in `XXXProxy` class
-   - if method needs a compex adaptor, like to allow optional parameters, implement static method `int doXXX(lua_State * L)` and use it directly. WARNING: Should be avoided
-4. Allow access to this class in script by returning it via API call or by passing it into script callback
+Every Lua script must return a table. This table becomes the script's *class table* — the set of functions the engine can call on it. The OOP convention used is:
+
+```lua
+local MyEffect = {}
+
+function MyEffect:apply(event)
+    -- 'self' receives the effect's parameters (from JSON), __index-linked to MyEffect
+end
+
+return MyEffect
+```
+
+When the engine calls a script function, it constructs a `self` table from the script's JSON parameters and sets its `__index` metamethod to point at the script table. This means `self` carries per-instance data while method lookups fall through to the shared class table.
+
+The following global names are injected by `LuaContext` before the script runs:
+
+| Global | Type | Description |
+|--------|------|-------------|
+| `GAME` | `game.Game` | Read-only query interface to the current game state |
+| `LIBRARY` | `library.Services` | Access to entity databases (creatures, spells, etc.) |
+| `ENUM` | table | Integer constants for all engine enumerations |
+| `require` | function | Load a Lua module from the VFS by path (e.g. `require("mod:path/to/module")`) |
+| `print` | function | Redirected to the VCMI logger at INFO level |
+
+The following standard Lua globals are **removed** for safety: `collectgarbage`, `dofile`, `load`, `loadfile`, `loadstring`, `string.dump`, `math.random`, `math.randomseed`.
+
+## Architecture overview
+
+```
+ScriptingHandler (engine core)
+  └── LuaModule  (DLL plugin, implements Service)
+        ├── LuaSpellEffectFactory  (effect type "lua")
+        ├── LuaUnitEffectFactory   (effect type "luaUnit")
+        └── createPoolInstance()
+              └── LuaScriptPool  (owned by CGameState)
+                    └── LuaContext  (one per script, per session)
+```
+
+Script *source* (path + text) lives in `LuaScriptInstance` objects, which are owned by the effect factories and persist across map restarts. The runnable execution environment — the `lua_State` itself — lives in `LuaContext` and is torn down and recreated on each map restart.
 
 ## Classes
 
-#### LuaModule
+### LuaModule
 
-Global class responsible for loading Lua scripts on startup. Part of `ScriptingHandler`.
+Global entry point for the Lua scripting system. Loaded as a dynamic library plugin by `ScriptingHandler`. Implements the `scripting::Service` interface and exposes two C entry points:
 
-#### LuaScriptInstance
+- `GetAiName` — returns the module display name `"Lua interpreter"`
+- `GetNewModule` — creates and returns a new `LuaModule` instance
 
-Instance of loaded script content (e.g. script source code). One is created for each loaded script. Persists between map restarts. Owned by `LuaModule`
+On `installScripting`, registers `LuaSpellEffectFactory` under the effect type key `"lua"` and `LuaUnitEffectFactory` under `"luaUnit"`. On `createPoolInstance`, creates a `LuaScriptPool` and registers all currently loaded scripts into it.
 
-#### LuaScriptPool
+### LuaScriptInstance
 
-Owned by CGameState. Contains runnable instances of all scripts
+Stores the source code and identity of a single Lua script. Created by `LuaSpellEffectFactory` or `LuaUnitEffectFactory` when an effect type references a Lua script path. Persists for the lifetime of the module — across map restarts.
 
-#### LuaContext
+Key fields:
+- `modScope` — the mod that owns this script (used to scope VFS lookups)
+- `sourcePath` — path inside the mod's `Scripts/` directory
+- `sourceText` — raw Lua source code loaded from VFS
 
-Manages a single script. Game maintains one LuaContext for each loaded script. Each script has its own independent LuaState. Does not persists between map restarts. Owned by `LuaScriptPool`
+The identifier exposed to the engine is `modScope:sourcePath`.
 
-#### CopyableWrapper, RawPointerWrapper and SharedPointerWrapper
+### LuaScriptPool
 
-Wrapper to expose C++ class to Lua in form of table with metadata
+Owned by `CGameState`. Created fresh on each map load via `LuaModule::createPoolInstance`. Holds one `LuaContext` per registered script. Scripts are registered during pool construction; their contexts are initialized (i.e. the Lua chunk is executed once to produce the class table) before gameplay begins.
 
-#### LuaFunctionWrapper and LuaMethodWrapper
+`getContext(script)` returns the live context for a given `LuaScriptInstance`; called by effect implementations to dispatch Lua function calls.
 
-Wrappers to adapt C++ method call into Lua callback signature `int function(lua_State * L)`
+### LuaContext
 
-#### LuaStack
+Manages a single `lua_State` for one script. Does **not** survive map restarts — it is destroyed and recreated with the owning `LuaScriptPool`.
 
-Helper to manage Lua state. Provides helper functions to:
+**Construction** (`LuaContext::LuaContext`):
+1. Opens a restricted subset of the standard library (`base`, `table`, `string`, `math`).
+2. Strips unsafe globals (`dofile`, `load`, `collectgarbage`, …).
+3. Registers all API types from `api::Registry` into the Lua registry and populates the `modules` table.
+4. Injects `GAME`, `LIBRARY`, `ENUM`, and the custom `require` function as globals.
 
-- push variables onto Lua stack
-- query variables located as specific position of the stack
-- adjust stack size, including automatic restoration of stack size to its initial size
+**Initialization** (`LuaContext::initialize`):
+Executes the script source once via `lua_pcall`. The script must return a table; that table is stored as `scriptTable` (a `LuaReference`). This is the script's class table.
 
-#### LuaReference
+**Dispatch** (`LuaContext::callMethod`):
+Template method. Looks up the named function in `scriptTable`, builds a `self` table from a `JsonNode` parameter block (with `__index = scriptTable` as metatable), then calls the function with `self` and any additional C++ arguments pushed by `LuaStack`.
 
-TODO
+**Module loading** (`LuaContext::require` / `LuaContext::loadModule`):
+Handles `require("scope:path")` from scripts. Resolves the path through the VFS (prepending `SCRIPTS/`), compiles and runs the chunk, and returns the resulting table to the script.
 
-#### LuaSpellEffect
+**Thread safety**: Each `LuaContext` holds a `std::mutex`. `hasFunction` and `callMethod` both lock it, making concurrent calls from different threads safe (but serialized).
 
-Adapter to provide spell effect implementation via Lua
+### LuaReference
+
+RAII wrapper around the Lua registry (`luaL_ref` / `luaL_unref`). Holds a value (table, function, etc.) in the Lua registry so it is not garbage-collected. Provides `push()` to put the referenced value back on the active stack.
+
+Used inside `LuaContext` to hold:
+- `modules` — the table of all registered API modules
+- `scriptClosure` — the compiled but not-yet-executed script chunk
+- `scriptTable` — the table returned by the script on first execution
+
+### LuaStack
+
+Central typed interface between C++ and the Lua stack. Constructed with a `lua_State *`; records `lua_gettop` at construction so `balance()` can assert the stack is unchanged.
+
+**Pushing** (`push` overloads):
+Handles all VCMI types uniformly through template specialization:
+- Primitives: `bool`, integers, enums, `IdentifierBase` subtypes → `lua_pushinteger`
+- `std::string`, `const char *` → `lua_pushlstring`
+- `JsonNode` → Lua table (recursive)
+- `std::vector<T>`, `boost::container::small_vector` → Lua array table
+- `std::map<std::string, T>` → Lua hash table
+- `ApiSerializable` subtypes → Lua table via `serializeScript` callback
+- `ApiRawPointer *` → userdata + metatable looked up in `Registry`
+- `std::shared_ptr<ApiSharedPointer>` → userdata + metatable
+- `ApiCopyable` → userdata copy + metatable
+
+**Reading** (`tryGet` / `getOrThrow` / `getNonNullOrThrow`):
+Mirror image of push; returns `false` or throws `LuaApiException` on type mismatch. For pointer types, validates the userdata's metatable against the registry entry before casting.
+
+### LuaApiException
+
+`std::runtime_error` subclass thrown by `LuaStack` when a type mismatch or missing value is encountered. Caught by the `LuaMethodWrapper` / `LuaFunctionWrapper` / `LuaCallWrapper` invoke wrappers and re-raised as a Lua error via `lua_error`.
+
+### LuaCallWrapper, LuaMethodWrapper, LuaFunctionWrapper
+
+Template wrappers that bridge C++ callables and Lua's `lua_CFunction` signature (`int(lua_State*)`).
+
+**`LuaCallWrapper<func>`** — the simplest wrapper. For functions that already have the correct `int(lua_State*)` signature. Wraps the call in a `try/catch` that converts C++ exceptions to Lua errors.
+
+**`LuaFunctionWrapper<func>`** — for plain C++ free functions or static proxy methods. Uses `LuaFunctionTraits` to decompose the function signature, pulls all arguments from the Lua stack starting at index 1, invokes the function, and pushes the return value (if any).
+
+**`LuaMethodWrapper<ObjectType, MethodType, method>`** — for member functions of proxy classes. Pulls `self` (as raw pointer, shared_ptr, or by-value copy depending on `ObjectType`'s tag base class) from stack position 1, then pulls remaining arguments from positions 2…N. Invokes the member function and pushes the result.
+
+All three wrappers catch `std::exception` and call `lua_error`, which performs a `longjmp` — so there must be no local variables with non-trivial destructors in the `invoke` function body.
+
+### RawPointerWrapper, SharedPointerWrapper, CopyableWrapper
+
+CRTP Registar implementations used to register proxy classes with the Lua engine. Each creates the appropriate Lua metatable structure when `pushMetatable` is called during `LuaContext` construction.
+
+**`RawPointerWrapper<T, Proxy>`** — for classes tagged `ApiRawPointer`. Creates two metatables: one for `T*` and one for `const T*`. Both share the same `__index` table populated from `Proxy::REGISTER_CUSTOM`. Does **not** install `__gc` since raw pointers are not owned by Lua.
+
+**`SharedPointerWrapper<T, Proxy>`** — for classes tagged `ApiSharedPointer`. Creates one metatable for `std::shared_ptr<T>` with `__gc` to destruct the shared_ptr (decrementing the refcount). Also pushes a static constructor table with `new()`.
+
+**`CopyableWrapper<T, Proxy>`** — for classes tagged `ApiCopyable`. Stores a full copy inside Lua userdata. Installs `__gc` to call the destructor. Also pushes a static constructor table with `new()`.
+
+Each wrapper builds a static table (accessible by module name in the `modules` global) and a per-instance metatable (used when accessing methods on a userdata value).
+
+### RegistarBase
+
+Abstract base for the three wrapper types above. Provides virtual `adjustMetatable` and `adjustStaticTable` hooks (both no-ops by default) that derived wrappers can override to add extra entries.
+
+### api::Registar
+
+Pure interface (`pushMetatable(lua_State*)`) implemented by `RegistarBase`. The `Registry` stores `Registar` instances and calls `pushMetatable` once per `LuaContext` during `registerPublicTypes`.
+
+### api::Registry
+
+Singleton (access via `Registry::get()`). Constructed once at program startup; its constructor calls `registerPrivate` for every known proxy type, associating a human-readable dotted name (e.g. `"battle.Unit"`) with the corresponding `Registar` instance.
+
+`getTypeName<T>()` returns `typeid(T).name()` as the metatable key used in the Lua registry. This is an opaque internal key; scripts never see it directly.
+
+`find(name)` looks up a type in the public map (currently all types are registered as private, meaning they are accessible from scripts but not listed in the public API).
+
+### LuaSpellEffect and LuaSpellEffectFactory
+
+`LuaSpellEffectFactory` is registered under the JSON effect type key `"lua"`. When `SpellEffectService` encounters this type during mod loading it calls `initialize(scope, name)` to load the Lua script, then `create(scope, name)` to return a `LuaSpellEffect` for each spell that uses it.
+
+`LuaSpellEffect` implements the full `spells::effects::Effect` interface by resolving the active `LuaContext` from the current `Mechanics` object and delegating each virtual method call to the correspondingly named Lua function:
+
+| C++ virtual | Lua function |
+|---|---|
+| `adjustTargetTypes` | `adjustTargetTypes` |
+| `adjustAffectedHexes` | `adjustAffectedHexes` |
+| `applicableGeneral` | `applicableGeneral` |
+| `applicableTarget` | `applicableTarget` |
+| `apply` | `apply` |
+| `filterTarget` | `filterTarget` |
+| `transformTarget` | `transformTarget` |
+| `getHealthChange` | `getHealthChange` |
+
+JSON effect parameters (from the spell definition) are serialized into the `self` table passed to each Lua call.
+
+### LuaUnitEffect and LuaUnitEffectFactory
+
+Parallel to the above, but for the `"luaUnit"` effect type. `LuaUnitEffect` extends `spells::effects::UnitEffect` and delegates `apply`, `isReceptive`, `isValidTarget`, and `getHealthChange` to Lua.
+
+## Exposing a class to Lua scripts
+
+1. **Choose a lifetime model** and inherit the C++ class from the matching API tag:
+   - `scripting::ApiSerializable` — serialize as a Lua table (POD, no proxy needed); implement `serializeScript(auto & s)`
+   - `scripting::ApiCopyable` — copy into Lua userdata; for small value types without inheritance
+   - `scripting::ApiRawPointer` — pass raw pointer; for long-lived singletons or interfaces
+   - `scripting::ApiSharedPointer` — pass `shared_ptr`; for short-lived objects or interfaces with shared ownership
+
+2. **Create a proxy class** `XXXProxy` in the appropriate `luascript/api/` subdirectory. The proxy inherits from the matching wrapper template (`RawPointerWrapper<X, XXXProxy>` etc.) and declares a static `REGISTER_CUSTOM` array of `CustomRegType` entries, each mapping a Lua method name to a C function.
+
+3. **Wrap each exposed method** using one of:
+   - `LuaMethodWrapper<ObjectType, MethodType, &C::method>::invoke` — direct method wrapper
+   - `LuaFunctionWrapper<&XXXProxy::adaptedMethod>::invoke` — static adapter with custom signature
+   - `LuaCallWrapper<&XXXProxy::rawMethod>::invoke` — for methods already in `int(lua_State*)` form
+
+4. **Register the proxy** in `Registry::Registry()` in `api/Registry.cpp` with `registerPrivate<XXXProxy>("module.Name")`.
+
+5. **Expose instances** by returning the object from an existing API call or by passing it as an argument when invoking a script callback.
+
+## Data flow: a spell effect call
+
+```
+Engine calls LuaSpellEffect::apply(server, mechanics, target)
+  → resolveScript(mechanics) → LuaScriptPool::getContext(script) → LuaContext
+  → LuaContext::callMethod<void>("apply", parameters, server, mechanics, target)
+      → lock mutex
+      → LuaStack: push function from scriptTable
+      → LuaStack: build self = {params...} with __index = scriptTable
+      → LuaStack: push server (ServerCb userdata), mechanics (SpellMechanics userdata), target (...)
+      → lua_pcall(L, argc, 1, 0)
+      → Lua script: function MyEffect:apply(server, mechanics, target) ... end
+      → LuaStack: pop result, unlock mutex
+```
