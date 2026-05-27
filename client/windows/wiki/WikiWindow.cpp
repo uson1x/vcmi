@@ -653,7 +653,7 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 				for(const auto & faction : LIBRARY->townh->objects)
 				{
 					if(faction && faction->hasTown() && !faction->special
-						&& faction->getNativeTerrain() == terrain->getId())
+						&& faction->isNativeTerrain(terrain->getId())
 					{
 						if(!nativeTowns.empty()) nativeTowns += ", ";
 						nativeTowns += faction->getNameTranslated();
