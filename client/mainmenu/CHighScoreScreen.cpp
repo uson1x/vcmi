@@ -197,7 +197,8 @@ void CHighScoreScreen::buttonExitClick()
 
 void CHighScoreScreen::showAll(Canvas & to)
 {
-	to.fillTexture(ENGINE->renderHandler().loadImage(ImagePath::builtin("DiBoxBck"), EImageBlitMode::OPAQUE));
+	const auto & bgConfig = CMainMenuConfig::get().getConfig()["backgroundAround"];
+	to.fillTexture(ENGINE->renderHandler().loadImage(bgConfig.isString() ? ImagePath::fromJson(bgConfig) : ImagePath::builtin("DIBOXBCK"), EImageBlitMode::OPAQUE));
 	CWindowObject::showAll(to);
 }
 
