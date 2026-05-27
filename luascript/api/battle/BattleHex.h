@@ -1,5 +1,5 @@
 /*
- * BattleHexProxy.h, part of VCMI engine
+ * BattleHex.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *

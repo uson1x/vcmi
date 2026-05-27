@@ -14,7 +14,7 @@
 
 #include "../../LuaWrapper.h"
 
-#include "EventBusProxy.h"
+#include "EventBus.h"
 
 namespace scripting
 {

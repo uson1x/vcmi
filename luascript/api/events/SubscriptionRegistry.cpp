@@ -1,5 +1,5 @@
 /*
- * EventBusProxy.cpp, part of VCMI engine
+ * SubscriptionRegistry.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,10 +9,7 @@
  */
 #include "StdInc.h"
 
-#include "EventBusProxy.h"
-
-#include "../../LuaStack.h"
-#include "../../LuaCallWrapper.h"
+#include "SubscriptionRegistry.h"
 
 #include "../Registry.h"
 
@@ -25,8 +22,7 @@ namespace api
 namespace events
 {
 //No methods here, just an empty metatable for type safety.
-const std::vector<EventBusProxy::CustomRegType> EventBusProxy::REGISTER_CUSTOM = {};
-
+const std::vector<EventSubscriptionProxy::CustomRegType> EventSubscriptionProxy::REGISTER_CUSTOM = {};
 }
 }
 }

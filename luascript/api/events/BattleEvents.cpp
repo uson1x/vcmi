@@ -15,7 +15,7 @@
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
 #include "../../../lib/battle/Unit.h"
-#include "SubscriptionRegistryProxy.h"
+#include "SubscriptionRegistry.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

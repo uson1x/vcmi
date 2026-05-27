@@ -1,5 +1,5 @@
 /*
- * GameCb.h, part of VCMI engine
+ * EventBus.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,11 +10,9 @@
 
 #pragma once
 
-#include "../LuaWrapper.h"
+#include <vcmi/events/EventBus.h>
 
-#include "../../lib/callback/IGameInfoCallback.h"
-
-#include <vcmi/scripting/Service.h>
+#include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,16 +20,17 @@ namespace scripting
 {
 namespace api
 {
+namespace events
+{
 
-class GameCbProxy : public RawPointerWrapper<const GameCb, GameCbProxy>
+class EventBusProxy : public RawPointerWrapper<::events::EventBus, EventBusProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const GameCb, GameCbProxy>;
-
+	using Wrapper = RawPointerWrapper<::events::EventBus, EventBusProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-
 };
 
+}
 }
 }
 

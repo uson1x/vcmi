@@ -1,5 +1,5 @@
 /*
- * BattleHexProxy.cpp, part of VCMI engine
+ * BattleHex.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,7 +10,7 @@
 
 #include "StdInc.h"
 
-#include "BattleHexProxy.h"
+#include "BattleHex.h"
 
 #include "../../../lib/GameLibrary.h"
 #include "../../LuaStack.h"

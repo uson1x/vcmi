@@ -1,5 +1,5 @@
 /*
- * BattleCb.h, part of VCMI engine
+ * IBattleInfoCallback.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -11,19 +11,19 @@
 #pragma once
 
 #include <vcmi/scripting/Service.h>
-#include "../../lib/battle/IBattleInfoCallback.h"
+#include "../../../lib/battle/IBattleInfoCallback.h"
 
-#include "../LuaWrapper.h"
+#include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
 {
 
-class BattleCbProxy : public RawPointerWrapper<const IBattleInfoCallback, BattleCbProxy>
+class IBattleInfoCallbackProxy : public RawPointerWrapper<const IBattleInfoCallback, IBattleInfoCallbackProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const IBattleInfoCallback, BattleCbProxy>;
+	using Wrapper = RawPointerWrapper<const IBattleInfoCallback, IBattleInfoCallbackProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

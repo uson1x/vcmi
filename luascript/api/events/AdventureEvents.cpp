@@ -14,7 +14,7 @@
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
-#include "SubscriptionRegistryProxy.h"
+#include "SubscriptionRegistry.h"
 
 namespace scripting
 {

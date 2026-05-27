@@ -1,5 +1,5 @@
 /*
- * ServerCb.h, part of VCMI engine
+ * ServerCallback.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -12,7 +12,7 @@
 
 #include <vcmi/ServerCallback.h>
 
-#include "../LuaWrapper.h"
+#include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -21,10 +21,10 @@ namespace scripting
 namespace api
 {
 
-class ServerCbProxy : public RawPointerWrapper<ServerCallback, ServerCbProxy>
+class ServerCallbackProxy : public RawPointerWrapper<ServerCallback, ServerCallbackProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<ServerCallback, ServerCbProxy>;
+	using Wrapper = RawPointerWrapper<ServerCallback, ServerCallbackProxy>;
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 

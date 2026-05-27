@@ -1,5 +1,5 @@
 /*
- * BattleCb.cpp, part of VCMI engine
+ * IBattleInfoCallback.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,15 +9,15 @@
  */
 #include "StdInc.h"
 
-#include "BattleCb.h"
+#include "IBattleInfoCallback.h"
 #include <vcmi/Entity.h>
 
-#include "../LuaStack.h"
-#include "../LuaCallWrapper.h"
+#include "../../LuaStack.h"
+#include "../../LuaCallWrapper.h"
 
-#include "../../lib/GameConstants.h"
-#include "../../lib/battle/Unit.h"
-#include "../../lib/BattleFieldHandler.h"
+#include "../../../lib/GameConstants.h"
+#include "../../../lib/battle/Unit.h"
+#include "../../../lib/BattleFieldHandler.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -25,18 +25,18 @@ namespace scripting::api
 {
 
 
-const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
+const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
 {
 	{ "getNextUnitId", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleNextUnitId), &BattleCb::battleNextUnitId>::invoke, false },
 	{ "getTacticDistance", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleTacticDist), &BattleCb::battleTacticDist>::invoke, false },
 	{ "getUnitById", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleGetUnitByID), &BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke, false },
 
-	{ "getAvailableHex", LuaCallWrapper<&BattleCbProxy::getAvailableHex>::invoke, false },
-	{ "getAnyUnitIf", LuaCallWrapper<&BattleCbProxy::getAnyUnitIf>::invoke, false },
+	{ "getAvailableHex", LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
+	{ "getAnyUnitIf", LuaCallWrapper<&IBattleInfoCallbackProxy::getAnyUnitIf>::invoke, false },
 };
 
-int BattleCbProxy::getAvailableHex(lua_State * L)
+int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -58,7 +58,7 @@ int BattleCbProxy::getAvailableHex(lua_State * L)
 	return 1;
 }
 
-int BattleCbProxy::getAnyUnitIf(lua_State * L)
+int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 {
 	LuaStack S(L);
 

@@ -1,5 +1,5 @@
 /*
- * ServerCb.cpp, part of VCMI engine
+ * ServerCallback.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,13 +9,13 @@
  */
 #include "StdInc.h"
 
-#include "ServerCb.h"
+#include "ServerCallback.h"
 
-#include "Registry.h"
+#include "../Registry.h"
 
-#include "../LuaStack.h"
-#include "../../lib/networkPacks/PacksForClientBattle.h"
-#include "../../lib/battle/Unit.h"
+#include "../../LuaStack.h"
+#include "../../../lib/networkPacks/PacksForClientBattle.h"
+#include "../../../lib/battle/Unit.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -24,16 +24,16 @@ namespace scripting
 namespace api
 {
 
-const std::vector<ServerCbProxy::CustomRegType> ServerCbProxy::REGISTER_CUSTOM =
+const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "createUnit", LuaCallWrapper<&ServerCbProxy::createUnit>::invoke, false },
-	{ "updateUnit", LuaCallWrapper<&ServerCbProxy::updateUnit>::invoke, false },
-	{ "injureUnit", LuaCallWrapper<&ServerCbProxy::injureUnit>::invoke, false },
-	{ "healUnit", LuaCallWrapper<&ServerCbProxy::healUnit>::invoke, false },
-	{ "removeUnit", LuaCallWrapper<&ServerCbProxy::removeUnit>::invoke, false },
+	{ "createUnit", LuaCallWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
+	{ "updateUnit", LuaCallWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
+	{ "injureUnit", LuaCallWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
+	{ "healUnit", LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke, false },
+	{ "removeUnit", LuaCallWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
 };
 
-int ServerCbProxy::createUnit(lua_State * L)
+int ServerCallbackProxy::createUnit(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -51,7 +51,7 @@ int ServerCbProxy::createUnit(lua_State * L)
 	return S.retVoid();
 }
 
-int ServerCbProxy::healUnit(lua_State * L)
+int ServerCallbackProxy::healUnit(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -81,7 +81,7 @@ int ServerCbProxy::healUnit(lua_State * L)
 	return S.retVoid();
 }
 
-int ServerCbProxy::updateUnit(lua_State * L)
+int ServerCallbackProxy::updateUnit(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -99,7 +99,7 @@ int ServerCbProxy::updateUnit(lua_State * L)
 	return S.retVoid();
 }
 
-int ServerCbProxy::injureUnit(lua_State * L)
+int ServerCallbackProxy::injureUnit(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -116,7 +116,7 @@ int ServerCbProxy::injureUnit(lua_State * L)
 	return S.retVoid();
 }
 
-int ServerCbProxy::removeUnit(lua_State * L)
+int ServerCallbackProxy::removeUnit(lua_State * L)
 {
 	LuaStack S(L);
 

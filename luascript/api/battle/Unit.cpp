@@ -1,5 +1,5 @@
 /*
- * UnitProxy.cpp, part of VCMI engine
+ * Unit.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,7 +10,7 @@
 
 #include "StdInc.h"
 
-#include "UnitProxy.h"
+#include "Unit.h"
 
 #include "../../../lib/GameLibrary.h"
 #include "../../LuaStack.h"

@@ -14,7 +14,7 @@
 
 #include "../../LuaWrapper.h"
 
-#include "EventBusProxy.h"
+#include "EventBus.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

@@ -1,5 +1,5 @@
 /*
- * BattleHexArrayProxy.cpp, part of VCMI engine
+ * BattleHexArray.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,7 +10,7 @@
 
 #include "StdInc.h"
 
-#include "BattleHexArrayProxy.h"
+#include "BattleHexArray.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

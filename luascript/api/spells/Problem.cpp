@@ -23,14 +23,14 @@ namespace api
 using ::spells::Problem;
 using ::spells::Mechanics;
 
-const std::vector<SpellProblemProxy::CustomRegType> SpellProblemProxy::REGISTER_CUSTOM =
+const std::vector<ProblemProxy::CustomRegType> ProblemProxy::REGISTER_CUSTOM =
 {
-	{"addCustom", LuaCallWrapper<&SpellProblemProxy::addCustom>::invoke, false},
-	{"addGeneric", LuaCallWrapper<&SpellProblemProxy::addGeneric>::invoke, false},
-	{"addStandard", LuaCallWrapper<&SpellProblemProxy::addStandard>::invoke, false},
+	{"addCustom", LuaCallWrapper<&ProblemProxy::addCustom>::invoke, false},
+	{"addGeneric", LuaCallWrapper<&ProblemProxy::addGeneric>::invoke, false},
+	{"addStandard", LuaCallWrapper<&ProblemProxy::addStandard>::invoke, false},
 };
 
-int SpellProblemProxy::addCustom(lua_State * L)
+int ProblemProxy::addCustom(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -51,7 +51,7 @@ int SpellProblemProxy::addCustom(lua_State * L)
 	return S.retVoid();
 }
 
-int SpellProblemProxy::addGeneric(lua_State * L)
+int ProblemProxy::addGeneric(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -65,7 +65,7 @@ int SpellProblemProxy::addGeneric(lua_State * L)
 	return S.retVoid();
 }
 
-int SpellProblemProxy::addStandard(lua_State * L)
+int ProblemProxy::addStandard(lua_State * L)
 {
 	LuaStack S(L);
 

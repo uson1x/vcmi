@@ -1,5 +1,5 @@
 /*
- * GameCb.cpp, part of VCMI engine
+ * IGameInfoCallback.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,14 +9,14 @@
  */
 #include "StdInc.h"
 
-#include "GameCb.h"
+#include "IGameInfoCallback.h"
 
 #include <vcmi/Player.h>
 
-#include "../LuaCallWrapper.h"
+#include "../../LuaCallWrapper.h"
 
-#include "../../lib/callback/IGameInfoCallback.h"
-#include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../../lib/callback/IGameInfoCallback.h"
+#include "../../../lib/mapObjects/CGHeroInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -25,7 +25,7 @@ namespace scripting
 namespace api
 {
 
-const std::vector<GameCbProxy::CustomRegType> GameCbProxy::REGISTER_CUSTOM =
+const std::vector<IGameInfoCallbackProxy::CustomRegType> IGameInfoCallbackProxy::REGISTER_CUSTOM =
 {
 	{"getHero", LuaMethodWrapper<GameCb, decltype(&GameCb::getHero), &GameCb::getHero>::invoke, false},
 
