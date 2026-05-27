@@ -42,7 +42,6 @@ class DLL_LINKAGE CFaction : public Faction
 	FactionID getFactionID() const override; //This function should not be used
 
 public:
-	TerrainId nativeTerrain;
 	std::vector<TerrainId> nativeTerrains;
 	EAlignment alignment = EAlignment::NEUTRAL;
 	bool preferUndergroundPlacement = false;
@@ -75,7 +74,6 @@ public:
 	std::string getDescriptionTextID() const;
 
 	bool hasTown() const override;
-	TerrainId getNativeTerrain() const override;
 	bool isNativeTerrain(TerrainId terrain) const override;
 	EAlignment getAlignment() const override;
 	BoatId getBoatType() const override;

@@ -753,7 +753,36 @@ void CTownHandler::loadPuzzle(CFaction &faction, const JsonNode &source) const
 
 		faction.puzzleMap.push_back(spi);
 	}
-	assert(faction.puzzleMap.size() == GameConstants::PUZZLE_MAP_PIECES);
+assert(faction.puzzleMap.size() == GameConstants::PUZZLE_MAP_PIECES);
+}
+
+static std::vector<JsonNode> getNativeTerrainEntries(const JsonNode & nativeTerrainConfig)
+{
+	if (nativeTerrainConfig.getType() == JsonNode::JsonType::DATA_VECTOR)
+		return nativeTerrainConfig.Vector();
+
+	return {nativeTerrainConfig};
+}
+
+static void loadNativeTerrains(const JsonNode & nativeTerrainConfig, const std::shared_ptr<CFaction> & faction)
+{
+	faction->nativeTerrains.clear();
+
+	if (nativeTerrainConfig.isNull())
+		return;
+
+	for (const auto & terrainIdentifier : getNativeTerrainEntries(nativeTerrainConfig))
+	{
+		// Explicit "none" means "no native terrain".
+		if (terrainIdentifier.String() == "none")
+			continue;
+
+		LIBRARY->identifiers()->requestIdentifier("terrain", terrainIdentifier, [=](int32_t index)
+		{
+			auto terrainId = TerrainId(index);
+			faction->nativeTerrains.push_back(terrainId);
+		});
+	}
 }
 
 std::shared_ptr<CFaction> CTownHandler::loadFromJson(const std::string & scope, const JsonNode & source, const std::string & identifier, size_t index)
@@ -791,49 +820,9 @@ std::shared_ptr<CFaction> CTownHandler::loadFromJson(const std::string & scope, 
 	faction->preferUndergroundPlacement = preferUndergound.isNull() ? false : preferUndergound.Bool();
 	faction->special = source["special"].Bool();
 
-	// NOTE: semi-workaround - normally, towns are supposed to have native terrains.
-	// Towns without one are exceptions. So, vcmi requires nativeTerrain to be defined
-	// But allows it to be defined with explicit value of "none" if town should not have native terrain
-	// This is better than allowing such terrain-less towns silently, leading to issues with RMG
-	faction->nativeTerrain = ETerrainId::NONE;
-	faction->nativeTerrains = {faction->nativeTerrain};
-	const auto & nativeTerrainConfig = source["nativeTerrain"];
-	if (!nativeTerrainConfig.isNull())
-	{
-		std::vector<JsonNode> terrainIdentifiers;
-		if (nativeTerrainConfig.getType() == JsonNode::JsonType::DATA_VECTOR)
-		{
-			terrainIdentifiers = nativeTerrainConfig.Vector();
-		}
-		else
-		{
-			terrainIdentifiers.push_back(nativeTerrainConfig);
-		}
-
-		faction->nativeTerrains.clear();
-		bool hasNonNoneTerrain = false;
-		bool primaryNativeTerrainAssigned = false;
-		for (const auto & terrainIdentifier : terrainIdentifiers)
-		{
-			if (terrainIdentifier.String() == "none")
-				continue;
-
-			hasNonNoneTerrain = true;
-			const bool setAsPrimaryNativeTerrain = !primaryNativeTerrainAssigned;
-			primaryNativeTerrainAssigned = true;
-			LIBRARY->identifiers()->requestIdentifier("terrain", terrainIdentifier, [=](int32_t index)
-			{
-				auto terrainId = TerrainId(index);
-				if (setAsPrimaryNativeTerrain)
-					faction->nativeTerrain = terrainId;
-
-				faction->nativeTerrains.push_back(terrainId);
-			});
-		}
-
-		if (!hasNonNoneTerrain)
-			faction->nativeTerrains.push_back(ETerrainId::NONE);
-	}
+	// NOTE: normally, towns are expected to have native terrains.
+	// "none" results in an empty nativeTerrains vector.
+	loadNativeTerrains(source["nativeTerrain"], faction);
 
 	if (!source["town"].isNull())
 	{

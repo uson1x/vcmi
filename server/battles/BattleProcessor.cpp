@@ -154,7 +154,11 @@ BattleID BattleProcessor::setupBattle(int3 tile, BattleSideArray<const CArmedIns
 	const auto & t = *gameHandler->gameInfo().getTile(tile);
 	TerrainId terrain = t.getTerrainID();
 	if (town)
-		terrain = town->getNativeTerrain();
+	{
+		const auto & nativeTerrains = town->getTown()->faction->nativeTerrains;
+		if (!nativeTerrains.empty())
+			terrain = nativeTerrains.front();
+	}
 	else if (gameHandler->gameState().getMap().isCoastalTile(tile)) //coastal tile is always ground
 		terrain = ETerrainId::SAND;
 

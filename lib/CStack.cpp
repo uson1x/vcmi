@@ -281,8 +281,7 @@ bool CStack::canBeHealed() const
 
 bool CStack::isOnNativeTerrain() const
 {
-	auto nativeTerrain = getNativeTerrain();
-	return nativeTerrain == ETerrainId::ANY_TERRAIN || getCurrentTerrain() == nativeTerrain;
+	return isNativeTerrain(getCurrentTerrain());
 }
 
 TerrainId CStack::getCurrentTerrain() const

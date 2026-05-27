@@ -90,20 +90,12 @@ const IBonusBearer* CGHeroInstance::getBonusBearer() const
 	return this;
 }
 
-TerrainId CGHeroInstance::getNativeTerrain() const
+bool CGHeroInstance::isNativeTerrain(TerrainId terrain) const
 {
-	TerrainId nativeTerrain = ETerrainId::ANY_TERRAIN;
-
 	for(const auto & stack : stacks)
-	{
-		TerrainId stackNativeTerrain = stack.second->getNativeTerrain(); //consider terrain bonuses e.g. Lodestar.
-
-		if(nativeTerrain == ETerrainId::ANY_TERRAIN)
-			nativeTerrain = stackNativeTerrain;
-		else if(nativeTerrain != stackNativeTerrain)
-			return ETerrainId::NONE;
-	}
-	return nativeTerrain;
+		if(!stack.second->isNativeTerrain(terrain))
+			return false;
+	return true;
 }
 
 bool CGHeroInstance::isCoastVisitable() const

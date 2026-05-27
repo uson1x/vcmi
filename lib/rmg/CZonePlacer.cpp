@@ -333,7 +333,7 @@ void CZonePlacer::prepareZones(TZoneMap &zones, TZoneVector &zonesVector, const 
 			{
 				const auto & factionObject = (*LIBRARY->townh)[faction];
 				const auto & nativeTerrains = factionObject->nativeTerrains;
-				if(nativeTerrains.empty() || (nativeTerrains.size() == 1 && nativeTerrains.front() == ETerrainId::NONE))
+				if(nativeTerrains.empty())
 				{
 					//any / random
 					zonesToPlace.push_back(zone);

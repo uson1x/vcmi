@@ -180,12 +180,22 @@ TurnInfo::TurnInfo(TurnInfoCache * sharedCache, const CGHeroInstance * target, i
 			noterrainPenalty.at(affectedTerrain.num) = true;
 		}
 
-		const auto nativeTerrain = target->getNativeTerrain();
-		if (nativeTerrain.hasValue())
-			noterrainPenalty.at(nativeTerrain.num) = true;
+		const auto allStacksNativeForTerrain = [this](TerrainId terrainId)
+		{
+			for (const auto & slot : this->target->Slots())
+			{
+				if (!slot.second->isNativeTerrain(terrainId))
+					return false;
+			}
+			return true;
+		};
 
-		if (nativeTerrain == ETerrainId::ANY_TERRAIN)
-			boost::range::fill(noterrainPenalty, true);
+		for (const auto & terrain : LIBRARY->terrainTypeHandler->objects)
+		{
+			auto terrainId = terrain->getId();
+			if (allStacksNativeForTerrain(terrainId))
+				noterrainPenalty.at(terrainId.num) = true;
+		}
 	}
 }
 

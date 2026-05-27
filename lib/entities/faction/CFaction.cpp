@@ -106,16 +106,8 @@ BoatId CFaction::getBoatType() const
 	return boatType;
 }
 
-TerrainId CFaction::getNativeTerrain() const
-{
-	return nativeTerrain;
-}
-
 bool CFaction::isNativeTerrain(TerrainId terrain) const
 {
-	if (nativeTerrain == ETerrainId::ANY_TERRAIN)
-		return true;
-
 	return vstd::contains(nativeTerrains, terrain);
 }
 
