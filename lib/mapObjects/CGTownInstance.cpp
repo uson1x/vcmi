@@ -1181,6 +1181,15 @@ bool CGTownInstance::isNativeTerrain(TerrainId terrain) const
 	return getTown()->faction->isNativeTerrain(terrain);
 }
 
+TerrainId CGTownInstance::getTownSiegeTerrain(TerrainId defaultTerrain) const
+{
+	const auto & nativeTerrains = getTown()->faction->nativeTerrains;
+	if(nativeTerrains.empty())
+		return defaultTerrain;
+
+	return nativeTerrains.front();
+}
+
 ArtifactID CGTownInstance::getWarMachineInBuilding(BuildingID building) const
 {
 	if (builtBuildings.count(building) == 0)

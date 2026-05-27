@@ -63,8 +63,7 @@
 				},
 				{
 					"type" : "array",
-					"items" : { "type" : "string" },
-					"minItems" : 1
+					"items" : { "type" : "string" }
 				}
 			],
 			"description" : "Native terrain for creatures. Creatures fighting on native terrain receive several bonuses"
