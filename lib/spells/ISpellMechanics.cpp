@@ -538,6 +538,13 @@ const CGHeroInstance * BaseMechanics::getHeroCaster() const
 	return caster->getHeroCaster();
 }
 
+const battle::Unit * BaseMechanics::getUnitCaster() const
+{
+	if (caster->getHeroCaster() != nullptr)
+		return nullptr;
+	return battle()->battleGetUnitByID(static_cast<uint32_t>(caster->getCasterUnitId()));
+}
+
 std::vector<AimType> BaseMechanics::getTargetTypes() const
 {
 	std::vector<AimType> ret;

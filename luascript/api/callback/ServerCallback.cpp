@@ -16,6 +16,9 @@
 #include "../../LuaStack.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../../lib/battle/Unit.h"
+#include "../../../lib/battle/CUnitState.h"
+#include "../../../lib/json/JsonNode.h"
+#include "../../../lib/texts/MetaString.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -29,8 +32,9 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "createUnit", LuaCallWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
 	{ "updateUnit", LuaCallWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
 	{ "injureUnit", LuaCallWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
-	{ "healUnit", LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke, false },
+	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,   false },
 	{ "removeUnit", LuaCallWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
+	{ "appendLog",  LuaCallWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
 };
 
 int ServerCallbackProxy::createUnit(lua_State * L)
@@ -61,8 +65,8 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	BattleID battleID;
 	const battle::Unit * unit = nullptr;
 	int64_t healthDelta;
-	EHealPower healPower;
 	EHealLevel healLevel;
+	EHealPower healPower;
 
 	S.get(1, object);
 	S.get(2, battleID);
@@ -72,7 +76,7 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	S.get(6, healPower);
 
 	auto changedUnit = unit->acquire();
-	changedUnit->heal(healthDelta, healLevel, healPower);
+	battle::HealInfo info = changedUnit->heal(healthDelta, healLevel, healPower);
 
 	BattleUnitsChanged buc;
 	UnitChanges uc;
@@ -80,10 +84,33 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	uc.operation = UnitChanges::EOperation::UPDATE;
 	uc.id = unit->unitId();
 	uc.data = changedUnit->save();
-	uc.healthDelta = healthDelta;
+	uc.healthDelta = info.healedHealthPoints;
 	buc.changedStacks.push_back(uc);
 
 	object->apply(buc);
+
+	S.clear();
+	S.push(info.healedHealthPoints);
+	S.push(static_cast<int64_t>(info.resurrectedCount));
+	return 2;
+}
+
+int ServerCallbackProxy::appendLog(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleID battleID;
+	JsonNode config;
+
+	S.getNonNull(1, object);
+	S.get(2, battleID);
+	S.get(3, config);
+
+	BattleLogMessage msg;
+	msg.battleID = battleID;
+	msg.lines.push_back(MetaString::createFromLua(config));
+	object->apply(msg);
 	return S.retVoid();
 }
 

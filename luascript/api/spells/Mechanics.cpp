@@ -44,6 +44,7 @@ namespace scripting
 			{"getCasterColor", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getCasterColor), &Mechanics::getCasterColor>::invoke, false},
 			{"getCasterSide", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getCasterSide), &Mechanics::getCasterSide>::invoke, false},
 			{"getHeroCaster", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getHeroCaster), &Mechanics::getHeroCaster>::invoke, false},
+			{"getUnitCaster", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getUnitCaster), &Mechanics::getUnitCaster>::invoke, false},
 			{"getBattle", LuaMethodWrapper<Mechanics, decltype(&Mechanics::battle), &Mechanics::battle>::invoke, false},
 			{"getBattleID", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getBattleID), &Mechanics::getBattleID>::invoke, false},
 			{"calculateRawEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::calculateRawEffectValue), &Mechanics::calculateRawEffectValue>::invoke, false},

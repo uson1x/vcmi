@@ -236,6 +236,7 @@ public:
 	virtual PlayerColor getCasterColor() const = 0;
 	virtual BattleSide getCasterSide() const { return casterSide; };
 	virtual const CGHeroInstance * getHeroCaster() const = 0;
+	virtual const battle::Unit * getUnitCaster() const = 0;
 
 	//Spell facade
 	virtual int32_t getSpellIndex() const = 0;
@@ -300,6 +301,7 @@ public:
 
 	PlayerColor getCasterColor() const override;
 	const CGHeroInstance * getHeroCaster() const override;
+	const battle::Unit * getUnitCaster() const override;
 
 	bool isSmart() const override;
 	bool isMassive() const override;

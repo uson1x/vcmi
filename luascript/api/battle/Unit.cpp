@@ -13,6 +13,7 @@
 #include "Unit.h"
 
 #include "../../../lib/GameLibrary.h"
+#include "../../../lib/battle/CUnitState.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"

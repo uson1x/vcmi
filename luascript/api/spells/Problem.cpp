@@ -13,6 +13,7 @@
 
 #include "../../../lib/json/JsonNode.h"
 #include "../../../lib/spells/ISpellMechanics.h"
+#include "../../../lib/texts/MetaString.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -40,14 +41,7 @@ int ProblemProxy::addCustom(lua_State * L)
 	S.getNonNull(1, object);
 	S.get(2, metaStringConfig);
 
-	MetaString metaString;
-	for (const auto & entry : metaStringConfig["append"].Vector())
-		metaString.appendTextID(entry.String());
-
-	for (const auto & entry : metaStringConfig["replace"].Vector())
-		metaString.replaceTextID(entry.String());
-
-	object->add(std::move(metaString));
+	object->add(MetaString::createFromLua(metaStringConfig));
 	return S.retVoid();
 }
 
