@@ -74,7 +74,7 @@ LuaSpellEffect::~LuaSpellEffect() = default;
 void LuaSpellEffect::adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
-	context->callMethod<void>(ADJUST_TARGET_TYPES, parameters, types);
+	types = context->callMethod<std::vector<TargetType>>(ADJUST_TARGET_TYPES, parameters, m, types);
 }
 
 void LuaSpellEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const

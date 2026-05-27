@@ -33,6 +33,7 @@ public:
 	static int healUnit(lua_State * L);
 	static int injureUnit(lua_State * L);
 	static int removeUnit(lua_State * L);
+	static int moveUnit(lua_State * L);
 	static int appendLog(lua_State * L);
 };
 

@@ -56,6 +56,12 @@ public:
 	LuaUnitEffect(const LuaScriptInstance * script_);
 	virtual ~LuaUnitEffect();
 
+	void adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const override;
+
+	bool applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const override;
+
+	Target transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const override;
+
 	void apply(ServerCallback * server, const Mechanics * m, const Target & target) const override;
 
 	SpellEffectValue getHealthChange(const Mechanics * m, const Target & spellTarget) const override;

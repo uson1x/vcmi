@@ -8,7 +8,17 @@ This page describes the internal working of the Lua scripting module. For usage 
 - (MAJOR) expand usage of scripts:
   - convert HotA map scripts into Lua form
   - convert HotA (and possibly - H3) Seer Huts into scripts
-  - Move all spell effects to Lua form
+  - Move all spell effects to Lua form:
+    - Clone -> UnitEffect
+    - Damage -> UnitEffect
+    - Dispel -> UnitEffect
+    - Timed -> UnitEffect
+    - Heal -> UnitEffect
+    - Sacrifice -> Heal
+    - RemoveObstacle -> LocationEffect
+    - Catapult -> LocationEffect
+    - Obstacle -> LocationEffect
+    - Moat -> Obstacle
   - Implement support for scriptable map objects
   - Move damage calculator, or at least - damage formula to Lua, based on [existing PR](https://github.com/vcmi/vcmi/pull/5135)
   - Move map movement point limit calculation to Lua
@@ -20,7 +30,7 @@ This page describes the internal working of the Lua scripting module. For usage 
   - Document everything in code and make exporter to both .md and Lua Language Server
 - Review existing API and ensure that it follows rules described here
   - replace `getAnyUnitIf` method with `getUnitsIf` that returns array
-- Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
+  - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
 - Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
 - consider wrapping Lua userdata into std::any for better type safety

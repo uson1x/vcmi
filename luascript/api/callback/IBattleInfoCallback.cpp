@@ -17,6 +17,8 @@
 
 #include "../../../lib/GameConstants.h"
 #include "../../../lib/battle/Unit.h"
+#include "../../../lib/battle/AccessibilityInfo.h"
+#include "../../../lib/battle/CBattleInfoCallback.h"
 #include "../../../lib/BattleFieldHandler.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -34,6 +36,8 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 
 	{ "getAvailableHex", LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
 	{ "getAnyUnitIf", LuaCallWrapper<&IBattleInfoCallbackProxy::getAnyUnitIf>::invoke, false },
+	{ "isAccessibleForUnit", LuaCallWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
+	{ "hasPenaltyOnLine", LuaCallWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke, false },
 };
 
 int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
@@ -91,6 +95,64 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 	else
 		S.pushNil();
 
+	return 1;
+}
+
+int IBattleInfoCallbackProxy::isAccessibleForUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	const IBattleInfoCallback * object;
+	S.getNonNull(1, object);
+
+	const battle::Unit * unit = nullptr;
+	BattleHex hex;
+
+	S.get(2, unit);
+	S.get(3, hex);
+
+	S.clear();
+
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
+	if(!cb || !unit)
+	{
+		S.push(false);
+		return 1;
+	}
+
+	bool result = cb->getAccessibility(unit).accessible(hex, unit);
+	S.push(result);
+	return 1;
+}
+
+int IBattleInfoCallbackProxy::hasPenaltyOnLine(lua_State * L)
+{
+	LuaStack S(L);
+
+	const IBattleInfoCallback * object;
+	S.getNonNull(1, object);
+
+	BattleHex from;
+	BattleHex dest;
+	bool checkWall = false;
+	bool checkMoat = false;
+
+	S.get(2, from);
+	S.get(3, dest);
+	S.get(4, checkWall);
+	S.get(5, checkMoat);
+
+	S.clear();
+
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
+	if(!cb)
+	{
+		S.push(false);
+		return 1;
+	}
+
+	bool result = cb->battleHasPenaltyOnLine(from, dest, checkWall, checkMoat);
+	S.push(result);
 	return 1;
 }
 

@@ -34,4 +34,17 @@ function Script:getHealthChange(mechanics, spellTarget)
 	return { hpDelta = 0, unitsDelta = 0, unitType = -1 }
 end
 
+--- Adjusts the spell's required target types. Return the (possibly modified) types array.
+--- Default: pass through unchanged.
+function Script:adjustTargetTypes(mechanics, types)
+	return types
+end
+
+--- Post-processes the C++-filtered target list. `filteredTarget` has had immunity applied;
+--- `aimPoint` is the original unfiltered aim. Return the final target to use.
+--- Default: pass through unchanged.
+function Script:transformTarget(mechanics, filteredTarget, aimPoint)
+	return filteredTarget
+end
+
 return Script

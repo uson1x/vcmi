@@ -29,6 +29,8 @@ public:
 
 	static int getAvailableHex(lua_State * L);
 	static int getAnyUnitIf(lua_State * L);
+	static int isAccessibleForUnit(lua_State * L);
+	static int hasPenaltyOnLine(lua_State * L);
 };
 
 }

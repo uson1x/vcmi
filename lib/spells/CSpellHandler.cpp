@@ -259,7 +259,7 @@ std::shared_ptr<CSpell> CSpellHandler::loadFromJson(const std::string & scope, c
 	auto targetType = json["targetType"].String();
 
 	if(targetType == "NO_TARGET")
-		spell->targetType = spells::AimType::NO_TARGET;
+		spell->targetType = spells::AimType::NOTHING;
 	else if(targetType == "CREATURE")
 		spell->targetType = spells::AimType::CREATURE;
 	else if(targetType == "OBSTACLE")

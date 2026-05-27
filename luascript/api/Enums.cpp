@@ -52,6 +52,16 @@ Enums::EnumMap<ESpellCastProblem> Enums::exportSpellCastProblem() const
 	};
 }
 
+Enums::EnumMap<spells::AimType> Enums::exportAimType() const
+{
+	return {
+		{ "nothing", spells::AimType::NOTHING },
+		{ "creature", spells::AimType::CREATURE },
+		{ "obstacle", spells::AimType::OBSTACLE },
+		{ "location", spells::AimType::LOCATION },
+	};
+}
+
 }
 
 VCMI_LIB_NAMESPACE_END

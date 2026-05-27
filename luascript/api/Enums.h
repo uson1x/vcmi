@@ -11,6 +11,7 @@
 #pragma once
 
 #include <vcmi/scripting/ApiTags.h>
+#include <vcmi/spells/Magic.h>
 
 #include "../../lib/constants/Enumerations.h"
 
@@ -27,6 +28,7 @@ class Enums : public scripting::ApiSerializable<Enums>
 	EnumMap<EHealLevel> exportHealLevel() const;
 	EnumMap<EHealPower> exportHealPower() const;
 	EnumMap<ESpellCastProblem> exportSpellCastProblem() const;
+	EnumMap<spells::AimType> exportAimType() const;
 
 public:
 	template<typename Serializer>
@@ -35,6 +37,7 @@ public:
 		s("HealLevel", exportHealLevel());
 		s("HealPower", exportHealPower());
 		s("SpellCastProblem", exportSpellCastProblem());
+		s("AimType", exportAimType());
 	}
 };
 

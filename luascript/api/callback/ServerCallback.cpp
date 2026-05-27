@@ -34,6 +34,7 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "injureUnit", LuaCallWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
 	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,   false },
 	{ "removeUnit", LuaCallWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
+	{ "moveUnit",   LuaCallWrapper<&ServerCallbackProxy::moveUnit>::invoke,   false },
 	{ "appendLog",  LuaCallWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
 };
 
@@ -172,6 +173,35 @@ int ServerCallbackProxy::removeUnit(lua_State * L)
 	buc.changedStacks.push_back(uc);
 
 	object->apply(buc);
+	return S.retVoid();
+}
+
+int ServerCallbackProxy::moveUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleID battleID;
+	const battle::Unit * unit = nullptr;
+	BattleHex destination;
+	bool isTeleport = false;
+
+	S.get(1, object);
+	S.get(2, battleID);
+	S.get(3, unit);
+	S.get(4, destination);
+	S.get(5, isTeleport);
+
+	BattleStackMoved pack;
+	pack.battleID = battleID;
+	pack.stack = unit->unitId();
+	pack.distance = 0;
+	pack.teleporting = isTeleport;
+	BattleHexArray tiles;
+	tiles.insert(destination);
+	pack.tilesToMove = tiles;
+
+	object->apply(pack);
 	return S.retVoid();
 }
 

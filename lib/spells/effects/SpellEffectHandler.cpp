@@ -23,7 +23,6 @@
 #include "Obstacle.h"
 #include "RemoveObstacle.h"
 #include "Sacrifice.h"
-#include "Teleport.h"
 #include "Timed.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -54,7 +53,6 @@ std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, 
 		{ "Obstacle",       &makeEffect<Obstacle> },
 		{ "RemoveObstacle", &makeEffect<RemoveObstacle> },
 		{ "Sacrifice",      &makeEffect<Sacrifice> },
-		{ "Teleport",       &makeEffect<Teleport> },
 		{ "Timed",          &makeEffect<Timed> },
 	};
 

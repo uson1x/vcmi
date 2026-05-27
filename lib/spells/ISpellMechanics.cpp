@@ -555,7 +555,7 @@ std::vector<AimType> BaseMechanics::getTargetTypes() const
 		auto spellTargetType = owner->getTargetType();
 
 		if(isMassive())
-			spellTargetType = AimType::NO_TARGET;
+			spellTargetType = AimType::NOTHING;
 		else if(spellTargetType == AimType::OBSTACLE)
 			spellTargetType = AimType::LOCATION;
 

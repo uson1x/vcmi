@@ -199,9 +199,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"teleport" : { 
-		"type" : "builtin",
-		"script" : "Teleport",
+	"teleport" : {
+		"type" : "luaUnit",
+		"script" : "teleport",
 		"schema" : {
 			"properties" : {
 				"type" : {},
@@ -210,7 +210,6 @@
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
 				"chainFactor" : { "type" : "number" },
-				"triggerObstacles" : { "type" : "boolean" },
 				"isWallPassable" : { "type" : "boolean" },
 				"isMoatPassable" : { "type" : "boolean" }
 			},

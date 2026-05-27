@@ -44,7 +44,7 @@ CSpell::CSpell():
 	offensive(false),
 	special(true),
 	nonMagical(false),
-	targetType(spells::AimType::NO_TARGET)
+	targetType(spells::AimType::NOTHING)
 {
 	levels.resize(GameConstants::SPELL_SCHOOL_LEVELS);
 }

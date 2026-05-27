@@ -18,10 +18,14 @@
 #include <vcmi/scripting/Service.h>
 
 #include "../lib/spells/ISpellMechanics.h"
+#include "../lib/spells/Problem.h"
 #include "../lib/battle/Unit.h"
 #include "../lib/battle/CBattleInfoCallback.h"
 #include "../lib/serializer/JsonSerializeFormat.h"
 
+static const std::string ADJUST_TARGET_TYPES = "adjustTargetTypes";
+static const std::string APPLICABLE_TARGET = "applicableTarget";
+static const std::string TRANSFORM_TARGET = "transformTarget";
 static const std::string APPLY = "apply";
 static const std::string IS_RECEPTIVE = "isReceptive";
 static const std::string IS_VALID_TARGET = "isValidTarget";
@@ -64,6 +68,28 @@ LuaUnitEffect::LuaUnitEffect(const LuaScriptInstance * script_)
 }
 
 LuaUnitEffect::~LuaUnitEffect() = default;
+
+void LuaUnitEffect::adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const
+{
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	types = context->callMethod<std::vector<TargetType>>(ADJUST_TARGET_TYPES, parameters, m, types);
+}
+
+bool LuaUnitEffect::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
+{
+	if(target.size() <= 1)
+		return UnitEffect::applicableTarget(problem, m, target);
+
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	return context->callMethod<bool>(APPLICABLE_TARGET, parameters, m, &problem, target);
+}
+
+Target LuaUnitEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+{
+	Target filtered = UnitEffect::transformTarget(m, aimPoint, spellTarget);
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	return context->callMethod<Target>(TRANSFORM_TARGET, parameters, m, filtered, aimPoint);
+}
 
 void LuaUnitEffect::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
