@@ -117,8 +117,7 @@ void MineInstanceConstructor::initTypeData(const JsonNode & input)
 		}
 	}
 
-	if(!config["guards"].isNull())
-		guards = config["guards"];
+	guards = config["guards"];
 
 	auto loadAdventureMessageTextID = [&](const JsonNode & inputNode, const std::string & key) -> std::string
 	{
