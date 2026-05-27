@@ -99,7 +99,7 @@ std::set<SecondarySkill> JsonKeyExtractor::filterKeysTyped(const JsonNode & valu
 			result,
 			[&requiredTag](const SecondarySkill & skill)
 			{
-				return skill.toSkill()->hasTag(requiredTag);
+				return !skill.toSkill()->hasTag(requiredTag);
 			}
 			);
 	}
