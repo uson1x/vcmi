@@ -54,7 +54,11 @@ public:
 
 		::events::EventBus * eventBus = nullptr;
 
-		if(!S.tryGet(1, eventBus))
+		try
+		{
+			S.getNonNull(1, eventBus);
+		}
+		catch(const LuaApiException &)
 		{
 			S.push("No event bus");
 			return 1;
@@ -73,7 +77,8 @@ public:
 			if(lua_pcall(L, 1, 0, 0) != 0)
 			{
 				std::string msg;
-				S.tryGet(1, msg);
+				if(lua_isstring(L, 1))
+					S.get(1, msg);
 				logMod->error("Script callback error: %s", msg);
 			}
 
@@ -94,7 +99,11 @@ public:
 
 		::events::EventBus * eventBus = nullptr;
 
-		if(!S.tryGet(1, eventBus))
+		try
+		{
+			S.getNonNull(1, eventBus);
+		}
+		catch(const LuaApiException &)
 		{
 			S.push("No event bus");
 			return 1;
@@ -113,7 +122,8 @@ public:
 			if(lua_pcall(L, 1, 0, 0) != 0)
 			{
 				std::string msg;
-				S.tryGet(1, msg);
+				if(lua_isstring(L, 1))
+					S.get(1, msg);
 				logMod->error("Script callback error: %s", msg);
 			}
 

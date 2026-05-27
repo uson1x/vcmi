@@ -58,11 +58,6 @@ private:
 	//log error and return nil from LuaCFunction
 	int errorRetVoid(const std::string & message);
 
-	void popAll();
-
-	void push(const std::string & value);
-	void push(lua_CFunction f, void * opaque);
-
 	std::string toStringRaw(int index);
 
 	void cleanupGlobals();
@@ -134,7 +129,7 @@ ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & par
 		ReturnType ret{};
 		try
 		{
-			S.getOrThrow(S.absindex(-1), ret);
+			S.get(S.absindex(-1), ret);
 		}
 		catch(const LuaApiException & e)
 		{
@@ -142,7 +137,7 @@ ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & par
 			logScript->error("Script '%s', function '%s' returned unexpected value: %s", script->getIdentifier(), name, e.what());
 			return ReturnType{};
 		}
-		S.balance();
+		S.restoreInitialTop();
 		return ret;
 	}
 	else

@@ -131,12 +131,12 @@ public:
 		if(luaL_newmetatable(L, KEY) != 0)
 			adjustMetatable(L);
 
-		S.balance();
+		S.restoreInitialTop();
 
 		if(luaL_newmetatable(L, S_KEY) != 0)
 			adjustMetatable(L);
 
-		S.balance();
+		S.restoreInitialTop();
 
 		detail::Dispatcher<Proxy, UDataType>::pushStaticTable(L);
 
@@ -187,7 +187,7 @@ public:
 			lua_rawset(L, -3);
 		}
 
-		S.balance();
+		S.restoreInitialTop();
 
 		detail::Dispatcher<Proxy, UDataType>::pushStaticTable(L);
 
@@ -237,7 +237,7 @@ public:
 			lua_rawset(L, -3);
 		}
 
-		S.balance();
+		S.restoreInitialTop();
 
 		detail::Dispatcher<Proxy, UDataType>::pushStaticTable(L);
 

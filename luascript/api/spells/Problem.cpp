@@ -37,8 +37,8 @@ int ProblemProxy::addCustom(lua_State * L)
 	Problem * object = nullptr;
 	JsonNode metaStringConfig;
 
-	S.getNonNullOrThrow(1, object);
-	S.getOrThrow(2, metaStringConfig);
+	S.getNonNull(1, object);
+	S.get(2, metaStringConfig);
 
 	MetaString metaString;
 	for (const auto & entry : metaStringConfig["append"].Vector())
@@ -58,8 +58,8 @@ int ProblemProxy::addGeneric(lua_State * L)
 	Problem * problem = nullptr;
 	const Mechanics * mechanics = nullptr;
 
-	S.getNonNullOrThrow(1, problem);
-	S.getNonNullOrThrow(2, mechanics);
+	S.getNonNull(1, problem);
+	S.getNonNull(2, mechanics);
 
 	mechanics->adaptGenericProblem(*problem);
 	return S.retVoid();
@@ -73,9 +73,9 @@ int ProblemProxy::addStandard(lua_State * L)
 	const Mechanics * mechanics = nullptr;
 	ESpellCastProblem spellProblem = ESpellCastProblem::OK;
 
-	S.getNonNullOrThrow(1, problem);
-	S.getNonNullOrThrow(2, mechanics);
-	S.getOrThrow(3, spellProblem);
+	S.getNonNull(1, problem);
+	S.getNonNull(2, mechanics);
+	S.get(3, spellProblem);
 
 	mechanics->adaptProblem(spellProblem, *problem);
 	return S.retVoid();

@@ -42,8 +42,10 @@ int ServerCallbackProxy::createUnit(lua_State * L)
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
 
-	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data))
-		throw LuaApiException("Invalid parameters passed into createUnit!");
+	S.get(1, object);
+	S.get(2, buc.battleID);
+	S.get(3, uc.id);
+	S.get(4, uc.data);
 
 	buc.changedStacks.push_back(uc);
 
@@ -62,8 +64,12 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	EHealPower healPower;
 	EHealLevel healLevel;
 
-	if (!S.tryGetAll(1, object, battleID, unit, healthDelta, healLevel, healPower))
-		throw LuaApiException("Invalid parameters passed into healUnit!");
+	S.get(1, object);
+	S.get(2, battleID);
+	S.get(3, unit);
+	S.get(4, healthDelta);
+	S.get(5, healLevel);
+	S.get(6, healPower);
 
 	auto changedUnit = unit->acquire();
 	changedUnit->heal(healthDelta, healLevel, healPower);
@@ -90,8 +96,11 @@ int ServerCallbackProxy::updateUnit(lua_State * L)
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::UPDATE;
 
-	if (!S.tryGetAll(1, object, buc.battleID, uc.id, uc.data, uc.healthDelta))
-		throw LuaApiException("Invalid parameters passed into updateUnit!");
+	S.get(1, object);
+	S.get(2, buc.battleID);
+	S.get(3, uc.id);
+	S.get(4, uc.data);
+	S.get(5, uc.healthDelta);
 
 	buc.changedStacks.push_back(uc);
 
@@ -124,8 +133,9 @@ int ServerCallbackProxy::removeUnit(lua_State * L)
 	BattleID battleID;
 	const battle::Unit * unit = nullptr;
 
-	if (!S.tryGetAll(1, object, battleID, unit))
-		throw LuaApiException("Invalid parameters passed into removeUnit!");
+	S.get(1, object);
+	S.get(2, battleID);
+	S.get(3, unit);
 
 	BattleUnitsChanged buc;
 	UnitChanges uc;

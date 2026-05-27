@@ -70,7 +70,7 @@ class LuaMethodWrapper
 	template <std::size_t... I>
 	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...> i)
 	{
-		( (stack.getOrThrow(static_cast<int>(I + 2), std::get<I>(t))), ... );
+		( (stack.get(static_cast<int>(I + 2), std::get<I>(t))), ... );
 	}
 
 	template <typename... Ts>
@@ -85,7 +85,7 @@ class LuaMethodWrapper
 		ObjectPtr obj{};
 		TupleType args;
 
-		S.getOrThrow(1,obj);
+		S.get(1,obj);
 		tryGetAll(S, args);
 		S.clear();
 
@@ -108,7 +108,7 @@ class LuaMethodWrapper
 		{
 			ReturnType result = std::apply([&](auto &&... a){ return std::invoke(method, objPtr, std::forward<decltype(a)>(a)...); }, args);
 			S.push(std::move(result));
-			return S.retPushed();
+			return S.stackSize();
 		}
 	}
 
@@ -159,7 +159,7 @@ class LuaFunctionWrapper
 	template <std::size_t... I>
 	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...>)
 	{
-		( (stack.getOrThrow(static_cast<int>(I + 1), std::get<I>(t))), ... ); // args start at index 1 for free functions
+		( (stack.get(static_cast<int>(I + 1), std::get<I>(t))), ... ); // args start at index 1 for free functions
 	}
 
 	template <typename... Ts>
@@ -185,7 +185,7 @@ class LuaFunctionWrapper
 		{
 			ReturnType result = std::apply([&](auto &&... a){ return std::invoke(func, std::forward<decltype(a)>(a)...); }, args);
 			S.push(std::move(result));
-			return S.retPushed();
+			return S.stackSize();
 		}
 	}
 

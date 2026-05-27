@@ -41,16 +41,17 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	S.getNonNullOrThrow(1, object);
+	S.getNonNull(1, object);
 
 	const Creature * creature;
 	BattleSide side;
 	si16 hexVal = BattleHex::INVALID;
 
-	if(!S.tryGet(2, creature) || !S.tryGet(3, side))
-		throw LuaApiException("Invalid parameters passed into getAvailableHex!");
+	S.get(2, creature);
+	S.get(3, side);
 
-	S.tryGet(4, hexVal);
+	if(lua_gettop(L) >= 4 && !lua_isnil(L, 4))
+		S.get(4, hexVal);
 
 	S.clear();
 	BattleHex result = object->getAvailableHex(creature, side, hexVal);
@@ -63,7 +64,7 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 	LuaStack S(L);
 
 	const IBattleInfoCallback * object;
-	S.getNonNullOrThrow(1, object);
+	S.getNonNull(1, object);
 
 	if(!S.isFunction(2))
 		throw LuaApiException("Invalid parameters passed into getAnyUnitIf!");
@@ -78,9 +79,8 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 			throw LuaApiException("Lua getAnyUnitIf callback failed with message: " + error);
 		}
 
-		bool result = false;
-		S2.tryGet(S2.absindex(-1), result);
-		S2.balance();
+		bool result = lua_toboolean(L, S2.absindex(-1)) != 0;
+		S2.restoreInitialTop();
 		return result;
 	});
 

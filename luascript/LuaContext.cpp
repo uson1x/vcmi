@@ -109,19 +109,19 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 		lua_setglobal(L, lib.name);
 	}
 
-	popAll();
+	lua_settop(L, 0);
 
 	cleanupGlobals();
 
-	popAll();
+	lua_settop(L, 0);
 
 	lua_newtable(L);
 	modules = std::make_shared<LuaReference>(L);
-	popAll();
+	lua_settop(L, 0);
 
 	registerPublicTypes();
 
-	popAll();
+	lua_settop(L, 0);
 
 	LuaStack S(L);
 	api::Enums enums;
@@ -135,7 +135,7 @@ LuaContext::LuaContext(const Script * source, const Environment * env_):
 	S.push(enums);
 	lua_setglobal(L, "ENUM");
 
-	popAll();
+	lua_settop(L, 0);
 }
 
 LuaContext::~LuaContext()
@@ -216,12 +216,12 @@ void LuaContext::initialize()
 	if(ret)
 	{
 		logScript->error("Script '%s' failed to compile: %s", script->getIdentifier(), toStringRaw(-1));
-		popAll();
+		lua_settop(L, 0);
 		return;
 	}
 
 	scriptClosure = std::make_shared<LuaReference>(L);
-	popAll();
+	lua_settop(L, 0);
 	scriptClosure->push();
 
 	ret = lua_pcall(L, 0, 1, 0);
@@ -229,14 +229,14 @@ void LuaContext::initialize()
 	if(ret)
 	{
 		logScript->error("Script '%s' failed to run: %s", script->getIdentifier(), toStringRaw(-1));
-		popAll();
+		lua_settop(L, 0);
 		return;
 	}
 
 	if(!lua_istable(L, -1))
 	{
 		logScript->error("Script '%s' did not return a table", script->getIdentifier());
-		popAll();
+		lua_settop(L, 0);
 		return;
 	}
 
@@ -246,24 +246,8 @@ void LuaContext::initialize()
 int LuaContext::errorRetVoid(const std::string & message)
 {
 	logScript->error(message);
-	popAll();
-	return 0;
-}
-
-void LuaContext::push(const std::string & value)
-{
-	lua_pushlstring(L, value.c_str(), value.size());
-}
-
-void LuaContext::push(lua_CFunction f, void * opaque)
-{
-	lua_pushlightuserdata(L, opaque);
-	lua_pushcclosure(L, f, 1);
-}
-
-void LuaContext::popAll()
-{
 	lua_settop(L, 0);
+	return 0;
 }
 
 std::string LuaContext::toStringRaw(int index)
@@ -275,21 +259,24 @@ std::string LuaContext::toStringRaw(int index)
 
 void LuaContext::registerPublicTypes()
 {
-	push(&LuaContext::require, this);
+	lua_pushlightuserdata(L, this);
+	lua_pushcclosure(L, &LuaContext::require, 1);
 	lua_setglobal(L, "require");
 
-	popAll();//just in case
+	lua_settop(L, 0);
+
+	LuaStack S(L);
 
 	for(const auto & registar : api::Registry::get()->getAllTypes())
 	{
 		registar.second->pushMetatable(L); //table
 
 		modules->push(); //table modules
-		push(registar.first); //table modules name
+		S.push(registar.first); //table modules name
 		lua_pushvalue(L, -3); //table modules name table
 		lua_rawset(L, -3);
 
-		popAll();
+		lua_settop(L, 0);
 	}
 }
 
