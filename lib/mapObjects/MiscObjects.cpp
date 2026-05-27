@@ -99,7 +99,7 @@ void CGMine::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroInstance *
 		BlockingDialog ynd(true,false);
 		ynd.player = h->tempOwner;
 		// ownedGuardedMessage applies to any owned mine with guards.
-		const bool useOwnedGuardedMessage = tempOwner != PlayerColor::NEUTRAL;
+		const bool useOwnedGuardedMessage = getOwner().isValid();
 		const std::string guardedMessageTextID = useOwnedGuardedMessage ? getResourceHandler()->getOwnedGuardedMessageTextID() : getResourceHandler()->getOnGuardedMessageTextID();
 		if(!guardedMessageTextID.empty())
 			ynd.text.appendTextID(guardedMessageTextID);
