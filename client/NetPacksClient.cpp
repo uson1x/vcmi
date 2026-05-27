@@ -117,6 +117,16 @@ void callBattleInterfaceIfPresentForBothSides(CClient & cl, const BattleID & bat
 	}
 }
 
+static void showEagleEyeLearnedSpellsDialog(CClient & cl, ObjectInstanceID heroId, const std::set<SpellID> & spells, PlayerColor player)
+{
+	if(spells.empty())
+		return;
+
+	const auto * hero = cl.gameInfo().getHero(heroId);
+	assert(hero);
+	callInterfaceIfPresent(cl, player, &CGameInterface::showInfoDialog, EInfoWindowMode::AUTO, UIHelper::getEagleEyeInfoWindowText(*hero, spells), UIHelper::getSpellsComponents(spells), soundBase::soundID(0));
+}
+
 void ApplyClientNetPackVisitor::visitSetResources(SetResources & pack)
 {
 	//todo: inform on actual resource set transferred
@@ -586,6 +596,21 @@ void ApplyClientNetPackVisitor::visitSetAvailableCreatures(SetAvailableCreatures
 	callInterfaceIfPresent(cl, p, &IGameEventsReceiver::availableCreaturesChanged, dw);
 }
 
+void ApplyClientNetPackVisitor::visitChangeSpells(ChangeSpells & pack)
+{
+	if(!pack.learn || pack.spells.empty())
+		return;
+
+	const auto * hero = cl.gameInfo().getHero(pack.hid);
+	if(!hero)
+		return;
+
+	if(hero->valOfBonuses(BonusType::LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE) <= 0)
+		return;
+
+	showEagleEyeLearnedSpellsDialog(cl, pack.hid, pack.spells, hero->tempOwner);
+}
+
 void ApplyClientNetPackVisitor::visitSetHeroesInTown(SetHeroesInTown & pack)
 {
 	const CGTownInstance * t = gs.getTown(pack.tid);
@@ -836,13 +861,7 @@ void ApplyClientNetPackVisitor::visitStacksInjured(StacksInjured & pack)
 
 void ApplyClientNetPackVisitor::visitBattleResultsApplied(BattleResultsApplied & pack)
 {
-	if(!pack.learnedSpells.spells.empty())
-	{
-		const auto * hero = cl.gameInfo().getHero(pack.learnedSpells.hid);
-		assert(hero);
-		callInterfaceIfPresent(cl, pack.victor, &CGameInterface::showInfoDialog, EInfoWindowMode::MODAL,
-			UIHelper::getEagleEyeInfoWindowText(*hero, pack.learnedSpells.spells), UIHelper::getSpellsComponents(pack.learnedSpells.spells), soundBase::soundID(0));
-	}
+	showEagleEyeLearnedSpellsDialog(cl, pack.learnedSpells.hid, pack.learnedSpells.spells, pack.victor);
 
 	if(!pack.movingArtifacts.empty())
 	{
