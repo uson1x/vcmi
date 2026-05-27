@@ -118,9 +118,8 @@ int CStackWindow::StackExperienceDetailsWindow::calculateDynamicTableRowCount(co
 			uniqueBonuses.insert({bonus->type, bonus->subtype.getNum()});
 	}
 
-	const int minBonusRows = 1;
 	const int maxRowsWithoutHeader = 7; // keep dialog within 800x600
-	const int rowsWithoutHeader = std::clamp(1 + std::max(minBonusRows, static_cast<int>(uniqueBonuses.size())), 1, maxRowsWithoutHeader); // Experience + bonus rows
+	const int rowsWithoutHeader = std::clamp(1 + static_cast<int>(uniqueBonuses.size()), 1, maxRowsWithoutHeader); // Experience + bonus rows
 	return rowsWithoutHeader;
 }
 
