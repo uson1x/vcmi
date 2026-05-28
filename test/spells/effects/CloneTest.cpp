@@ -92,6 +92,58 @@ TEST_F(CloneTest, SecondCloneRejected)
 	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
+TEST_F(CloneTest, RejectsNullUnitTarget)
+{
+	setupEffect(JsonNode());
+
+	Target target;
+	target.emplace_back(); // default Destination: unitValue=nullptr
+
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(CloneTest, RejectsTierExceedingMaxTier)
+{
+	{
+		JsonNode config;
+		config["maxTier"].Integer() = 3;
+		EffectFixture::setupEffect(config);
+	}
+
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	EXPECT_CALL(unit, isClone()).WillRepeatedly(Return(false));
+	EXPECT_CALL(unit, hasClone()).WillRepeatedly(Return(false));
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).WillRepeatedly(Return(true));
+	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(4)); // exceeds maxTier=3
+
+	EXPECT_CALL(mechanicsMock, adaptProblem(Eq(ESpellCastProblem::NO_APPROPRIATE_TARGET), Ref(problemMock))).WillOnce(Return(false));
+
+	EXPECT_FALSE(subject->applicableGeneral(problemMock, &mechanicsMock));
+}
+
+TEST_F(CloneTest, AcceptsTierAtMaxTier)
+{
+	{
+		JsonNode config;
+		config["maxTier"].Integer() = 3;
+		EffectFixture::setupEffect(config);
+	}
+
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	EXPECT_CALL(unit, isClone()).WillRepeatedly(Return(false));
+	EXPECT_CALL(unit, hasClone()).WillRepeatedly(Return(false));
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).WillRepeatedly(Return(true));
+	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(3)); // equals maxTier=3
+	EXPECT_CALL(unit, isInvincible()).WillRepeatedly(Return(false));
+
+	EXPECT_CALL(mechanicsMock, isReceptive(Eq(&unit))).WillRepeatedly(Return(true));
+	EXPECT_CALL(mechanicsMock, isSmart()).WillRepeatedly(Return(false)); // skip owner check
+
+	EXPECT_TRUE(subject->applicableGeneral(problemMock, &mechanicsMock));
+}
+
 class CloneApplyTest : public Test, public EffectFixture
 {
 public:
@@ -236,6 +288,38 @@ TEST_F(CloneApplyTest, SetsLifetimeMarker)
 	EXPECT_CALL(*battleFake, addUnitBonus(_, _)).WillOnce(Invoke(this, &CloneApplyTest::checkCloneLifetimeMarker));
 
 	subject->apply(&serverMock, &mechanicsMock, target);
+}
+
+TEST_F(CloneApplyTest, SkipsZeroCountUnit)
+{
+	battleFake->setupEmptyBattlefield();
+
+	auto & original = unitsFake.add(BattleSide::ATTACKER);
+	EXPECT_CALL(original, getCount()).WillRepeatedly(Return(0));
+	EXPECT_CALL(original, getPosition()).WillOnce(Return(originalPosition));
+
+	target.emplace_back(&original);
+
+	subject->apply(&serverMock, &mechanicsMock, target);
+}
+
+TEST_F(CloneApplyTest, SkipsMultipleTargetsOnPartialFailure)
+{
+	setDefaultExpectations();
+
+	EXPECT_CALL(*battleFake, addUnitBonus(_, _)).Times(AtLeast(1));
+
+	auto & secondary = unitsFake.add(BattleSide::ATTACKER);
+	EXPECT_CALL(secondary, getCount()).WillRepeatedly(Return(0));
+	EXPECT_CALL(secondary, getPosition()).WillOnce(Return(BattleHex(3, 3)));
+
+	target.emplace_back(&secondary);
+
+	subject->apply(&serverMock, &mechanicsMock, target);
+
+	EXPECT_EQ(cloneAddInfo->id, cloneId);
+	EXPECT_EQ(cloneAddInfo->count, expectedAmount);
+	EXPECT_TRUE(cloneAddInfo->summoned);
 }
 
 }

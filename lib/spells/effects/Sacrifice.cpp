@@ -57,7 +57,7 @@ bool Sacrifice::applicableGeneral(Problem & problem, const Mechanics * m) const
 
 	for(const battle::Unit * target : targets)
 	{
-		if(target->alive() && target->isLiving() && !target->hasBonusOfType(BonusType::MECHANICAL))
+		if(target->alive())
 			targetToSacrificeExists = true;
 		else if(target->isDead())
 			targetExists = true;

@@ -18,7 +18,6 @@ class PlayerColor;
 class MetaString;
 class ServerCallback;
 class CGHeroInstance;
-class Spell;
 class SpellSchool;
 
 namespace battle

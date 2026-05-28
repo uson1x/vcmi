@@ -25,11 +25,13 @@ public:
 	const SpellID negativeID = SpellID(4243);
 	const SpellID neutralID = SpellID(4244);
 	const SpellID persistentID = SpellID(4245);
+	const SpellID adventureID = SpellID(4246);
 
 	StrictMock<SpellMock> positiveSpell;
 	StrictMock<SpellMock> negativeSpell;
 	StrictMock<SpellMock> persistentSpell;
 	StrictMock<SpellMock> neutralSpell;
+	StrictMock<SpellMock> adventureSpell;
 
 	DispelFixture()
 		: EffectFixture("core:dispel")
@@ -67,6 +69,13 @@ public:
 		EXPECT_CALL(persistentSpell, getPositiveness()).WillRepeatedly(Return(false));
 		EXPECT_CALL(persistentSpell, isAdventure()).WillRepeatedly(Return(false));
 		EXPECT_CALL(persistentSpell, isPersistent()).WillRepeatedly(Return(true));
+
+		EXPECT_CALL(spellServiceMock, getById(Eq(adventureID))).WillRepeatedly(Return(&adventureSpell));
+		EXPECT_CALL(spellServiceMock, getByIndex(Eq(adventureID.getNum()))).WillRepeatedly(Return(&adventureSpell));
+		EXPECT_CALL(adventureSpell, getIndex()).WillRepeatedly(Return(adventureID.toEnum()));
+		EXPECT_CALL(adventureSpell, getPositiveness()).WillRepeatedly(Return(false));
+		EXPECT_CALL(adventureSpell, isAdventure()).WillRepeatedly(Return(true));
+		EXPECT_CALL(adventureSpell, isPersistent()).WillRepeatedly(Return(false));
 
 	}
 
@@ -190,6 +199,165 @@ TEST_F(DispelTest, NotApplicableToDeadUnit)
 	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtMost(1)).WillRepeatedly(Return(false));
 	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).Times(AtMost(1)).WillRepeatedly(Return(true));
 
+	unitsFake.setDefaultBonusExpectations();
+
+	Target target;
+	target.emplace_back(&unit, BattleHex());
+
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(DispelTest, IgnoresAdventureSpellEffects)
+{
+	{
+		JsonNode config;
+		config["dispelPositive"].Bool() = true;
+		config["dispelNegative"].Bool() = true;
+		config["dispelNeutral"].Bool() = true;
+		EffectFixture::setupEffect(config);
+	}
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	unit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::PRIMARY_SKILL, BonusSource::SPELL_EFFECT, 1, BonusSourceID(adventureID)));
+
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).Times(AtMost(1)).WillRepeatedly(Return(true));
+
+	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtMost(1)).WillRepeatedly(Return(false));
+	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).Times(AtMost(1)).WillRepeatedly(Return(true));
+
+	setDefaultExpectations();
+	unitsFake.setDefaultBonusExpectations();
+
+	Target target;
+	target.emplace_back(&unit, BattleHex());
+
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(DispelTest, IgnoresNonSpellEffectSourceBonuses)
+{
+	{
+		JsonNode config;
+		config["dispelPositive"].Bool() = true;
+		config["dispelNegative"].Bool() = true;
+		config["dispelNeutral"].Bool() = true;
+		EffectFixture::setupEffect(config);
+	}
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	unit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::PRIMARY_SKILL, BonusSource::CREATURE_ABILITY, 1, BonusSourceID()));
+
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).Times(AtMost(1)).WillRepeatedly(Return(true));
+
+	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtMost(1)).WillRepeatedly(Return(false));
+	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).Times(AtMost(1)).WillRepeatedly(Return(true));
+
+	unitsFake.setDefaultBonusExpectations();
+
+	Target target;
+	target.emplace_back(&unit, BattleHex());
+
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(DispelTest, ApplicableToUnitWithPositiveEffect)
+{
+	{
+		JsonNode config;
+		config["dispelPositive"].Bool() = true;
+		EffectFixture::setupEffect(config);
+	}
+
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	unit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::PRIMARY_SKILL, BonusSource::SPELL_EFFECT, 1, BonusSourceID(positiveID)));
+
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).WillOnce(Return(true));
+
+	EXPECT_CALL(mechanicsMock, isSmart()).WillOnce(Return(false));
+	EXPECT_CALL(mechanicsMock, getSpellIndex()).Times(AtLeast(1)).WillRepeatedly(Return(negativeID.toEnum()));
+
+	setDefaultExpectations();
+	unitsFake.setDefaultBonusExpectations();
+
+	Target target;
+	target.emplace_back(&unit, BattleHex());
+
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(DispelTest, ApplicableToUnitWithNeutralEffect)
+{
+	{
+		JsonNode config;
+		config["dispelNeutral"].Bool() = true;
+		EffectFixture::setupEffect(config);
+	}
+
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	unit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::PRIMARY_SKILL, BonusSource::SPELL_EFFECT, 1, BonusSourceID(neutralID)));
+
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).WillOnce(Return(true));
+
+	EXPECT_CALL(mechanicsMock, isSmart()).WillOnce(Return(false));
+	EXPECT_CALL(mechanicsMock, getSpellIndex()).Times(AtLeast(1)).WillRepeatedly(Return(positiveID.toEnum()));
+
+	setDefaultExpectations();
+	unitsFake.setDefaultBonusExpectations();
+
+	Target target;
+	target.emplace_back(&unit, BattleHex());
+
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(DispelTest, NotApplicableWhenDispelNegativeAndOnlyPositiveEffect)
+{
+	{
+		JsonNode config;
+		config["dispelNegative"].Bool() = true;
+		EffectFixture::setupEffect(config);
+	}
+
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	unit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::PRIMARY_SKILL, BonusSource::SPELL_EFFECT, 1, BonusSourceID(positiveID)));
+
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).Times(AtMost(1)).WillRepeatedly(Return(true));
+
+	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtMost(1)).WillRepeatedly(Return(false));
+	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).Times(AtMost(1)).WillRepeatedly(Return(true));
+	EXPECT_CALL(mechanicsMock, getSpellIndex()).Times(AtLeast(1)).WillRepeatedly(Return(neutralID.toEnum()));
+
+	setDefaultExpectations();
+	unitsFake.setDefaultBonusExpectations();
+
+	Target target;
+	target.emplace_back(&unit, BattleHex());
+
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
+}
+
+TEST_F(DispelTest, NotApplicableWhenDispelPositiveAndOnlyNegativeEffect)
+{
+	{
+		JsonNode config;
+		config["dispelPositive"].Bool() = true;
+		EffectFixture::setupEffect(config);
+	}
+
+	auto & unit = unitsFake.add(BattleSide::ATTACKER);
+
+	unit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::PRIMARY_SKILL, BonusSource::SPELL_EFFECT, 1, BonusSourceID(negativeID)));
+
+	EXPECT_CALL(unit, isValidTarget(Eq(false))).Times(AtMost(1)).WillRepeatedly(Return(true));
+
+	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtMost(1)).WillRepeatedly(Return(false));
+	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).Times(AtMost(1)).WillRepeatedly(Return(true));
+	EXPECT_CALL(mechanicsMock, getSpellIndex()).Times(AtLeast(1)).WillRepeatedly(Return(neutralID.toEnum()));
+
+	setDefaultExpectations();
 	unitsFake.setDefaultBonusExpectations();
 
 	Target target;
