@@ -416,26 +416,7 @@ const CGObjectInstance * CMap::getObjectiveObjectFrom(const int3 & pos, Obj type
 	}
 
 	logGlobal->error("Failed to find object of type %d at %s", type.getNum(), pos.toString());
-	logGlobal->error("Will try to find closest matching object");
-
-	CGObjectInstance * bestMatch = nullptr;
-	for (const auto & object : objects)
-	{
-		if (object && object->ID == type)
-		{
-			if (bestMatch == nullptr)
-				bestMatch = object.get();
-			else
-			{
-				if (object->anchorPos().dist2dSQ(pos) < bestMatch->anchorPos().dist2dSQ(pos))
-					bestMatch = object.get();// closer than one we already found
-			}
-		}
-	}
-	assert(bestMatch != nullptr); // if this happens - victory conditions or map itself is very, very broken
-
-	logGlobal->error("Will use %s from %s", bestMatch->getObjectName(), bestMatch->anchorPos().toString());
-	return bestMatch;
+	return nullptr;
 }
 
 void CMap::checkForObjectives()
@@ -463,7 +444,12 @@ void CMap::checkForObjectives()
 
 				case EventCondition::HAVE_BUILDING:
 					if (isInTheMap(cond.position))
-						cond.objectID = getObjectiveObjectFrom(cond.position, Obj::TOWN)->id;
+					{
+						if(const auto * object = getObjectiveObjectFrom(cond.position, Obj::TOWN))
+							cond.objectID = object->id;
+						else
+							logGlobal->warn("Objective '%s': failed to resolve town target for building objective at %s", event.identifier, cond.position.toString());
+					}
 					break;
 
 				case EventCondition::CONTROL:
@@ -496,8 +482,20 @@ void CMap::checkForObjectives()
 					break;
 
 				case EventCondition::DESTROY:
+					// Placeholder-targeted "defeat hero" objectives stay unresolved until normal-map placeholder replacement is supported.
+					if(cond.objectType.as<MapObjectID>() == Obj::HERO_PLACEHOLDER)
+						break;
+
 					if(isInTheMap(cond.position))
-						cond.objectID = getObjectiveObjectFrom(cond.position, cond.objectType.as<MapObjectID>())->id;
+					{
+						if(const auto * object = getObjectiveObjectFrom(cond.position, cond.objectType.as<MapObjectID>()))
+							cond.objectID = object->id;
+						else
+							logGlobal->warn("Objective '%s': failed to resolve destroy target of type %d at %s",
+								event.identifier,
+								cond.objectType.as<MapObjectID>().getNum(),
+								cond.position.toString());
+					}
 
 					if(cond.objectID != ObjectInstanceID::NONE)
 					{
@@ -507,7 +505,10 @@ void CMap::checkForObjectives()
 					}
 					break;
 				case EventCondition::TRANSPORT:
-					cond.objectID = getObjectiveObjectFrom(cond.position, Obj::TOWN)->id;
+					if(const auto * object = getObjectiveObjectFrom(cond.position, Obj::TOWN))
+						cond.objectID = object->id;
+					else
+						logGlobal->warn("Objective '%s': failed to resolve town target for transport objective at %s", event.identifier, cond.position.toString());
 					break;
 				//break; case EventCondition::DAYS_PASSED:
 				//break; case EventCondition::IS_HUMAN:
