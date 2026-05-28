@@ -197,6 +197,32 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 			if(!map->mods.count(mod.first))
 				issues.insert({ MapController::modMissingMessage(mod.second), true });
 		}
+
+		for(const auto & event : map->triggeredEvents)
+		{
+			auto conditionValidator = [map, &issues, &event](const EventCondition & condition) -> EventExpression::Variant
+			{
+				if(const auto * placeholder = map->isHeroPlaceholderObjective(condition))
+				{
+					const auto conditionName =
+						event.effect.type == EventEffect::VICTORY ?
+							Validator::tr("defeat a specific hero") :
+							Validator::tr("lose a specific hero");
+					const QString placeholderName = placeholder->heroType.has_value() ?
+						QString::fromStdString(placeholder->heroType->toHeroType()->getNameTranslated()) :
+						Validator::tr("hero placeholder");
+					issues.insert({
+						Validator::tr("Triggered event '%1' uses %2 condition targeting %3 at %4. This setup is unusual and should be avoided; map will stay playable, but the condition remains unresolved unless placeholder replacement is supported.")
+							.arg(event.identifier.c_str(), conditionName, placeholderName, QString::fromStdString(condition.position.toString())),
+						false
+					});
+				}
+
+				return condition;
+			};
+
+			event.trigger.morph(conditionValidator);
+		}
 	}
 	catch(const std::exception & e)
 	{

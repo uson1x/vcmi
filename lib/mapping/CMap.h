@@ -25,6 +25,7 @@ class CArtifactInstance;
 class CArtifactSet;
 class CGObjectInstance;
 class CGHeroInstance;
+class CGHeroPlaceholder;
 class CCommanderInstance;
 class CGameState;
 class CGCreature;
@@ -235,6 +236,8 @@ public:
 
 	/// Gets object of specified type on requested position
 	const CGObjectInstance * getObjectiveObjectFrom(const int3 & pos, Obj type);
+	const CGHeroPlaceholder * findHeroPlaceholder(const int3 & position) const;
+	const CGHeroPlaceholder * isHeroPlaceholderObjective(const EventCondition & condition) const;
 
 	/// Returns pointer to hero of specified type if hero is present on map
 	CGHeroInstance * getHero(HeroTypeID heroId);
@@ -248,6 +251,7 @@ public:
 	const std::vector<ObjectInstanceID> & getAllTowns() const;
 
 	/// Sets the victory/loss condition objectives ??
+	void resolveHeroPlaceholderObjectives();
 	void checkForObjectives();
 
 	void resolveQuestIdentifiers();

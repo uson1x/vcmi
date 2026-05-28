@@ -208,6 +208,7 @@ void CGameState::init(const IMapService * mapService, StartInfo * si, IGameRando
 	initPlayerStates();
 	if (campaign)
 		campaign->placeCampaignHeroes(randomGenerator);
+	map->resolveHeroPlaceholderObjectives();
 	removeHeroPlaceholders();
 	initGrailPosition(randomGenerator);
 	initRandomFactionsForPlayers(randomGenerator);
@@ -1321,6 +1322,10 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		}
 		case EventCondition::DESTROY:
 		{
+			// Preserve hero-placeholder objectives as in HotA / OH3 so the map remains playable.
+			if(condition.objectType.as<MapObjectID>() == Obj::HERO_PLACEHOLDER)
+				return false;
+
 			if(condition.objectID != ObjectInstanceID::NONE) // mode A - destroy specific object of this type
 			{
 				return p->destroyedObjects.contains(condition.objectID);
@@ -1338,6 +1343,10 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		case EventCondition::CONTROL:
 		{
 			const auto * team = CGameInfoCallback::getPlayerTeam(player);
+
+			// Preserve hero-placeholder objectives as in HotA / OH3 so the map remains playable.
+			if(condition.objectType.as<MapObjectID>() == Obj::HERO_PLACEHOLDER)
+				return true;
 
 			if(condition.objectID != ObjectInstanceID::NONE)
 			{
@@ -1363,6 +1372,10 @@ bool CGameState::checkForVictory(const PlayerColor & player, const EventConditio
 		case EventCondition::CONTROL_CURRENT:
 		{
 			const auto * team = CGameInfoCallback::getPlayerTeam(player);
+
+			// Preserve hero-placeholder objectives as in HotA / OH3 so the map remains playable.
+			if(condition.objectType.as<MapObjectID>() == Obj::HERO_PLACEHOLDER)
+				return true;
 
 			if(condition.objectID != ObjectInstanceID::NONE)
 			{

@@ -39,6 +39,51 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+const CGHeroPlaceholder * CMap::findHeroPlaceholder(const int3 & position) const
+{
+	for(const auto * placeholder : getObjects<CGHeroPlaceholder>())
+	{
+		if(placeholder->coveringAt(position))
+			return placeholder;
+	}
+
+	return nullptr;
+}
+
+const CGHeroPlaceholder * CMap::isHeroPlaceholderObjective(const EventCondition & condition) const
+{
+	if((condition.condition != EventCondition::CONTROL &&
+		condition.condition != EventCondition::CONTROL_CURRENT &&
+		condition.condition != EventCondition::DESTROY) ||
+		condition.objectType.as<MapObjectID>() != Obj::HERO)
+		return nullptr;
+
+	return findHeroPlaceholder(condition.position);
+}
+
+void CMap::resolveHeroPlaceholderObjectives()
+{
+	for(TriggeredEvent & event : triggeredEvents)
+	{
+		auto patcher = [this, &event](EventCondition cond) -> EventExpression::Variant
+		{
+			if(const auto * placeholder = isHeroPlaceholderObjective(cond))
+			{
+				const std::string placeholderName = placeholder->heroType.has_value() ?
+					placeholder->heroType->toHeroType()->getNameTranslated() :
+					placeholder->instanceName;
+				cond.objectType = MapObjectID(Obj::HERO_PLACEHOLDER);
+				logGlobal->warn("Objective '%s': hero objective at %s points to hero placeholder '%s'; condition will remain unresolved until placeholder replacement is supported for normal maps",
+					event.identifier, cond.position.toString(), placeholderName);
+			}
+
+			return cond;
+		};
+
+		event.trigger = event.trigger.morph(patcher);
+	}
+}
+
 void Rumor::serializeJson(JsonSerializeFormat & handler)
 {
 	handler.serializeString("name", name);

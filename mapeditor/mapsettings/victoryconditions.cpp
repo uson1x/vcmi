@@ -139,11 +139,11 @@ void VictoryConditions::initialize(MapController & c)
 
 						case EventCondition::DESTROY: {
 							auto objectType = MapObjectID::decode(json["objectType"].String());
-							if(objectType == Obj::HERO)
+							if(objectType == Obj::HERO || objectType == Obj::HERO_PLACEHOLDER)
 							{
 								ui->victoryComboBox->setCurrentIndex(6);
 								assert(victoryTypeWidget);
-								int heroIdx = getObjectByPos<const CGHeroInstance>(*controller->map(), posFromJson(json["position"]));
+								int heroIdx = getHeroTargetObjectByPos(*controller->map(), posFromJson(json["position"]));
 								if(heroIdx >= 0)
 								{
 									auto idx = victoryTypeWidget->findData(heroIdx);
@@ -457,7 +457,7 @@ void VictoryConditions::on_victoryComboBox_currentIndexChanged(int index)
 		case 5: { //EventCondition::DESTROY (Obj::HERO)
 			victoryTypeWidget = new QComboBox;
 			ui->victoryParamsLayout->addWidget(victoryTypeWidget);
-			for(int i : getObjectIndexes<const CGHeroInstance>(*controller->map()))
+			for(int i : getHeroTargetObjectIndexes(*controller->map()))
 				victoryTypeWidget->addItem(tr(getHeroName(*controller->map(), i).c_str()), QVariant::fromValue(i));
 			pickObjectButton = new QToolButton;
 			connect(pickObjectButton, &QToolButton::clicked, this, &VictoryConditions::onObjectSelect);
@@ -515,7 +515,7 @@ void VictoryConditions::onObjectSelect()
 			}
 
 			case 5: { //EventCondition::DESTROY (Obj::HERO)
-				l.highlight<const CGHeroInstance>();
+				l.highlight([](const CGObjectInstance * obj){ return AbstractSettings::isHeroTargetObject(obj); });
 				break;
 			}
 
