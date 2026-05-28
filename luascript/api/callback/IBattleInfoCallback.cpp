@@ -26,6 +26,18 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
+const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
+{
+	{ "getNextUnitId",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
+	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
+	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
+	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
+
+	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
+	{ "getUnitsIf",           LuaCallWrapper<&IBattleInfoCallbackProxy::getUnitsIf>::invoke,      false },
+	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
+	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
+};
 
 bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex)
 {
@@ -42,19 +54,6 @@ bool IBattleInfoCallbackProxy::hasPenaltyOnLine(const IBattleInfoCallback * obje
 		return false;
 	return cb->battleHasPenaltyOnLine(from, dest, checkWall, checkMoat);
 }
-
-const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
-{
-	{ "getNextUnitId",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
-	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
-	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
-	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
-
-	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
-	{ "getAnyUnitIf",         LuaCallWrapper<&IBattleInfoCallbackProxy::getAnyUnitIf>::invoke,    false },
-	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
-	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
-};
 
 int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 {
@@ -79,7 +78,7 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 	return 1;
 }
 
-int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
+int IBattleInfoCallbackProxy::getUnitsIf(lua_State * L)
 {
 	LuaStack S(L);
 
@@ -87,7 +86,7 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 	S.getNonNull(1, object);
 
 	if(!S.isFunction(2))
-		throw LuaApiException("Invalid parameters passed into getAnyUnitIf!");
+		throw LuaApiException("Invalid parameters passed into getUnitsIf!");
 
 	battle::Units units = object->battleGetUnitsIf([&L](const battle::Unit * unit){
 		LuaStack S2(L);
@@ -96,7 +95,7 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 
 		if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
 			std::string error = lua_tostring(L, S2.absindex(-1));
-			throw LuaApiException("Lua getAnyUnitIf callback failed with message: " + error);
+			throw LuaApiException("Lua getUnitsIf callback failed with message: " + error);
 		}
 
 		bool result = lua_toboolean(L, S2.absindex(-1)) != 0;
@@ -105,12 +104,7 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 	});
 
 	S.clear();
-
-	if (!units.empty())
-		S.push(units.front());
-	else
-		S.pushNil();
-
+	S.push(units);
 	return 1;
 }
 

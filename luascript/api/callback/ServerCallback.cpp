@@ -27,6 +27,17 @@ namespace scripting
 namespace api
 {
 
+const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
+{
+	{ "createUnit", LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
+	{ "updateUnit", LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
+	{ "injureUnit", LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
+	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,        false },
+	{ "removeUnit", LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
+	{ "moveUnit",   LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,   false },
+	{ "appendLog",  LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
+};
+
 void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
 {
 	BattleUnitsChanged buc;
@@ -87,17 +98,6 @@ void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, 
 	msg.lines.push_back(MetaString::createFromLua(config));
 	object->apply(msg);
 }
-
-const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
-{
-	{ "createUnit", LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
-	{ "updateUnit", LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
-	{ "injureUnit", LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
-	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,        false },
-	{ "removeUnit", LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
-	{ "moveUnit",   LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,   false },
-	{ "appendLog",  LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
-};
 
 int ServerCallbackProxy::healUnit(lua_State * L)
 {

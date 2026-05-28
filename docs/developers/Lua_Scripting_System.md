@@ -29,7 +29,6 @@ This page describes the internal working of the Lua scripting module. For usage 
   - Both .md and Lua Language Server
   - Document everything in code and make exporter to both .md and Lua Language Server
 - Review existing API and ensure that it follows rules described here
-  - replace `getAnyUnitIf` method with `getUnitsIf` that returns array
   - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
 - Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
