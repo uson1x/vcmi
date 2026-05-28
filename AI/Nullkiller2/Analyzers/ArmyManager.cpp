@@ -139,15 +139,17 @@ std::vector<SlotInfo>::iterator ArmyManager::getBestUnitForScout(std::vector<Slo
 
 		if (terrainHasPenalty)
 		{
-			auto leftNativeTerrain = left.creature->getFactionID().toFaction()->nativeTerrain;
-			auto rightNativeTerrain = right.creature->getFactionID().toFaction()->nativeTerrain;
+			const auto leftFaction = left.creature->getFactionID().toFaction();
+			const auto rightFaction = right.creature->getFactionID().toFaction();
+			const bool leftIsNative = leftFaction->isNativeTerrain(armyTerrain);
+			const bool rightIsNative = rightFaction->isNativeTerrain(armyTerrain);
 
-			if (leftNativeTerrain != rightNativeTerrain)
+			if (leftIsNative != rightIsNative)
 			{
-				if (leftNativeTerrain == armyTerrain)
+				if (leftIsNative)
 					return true;
 
-				if (rightNativeTerrain == armyTerrain)
+				if (rightIsNative)
 					return false;
 			}
 		}

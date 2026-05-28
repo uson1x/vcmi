@@ -106,9 +106,9 @@ BoatId CFaction::getBoatType() const
 	return boatType;
 }
 
-TerrainId CFaction::getNativeTerrain() const
+bool CFaction::isNativeTerrain(TerrainId terrain) const
 {
-	return nativeTerrain;
+	return vstd::contains(nativeTerrains, terrain);
 }
 
 void CFaction::updateFrom(const JsonNode & data)

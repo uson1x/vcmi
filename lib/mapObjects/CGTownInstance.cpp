@@ -1176,14 +1176,18 @@ FactionID CGTownInstance::getFactionID() const
 	return FactionID(subID.getNum());
 }
 
-TerrainId CGTownInstance::getNativeTerrain() const
+bool CGTownInstance::isNativeTerrain(TerrainId terrain) const
 {
-	auto const & terrain = getTown()->faction->getNativeTerrain();
+	return getTown()->faction->isNativeTerrain(terrain);
+}
 
-	if (!terrain.toEntity(LIBRARY)->isSurface() && !terrain.toEntity(LIBRARY)->isUnderground())
-		logMod->warn("Faction %s has terrain %s as native, but terrain is not suitable for either surface or subterranean layers!", getTown()->faction->getJsonKey(), terrain.toEntity(LIBRARY)->getJsonKey());
+TerrainId CGTownInstance::getTownSiegeTerrain(TerrainId defaultTerrain) const
+{
+	const auto & nativeTerrains = getTown()->faction->nativeTerrains;
+	if(nativeTerrains.empty())
+		return defaultTerrain;
 
-	return terrain;
+	return nativeTerrains.front();
 }
 
 ArtifactID CGTownInstance::getWarMachineInBuilding(BuildingID building) const

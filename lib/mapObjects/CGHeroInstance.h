@@ -172,7 +172,7 @@ public:
 
 	//INativeTerrainProvider
 	FactionID getFactionID() const override;
-	TerrainId getNativeTerrain() const override;
+	bool isNativeTerrain(TerrainId terrain) const override;
 	int getLowestCreatureSpeed() const;
 	si32 manaRegain() const; //how many points of mana can hero regain "naturally" in one day
 	si32 getManaNewTurn() const; //calculate how much mana this hero is going to have the next day
