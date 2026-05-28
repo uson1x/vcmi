@@ -269,7 +269,7 @@ public:
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSerializable, T>, int> = 0>
-	STRONG_INLINE bool tryGet(int position, T & value)
+	inline bool tryGet(int position, T & value)
 	{
 		const auto & deserializer = [this, position]<typename Data>(const std::string &keyName, Data & data)
 		{
@@ -298,7 +298,7 @@ public:
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagRawPointer, T> && std::is_const_v<T>, int> = 0>
-	STRONG_INLINE bool tryGet(int position, T * & value)
+	inline bool tryGet(int position, T * & value)
 	{
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
@@ -312,7 +312,7 @@ public:
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagRawPointer, T> && !std::is_const_v<T>, int> = 0>
-	STRONG_INLINE bool tryGet(int position, T * & value)
+	inline bool tryGet(int position, T * & value)
 	{
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
@@ -325,7 +325,7 @@ public:
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSharedPointer, T> && std::is_const_v<T>, int> = 0>
-	STRONG_INLINE bool tryGet(int position, std::shared_ptr<T> & value)
+	inline bool tryGet(int position, std::shared_ptr<T> & value)
 	{
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
@@ -339,7 +339,7 @@ public:
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSharedPointer, T> && !std::is_const_v<T>, int> = 0>
-	STRONG_INLINE bool tryGet(int position, std::shared_ptr<T> & value)
+	inline bool tryGet(int position, std::shared_ptr<T> & value)
 	{
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
@@ -352,7 +352,7 @@ public:
 	}
 
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagCopyable, T>, int> = 0>
-	STRONG_INLINE bool tryGet(int position, T & value)
+	inline bool tryGet(int position, T & value)
 	{
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
@@ -400,8 +400,7 @@ public:
 
 	int retVoid();
 
-	STRONG_INLINE
-	int retPushed()
+	inline int retPushed()
 	{
 		return lua_gettop(L);
 	}

@@ -60,10 +60,10 @@ private:
 
 	void initializeGraph();
 
-	STRONG_INLINE
+	inline
 	void push(CGPathNode * node);
 
-	STRONG_INLINE
+	inline
 	CGPathNode * topAndPop();
 };
 
