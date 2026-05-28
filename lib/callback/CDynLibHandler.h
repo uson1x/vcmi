@@ -16,7 +16,7 @@ class CBattleGameInterface;
 
 namespace scripting
 {
-	class Module;
+	class Service;
 }
 
 class DLL_LINKAGE CDynLibHandler
@@ -24,7 +24,7 @@ class DLL_LINKAGE CDynLibHandler
 public:
 	static std::shared_ptr<CGlobalAI> getNewAI(const std::string & dllname);
 	static std::shared_ptr<CBattleGameInterface> getNewBattleAI(const std::string & dllname);
-	static std::shared_ptr<scripting::Module> getNewScriptingModule(const boost::filesystem::path & dllname);
+	static std::unique_ptr<scripting::Service> getNewScriptingModule(const boost::filesystem::path & dllname);
 };
 
 VCMI_LIB_NAMESPACE_END

@@ -112,7 +112,7 @@
 #include "../lib/serializer/CTypeList.h"
 #include "../lib/serializer/ESerializationVersion.h"
 
-#include "../lib/spells/CSpellHandler.h"
+#include "../lib/spells/CSpell.h"
 
 #include "../lib/texts/TextOperations.h"
 

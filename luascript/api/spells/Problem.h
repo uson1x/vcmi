@@ -21,7 +21,9 @@ namespace scripting
 	{
 		class SpellProblemProxy : public RawPointerWrapper<::spells::Problem, SpellProblemProxy>
 		{
-			static int add(lua_State * L);
+			static int addCustom(lua_State * L);
+		static int addGeneric(lua_State * L);
+		static int addStandard(lua_State * L);
 		public:
 			using Wrapper = RawPointerWrapper<::spells::Problem, SpellProblemProxy>;
 

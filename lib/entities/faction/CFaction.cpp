@@ -111,14 +111,4 @@ bool CFaction::isNativeTerrain(TerrainId terrain) const
 	return vstd::contains(nativeTerrains, terrain);
 }
 
-void CFaction::updateFrom(const JsonNode & data)
-{
-
-}
-
-void CFaction::serializeJson(JsonSerializeFormat & handler)
-{
-
-}
-
 VCMI_LIB_NAMESPACE_END

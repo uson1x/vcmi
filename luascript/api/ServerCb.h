@@ -28,13 +28,10 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	template<typename NetPack>
-	static int apply(lua_State * L);
-	static int commitPackage(lua_State * L);
-
 	static int createUnit(lua_State * L);
 	static int updateUnit(lua_State * L);
 	static int healUnit(lua_State * L);
+	static int injureUnit(lua_State * L);
 	static int removeUnit(lua_State * L);
 };
 

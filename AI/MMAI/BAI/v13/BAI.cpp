@@ -14,7 +14,6 @@
 #include "battle/BattleStateInfoForRetreat.h"
 #include "battle/CBattleInfoEssentials.h"
 #include "callback/CBattleCallback.h"
-#include "spells/CSpellHandler.h"
 
 #include "BAI/v13/BAI.h"
 #include "BAI/v13/action.h"

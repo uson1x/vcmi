@@ -11,7 +11,6 @@
 
 #include "Moat.h"
 
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 
 #include "../../entities/building/CBuilding.h"
@@ -110,13 +109,13 @@ void Moat::convertBonus(const Mechanics * m, std::vector<Bonus> & converted) con
 	}
 }
 
-void Moat::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Moat::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	assert(m->isMassive());
 	assert(m->battle()->battleGetDefendedTown());
 	if(m->isMassive() && m->battle()->battleGetFortifications().hasMoat)
 	{
-		EffectTarget moat;
+		Target moat;
 		placeObstacles(server, m, moat);
 
 		std::vector<Bonus> converted;
@@ -131,7 +130,7 @@ void Moat::apply(ServerCallback * server, const Mechanics * m, const EffectTarge
 	}
 }
 
-void Moat::placeObstacles(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Moat::placeObstacles(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	assert(m->battle()->battleGetDefendedTown());
 	assert(m->casterSide == BattleSide::DEFENDER); // Moats are always cast by defender

@@ -11,32 +11,24 @@
 #include "StdInc.h"
 #include "ISpellMechanics.h"
 
-#include "../GameLibrary.h"
+#include "BattleSpellMechanics.h"
+#include "TargetCondition.h"
+#include "Problem.h"
+#include "CSpell.h"
 
+#include "adventure/AdventureSpellMechanics.h"
+#include "effects/Effects.h"
+#include "effects/Damage.h"
+#include "effects/Timed.h"
+
+#include "../GameLibrary.h"
 #include "../bonuses/Bonus.h"
 #include "../battle/CBattleInfoCallback.h"
 #include "../battle/IBattleState.h"
 #include "../battle/Unit.h"
-
 #include "../mapObjects/CGHeroInstance.h"
-
 #include "../serializer/JsonDeserializer.h"
 #include "../serializer/JsonSerializer.h"
-
-#include "TargetCondition.h"
-#include "Problem.h"
-
-#include "adventure/AdventureSpellMechanics.h"
-
-#include "BattleSpellMechanics.h"
-
-#include "effects/Effects.h"
-#include "effects/Registry.h"
-#include "effects/Damage.h"
-#include "effects/Timed.h"
-
-#include "CSpellHandler.h"
-
 #include "../BattleFieldHandler.h"
 
 #include <vstd/RNG.h>
@@ -76,7 +68,7 @@ protected:
 	void loadEffects(const JsonNode & config, const int level)
 	{
 		JsonDeserializer deser(nullptr, config);
-		effects->serializeJson(LIBRARY->spellEffects(), deser, level, spell->modScope, spell->identifier);
+		effects->serializeJson(deser, level, spell->modScope, spell->identifier);
 	}
 private:
 	std::shared_ptr<IReceptiveCheck> targetCondition;

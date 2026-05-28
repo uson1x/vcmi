@@ -77,9 +77,6 @@ public:
 	bool isNativeTerrain(TerrainId terrain) const override;
 	EAlignment getAlignment() const override;
 	BoatId getBoatType() const override;
-
-	void updateFrom(const JsonNode & data);
-	void serializeJson(JsonSerializeFormat & handler);
 };
 
 VCMI_LIB_NAMESPACE_END

@@ -266,11 +266,10 @@ set(lib_MAIN_SRCS
 	serializer/JsonUpdater.cpp
 	serializer/SerializerReflection.cpp
 
-	scripting/ScriptHandler.cpp
-
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
 	spells/BonusCaster.cpp
+	spells/CSpell.cpp
 	spells/CSpellHandler.cpp
 	spells/ExternalCaster.cpp
 	spells/ISpellMechanics.cpp
@@ -294,7 +293,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Catapult.cpp
 	spells/effects/Clone.cpp
 	spells/effects/Damage.cpp
-	spells/effects/DemonSummon.cpp
 	spells/effects/Dispel.cpp
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
@@ -302,7 +300,7 @@ set(lib_MAIN_SRCS
 	spells/effects/LocationEffect.cpp
 	spells/effects/Moat.cpp
 	spells/effects/Obstacle.cpp
-	spells/effects/Registry.cpp
+	spells/effects/SpellEffectHandler.cpp
 	spells/effects/UnitEffect.cpp
 	spells/effects/Teleport.cpp
 	spells/effects/Timed.cpp
@@ -747,17 +745,17 @@ set(lib_MAIN_HEADERS
 	serializer/Serializeable.h
 	serializer/SerializerReflection.h
 
-	scripting/ScriptHandler.h
-
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
 	spells/BonusCaster.h
+	spells/CSpell.h
 	spells/CSpellHandler.h
 	spells/ExternalCaster.h
 	spells/ISpellMechanics.h
 	spells/ObstacleCasterProxy.h
 	spells/Problem.h
 	spells/ProxyCaster.h
+	spells/SpellAnimationItem.h
 	spells/SpellSchoolHandler.h
 	spells/TargetCondition.h
 	spells/ViewSpellInt.h
@@ -774,7 +772,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Catapult.h
 	spells/effects/Clone.h
 	spells/effects/Damage.h
-	spells/effects/DemonSummon.h
 	spells/effects/Dispel.h
 	spells/effects/Effect.h
 	spells/effects/Effects.h
@@ -782,7 +779,8 @@ set(lib_MAIN_HEADERS
 	spells/effects/Heal.h
 	spells/effects/LocationEffect.h
 	spells/effects/Obstacle.h
-	spells/effects/Registry.h
+	spells/effects/SpellEffectHandler.h
+	spells/effects/SpellEffectService.h
 	spells/effects/UnitEffect.h
 	spells/effects/Teleport.h
 	spells/effects/Timed.h

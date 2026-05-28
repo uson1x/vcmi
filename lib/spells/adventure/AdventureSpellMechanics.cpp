@@ -19,8 +19,8 @@
 #include "TownPortalEffect.h"
 #include "ViewWorldEffect.h"
 
-#include "../CSpellHandler.h"
 #include "../Problem.h"
+#include "../CSpell.h"
 
 #include "../../json/JsonBonus.h"
 #include "../../mapObjects/CGHeroInstance.h"

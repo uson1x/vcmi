@@ -41,7 +41,6 @@
 
 #include "../../lib/GameLibrary.h"
 #include "../../lib/CCreatureHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/CStopWatch.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/callback/CCallback.h"

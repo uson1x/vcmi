@@ -11,7 +11,6 @@
 #include "inspector.h"
 #include "../../lib/entities/hero/CHeroClass.h"
 #include "../../lib/entities/hero/CHeroHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/CRandomGenerator.h"
 #include "../../lib/mapObjectConstructors/AObjectTypeHandler.h"
 #include "../../lib/mapObjectConstructors/CObjectClassesHandler.h"
@@ -21,6 +20,7 @@
 #include "../../lib/constants/StringConstants.h"
 #include "../../lib/CPlayerState.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 #include "abilitieswidget.h"
 #include "townbuildingswidget.h"

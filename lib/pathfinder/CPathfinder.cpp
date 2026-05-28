@@ -25,7 +25,7 @@
 #include "../mapObjects/MiscObjects.h"
 #include "../mapping/CMap.h"
 #include "../spells/CSpellHandler.h"
-#include "spells/ISpellMechanics.h"
+#include "../spells/ISpellMechanics.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

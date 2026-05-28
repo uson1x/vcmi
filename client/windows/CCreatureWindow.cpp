@@ -43,6 +43,7 @@
 #include "../../lib/gameState/CGameState.h"
 #include "../../lib/gameState/UpgradeInfo.h"
 #include "../../lib/networkPacks/ArtifactLocation.h"
+#include "../../lib/spells/CSpell.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/texts/TextOperations.h"
 #include "../../lib/texts/Languages.h"

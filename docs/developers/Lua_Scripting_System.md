@@ -4,7 +4,6 @@ This page describes internal working of Lua scripting module. For usage of publi
 
 ## TODO
 
-- (MAJOR) switch from using global to `return table` pattern when loading scripts. This would allow implementing inheritance / extension of existing scripts
 - (MAJOR) expand API to make scripts actually usable for modding. [ERM docs](https://azethmeron.github.io/) can serve as reference as to what should be accessible from Lua.
 - (MAJOR) expand usage of scripts:
   - convert HotA map scripts into Lua form
@@ -13,12 +12,12 @@ This page describes internal working of Lua scripting module. For usage of publi
   - Implement support for scriptable map objects
   - Move damage calculator, or at least - damage formula to Lua, based on [existing PR](https://github.com/vcmi/vcmi/pull/5135)
   - Move map movement point limit calculation to Lua
+  - Move starting armies and starting town building randomization to lua?
 - Document public scripting API. Decide approach on how to handle it:
   - Use .md form and place them as part of our docs, accessible from website
   - Use [Lua Language Server format](https://luals.github.io/wiki/definition-files/) to make docs accessible from IDE
   - Both .md and Lua Language Server
   - Document everything in code and make exporter to both .md and Lua Language Server
-- Currently C++ bindings rely on undefined behavior, which previously was causing issues on Android. We need to remove `VCMI_REGISTER_CORE_SCRIPT_API` and `VCMI_REGISTER_CORE_SCRIPT_API` macro and perform these actions explicitly on initialization of scripting
 - Review existing API and ensure that it follows rules described here
   - replace `getAnyUnitIf` method with `getUnitsIf` that returns array
 - Document C++ classes
@@ -27,10 +26,6 @@ This page describes internal working of Lua scripting module. For usage of publi
 - Add error handling instead of returning nil values whenever something goes wrong. Lua already provides `luaL_error` for such cases. Make sure that Lua stack size is correct whenever error occurs
   - For API calls, ensure that all use some wrapper, such as `LuaCallWrapper` and not a direct function call
 - Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
-- Consider config validation as part of the script. Options:
-  - external json schema support
-  - implement "validate" function that performs all checks manually
-  - have Lua generate json schema?
 - ensure that there is debug logging available to scripts:
   - information logging
   - assertions

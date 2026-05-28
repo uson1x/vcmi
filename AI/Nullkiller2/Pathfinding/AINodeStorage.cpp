@@ -18,6 +18,7 @@
 #include "../../../lib/pathfinder/PathfinderOptions.h"
 #include "../../../lib/pathfinder/PathfinderUtil.h"
 #include "../../../lib/spells/ISpellMechanics.h"
+#include "../../../lib/spells/CSpellHandler.h"
 #include "../../../lib/spells/adventure/TownPortalEffect.h"
 #include "../Engine/Nullkiller.h"
 #include "../AIGateway.h"

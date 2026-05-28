@@ -28,9 +28,6 @@ public:
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
 	static int getAvailableHex(lua_State * L);
-	static int getBattlefieldType(lua_State * L);
-	static int getTerrainType(lua_State * L);
-	static int getUnitByPos(lua_State * L);
 	static int getAnyUnitIf(lua_State * L);
 };
 

@@ -28,9 +28,6 @@ using ::events::GameResumed;
 using ::events::PlayerGotTurn;
 using ::events::TurnStarted;
 
-VCMI_REGISTER_SCRIPT_API(GameResumedProxy, "events.GameResumed");
-VCMI_REGISTER_SCRIPT_API(PlayerGotTurnProxy, "events.PlayerGotTurn");
-VCMI_REGISTER_SCRIPT_API(TurnStartedProxy, "events.TurnStarted");
 
 const std::vector<GameResumedProxy::CustomRegType> GameResumedProxy::REGISTER_CUSTOM =
 {

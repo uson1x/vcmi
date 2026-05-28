@@ -30,8 +30,8 @@
 #include "../mapObjects/TownBuildingInstance.h"
 #include "../mapping/CMap.h"
 #include "../networkPacks/StackLocation.h"
+#include "../spells/CSpell.h"
 
-#include "../spells/CSpellHandler.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

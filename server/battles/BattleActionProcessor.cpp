@@ -27,9 +27,9 @@
 #include "../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../lib/networkPacks/SetStackEffect.h"
 #include "../../lib/spells/AbilityCaster.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/ISpellMechanics.h"
 #include "../../lib/spells/Problem.h"
+#include "../../lib/spells/CSpell.h"
 
 #include <vstd/RNG.h>
 

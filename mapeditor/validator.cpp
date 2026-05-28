@@ -17,7 +17,8 @@
 #include "../lib/mapObjects/MapObjects.h"
 #include "../lib/modding/CModHandler.h"
 #include "../lib/modding/ModDescription.h"
-#include "../lib/spells/CSpellHandler.h"
+
+#include <vcmi/spells/Spell.h>
 
 #include "../lib/json/JsonKeyExtractor.h"
 

@@ -24,7 +24,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-VCMI_REGISTER_CORE_SCRIPT_API(BattleCbProxy, "game.Battle");
 
 const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
 {
@@ -34,32 +33,8 @@ const std::vector<BattleCbProxy::CustomRegType> BattleCbProxy::REGISTER_CUSTOM =
 	{ "isFinished", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke, false },
 
 	{ "getAvailableHex", LuaCallWrapper<&BattleCbProxy::getAvailableHex>::invoke, false },
-	{ "getBattlefieldType", LuaCallWrapper<&BattleCbProxy::getBattlefieldType>::invoke, false },
-	{ "getTerrainType", LuaCallWrapper<&BattleCbProxy::getTerrainType>::invoke, false },
-	{ "getUnitByPos", LuaCallWrapper<&BattleCbProxy::getUnitByPos>::invoke, false },
 	{ "getAnyUnitIf", LuaCallWrapper<&BattleCbProxy::getAnyUnitIf>::invoke, false },
 };
-
-int BattleCbProxy::getBattlefieldType(lua_State * L)
-{
-	LuaStack S(L);
-
-	const IBattleInfoCallback * object;
-	S.getNonNullOrThrow(1, object);
-	auto ret = object->battleGetBattlefieldType();
-
-	return LuaStack::quickRetStr(L, ret.getInfo()->identifier);
-}
-
-int BattleCbProxy::getTerrainType(lua_State * L)
-{
-	LuaStack S(L);
-
-	const IBattleInfoCallback * object;
-	S.getNonNullOrThrow(1, object);
-
-	return LuaStack::quickRetInt(L, object->battleTerrainType().getNum());
-}
 
 int BattleCbProxy::getAvailableHex(lua_State * L)
 {
@@ -73,37 +48,13 @@ int BattleCbProxy::getAvailableHex(lua_State * L)
 	si16 hexVal = BattleHex::INVALID;
 
 	if(!S.tryGet(2, creature) || !S.tryGet(3, side))
-		return S.retNil();
+		throw LuaApiException("Invalid parameters passed into getAvailableHex!");
 
 	S.tryGet(4, hexVal);
 
 	S.clear();
 	BattleHex result = object->getAvailableHex(creature, side, hexVal);
 	S.push(result);
-	return 1;
-}
-
-int BattleCbProxy::getUnitByPos(lua_State * L)
-{
-	LuaStack S(L);
-
-	const IBattleInfoCallback * object;
-	S.getNonNullOrThrow(1, object);
-
-	si16 hexVal;
-
-	if(!S.tryGet(2, hexVal))
-		return S.retNil();
-
-	BattleHex hex(hexVal);
-
-	bool onlyAlive;
-
-	if(!S.tryGet(3, onlyAlive))
-		onlyAlive = true;//same as default value in battleGetUnitByPos
-
-	S.clear();
-	S.push(object->battleGetUnitByPos(hex, onlyAlive));
 	return 1;
 }
 
@@ -115,7 +66,7 @@ int BattleCbProxy::getAnyUnitIf(lua_State * L)
 	S.getNonNullOrThrow(1, object);
 
 	if(!S.isFunction(2))
-		return S.retNil();
+		throw LuaApiException("Invalid parameters passed into getAnyUnitIf!");
 
 	battle::Units units = object->battleGetUnitsIf([&L](const battle::Unit * unit){
 		LuaStack S2(L);

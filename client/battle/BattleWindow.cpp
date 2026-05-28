@@ -53,6 +53,7 @@
 #include "../../lib/gameState/InfoAboutArmy.h"
 #include "../../lib/mapping/CMapHeader.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/spells/CSpell.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 
 BattleWindow::BattleWindow(BattleInterface & Owner)

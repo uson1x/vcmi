@@ -12,6 +12,7 @@
 
 #include <vcmi/scripting/Service.h>
 #include "../../../lib/battle/Unit.h"
+#include <vcmi/spells/Spell.h>
 
 #include "../../LuaWrapper.h"
 
@@ -34,6 +35,9 @@ public:
 
 	static void heal(Unit *, int64_t & amount, EHealLevel level, EHealPower power);
 	static const Creature * getCreature(const Unit *);
+	static int32_t getBaseAmount(const Unit *);
+	static BattleHexArray getHexes(const Unit *);
+	static bool hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell);
 };
 
 }

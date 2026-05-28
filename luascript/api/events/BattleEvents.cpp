@@ -27,8 +27,6 @@ namespace events
 {
 using ::events::ApplyDamage;
 
-VCMI_REGISTER_SCRIPT_API(ApplyDamageProxy, "events.ApplyDamage");
-
 const std::vector<ApplyDamageProxy::CustomRegType> ApplyDamageProxy::REGISTER_CUSTOM =
 {
 	{

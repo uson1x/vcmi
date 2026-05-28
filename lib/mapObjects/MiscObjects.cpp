@@ -22,7 +22,6 @@
 #include "../CConfigHandler.h"
 #include "../texts/CGeneralTextHandler.h"
 #include "../CSkillHandler.h"
-#include "../spells/CSpellHandler.h"
 #include "../gameState/CGameState.h"
 #include "../mapping/CMap.h"
 #include "../CPlayerState.h"

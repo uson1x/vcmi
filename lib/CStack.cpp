@@ -18,8 +18,8 @@
 #include "texts/CGeneralTextHandler.h"
 #include "battle/BattleInfo.h"
 #include "GameLibrary.h"
-#include "spells/CSpellHandler.h"
 #include "networkPacks/PacksForClientBattle.h"
+#include "spells/CSpell.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

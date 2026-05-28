@@ -103,6 +103,10 @@
 	[
 		"config/spellSchools.json"
 	],
+	"spellEffects" :
+	[
+		"config/spellEffects.json"
+	],
 	"skills" :
 	[
 		"config/skills.json"
@@ -139,13 +143,6 @@
 	[
 		"config/mapLayers.json"
 	],
-	
-	"scripts" : {
-		"summon" : {
-			"source" : "scripts/SpellEffectSummon.lua",
-			"implements" : "BATTLE_EFFECT"
-		}
-	},
 	
 	"settings":
 	{

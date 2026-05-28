@@ -29,8 +29,8 @@
 #include "../../lib/mapping/CMap.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/networkPacks/PacksForClientBattle.h"
-#include "../../lib/spells/CSpellHandler.h"
 
+#include <vcmi/spells/Spell.h>
 #include <boost/lexical_cast.hpp>
 
 BattleResultProcessor::BattleResultProcessor(CGameHandler * gameHandler)

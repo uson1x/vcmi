@@ -13,9 +13,10 @@
 #include "LuaScriptInstance.h"
 #include "LuaScriptPool.h"
 #include "LuaSpellEffect.h"
+#include "LuaUnitEffect.h"
 
 #include "../lib/GameLibrary.h"
-#include "../lib/spells/effects/Registry.h"
+#include "../lib/spells/effects/SpellEffectService.h"
 
 #ifdef __GNUC__
 #	define strcpy_s(a, b, c) strncpy(a, c, b)
@@ -30,9 +31,9 @@ extern "C" DLL_EXPORT void GetAiName(char * name)
 	strcpy_s(name, strlen(g_cszAiName) + 1, g_cszAiName);
 }
 
-extern "C" DLL_EXPORT void GetNewModule(std::shared_ptr<scripting::Module> & out)
+extern "C" DLL_EXPORT void GetNewModule(std::unique_ptr<scripting::Service> & out)
 {
-	out = std::make_shared<scripting::LuaModule>();
+	out = std::make_unique<scripting::LuaModule>();
 }
 
 namespace scripting
@@ -41,46 +42,23 @@ namespace scripting
 LuaModule::LuaModule() = default;
 LuaModule::~LuaModule() = default;
 
-LuaModule::ScriptPtr LuaModule::loadFromJson(vstd::CLoggerBase * logger, const std::string & scope, const JsonNode & json, const std::string & identifier)
+void LuaModule::installScripting(spells::effects::SpellEffectService * spellEffects)
 {
-	auto ret = std::make_shared<LuaScriptInstance>(*this);
+	luaSpellEffects = std::make_shared<spells::effects::LuaSpellEffectFactory>(*this);
+	spellEffects->registerFactory("lua", luaSpellEffects);
 
-	ret->identifier = identifier;
-	ret->modScope = scope;
-	ret->loadFromJson(json);
-	return ret;
-}
-
-void LuaModule::loadObject(const std::string & scope, const std::string & name, const JsonNode & data)
-{
-	auto object = loadFromJson(logMod, scope, data, name);
-	objects[object->getJsonKey()] = object;
-}
-
-void LuaModule::afterLoadFinalization()
-{
-	for(const auto & [name, script] : objects)
-	{
-		switch(script->implements)
-		{
-			case LuaScriptInstance::Implements::ANYTHING:
-				break;
-			case LuaScriptInstance::Implements::BATTLE_EFFECT:
-				LIBRARY->spellEffects()->add(script->getJsonKey(), std::make_shared<spells::effects::LuaSpellEffectFactory>(script.get()));
-				break;
-		}
-	}
+	luaUnitEffects = std::make_shared<spells::effects::LuaUnitEffectFactory>(*this);
+	spellEffects->registerFactory("luaUnit", luaUnitEffects);
 }
 
 std::unique_ptr<Pool> LuaModule::createPoolInstance(const Environment * ENV) const
 {
 	auto result = std::make_unique<LuaScriptPool>(*this, ENV);
-
-	for(const auto & [name, script] : objects)
-		result->registerScript(script.get());
-
+	luaSpellEffects->registerScripts(result.get());
+	luaUnitEffects->registerScripts(result.get());
 	return result;
 }
+
 }
 
 VCMI_LIB_NAMESPACE_END

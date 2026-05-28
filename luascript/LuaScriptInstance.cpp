@@ -13,41 +13,29 @@
 #include "LuaScriptInstance.h"
 
 #include "../lib/filesystem/Filesystem.h"
-#include "../lib/json/JsonNode.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
-
-constexpr std::array IMPLEMENTS_MAP = {"ANYTHING", "BATTLE_EFFECT"};
 
 namespace scripting
 {
 
-LuaScriptInstance::LuaScriptInstance(LuaModule & host) : implements(Implements::ANYTHING), host(host) {}
+LuaScriptInstance::LuaScriptInstance(LuaModule & host, const std::string & modScope, const std::string & sourcePath)
+	: host(host)
+	, modScope(modScope)
+	, sourcePath(sourcePath)
+{
+	ScriptPath sourcePathId = ScriptPath::builtinTODO(sourcePath).addPrefix("SCRIPTS/");
+	CResourceHandler::get(modScope)->load(sourcePathId);
+
+	auto rawData = CResourceHandler::get()->load(sourcePathId)->readAll();
+	sourceText = std::string(reinterpret_cast<char *>(rawData.first.get()), rawData.second);
+}
 
 LuaScriptInstance::~LuaScriptInstance() = default;
-
-std::string LuaScriptInstance::getJsonKey() const
-{
-	return modScope + ':' + identifier;
-}
 
 std::shared_ptr<LuaContext> LuaScriptInstance::createContext(const Environment * ENV) const
 {
 	return std::make_shared<LuaContext>(this, ENV);
-}
-
-const std::string & LuaScriptInstance::getSource() const
-{
-	return sourceText;
-}
-
-void LuaScriptInstance::loadFromJson(const JsonNode & input)
-{
-	sourcePath = input["source"].String();
-	implements = static_cast<Implements>(vstd::find_pos(IMPLEMENTS_MAP, input["implements"].String()));
-	ResourcePath sourcePathId(sourcePath);
-	auto rawData = CResourceHandler::get()->load(sourcePathId)->readAll();
-	sourceText = std::string(reinterpret_cast<char *>(rawData.first.get()), rawData.second);
 }
 
 }

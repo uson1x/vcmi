@@ -11,6 +11,7 @@
 #include "QuickSpellPanel.h"
 
 #include "BattleInterface.h"
+#include "BattleWindow.h"
 
 #include "../GameEngine.h"
 #include "../eventsSDL/InputHandler.h"
@@ -27,7 +28,6 @@
 #include "../../lib/json/JsonUtils.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/spells/CSpellHandler.h"
-#include "battle/BattleWindow.h"
 
 QuickSpellPanel::QuickSpellPanel(BattleInterface & owner)
 	: CIntObject(0)

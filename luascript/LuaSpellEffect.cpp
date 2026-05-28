@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 
+#include "LuaScriptPool.h"
 #include "LuaSpellEffect.h"
 
 #include "LuaContext.h"
@@ -21,10 +22,14 @@
 #include "../lib/battle/CBattleInfoCallback.h"
 #include "../lib/serializer/JsonSerializeFormat.h"
 
-static const std::string APPLICABLE_GENERAL = "applicable";
+static const std::string APPLICABLE_GENERAL = "applicableGeneral";
 static const std::string APPLICABLE_TARGET = "applicableTarget";
 static const std::string TRANSFORM_TARGET = "transformTarget";
 static const std::string APPLY = "apply";
+//static const std::string INITIALIZE = "initialize";
+static const std::string GET_HEALTH_CHANGE = "getHealthChange";
+static const std::string ADJUST_AFFECTED_HEXES = "adjustAffectedHexes";
+static const std::string ADJUST_TARGET_TYPES = "adjustTargetTypes";
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -33,17 +38,29 @@ namespace spells
 namespace effects
 {
 
-LuaSpellEffectFactory::LuaSpellEffectFactory(const LuaScriptInstance * script_)
-	: script(script_)
+LuaSpellEffectFactory::LuaSpellEffectFactory(scripting::LuaModule & host)
+	:host(host)
 {
 
 }
 
 LuaSpellEffectFactory::~LuaSpellEffectFactory() = default;
 
-Effect * LuaSpellEffectFactory::create() const
+void LuaSpellEffectFactory::initialize(const std::string & scope, const std::string & name)
 {
-	return new LuaSpellEffect(script);
+	auto loadedScript = std::make_unique<scripting::LuaScriptInstance>(host, scope,name);
+	loadedScripts[loadedScript->getIdentifier()] = std::move(loadedScript);
+}
+
+std::shared_ptr<Effect> LuaSpellEffectFactory::create(const std::string & scope, const std::string & name) const
+{
+	return std::make_shared<LuaSpellEffect>(loadedScripts.at(scope + ':' + name).get());
+}
+
+void LuaSpellEffectFactory::registerScripts(scripting::LuaScriptPool * pool)
+{
+	for (const auto & script : loadedScripts)
+		pool->registerScript(script.second.get());
 }
 
 LuaSpellEffect::LuaSpellEffect(const LuaScriptInstance * script_)
@@ -54,62 +71,60 @@ LuaSpellEffect::LuaSpellEffect(const LuaScriptInstance * script_)
 
 LuaSpellEffect::~LuaSpellEffect() = default;
 
-void LuaSpellEffect::adjustTargetTypes(std::vector<TargetType> & types) const
+void LuaSpellEffect::adjustTargetTypes(std::vector<TargetType> & types, const Mechanics * m) const
 {
-
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	context->callMethod<void>(ADJUST_TARGET_TYPES, parameters, types);
 }
 
 void LuaSpellEffect::adjustAffectedHexes(BattleHexArray & hexes, const Mechanics * m, const Target & spellTarget) const
 {
-
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	context->callMethod<void>(ADJUST_AFFECTED_HEXES, parameters, m, hexes, spellTarget);
 }
 
-bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m) const
+SpellEffectValue LuaSpellEffect::getHealthChange(const Mechanics * m, const Target & spellTarget) const
 {
 	std::shared_ptr<LuaContext> context = resolveScript(m);
-
-	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_GENERAL, parameters, m, &problem);
-
+	auto result = context->callMethod<SpellEffectValue>(GET_HEALTH_CHANGE, parameters, m, spellTarget);
 	return result;
 }
 
-bool LuaSpellEffect::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool LuaSpellEffect::applicableGeneral(Problem & problem, const Mechanics * m) const
 {
-	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
-
-	if(target.empty())
-		return false;
-
-	bool result = context->callGlobalWithParameters<bool>(APPLICABLE_TARGET, parameters, m, target);
-
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	bool result = context->callMethod<bool>(APPLICABLE_GENERAL, parameters, m, &problem);
 	return result;
 }
 
-void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+bool LuaSpellEffect::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
-
-	context->callGlobalWithParameters<void>(APPLY, parameters, m, server, target);
+	bool result = context->callMethod<bool>(APPLICABLE_TARGET, parameters, &problem, m, target);
+	return result;
 }
 
-EffectTarget LuaSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
-{
-	return EffectTarget(target);
-}
-
-EffectTarget LuaSpellEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+void LuaSpellEffect::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
+	context->callMethod<void>(APPLY, parameters, m, server, target);
+}
 
-	Target response = context->callGlobalWithParameters<Target>(TRANSFORM_TARGET, parameters, m, aimPoint, spellTarget);
+Target LuaSpellEffect::filterTarget(const Mechanics * m, const Target & target) const
+{
+	return target;
+}
 
+Target LuaSpellEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+{
+	std::shared_ptr<scripting::LuaContext> context = resolveScript(m);
+	Target response = context->callMethod<Target>(TRANSFORM_TARGET, parameters, m, aimPoint, spellTarget);
 	return response;
 }
 
 void LuaSpellEffect::serializeJsonEffect(JsonSerializeFormat & handler)
 {
 	parameters = handler.getCurrent();
-	//TODO: load everything and provide to script
 }
 
 std::shared_ptr<scripting::LuaContext> LuaSpellEffect::resolveScript(const Mechanics * m) const

@@ -14,19 +14,24 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+namespace spells::effects
+{
+class LuaSpellEffectFactory;
+class LuaUnitEffectFactory;
+}
+
 namespace scripting
 {
 
 class LuaScriptInstance;
 
-class LuaModule final : public Module
+class LuaModule final : public Service
 {
 public:
 	LuaModule();
 	~LuaModule();
 
-	void loadObject(const std::string & scope, const std::string & name, const JsonNode & data) override;
-	void afterLoadFinalization() override;
+	void installScripting(spells::effects::SpellEffectService * spellEffects) override;
 
 	std::unique_ptr<Pool> createPoolInstance(const Environment * ENV) const override;
 
@@ -34,9 +39,8 @@ private:
 	using ScriptPtr = std::shared_ptr<LuaScriptInstance>;
 	using ScriptMap = std::map<std::string, ScriptPtr>;
 
-	ScriptMap objects;
-
-	ScriptPtr loadFromJson(vstd::CLoggerBase * logger, const std::string & scope, const JsonNode & json, const std::string & identifier);
+	std::shared_ptr<spells::effects::LuaSpellEffectFactory> luaSpellEffects;
+	std::shared_ptr<spells::effects::LuaUnitEffectFactory> luaUnitEffects;
 };
 }
 

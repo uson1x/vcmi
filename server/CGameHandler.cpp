@@ -29,7 +29,6 @@
 #include "../lib/CSoundBase.h"
 #include "../lib/GameConstants.h"
 #include "../lib/IGameSettings.h"
-#include "../lib/scripting/ScriptHandler.h"
 #include "../lib/StartInfo.h"
 #include "../lib/TerrainHandler.h"
 #include "../lib/GameLibrary.h"
@@ -77,7 +76,7 @@
 #include "../lib/serializer/CSaveFile.h"
 #include "../lib/serializer/CLoadFile.h"
 
-#include "../lib/spells/CSpellHandler.h"
+#include "../lib/spells/CSpell.h"
 
 #include <vstd/RNG.h>
 #include <vstd/CLoggerBase.h>

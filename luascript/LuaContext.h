@@ -11,6 +11,7 @@
 #pragma once
 
 #include "LuaStack.h"
+#include "LuaReference.h"
 #include "../lib/json/JsonNode.h"
 #include <vcmi/scripting/Service.h>
 
@@ -27,12 +28,18 @@ public:
 	LuaContext(const Script * source, const Environment * env_);
 	~LuaContext();
 
-	void run() override;
+	/// Runs script once to perform its initialization
+	void initialize();
 
-	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
+	/// Returns true if the script table defines a function with the given name
+	bool hasFunction(const std::string & name);
 
+	/// Calls a method on the script class using OOP convention.
+	/// params is pushed as self (with __index = scriptTable), remaining args follow.
+	/// Return value (if any) is converted from Lua and returned.
+	/// For void return, use explicit ReturnType = void.
 	template<typename ReturnType, typename... Args>
-	ReturnType callGlobalWithParameters(const std::string & name, Args&& ... parameters);
+	ReturnType callMethod(const std::string & name, const JsonNode & params, Args&&... args);
 
 private:
 	std::mutex mutex;
@@ -44,21 +51,10 @@ private:
 
 	std::shared_ptr<LuaReference> modules;
 	std::shared_ptr<LuaReference> scriptClosure;
+	std::shared_ptr<LuaReference> scriptTable;
 
 	//log error and return nil from LuaCFunction
 	int errorRetVoid(const std::string & message);
-
-	void getGlobal(const std::string & name, int & value) override;
-	void getGlobal(const std::string & name, std::string & value) override;
-	void getGlobal(const std::string & name, double & value) override;
-	void getGlobal(const std::string & name, JsonNode & value) override;
-
-	void setGlobal(const std::string & name, int value) override;
-	void setGlobal(const std::string & name, const std::string & value) override;
-	void setGlobal(const std::string & name, double value) override;
-	void setGlobal(const std::string & name, const JsonNode & value) override;
-
-	void pop(JsonNode & value);
 
 	void popAll();
 
@@ -69,7 +65,7 @@ private:
 
 	void cleanupGlobals();
 
-	void registerCore();
+	void registerPublicTypes();
 
 	//require global function
 	static int require(lua_State * L);
@@ -79,12 +75,14 @@ private:
 };
 
 template<typename ReturnType, typename... Args>
-ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&& ... parameters)
+ReturnType LuaContext::callMethod(const std::string & name, const JsonNode & params, Args&&... args)
 {
 	std::lock_guard guard(mutex);
 	LuaStack S(L);
 
-	lua_getglobal(L, name.c_str());
+	scriptTable->push();               // stack: (table)
+	lua_getfield(L, -1, name.c_str()); // stack: (table), (function)
+	lua_replace(L, 1);                 // stack: (function)
 
 	if(!S.isFunction(-1))
 	{
@@ -94,8 +92,16 @@ ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&&
 		throw LuaApiException(error);
 	}
 
-	int argc = sizeof...(Args);
-	(S << ... << parameters);
+	// Build self: push params as Lua table, set __index = scriptTable via metatable
+	S.push(params);                    // stack: (function), (self)
+	lua_newtable(L);                   // stack: (function), (self), (mt)
+	scriptTable->push();               // stack: (function), (self), (mt), (scriptTable)
+	lua_setfield(L, -2, "__index");    // mt.__index = scriptTable; stack: (function), (self), (mt)
+	lua_setmetatable(L, -2);           // setmetatable(self, mt); stack: (function), (self)
+
+	// push all params
+	int argc = 1 + sizeof...(Args);
+	(S << ... << args);
 
 	if(lua_pcall(L, argc, 1, 0))
 	{
@@ -117,7 +123,7 @@ ReturnType LuaContext::callGlobalWithParameters(const std::string & name, Args&&
 	}
 	else
 	{
-		S.balance();
+		S.clear();
 		return;
 	}
 }

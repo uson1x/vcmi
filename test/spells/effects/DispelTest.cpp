@@ -101,10 +101,10 @@ TEST_F(DispelTest, ApplicableToAliveUnitWithTimedEffect)
 	setDefaultExpectations();
 	unitsFake.setDefaultBonusExpectations();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(DispelTest, IgnoresOwnEffects)
@@ -129,10 +129,10 @@ TEST_F(DispelTest, IgnoresOwnEffects)
 	setDefaultExpectations();
 	unitsFake.setDefaultBonusExpectations();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(DispelTest, IgnoresPersistentEffects)
@@ -156,10 +156,10 @@ TEST_F(DispelTest, IgnoresPersistentEffects)
 	setDefaultExpectations();
 	unitsFake.setDefaultBonusExpectations();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(DispelTest, NotApplicableToUnitWithNoTimedEffect)
@@ -174,10 +174,10 @@ TEST_F(DispelTest, NotApplicableToUnitWithNoTimedEffect)
 
 	unitsFake.setDefaultBonusExpectations();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(DispelTest, NotApplicableToDeadUnit)
@@ -192,10 +192,10 @@ TEST_F(DispelTest, NotApplicableToDeadUnit)
 
 	unitsFake.setDefaultBonusExpectations();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 class DispelApplyTest : public DispelFixture
@@ -259,7 +259,7 @@ TEST_F(DispelApplyTest, RemovesEffects)
 	unitsFake.setDefaultBonusExpectations();
 	setupDefaultRNG();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit0, BattleHex());
 	target.emplace_back(&unit1, BattleHex());
 

@@ -11,29 +11,11 @@
 #pragma once
 
 #include <typeinfo>
-#include <typeindex>
-
-#define VCMI_REGISTER_SCRIPT_API(Type, Name) \
-namespace\
-{\
-RegisterAPI<Type> _register ## Type (Name);\
-}\
-\
-
-#define VCMI_REGISTER_CORE_SCRIPT_API(Type, Name) \
-namespace\
-{\
-RegisterCoreAPI<Type> _register ## Type (Name);\
-}\
-\
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
+namespace scripting::api
 {
-namespace api
-{
-class TypeRegistry;
 
 class Registar
 {
@@ -43,72 +25,47 @@ public:
 	virtual void pushMetatable(lua_State * L) const = 0;
 };
 
-class Registry : public boost::noncopyable
+class Registry final : public boost::noncopyable
 {
-public:
 	using RegistryData = std::map<std::string, std::shared_ptr<Registar>>;
-	static Registry * get();
 
+public:
+	/// Returns global unique instance of type registry
+	static const Registry * get();
+
+	/// Returns type information for public type with provided registered name
 	const Registar * find(const std::string & name) const;
-	void add(const std::string & name, std::shared_ptr<Registar> item);
-	void addCore(const std::string & name, std::shared_ptr<Registar> item);
 
-	const RegistryData & getCoreData() const
+	/// Returns all registered types including internal types
+	const RegistryData & getAllTypes() const
 	{
-		return coreData;
+		return privateData;
+	}
+
+	/// Returns unique type name for a provided type
+	/// TODO: consider offering demangled names instead, or those provided as part of registration
+	template<typename T>
+	const char * getTypeName() const
+	{
+		return typeid(T).name();
 	}
 private:
-	RegistryData data;
-	RegistryData coreData;
+	RegistryData privateData;
+	RegistryData publicData;
 
 	Registry();
-};
 
-template<typename T>
-class RegisterAPI
-{
-public:
-	RegisterAPI(const std::string & name)
-	{
-		auto r = std::make_shared<T>();
-		Registry::get()->add(name, r);
-	}
-};
+	void addPublic(const std::string & name, const std::shared_ptr<Registar> & item);
+	void addPrivate(const std::string & name, const std::shared_ptr<Registar> & item);
 
-template<typename T>
-class RegisterCoreAPI
-{
-public:
-	RegisterCoreAPI(const std::string & name)
-	{
-		auto r = std::make_shared<T>();
-		Registry::get()->addCore(name, r);
-	}
-};
-
-class TypeRegistry : public boost::noncopyable
-{
-public:
 	template<typename T>
-	const char * getKey()
+	void registerPrivate(const std::string & name)
 	{
-		return getKeyForType(typeid(T));
+		auto r = std::make_shared<T>();
+		addPrivate(name, r);
 	}
-
-	static TypeRegistry * get();
-private:
-	size_t nextIndex;
-
-	std::mutex mutex;
-
-	std::map<std::type_index, std::string> keys;
-
-	TypeRegistry();
-
-	const char * getKeyForType(const std::type_info & type);
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -39,6 +39,7 @@
 #include "../../lib/battle/BattleHex.h"
 #include "../../lib/battle/CPlayerBattleCallback.h"
 #include "../../lib/spells/ISpellMechanics.h"
+#include "../../lib/spells/CSpell.h"
 #include "../../lib/texts/TextOperations.h"
 
 static void onAnimationFinished(const CStack *stack, std::weak_ptr<CreatureAnimation> anim)

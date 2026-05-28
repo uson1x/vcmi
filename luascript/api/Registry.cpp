@@ -9,84 +9,95 @@
  */
 #include "StdInc.h"
 
-#include "api/Registry.h"
+#include "Registry.h"
+
+#include "battle/UnitProxy.h"
+#include "battle/BattleHexProxy.h"
+#include "battle/BattleHexArrayProxy.h"
+#include "events/BattleEvents.h"
+#include "events/EventBusProxy.h"
+#include "events/GenericEvents.h"
+#include "events/SubscriptionRegistryProxy.h"
+#include "spells/Mechanics.h"
+#include "spells/Problem.h"
+#include "library/Artifact.h"
+#include "BattleCb.h"
+#include "library/Creature.h"
+#include "library/Faction.h"
+#include "GameCb.h"
+#include "library/HeroClass.h"
+#include "adventure/HeroInstance.h"
+#include "library/HeroType.h"
+#include "Registry.h"
+#include "ServerCb.h"
+#include "library/Services.h"
+#include "library/Skill.h"
+#include "library/Spell.h"
+#include "adventure/StackInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
-Registry::Registry() = default;
-
-Registry * Registry::get()
+Registry::Registry()
 {
-	static auto Instance = std::unique_ptr<Registry>(new Registry());
-	return Instance.get();
+	registerPrivate<library::ServicesProxy>("library.Services");
+	registerPrivate<library::ArtifactProxy>("library.Artifact");
+	registerPrivate<library::CreatureProxy>("library.Creature");
+	registerPrivate<library::FactionProxy>("library.Faction");
+	registerPrivate<library::HeroClassProxy>("library.HeroClass");
+	registerPrivate<library::HeroTypeProxy>("library.HeroType");
+	registerPrivate<library::SkillProxy>("library.Skill");
+	registerPrivate<library::SpellProxy>("library.Spell");
+
+	registerPrivate<HeroInstanceProxy>("adventure.HeroInstance");
+	registerPrivate<StackInstanceProxy>("adventure.StackInstance");
+
+	registerPrivate<battle::BattleHexProxy>("battle.BattleHex");
+	registerPrivate<battle::BattleHexArrayProxy>("battle.BattleHexArray");
+	registerPrivate<battle::UnitProxy>("battle.Unit");
+	registerPrivate<SpellProblemProxy>("battle.SpellProblem");
+	registerPrivate<SpellsMechanicsProxy>("battle.SpellMechanics");
+
+	registerPrivate<events::ApplyDamageProxy>("events.ApplyDamage");
+	registerPrivate<events::GameResumedProxy>("events.GameResumed");
+	registerPrivate<events::PlayerGotTurnProxy>("events.PlayerGotTurn");
+	registerPrivate<events::TurnStartedProxy>("events.TurnStarted");
+
+	registerPrivate<BattleCbProxy>("game.Battle");
+	registerPrivate<GameCbProxy>("game.Game");
+	registerPrivate<ServerCbProxy>("game.Server");
+	registerPrivate<events::EventBusProxy>("game.EventBus");
+	registerPrivate<events::EventSubscriptionProxy>("game.EventSubscription");
 }
 
-void Registry::add(const std::string & name, std::shared_ptr<Registar> item)
+const Registry * Registry::get()
 {
-	data[name] = std::move(item);
+	static const Registry instance;
+	return &instance;
 }
 
-void Registry::addCore(const std::string & name, std::shared_ptr<Registar> item)
+void Registry::addPrivate(const std::string & name, const std::shared_ptr<Registar> & item)
 {
-	coreData[name] = std::move(item);
+	privateData[name] = item;
+}
+
+void Registry::addPublic(const std::string & name, const std::shared_ptr<Registar> & item)
+{
+	privateData[name] = item;
+	publicData[name] = item;
 }
 
 const Registar * Registry::find(const std::string & name) const
 {
-	auto iter = data.find(name);
-	if(iter == data.end())
+	auto iter = publicData.find(name);
+	if(iter == publicData.end())
 		return nullptr;
 	else
 		return iter->second.get();
 }
 
-TypeRegistry::TypeRegistry()
-	: nextIndex(0)
-{
-
-}
-
-TypeRegistry * TypeRegistry::get()
-{
-	static auto Instance = std::unique_ptr<TypeRegistry>(new TypeRegistry());
-	return Instance.get();
-}
-
-const char * TypeRegistry::getKeyForType(const std::type_info & type)
-{
-	//std::type_index is unique and stable (because all bindings are in vcmiLua shared lib), but there is no way to convert it to Lua value
-	//there is no guarantee that name is unique, but it is at least somewhat human readable, so we append unique number to name
-	//TODO: name demangle
-
-	std::type_index typeIndex(type);
-
-	std::unique_lock<std::mutex> lock(mutex);
-
-	auto iter = keys.find(typeIndex);
-
-	if(iter == std::end(keys))
-	{
-		std::string newKey = type.name();
-		newKey += "_";
-		newKey += std::to_string(nextIndex++);
-
-		keys[typeIndex] = std::move(newKey);
-
-		return keys[typeIndex].c_str();
-	}
-	else
-	{
-		return iter->second.c_str();
-	}
-}
-
-
-}
 }
 
 VCMI_LIB_NAMESPACE_END

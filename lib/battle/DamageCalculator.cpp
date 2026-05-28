@@ -17,10 +17,10 @@
 #include "../bonuses/Bonus.h"
 #include "../CCreatureHandler.h"
 #include "../mapObjects/CGTownInstance.h"
-#include "../spells/CSpellHandler.h"
 #include "../IGameSettings.h"
 #include "../GameLibrary.h"
 
+#include <vcmi/spells/Spell.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -172,7 +172,7 @@ int DamageCalculator::getActorAttackSlayer() const
 		if(isAffected)
 		{
 			SpellID spell(SpellID::SLAYER);
-			int attackBonus = spell.toSpell()->getLevelPower(spLevel);
+			int attackBonus = spell.toEntity(LIBRARY)->getLevelPower(spLevel);
 			if(info.attacker->hasBonusOfType(BonusType::SPECIAL_PECULIAR_ENCHANT, BonusSubtypeID(spell)))
 			{
 				ui8 attackerTier = info.attacker->unitType()->getLevel();

@@ -93,7 +93,7 @@ public:
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, const BaseType *, BaseType *>;
-		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
+		static const auto KEY = api::Registry::get()->getTypeName<PtrType>();
 
 		if(value == nullptr)
 		{
@@ -116,7 +116,7 @@ public:
 		using DataType = T;
 		using BaseType = typename DataType::ScriptingApiName;
 		using PtrType = std::conditional_t<std::is_const_v<T>, std::shared_ptr<const BaseType>, std::shared_ptr<BaseType>>;
-		static const auto KEY = api::TypeRegistry::get()->getKey<PtrType>();
+		static const auto KEY = api::Registry::get()->getTypeName<PtrType>();
 
 		if(value == nullptr)
 		{
@@ -140,7 +140,7 @@ public:
 		using BaseType = typename DataType::ScriptingApiName;
 		static_assert(std::is_same_v<std::remove_const_t<DataType>, BaseType>, "Can not push derived class as copyable!");
 
-		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
 		
 		createLuaUserdata<BaseType>(value);
 
@@ -151,17 +151,16 @@ public:
 		lua_setmetatable(L, -2);
 	}
 
+	template<typename T, std::size_t N>
+	void push(const boost::container::small_vector<T,N> & value)
+	{
+		pushArray(value);
+	}
+
 	template<typename T>
 	void push(const std::vector<T> & value)
 	{
-		lua_newtable(L);
-		int tableIndex = lua_gettop(L);
-
-		for (size_t i = 0; i < value.size(); ++i)
-		{
-			push(value[i]);
-			lua_rawseti(L, tableIndex, i + 1);
-		}
+		pushArray(value);
 	}
 
 	template<typename T>
@@ -194,8 +193,6 @@ public:
 
 		nonConstValue.serializeScript(luaSerializer);
 	}
-
-	bool tryGetInteger(int position, lua_Integer & value);
 
 	bool tryGet(int position, bool & value);
 
@@ -399,6 +396,42 @@ public:
 		}
 	}
 
+	bool tryGet(int position, JsonNode & value);
+
+	int retVoid();
+
+	STRONG_INLINE
+	int retPushed()
+	{
+		return lua_gettop(L);
+	}
+
+	inline bool isFunction(int position)
+	{
+		return lua_isfunction(L, position);
+	}
+
+	inline bool isNumber(int position)
+	{
+		return lua_isnumber(L, position);
+	}
+
+private:
+	bool tryGetInteger(int position, lua_Integer & value);
+
+	template<typename T>
+	void pushArray(T & value)
+	{
+		lua_newtable(L);
+		int tableIndex = lua_gettop(L);
+
+		for (size_t i = 0; i < value.size(); ++i)
+		{
+			push(value[i]);
+			lua_rawseti(L, tableIndex, i + 1);
+		}
+	}
+
 	template<typename BaseType>
 	bool tryGetUData(int position, BaseType & value)
 	{
@@ -411,7 +444,7 @@ public:
 			}
 		}
 
-		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
+		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
 
 		void * raw = lua_touserdata(L, position);
 
@@ -449,8 +482,8 @@ public:
 			return true;
 		}
 
-		static const auto KEY = api::TypeRegistry::get()->getKey<BaseType>();
-		static auto C_KEY = api::TypeRegistry::get()->getKey<BaseConstType>();
+		static const auto KEY = api::Registry::get()->getTypeName<BaseType>();
+		static const auto C_KEY = api::Registry::get()->getTypeName<BaseConstType>();
 
 		void * raw = lua_touserdata(L, position);
 
@@ -493,68 +526,15 @@ public:
 		throw LuaApiException( "Failed to retrieve class " + std::string(typeid(BaseType).name()) + " from stack!");
 	}
 
-	bool tryGet(int position, JsonNode & value);
-
-	int retNil();
-	int retVoid();
-
-	STRONG_INLINE
-	int retPushed()
-	{
-		return lua_gettop(L);
-	}
-
-	inline bool isFunction(int position)
-	{
-		return lua_isfunction(L, position);
-	}
-
-	inline bool isNumber(int position)
-	{
-		return lua_isnumber(L, position);
-	}
-
-	static int quickRetBool(lua_State * L, bool value)
-	{
-		lua_settop(L, 0);
-		lua_pushboolean(L, value);
-		return 1;
-	}
-
-	template<typename T>
-	static int quickRetInt(lua_State * L, const T & value)
-	{
-		lua_settop(L, 0);
-		lua_pushinteger(L, static_cast<int32_t>(value));
-		return 1;
-	}
-
-	template<std::size_t T>
-	static int quickRetInt(lua_State * L, const std::bitset<T> & value)
-	{
-		lua_settop(L, 0);
-		lua_pushinteger(L, static_cast<int32_t>(value.to_ulong()));
-		return 1;
-	}
-
-	static int quickRetStr(lua_State * L, const std::string & value)
-	{
-		lua_settop(L, 0);
-		lua_pushlstring(L, value.c_str(), value.size());
-		return 1;
-	}
-
-private:
 	/// Pushes copy of FinalType on top of Lua stack as userdata
 	template<typename DataType, typename FinalType>
-	DataType * createLuaUserdata(const FinalType & copySource)
+	void createLuaUserdata(const FinalType & copySource)
 	{
 		void * raw = lua_newuserdata(L, sizeof(DataType));
 		if(!raw)
 			throw LuaApiException("Failed to allocate new user data!");
 
-		DataType * resultPtr = new (raw) DataType(copySource);
-		return resultPtr;
+		new(raw) DataType(copySource);
 	}
 
 	lua_State * L;

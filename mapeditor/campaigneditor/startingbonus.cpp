@@ -20,8 +20,8 @@
 #include "../../lib/mapping/CMap.h"
 #include "../../lib/CSkillHandler.h"
 #include "../../lib/CCreatureHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 StartingBonus::StartingBonus(PlayerColor color, std::shared_ptr<CMap> map, CampaignBonus bonus):
 	ui(new Ui::StartingBonus),

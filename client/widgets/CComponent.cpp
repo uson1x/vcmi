@@ -31,7 +31,6 @@
 #include "../../lib/entities/faction/CTown.h"
 #include "../../lib/entities/faction/CTownHandler.h"
 #include "../../lib/networkPacks/Component.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/CCreatureHandler.h"
 #include "../../lib/CSkillHandler.h"
 #include "../../lib/texts/CGeneralTextHandler.h"

@@ -33,7 +33,7 @@ namespace spells
 
 	namespace effects
 	{
-		class Registry;
+		class SpellEffectService;
 	}
 }
 
@@ -59,10 +59,7 @@ public:
 	virtual const BattleFieldService * battlefields() const = 0;
 	virtual const ObstacleService * obstacles() const = 0;
 	virtual const IGameSettings * engineSettings() const = 0;
-
-	virtual const spells::effects::Registry * spellEffects() const = 0;
-	virtual spells::effects::Registry * spellEffects() = 0;
-	//TODO: put map object types registry access here
+	virtual const spells::effects::SpellEffectService * spellEffects() const = 0;
 };
 
 VCMI_LIB_NAMESPACE_END

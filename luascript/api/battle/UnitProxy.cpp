@@ -22,8 +22,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api::battle
 {
 
-VCMI_REGISTER_CORE_SCRIPT_API(UnitProxy, "battle.Unit")
-
 const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 {
 	{"getMinDamage", LuaMethodWrapper<Unit, decltype(&ACreature::getMinDamage), &ACreature::getMinDamage>::invoke, false},
@@ -32,13 +30,22 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getDefense", LuaMethodWrapper<Unit, decltype(&ACreature::getDefense), &ACreature::getDefense>::invoke, false},
 	{"isAlive", LuaMethodWrapper<Unit, decltype(&Unit::alive), &Unit::alive>::invoke, false},
 	{"isClone", LuaMethodWrapper<Unit, decltype(&Unit::isClone), &Unit::isClone>::invoke, false},
+	{"isDead", LuaMethodWrapper<Unit, decltype(&Unit::isDead), &Unit::isDead>::invoke, false},
+	{"isGhost", LuaMethodWrapper<Unit, decltype(&Unit::isGhost), &Unit::isGhost>::invoke, false},
+	{"isValidTarget", LuaMethodWrapper<Unit, decltype(&Unit::isValidTarget), &Unit::isValidTarget>::invoke, false},
+	{"isInvincible", LuaMethodWrapper<Unit, decltype(&Unit::isInvincible), &Unit::isInvincible>::invoke, false},
+	{"hasAbsoluteImmunity", LuaFunctionWrapper<&UnitProxy::hasAbsoluteImmunity>::invoke, false},
 	{"isSummoned", LuaMethodWrapper<Unit, decltype(&Unit::isSummoned), &Unit::isSummoned>::invoke, false},
 	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
 	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
 	{"getPosition", LuaMethodWrapper<Unit, decltype(&Unit::getPosition), &Unit::getPosition>::invoke, false},
+	{"getTotalHealth", LuaMethodWrapper<Unit, decltype(&Unit::getTotalHealth), &Unit::getTotalHealth>::invoke, false},
+	{"coversPos", LuaMethodWrapper<Unit, decltype(&Unit::coversPos), &Unit::coversPos>::invoke, false},
 
 	{"heal", LuaFunctionWrapper<&UnitProxy::heal>::invoke, false},
-	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false },
+	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false},
+	{"getBaseAmount", LuaFunctionWrapper<&UnitProxy::getBaseAmount>::invoke, false},
+	{"getHexes", LuaFunctionWrapper<&UnitProxy::getHexes>::invoke, false},
 };
 
 void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower power)
@@ -49,6 +56,21 @@ void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower
 const Creature * UnitProxy::getCreature(const Unit * unit)
 {
 	return unit->creatureId().toEntity(LIBRARY);
+}
+
+int32_t UnitProxy::getBaseAmount(const Unit * unit)
+{
+	return unit->unitBaseAmount();
+}
+
+BattleHexArray UnitProxy::getHexes(const Unit * unit)
+{
+	return unit->getHexes();
+}
+
+bool UnitProxy::hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell)
+{
+	return unit->hasAbsoluteImmunity(spell->getId());
 }
 
 }

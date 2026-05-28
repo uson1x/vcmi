@@ -66,7 +66,7 @@
 #include "../serializer/CMemorySerializer.h"
 #include "../serializer/CLoadFile.h"
 #include "../serializer/CSaveFile.h"
-#include "../spells/CSpellHandler.h"
+#include "../spells/CSpell.h"
 #include "UpgradeInfo.h"
 #include "mapObjects/CGPandoraBox.h"
 

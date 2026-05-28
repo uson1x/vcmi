@@ -18,7 +18,7 @@
 #include "../../mapObjects/CGTownInstance.h"
 #include "../../mapping/CMap.h"
 #include "../../mapping/CMapEditManager.h"
-#include "../../spells/CSpellHandler.h" //for choosing random spells
+#include "../../spells/CSpellHandler.h"
 #include "../RmgPath.h"
 #include "../RmgObject.h"
 #include "ObjectManager.h"

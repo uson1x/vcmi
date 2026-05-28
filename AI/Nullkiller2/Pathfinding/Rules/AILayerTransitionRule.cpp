@@ -15,6 +15,7 @@
 #include "../../../../lib/pathfinder/TurnInfo.h"
 #include "../../../../lib/spells/ISpellMechanics.h"
 #include "../../../../lib/spells/adventure/SummonBoatEffect.h"
+#include "../../../../lib/spells/CSpellHandler.h"
 
 namespace NK2AI
 {

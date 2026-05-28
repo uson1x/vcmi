@@ -47,10 +47,10 @@ TEST_F(DamageTest, ApplicableToAliveUnit)
 
 	EXPECT_CALL(mechanicsMock, isSmart()).WillOnce(Return(false));
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_TRUE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 TEST_F(DamageTest, NotApplicableToDeadUnit)
@@ -61,10 +61,10 @@ TEST_F(DamageTest, NotApplicableToDeadUnit)
 	EXPECT_CALL(mechanicsMock, isSmart()).Times(AtMost(1)).WillRepeatedly(Return(false));
 	EXPECT_CALL(mechanicsMock, ownerMatches(Eq(&unit))).Times(AtMost(1)).WillRepeatedly(Return(true));
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
-	EXPECT_FALSE(subject->applicable(problemMock, &mechanicsMock, target));
+	EXPECT_FALSE(subject->applicableTarget(problemMock, &mechanicsMock, target));
 }
 
 class DamageApplyTest : public Test, public EffectFixture
@@ -114,7 +114,7 @@ TEST_F(DamageApplyTest, DoesDamageToAliveUnit)
 
 	setupDefaultRNG();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&targetUnit, BattleHex());
 
 	subject->apply(&serverMock, &mechanicsMock, target);
@@ -136,7 +136,7 @@ TEST_F(DamageApplyTest, IgnoresDeadUnit)
 
 	setupDefaultRNG();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&targetUnit, BattleHex());
 
 	subject->apply(&serverMock, &mechanicsMock, target);
@@ -179,7 +179,7 @@ TEST_F(DamageApplyTest, DoesDamageByPercent)
 
 	setupDefaultRNG();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&targetUnit, BattleHex());
 
 	subject->apply(&serverMock, &mechanicsMock, target);
@@ -223,7 +223,7 @@ TEST_F(DamageApplyTest, DoesDamageByCount)
 
 	setupDefaultRNG();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&targetUnit, BattleHex());
 
 	subject->apply(&serverMock, &mechanicsMock, target);

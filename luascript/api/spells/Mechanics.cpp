@@ -16,6 +16,8 @@
 #include "../../LuaCallWrapper.h"
 
 #include "../../../lib/battle/CBattleInfoCallback.h"
+#include "../../../lib/spells/CSpell.h"
+#include "../../../lib/battle/Unit.h"
 #include "../../../lib/spells/Problem.h"
 #include "../../../lib/mapObjects/CGHeroInstance.h"
 
@@ -27,12 +29,12 @@ namespace scripting
 	{
 		using ::spells::Mechanics;
 
-		VCMI_REGISTER_CORE_SCRIPT_API(SpellsMechanicsProxy, "battle.SpellMechanics");
 
 		const std::vector<SpellsMechanicsProxy::CustomRegType> SpellsMechanicsProxy::REGISTER_CUSTOM =
 		{
 			{"isPositive", LuaMethodWrapper<Mechanics, decltype(&Mechanics::isPositiveSpell), &Mechanics::isPositiveSpell>::invoke, false},
 			{"isNegative", LuaMethodWrapper<Mechanics, decltype(&Mechanics::isNegativeSpell), &Mechanics::isNegativeSpell>::invoke, false},
+			{"isSmart", LuaMethodWrapper<Mechanics, decltype(&Mechanics::isSmart), &Mechanics::isSmart>::invoke, false},
 
 			{"getEffectLevel", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getEffectLevel), &Mechanics::getEffectLevel>::invoke, false},
 			{"getRangeLevel", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getRangeLevel), &Mechanics::getRangeLevel>::invoke, false},
@@ -46,6 +48,9 @@ namespace scripting
 			{"getBattleID", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getBattleID), &Mechanics::getBattleID>::invoke, false},
 			{"calculateRawEffectValue", LuaMethodWrapper<Mechanics, decltype(&Mechanics::calculateRawEffectValue), &Mechanics::calculateRawEffectValue>::invoke, false},
 			{"applySpecificSpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpecificSpellBonus), &Mechanics::applySpecificSpellBonus>::invoke, false},
+			{"applySpellBonus", LuaMethodWrapper<Mechanics, decltype(&Mechanics::applySpellBonus), &Mechanics::applySpellBonus>::invoke, false},
+			{"isReceptive", LuaMethodWrapper<Mechanics, decltype(&Mechanics::isReceptive), &Mechanics::isReceptive>::invoke, false},
+			{"getSpell", LuaMethodWrapper<Mechanics, decltype(&Mechanics::getSpell), &Mechanics::getSpell>::invoke, false},
 		};
 	}
 }

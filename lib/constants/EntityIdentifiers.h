@@ -1069,6 +1069,15 @@ public:
 	static std::string entityType();
 };
 
+class DLL_LINKAGE SpellEffectID : public StaticIdentifier<SpellEffectID>
+{
+public:
+	using StaticIdentifier<SpellEffectID>::StaticIdentifier;
+
+	static const SpellEffectID NONE;
+};
+
+
 class GameResIDBase : public IdentifierBase
 {
 public:

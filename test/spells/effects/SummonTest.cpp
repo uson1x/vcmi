@@ -116,7 +116,7 @@ TEST_P(SummonTest, Applicable)
 	EXPECT_CALL(mechanicsMock, calculateRawEffectValue(0, summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
 	EXPECT_CALL(mechanicsMock, applySpecificSpellBonus(summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
 
-	EXPECT_EQ(expectedApplicable, subject->applicable(problemMock, &mechanicsMock));
+	EXPECT_EQ(expectedApplicable, subject->applicableGeneral(problemMock, &mechanicsMock));
 }
 
 TEST_P(SummonTest, Transform)
@@ -136,9 +136,9 @@ TEST_P(SummonTest, Transform)
 	EXPECT_CALL(mechanicsMock, calculateRawEffectValue(0, summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
 	EXPECT_CALL(mechanicsMock, applySpecificSpellBonus(summonSpellPower)).WillRepeatedly(Return(summonSpellPower));
 
-	EffectTarget transformed = subject->transformTarget(&mechanicsMock, Target(), Target());
+	Target transformed = subject->transformTarget(&mechanicsMock, Target(), Target());
 
-	EffectTarget expected;
+	Target expected;
 
 	if(otherSummoned == toSummon && summonSameUnit)
 	{
@@ -254,7 +254,7 @@ TEST_P(SummonApplyTest, SpawnsNewUnit)
 	EXPECT_CALL(*battleFake, addUnit(Eq(unitId), _)).WillOnce(Invoke(this, &SummonApplyTest::onUnitAdded));
 	EXPECT_CALL(serverMock, apply(Matcher<BattleUnitsChanged &>(_))).Times(1);
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(unitPosition);
 
 	subject->apply(&serverMock, &mechanicsMock, target);
@@ -292,7 +292,7 @@ TEST_P(SummonApplyTest, UpdatesOldUnit)
 
 	unitsFake.setDefaultBonusExpectations();
 
-	EffectTarget target;
+	Target target;
 	target.emplace_back(&unit, BattleHex());
 
 	subject->apply(&serverMock, &mechanicsMock, target);

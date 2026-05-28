@@ -32,6 +32,9 @@
 #include "../Markers/ArmyUpgrade.h"
 #include "../Markers/DefendTown.h"
 
+#include <vcmi/spells/Service.h>
+#include <vcmi/spells/Spell.h>
+
 namespace NK2AI
 {
 

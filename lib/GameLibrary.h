@@ -45,9 +45,9 @@ class MapFormatSettings;
 class CampaignRegionsHandler;
 class MapLayerTypeHandler;
 
-namespace scripting
+namespace spells::effects
 {
-	class ScriptHandler;
+	class SpellEffectHandler;
 }
 
 /// Loads and constructs several handlers
@@ -74,11 +74,8 @@ public:
 	const BattleFieldService * battlefields() const override;
 	const ObstacleService * obstacles() const override;
 	const IGameSettings * engineSettings() const override;
-
-	const spells::effects::Registry * spellEffects() const override;
-	spells::effects::Registry * spellEffects() override;
-
-	const IBonusTypeHandler * getBth() const; //deprecated
+	const spells::effects::SpellEffectService * spellEffects() const override;
+	const IBonusTypeHandler * getBth() const;
 	const CIdentifierStorage * identifiers() const;
 
 	std::unique_ptr<CArtHandler> arth;
@@ -88,6 +85,7 @@ public:
 	std::unique_ptr<CCreatureHandler> creh;
 	std::unique_ptr<CSpellHandler> spellh;
 	std::unique_ptr<SpellSchoolHandler> spellSchoolHandler;
+	std::unique_ptr<spells::effects::SpellEffectHandler> spellEffectHandler;
 	std::unique_ptr<CSkillHandler> skillh;
 	std::unique_ptr<CObjectClassesHandler> objtypeh;
 	std::unique_ptr<CTownHandler> townh;
@@ -107,7 +105,7 @@ public:
 	std::unique_ptr<MapFormatSettings> mapFormat;
 	std::unique_ptr<CampaignRegionsHandler> campaignRegions;
 	std::unique_ptr<MapLayerTypeHandler> mapLayerHandler;
-	std::unique_ptr<scripting::ScriptHandler> scriptHandler;
+	std::unique_ptr<scripting::Service> scriptHandler;
 
 	GameLibrary();
 	~GameLibrary();
