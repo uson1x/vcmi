@@ -24,56 +24,27 @@ namespace api
 using ::spells::Problem;
 using ::spells::Mechanics;
 
+void ProblemProxy::addCustom(Problem * problem, JsonNode config)
+{
+	problem->add(MetaString::createFromLua(config));
+}
+
+void ProblemProxy::addGeneric(Problem * problem, const Mechanics * mechanics)
+{
+	mechanics->adaptGenericProblem(*problem);
+}
+
+void ProblemProxy::addStandard(Problem * problem, const Mechanics * mechanics, ESpellCastProblem spellProblem)
+{
+	mechanics->adaptProblem(spellProblem, *problem);
+}
+
 const std::vector<ProblemProxy::CustomRegType> ProblemProxy::REGISTER_CUSTOM =
 {
-	{"addCustom", LuaCallWrapper<&ProblemProxy::addCustom>::invoke, false},
-	{"addGeneric", LuaCallWrapper<&ProblemProxy::addGeneric>::invoke, false},
-	{"addStandard", LuaCallWrapper<&ProblemProxy::addStandard>::invoke, false},
+	{"addCustom",   LuaFunctionWrapper<&ProblemProxy::addCustom>::invoke,   false},
+	{"addGeneric",  LuaFunctionWrapper<&ProblemProxy::addGeneric>::invoke,  false},
+	{"addStandard", LuaFunctionWrapper<&ProblemProxy::addStandard>::invoke, false},
 };
-
-int ProblemProxy::addCustom(lua_State * L)
-{
-	LuaStack S(L);
-
-	Problem * object = nullptr;
-	JsonNode metaStringConfig;
-
-	S.getNonNull(1, object);
-	S.get(2, metaStringConfig);
-
-	object->add(MetaString::createFromLua(metaStringConfig));
-	return S.retVoid();
-}
-
-int ProblemProxy::addGeneric(lua_State * L)
-{
-	LuaStack S(L);
-
-	Problem * problem = nullptr;
-	const Mechanics * mechanics = nullptr;
-
-	S.getNonNull(1, problem);
-	S.getNonNull(2, mechanics);
-
-	mechanics->adaptGenericProblem(*problem);
-	return S.retVoid();
-}
-
-int ProblemProxy::addStandard(lua_State * L)
-{
-	LuaStack S(L);
-
-	Problem * problem = nullptr;
-	const Mechanics * mechanics = nullptr;
-	ESpellCastProblem spellProblem = ESpellCastProblem::OK;
-
-	S.getNonNull(1, problem);
-	S.getNonNull(2, mechanics);
-	S.get(3, spellProblem);
-
-	mechanics->adaptProblem(spellProblem, *problem);
-	return S.retVoid();
-}
 
 }
 }

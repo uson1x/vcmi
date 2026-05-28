@@ -25,43 +25,32 @@ namespace scripting::api::battle
 
 const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 {
-	{"getMinDamage", LuaMethodWrapper<Unit, decltype(&ACreature::getMinDamage), &ACreature::getMinDamage>::invoke, false},
-	{"getMaxDamage", LuaMethodWrapper<Unit, decltype(&ACreature::getMaxDamage), &ACreature::getMaxDamage>::invoke, false},
-	{"getAttack", LuaMethodWrapper<Unit, decltype(&ACreature::getAttack), &ACreature::getAttack>::invoke, false},
-	{"getDefense", LuaMethodWrapper<Unit, decltype(&ACreature::getDefense), &ACreature::getDefense>::invoke, false},
-	{"isAlive", LuaMethodWrapper<Unit, decltype(&Unit::alive), &Unit::alive>::invoke, false},
-	{"isClone", LuaMethodWrapper<Unit, decltype(&Unit::isClone), &Unit::isClone>::invoke, false},
-	{"isDead", LuaMethodWrapper<Unit, decltype(&Unit::isDead), &Unit::isDead>::invoke, false},
-	{"isGhost", LuaMethodWrapper<Unit, decltype(&Unit::isGhost), &Unit::isGhost>::invoke, false},
-	{"isValidTarget", LuaMethodWrapper<Unit, decltype(&Unit::isValidTarget), &Unit::isValidTarget>::invoke, false},
-	{"isInvincible", LuaMethodWrapper<Unit, decltype(&Unit::isInvincible), &Unit::isInvincible>::invoke, false},
+	{"getMinDamage",        LuaMethodWrapper<&ACreature::getMinDamage, Unit>::invoke,  false},
+	{"getMaxDamage",        LuaMethodWrapper<&ACreature::getMaxDamage, Unit>::invoke,  false},
+	{"getAttack",           LuaMethodWrapper<&ACreature::getAttack, Unit>::invoke,     false},
+	{"getDefense",          LuaMethodWrapper<&ACreature::getDefense, Unit>::invoke,    false},
+	{"isAlive",             LuaMethodWrapper<&Unit::alive>::invoke,                    false},
+	{"isClone",             LuaMethodWrapper<&Unit::isClone>::invoke,                  false},
+	{"isDead",              LuaMethodWrapper<&Unit::isDead>::invoke,                   false},
+	{"isGhost",             LuaMethodWrapper<&Unit::isGhost>::invoke,                  false},
+	{"isValidTarget",       LuaMethodWrapper<&Unit::isValidTarget>::invoke,            false},
+	{"isInvincible",        LuaMethodWrapper<&Unit::isInvincible>::invoke,             false},
 	{"hasAbsoluteImmunity", LuaFunctionWrapper<&UnitProxy::hasAbsoluteImmunity>::invoke, false},
-	{"isSummoned", LuaMethodWrapper<Unit, decltype(&Unit::isSummoned), &Unit::isSummoned>::invoke, false},
-	{"getOwner", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitOwner), &IUnitInfo::unitOwner>::invoke, false},
-	{"getSlot", LuaMethodWrapper<Unit, decltype(&IUnitInfo::unitSlot), &IUnitInfo::unitSlot>::invoke, false},
-	{"getPosition", LuaMethodWrapper<Unit, decltype(&Unit::getPosition), &Unit::getPosition>::invoke, false},
-	{"getTotalHealth", LuaMethodWrapper<Unit, decltype(&Unit::getTotalHealth), &Unit::getTotalHealth>::invoke, false},
-	{"coversPos", LuaMethodWrapper<Unit, decltype(&Unit::coversPos), &Unit::coversPos>::invoke, false},
+	{"isSummoned",          LuaMethodWrapper<&Unit::isSummoned>::invoke,               false},
+	{"getOwner",            LuaMethodWrapper<&IUnitInfo::unitOwner, Unit>::invoke,     false},
+	{"getSlot",             LuaMethodWrapper<&IUnitInfo::unitSlot, Unit>::invoke,      false},
+	{"getPosition",         LuaMethodWrapper<&Unit::getPosition>::invoke,              false},
+	{"getTotalHealth",      LuaMethodWrapper<&Unit::getTotalHealth>::invoke,           false},
+	{"coversPos",           LuaMethodWrapper<&Unit::coversPos>::invoke,                false},
 
-	{"heal", LuaFunctionWrapper<&UnitProxy::heal>::invoke, false},
 	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false},
-	{"getBaseAmount", LuaFunctionWrapper<&UnitProxy::getBaseAmount>::invoke, false},
+	{"getBaseAmount", LuaMethodWrapper<&Unit::unitBaseAmount, Unit>::invoke, false},
 	{"getHexes", LuaFunctionWrapper<&UnitProxy::getHexes>::invoke, false},
 };
-
-void UnitProxy::heal(Unit * unit, int64_t & amount, EHealLevel level, EHealPower power)
-{
-	unit->heal(amount, level, power);
-}
 
 const Creature * UnitProxy::getCreature(const Unit * unit)
 {
 	return unit->creatureId().toEntity(LIBRARY);
-}
-
-int32_t UnitProxy::getBaseAmount(const Unit * unit)
-{
-	return unit->unitBaseAmount();
 }
 
 BattleHexArray UnitProxy::getHexes(const Unit * unit)

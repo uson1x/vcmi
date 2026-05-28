@@ -12,8 +12,12 @@
 
 #include "../../LuaWrapper.h"
 #include "../../../lib/spells/Problem.h"
+#include "../../../lib/json/JsonNode.h"
+#include "../../../lib/constants/Enumerations.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
+
+namespace spells { class Mechanics; }
 
 namespace scripting
 {
@@ -21,13 +25,14 @@ namespace scripting
 	{
 		class ProblemProxy : public RawPointerWrapper<::spells::Problem, ProblemProxy>
 		{
-			static int addCustom(lua_State * L);
-		static int addGeneric(lua_State * L);
-		static int addStandard(lua_State * L);
 		public:
 			using Wrapper = RawPointerWrapper<::spells::Problem, ProblemProxy>;
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+
+			static void addCustom(::spells::Problem * problem, JsonNode config);
+			static void addGeneric(::spells::Problem * problem, const ::spells::Mechanics * mechanics);
+			static void addStandard(::spells::Problem * problem, const ::spells::Mechanics * mechanics, ESpellCastProblem spellProblem);
 		};
 	}
 }

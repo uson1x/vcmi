@@ -29,8 +29,8 @@ public:
 
 	static int getAvailableHex(lua_State * L);
 	static int getAnyUnitIf(lua_State * L);
-	static int isAccessibleForUnit(lua_State * L);
-	static int hasPenaltyOnLine(lua_State * L);
+	static bool isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex);
+	static bool hasPenaltyOnLine(const IBattleInfoCallback * object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat);
 };
 
 }

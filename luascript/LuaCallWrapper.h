@@ -27,6 +27,7 @@ template<typename R, typename C, typename... Args>
 struct LuaClassMemberTraits<R(C::*)(Args...)>
 {
 	using ReturnType = R;
+	using ClassType  = C;
 	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
 	static constexpr bool isConst = false;
 };
@@ -36,6 +37,7 @@ template<typename R, typename C, typename... Args>
 struct LuaClassMemberTraits<R(C::*)(Args...) const>
 {
 	using ReturnType = R;
+	using ClassType  = C;
 	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
 	static constexpr bool isConst = true;
 };
@@ -45,30 +47,35 @@ template<typename R, typename C, typename... Args>
 struct LuaClassMemberTraits<R(C::*)(Args...) const noexcept>
 {
 	using ReturnType = R;
+	using ClassType  = C;
 	using TupleType  = std::tuple<std::remove_cvref_t<Args>...>;
 	static constexpr bool isConst = true;
 };
 
 /// Adapts a C++ member function (from a proxy class) into a Lua C function with full exception-to-error translation.
 /// Automatically unpacks `self` and all arguments from the Lua stack using LuaStack type traits.
-template <typename ObjectType, typename MethodType, MethodType method>
+/// Usage: LuaMethodWrapper<&Class::method> when Class has a scripting tag,
+///        LuaMethodWrapper<&Base::method, DerivedClass> when the method is defined in an untagged base class.
+template <auto method, typename ExplicitObjectType = void>
 class LuaMethodWrapper
 {
+	using MethodType = decltype(method);
 	using TraitsInfo = LuaClassMemberTraits<MethodType>;
 	using ReturnType = typename TraitsInfo::ReturnType;
 	using TupleType = typename TraitsInfo::TupleType;
+	using ObjectType = std::conditional_t<std::is_void_v<ExplicitObjectType>, typename TraitsInfo::ClassType, ExplicitObjectType>;
 
 	static constexpr bool isSharedPtr = std::is_base_of_v<scripting::TagSharedPointer, ObjectType>;
 	static constexpr bool isRawPtr = std::is_base_of_v<scripting::TagRawPointer, ObjectType>;
 	static constexpr bool isCopyable = std::is_base_of_v<scripting::TagCopyable, ObjectType>;
-	static_assert(isSharedPtr + isRawPtr + isCopyable == 1, "Unsupported class passed into LuaMethodWrapper. Please inherit from scipting API tags");
+	static_assert(isSharedPtr + isRawPtr + isCopyable == 1, "Unsupported class passed into LuaMethodWrapper. Please inherit from scripting API tags");
 
 	using ObjectRawPtr = std::conditional_t<TraitsInfo::isConst, const ObjectType*, ObjectType*>;
 	using ObjectSharedPtr = std::conditional_t<TraitsInfo::isConst, std::shared_ptr<const ObjectType>, std::shared_ptr<ObjectType>>;
 	using ObjectPtr = std::conditional_t<isSharedPtr, ObjectSharedPtr, std::conditional_t<isCopyable, ObjectType, ObjectRawPtr>>;
 
 	template <std::size_t... I>
-	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...> i)
+	static void tryGetAllImpl(LuaStack &stack, TupleType &t, std::index_sequence<I...>)
 	{
 		( (stack.get(static_cast<int>(I + 2), std::get<I>(t))), ... );
 	}
@@ -85,7 +92,7 @@ class LuaMethodWrapper
 		ObjectPtr obj{};
 		TupleType args;
 
-		S.get(1,obj);
+		S.get(1, obj);
 		tryGetAll(S, args);
 		S.clear();
 
@@ -97,7 +104,6 @@ class LuaMethodWrapper
 			objPtr = &obj;
 		else
 			objPtr = obj;
-
 
 		if constexpr (std::is_void_v<ReturnType>)
 		{

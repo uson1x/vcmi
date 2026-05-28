@@ -27,9 +27,8 @@ namespace api
 
 const std::vector<IGameInfoCallbackProxy::CustomRegType> IGameInfoCallbackProxy::REGISTER_CUSTOM =
 {
-	{"getHero", LuaMethodWrapper<GameCb, decltype(&GameCb::getHero), &GameCb::getHero>::invoke, false},
-
-	{"getObj", LuaMethodWrapper<GameCb, decltype(&GameCb::getObj), &GameCb::getObj>::invoke, false},
+	{"getHero", LuaMethodWrapper<&GameCb::getHero>::invoke, false},
+	{"getObj",  LuaMethodWrapper<&GameCb::getObj>::invoke,  false},
 };
 
 }

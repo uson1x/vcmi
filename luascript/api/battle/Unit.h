@@ -33,9 +33,7 @@ public:
 	using Wrapper = RawPointerWrapper<const Unit, UnitProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static void heal(Unit *, int64_t & amount, EHealLevel level, EHealPower power);
 	static const Creature * getCreature(const Unit *);
-	static int32_t getBaseAmount(const Unit *);
 	static BattleHexArray getHexes(const Unit *);
 	static bool hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell);
 };

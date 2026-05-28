@@ -27,17 +27,33 @@ namespace scripting::api
 {
 
 
+bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex)
+{
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
+	if(!cb || !unit)
+		return false;
+	return cb->getAccessibility(unit).accessible(hex, unit);
+}
+
+bool IBattleInfoCallbackProxy::hasPenaltyOnLine(const IBattleInfoCallback * object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat)
+{
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
+	if(!cb)
+		return false;
+	return cb->battleHasPenaltyOnLine(from, dest, checkWall, checkMoat);
+}
+
 const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "getNextUnitId", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleNextUnitId), &BattleCb::battleNextUnitId>::invoke, false },
-	{ "getTacticDistance", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleTacticDist), &BattleCb::battleTacticDist>::invoke, false },
-	{ "getUnitById", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleGetUnitByID), &BattleCb::battleGetUnitByID>::invoke, false },
-	{ "isFinished", LuaMethodWrapper<BattleCb, decltype(&BattleCb::battleIsFinished), &BattleCb::battleIsFinished>::invoke, false },
+	{ "getNextUnitId",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
+	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
+	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
+	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
 
-	{ "getAvailableHex", LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
-	{ "getAnyUnitIf", LuaCallWrapper<&IBattleInfoCallbackProxy::getAnyUnitIf>::invoke, false },
-	{ "isAccessibleForUnit", LuaCallWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
-	{ "hasPenaltyOnLine", LuaCallWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke, false },
+	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
+	{ "getAnyUnitIf",         LuaCallWrapper<&IBattleInfoCallbackProxy::getAnyUnitIf>::invoke,    false },
+	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
+	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
 };
 
 int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
@@ -95,64 +111,6 @@ int IBattleInfoCallbackProxy::getAnyUnitIf(lua_State * L)
 	else
 		S.pushNil();
 
-	return 1;
-}
-
-int IBattleInfoCallbackProxy::isAccessibleForUnit(lua_State * L)
-{
-	LuaStack S(L);
-
-	const IBattleInfoCallback * object;
-	S.getNonNull(1, object);
-
-	const battle::Unit * unit = nullptr;
-	BattleHex hex;
-
-	S.get(2, unit);
-	S.get(3, hex);
-
-	S.clear();
-
-	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
-	if(!cb || !unit)
-	{
-		S.push(false);
-		return 1;
-	}
-
-	bool result = cb->getAccessibility(unit).accessible(hex, unit);
-	S.push(result);
-	return 1;
-}
-
-int IBattleInfoCallbackProxy::hasPenaltyOnLine(lua_State * L)
-{
-	LuaStack S(L);
-
-	const IBattleInfoCallback * object;
-	S.getNonNull(1, object);
-
-	BattleHex from;
-	BattleHex dest;
-	bool checkWall = false;
-	bool checkMoat = false;
-
-	S.get(2, from);
-	S.get(3, dest);
-	S.get(4, checkWall);
-	S.get(5, checkMoat);
-
-	S.clear();
-
-	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
-	if(!cb)
-	{
-		S.push(false);
-		return 1;
-	}
-
-	bool result = cb->battleHasPenaltyOnLine(from, dest, checkWall, checkMoat);
-	S.push(result);
 	return 1;
 }
 

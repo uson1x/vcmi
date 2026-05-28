@@ -55,16 +55,8 @@ const std::vector<PlayerGotTurnProxy::CustomRegType> PlayerGotTurnProxy::REGISTE
 		&SubscriptionRegistryProxy<PlayerGotTurnProxy>::subscribeAfter,
 		true
 	},
-	{
-		"getPlayer",
-		LuaMethodWrapper<PlayerGotTurn, decltype(&PlayerGotTurn::getPlayerIndex), &PlayerGotTurn::getPlayerIndex>::invoke,
-		false
-	},
-	{
-		"setPlayer",
-		LuaMethodWrapper<PlayerGotTurn, decltype(&PlayerGotTurn::setPlayerIndex), &PlayerGotTurn::setPlayerIndex>::invoke,
-		false
-	},
+	{"getPlayer", LuaMethodWrapper<&PlayerGotTurn::getPlayerIndex>::invoke, false},
+	{"setPlayer", LuaMethodWrapper<&PlayerGotTurn::setPlayerIndex>::invoke, false},
 };
 
 const std::vector<TurnStartedProxy::CustomRegType> TurnStartedProxy::REGISTER_CUSTOM =

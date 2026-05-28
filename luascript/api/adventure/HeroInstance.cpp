@@ -24,9 +24,9 @@ namespace api
 {
 const std::vector<HeroInstanceProxy::CustomRegType> HeroInstanceProxy::REGISTER_CUSTOM =
 {
-	{"getStack", LuaMethodWrapper<CGHeroInstance, decltype(&CCreatureSet::getStackPtr), &CCreatureSet::getStackPtr>::invoke, false},
-	{"getOwner", LuaMethodWrapper<CGHeroInstance, decltype(&CGObjectInstance::getOwner), &CGObjectInstance::getOwner>::invoke, false},
-	{"getNameTextID", LuaMethodWrapper<CGHeroInstance, decltype(&CGHeroInstance::getNameTextID), &CGHeroInstance::getNameTextID>::invoke, false},
+	{"getStack",      LuaMethodWrapper<&CCreatureSet::getStackPtr, CGHeroInstance>::invoke, false},
+	{"getOwner",      LuaMethodWrapper<&CGObjectInstance::getOwner, CGHeroInstance>::invoke, false},
+	{"getNameTextID", LuaMethodWrapper<&CGHeroInstance::getNameTextID>::invoke, false},
 	{"isMale", LuaFunctionWrapper<&HeroInstanceProxy::isMale>::invoke, false},
 	{"isFemale", LuaFunctionWrapper<&HeroInstanceProxy::isFemale>::invoke, false},
 };

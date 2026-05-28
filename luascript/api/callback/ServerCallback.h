@@ -13,8 +13,13 @@
 #include <vcmi/ServerCallback.h>
 
 #include "../../LuaWrapper.h"
+#include "../../../lib/battle/BattleHex.h"
+#include "../../../lib/json/JsonNode.h"
+#include "../../../lib/constants/EntityIdentifiers.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
+
+namespace battle { class Unit; }
 
 namespace scripting
 {
@@ -28,13 +33,13 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static int createUnit(lua_State * L);
-	static int updateUnit(lua_State * L);
+	static void createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data);
+	static void updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta);
+	static void injureUnit();
+	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
+	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);
+	static void appendLog(ServerCallback * object, BattleID battleID, JsonNode config);
 	static int healUnit(lua_State * L);
-	static int injureUnit(lua_State * L);
-	static int removeUnit(lua_State * L);
-	static int moveUnit(lua_State * L);
-	static int appendLog(lua_State * L);
 };
 
 }

@@ -24,8 +24,8 @@ namespace scripting::api::battle
 
 const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM =
 {
-	{"isValid", LuaMethodWrapper<BattleHex, decltype(&BattleHex::isValid), &BattleHex::isValid>::invoke, false},
-	{"toInteger", LuaMethodWrapper<BattleHex, decltype(&BattleHex::toInt), &BattleHex::toInt>::invoke, false},
+	{"isValid",   LuaMethodWrapper<&BattleHex::isValid>::invoke, false},
+	{"toInteger", LuaMethodWrapper<&BattleHex::toInt>::invoke,  false},
 };
 
 }

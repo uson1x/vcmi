@@ -25,8 +25,8 @@ namespace api
 {
 const std::vector<StackInstanceProxy::CustomRegType> StackInstanceProxy::REGISTER_CUSTOM =
 {
-	{"getType", LuaMethodWrapper<CStackInstance, decltype(&CStackBasicDescriptor::getType), &CStackBasicDescriptor::getType>::invoke, false},
-	{"getCount", LuaMethodWrapper<CStackInstance, decltype(&CStackBasicDescriptor::getCount), &CStackBasicDescriptor::getCount>::invoke, false},
+	{"getType",  LuaMethodWrapper<&CStackBasicDescriptor::getType, CStackInstance>::invoke,  false},
+	{"getCount", LuaMethodWrapper<&CStackBasicDescriptor::getCount, CStackInstance>::invoke, false},
 };
 
 

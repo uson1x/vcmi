@@ -25,7 +25,6 @@ public:
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
 	static void insert(BattleHexArray & hexes, BattleHex target);
-	static int size(BattleHexArray & hexes);
 	static BattleHex at(BattleHexArray & hexes, int index);
 };
 

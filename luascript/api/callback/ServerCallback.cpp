@@ -27,36 +27,77 @@ namespace scripting
 namespace api
 {
 
-const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
+void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
 {
-	{ "createUnit", LuaCallWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
-	{ "updateUnit", LuaCallWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
-	{ "injureUnit", LuaCallWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
-	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,   false },
-	{ "removeUnit", LuaCallWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
-	{ "moveUnit",   LuaCallWrapper<&ServerCallbackProxy::moveUnit>::invoke,   false },
-	{ "appendLog",  LuaCallWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
-};
-
-int ServerCallbackProxy::createUnit(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
-
-	S.get(1, object);
-	S.get(2, buc.battleID);
-	S.get(3, uc.id);
-	S.get(4, uc.data);
-
+	buc.battleID = battleID;
+	uc.id = id;
+	uc.data = std::move(data);
 	buc.changedStacks.push_back(uc);
-
 	object->apply(buc);
-	return S.retVoid();
 }
+
+void ServerCallbackProxy::updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta)
+{
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	uc.operation = UnitChanges::EOperation::UPDATE;
+	buc.battleID = battleID;
+	uc.id = id;
+	uc.data = std::move(data);
+	uc.healthDelta = healthDelta;
+	buc.changedStacks.push_back(uc);
+	object->apply(buc);
+}
+
+void ServerCallbackProxy::injureUnit()
+{
+}
+
+void ServerCallbackProxy::removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit)
+{
+	BattleUnitsChanged buc;
+	UnitChanges uc;
+	buc.battleID = battleID;
+	uc.operation = UnitChanges::EOperation::REMOVE;
+	uc.id = unit->unitId();
+	buc.changedStacks.push_back(uc);
+	object->apply(buc);
+}
+
+void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport)
+{
+	BattleStackMoved pack;
+	pack.battleID = battleID;
+	pack.stack = unit->unitId();
+	pack.distance = 0;
+	pack.teleporting = isTeleport;
+	BattleHexArray tiles;
+	tiles.insert(destination);
+	pack.tilesToMove = tiles;
+	object->apply(pack);
+}
+
+void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, JsonNode config)
+{
+	BattleLogMessage msg;
+	msg.battleID = battleID;
+	msg.lines.push_back(MetaString::createFromLua(config));
+	object->apply(msg);
+}
+
+const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
+{
+	{ "createUnit", LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
+	{ "updateUnit", LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
+	{ "injureUnit", LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
+	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,        false },
+	{ "removeUnit", LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
+	{ "moveUnit",   LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,   false },
+	{ "appendLog",  LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
+};
 
 int ServerCallbackProxy::healUnit(lua_State * L)
 {
@@ -94,115 +135,6 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	S.push(info.healedHealthPoints);
 	S.push(static_cast<int64_t>(info.resurrectedCount));
 	return 2;
-}
-
-int ServerCallbackProxy::appendLog(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
-	BattleID battleID;
-	JsonNode config;
-
-	S.getNonNull(1, object);
-	S.get(2, battleID);
-	S.get(3, config);
-
-	BattleLogMessage msg;
-	msg.battleID = battleID;
-	msg.lines.push_back(MetaString::createFromLua(config));
-	object->apply(msg);
-	return S.retVoid();
-}
-
-int ServerCallbackProxy::updateUnit(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
-	BattleUnitsChanged buc;
-	UnitChanges uc;
-	uc.operation = UnitChanges::EOperation::UPDATE;
-
-	S.get(1, object);
-	S.get(2, buc.battleID);
-	S.get(3, uc.id);
-	S.get(4, uc.data);
-	S.get(5, uc.healthDelta);
-
-	buc.changedStacks.push_back(uc);
-
-	object->apply(buc);
-	return S.retVoid();
-}
-
-int ServerCallbackProxy::injureUnit(lua_State * L)
-{
-	LuaStack S(L);
-
-//	ServerCallback * object = nullptr;
-//	StacksInjured si;
-//	BattleStackAttacked bsa;
-//
-//	if (!S.tryGetAll(1, object, si.battleID, bsa.attackerID, bsa.stackAttacked, uc.id, uc.data, uc.healthDelta))
-//		throw LuaApiException("Invalid parameters passed into updateUnit!");
-//
-//	buc.changedStacks.push_back(uc);
-//
-//	object->apply(buc);
-	return S.retVoid();
-}
-
-int ServerCallbackProxy::removeUnit(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
-	BattleID battleID;
-	const battle::Unit * unit = nullptr;
-
-	S.get(1, object);
-	S.get(2, battleID);
-	S.get(3, unit);
-
-	BattleUnitsChanged buc;
-	UnitChanges uc;
-	buc.battleID = battleID;
-	uc.operation = UnitChanges::EOperation::REMOVE;
-	uc.id = unit->unitId();
-	buc.changedStacks.push_back(uc);
-
-	object->apply(buc);
-	return S.retVoid();
-}
-
-int ServerCallbackProxy::moveUnit(lua_State * L)
-{
-	LuaStack S(L);
-
-	ServerCallback * object = nullptr;
-	BattleID battleID;
-	const battle::Unit * unit = nullptr;
-	BattleHex destination;
-	bool isTeleport = false;
-
-	S.get(1, object);
-	S.get(2, battleID);
-	S.get(3, unit);
-	S.get(4, destination);
-	S.get(5, isTeleport);
-
-	BattleStackMoved pack;
-	pack.battleID = battleID;
-	pack.stack = unit->unitId();
-	pack.distance = 0;
-	pack.teleporting = isTeleport;
-	BattleHexArray tiles;
-	tiles.insert(destination);
-	pack.tilesToMove = tiles;
-
-	object->apply(pack);
-	return S.retVoid();
 }
 
 

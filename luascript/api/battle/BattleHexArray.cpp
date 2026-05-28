@@ -19,19 +19,14 @@ namespace scripting::api::battle
 
 const std::vector<BattleHexArrayProxy::CustomRegType> BattleHexArrayProxy::REGISTER_CUSTOM =
 {
-	{"insert", LuaFunctionWrapper<&BattleHexArrayProxy::insert>::invoke, false},
-	{"size",   LuaFunctionWrapper<&BattleHexArrayProxy::size>::invoke,   false},
-	{"at",     LuaFunctionWrapper<&BattleHexArrayProxy::at>::invoke,     false},
+	{"insert", LuaFunctionWrapper<&BattleHexArrayProxy::insert>::invoke,                                               false},
+	{"size",   LuaMethodWrapper<&BattleHexArray::size>::invoke,                                                         false},
+	{"at",     LuaFunctionWrapper<&BattleHexArrayProxy::at>::invoke,                                                   false},
 };
 
 void BattleHexArrayProxy::insert(BattleHexArray & hexes, BattleHex target)
 {
 	hexes.insert(target);
-}
-
-int BattleHexArrayProxy::size(BattleHexArray & hexes)
-{
-	return static_cast<int>(hexes.size());
 }
 
 BattleHex BattleHexArrayProxy::at(BattleHexArray & hexes, int index)
