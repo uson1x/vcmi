@@ -88,7 +88,7 @@ private:
 	BonusValueCache unlimited;
 };
 
-class DLL_LINKAGE CHealth
+class DLL_LINKAGE CHealth final
 {
 public:
 	explicit CHealth(const battle::Unit * Owner);

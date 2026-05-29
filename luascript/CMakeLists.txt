@@ -15,6 +15,7 @@ set(lualib_SRCS
 		api/adventure/StackInstance.cpp
 
 		api/battle/Unit.cpp
+		api/battle/UnitState.cpp
 		api/battle/BattleHexArray.cpp
 		api/battle/BattleHex.cpp
 
@@ -59,6 +60,7 @@ set(lualib_HDRS
 		api/adventure/StackInstance.h
 
 		api/battle/Unit.h
+		api/battle/UnitState.h
 		api/battle/BattleHexArray.h
 		api/battle/BattleHex.h
 

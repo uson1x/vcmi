@@ -15,6 +15,7 @@
 #include <vcmi/spells/Spell.h>
 
 #include "../../LuaWrapper.h"
+#include "UnitState.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -36,6 +37,7 @@ public:
 	static const Creature * getCreature(const Unit *);
 	static BattleHexArray getHexes(const Unit *);
 	static bool hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell);
+	static LuaUnitState copy(const Unit * unit);
 };
 
 }

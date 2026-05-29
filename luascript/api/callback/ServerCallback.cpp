@@ -12,6 +12,7 @@
 #include "ServerCallback.h"
 
 #include "../Registry.h"
+#include "../battle/UnitState.h"
 
 #include "../../LuaStack.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
@@ -29,13 +30,14 @@ namespace api
 
 const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "createUnit", LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke, false },
-	{ "updateUnit", LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke, false },
-	{ "injureUnit", LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke, false },
-	{ "healUnit",   LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,        false },
-	{ "removeUnit", LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke, false },
-	{ "moveUnit",   LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,   false },
-	{ "appendLog",  LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,  false },
+	{ "createUnit",  LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,  false },
+	{ "updateUnit",  LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,  false },
+	{ "injureUnit",  LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke,  false },
+	{ "healUnit",    LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,         false },
+	{ "changeUnit",  LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,       false },
+	{ "removeUnit",  LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,  false },
+	{ "moveUnit",    LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,    false },
+	{ "appendLog",   LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,   false },
 };
 
 void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
@@ -97,6 +99,34 @@ void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, 
 	msg.battleID = battleID;
 	msg.lines.push_back(MetaString::createFromLua(config));
 	object->apply(msg);
+}
+
+int ServerCallbackProxy::changeUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleID battleID;
+	battle::LuaUnitState unitState;
+	int64_t healthDelta = 0;
+
+	S.get(1, object);
+	S.get(2, battleID);
+	S.get(3, unitState);
+	if(S.stackSize() >= 4)
+		S.get(4, healthDelta);
+
+	auto * cstate = unitState.getState();
+
+	BattleUnitsChanged buc;
+	UnitChanges uc(cstate->unitId(), UnitChanges::EOperation::UPDATE);
+	buc.battleID = battleID;
+	uc.data = cstate->save();
+	uc.healthDelta = healthDelta;
+	buc.changedStacks.push_back(uc);
+	object->apply(buc);
+
+	return S.retVoid();
 }
 
 int ServerCallbackProxy::healUnit(lua_State * L)

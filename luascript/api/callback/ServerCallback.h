@@ -40,6 +40,7 @@ public:
 	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);
 	static void appendLog(ServerCallback * object, BattleID battleID, JsonNode config);
 	static int healUnit(lua_State * L);
+	static int changeUnit(lua_State * L); // args: battleID, unitState, [healthDelta=0]
 };
 
 }

@@ -43,9 +43,10 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getTotalHealth",      LuaMethodWrapper<&Unit::getTotalHealth>::invoke,           false},
 	{"coversPos",           LuaMethodWrapper<&Unit::coversPos>::invoke,                false},
 
-	{"getCreature", LuaFunctionWrapper<&UnitProxy::getCreature>::invoke, false},
-	{"getBaseAmount", LuaMethodWrapper<&Unit::unitBaseAmount, Unit>::invoke, false},
-	{"getHexes", LuaFunctionWrapper<&UnitProxy::getHexes>::invoke, false},
+	{"getCreature",  LuaFunctionWrapper<&UnitProxy::getCreature>::invoke,  false},
+	{"getBaseAmount",LuaMethodWrapper<&Unit::unitBaseAmount, Unit>::invoke, false},
+	{"getHexes",     LuaFunctionWrapper<&UnitProxy::getHexes>::invoke,     false},
+	{"copy",         LuaFunctionWrapper<&UnitProxy::copy>::invoke,         false},
 };
 
 const Creature * UnitProxy::getCreature(const Unit * unit)
@@ -61,6 +62,11 @@ BattleHexArray UnitProxy::getHexes(const Unit * unit)
 bool UnitProxy::hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell)
 {
 	return unit->hasAbsoluteImmunity(spell->getId());
+}
+
+LuaUnitState UnitProxy::copy(const Unit * unit)
+{
+	return LuaUnitState(unit->acquireState());
 }
 
 }
