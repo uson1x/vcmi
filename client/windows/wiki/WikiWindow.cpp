@@ -570,11 +570,11 @@ WikiWindow::WikiWindow(WikiWindow::Style style_, std::optional<WikiEntryKey> ini
 		          [](const WikiEntry & a, const WikiEntry & b){ return a.name < b.name; });
 	}
 
-	// Artifacts – exclude "special" class
+	// Artifacts
 	{
 		const int iArtifact = static_cast<int>(WikiCategory::ARTIFACT);
 		for(const auto & artifact : LIBRARY->arth->objects)
-			if(artifact && artifact->aClass != EArtifactClass::ART_SPECIAL)
+			if(artifact)
 				categoryEntries[iArtifact].push_back({
 					artifact->getJsonKey(),
 					artifact->getNameTranslated(),
