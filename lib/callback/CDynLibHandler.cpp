@@ -17,6 +17,7 @@
 #include <vcmi/scripting/Service.h>
 
 #ifdef STATIC_AI
+#  include "../../luascript/LuaModule.h"
 #  ifdef ENABLE_NULLKILLER2_AI
 #    include "../../AI/Nullkiller2/AIGateway.h"
 #  endif
@@ -144,6 +145,16 @@ std::shared_ptr<CBattleGameInterface> createAny(const boost::filesystem::path & 
 
 	return std::make_shared<CEmptyAI>();
 }
+
+template<>
+std::unique_ptr<scripting::Service> createAny(const boost::filesystem::path & libpath, const std::string & methodName)
+{
+	if(libpath.stem() == "libvcmiLua")
+		return std::make_unique<scripting::LuaModule>();
+
+	throw std::runtime_error("Unknown scripting library: " + libpath.string());
+}
+
 
 #endif // STATIC_AI
 
