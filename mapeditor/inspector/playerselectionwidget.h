@@ -12,8 +12,11 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QCheckBox>
 #include "baseinspectoritemdelegate.h"
 #include "../../lib/constants/EntityIdentifiers.h"
+
+VCMI_LIB_USING_NAMESPACE
 
 namespace Ui {
 	class PlayerSelectionWidget;
