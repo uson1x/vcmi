@@ -86,9 +86,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"heal" : { 
-		"type" : "builtin",
-		"script" : "Heal",
+	"heal" : {
+		"type" : "luaUnit",
+		"script" : "heal",
 		"schema" : {
 			"properties" : {
 				"type" : {},
@@ -104,9 +104,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"sacrifice" : { 
-		"type" : "builtin",
-		"script" : "Sacrifice",
+	"sacrifice" : {
+		"type" : "luaUnit",
+		"script" : "sacrifice",
 		"schema" : {
 			"properties" : {
 				"type" : {},

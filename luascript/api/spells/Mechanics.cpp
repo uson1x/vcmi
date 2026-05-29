@@ -29,6 +29,10 @@ namespace scripting
 	{
 		using ::spells::Mechanics;
 
+		static bool ownerMatchesUnit(const Mechanics * m, const battle::Unit * unit)
+		{
+			return m->ownerMatches(unit);
+		}
 
 		const std::vector<MechanicsProxy::CustomRegType> MechanicsProxy::REGISTER_CUSTOM =
 		{
@@ -51,6 +55,7 @@ namespace scripting
 			{"applySpecificSpellBonus", LuaMethodWrapper<&Mechanics::applySpecificSpellBonus>::invoke, false},
 			{"applySpellBonus",        LuaMethodWrapper<&Mechanics::applySpellBonus>::invoke,          false},
 			{"isReceptive",            LuaMethodWrapper<&Mechanics::isReceptive>::invoke,              false},
+			{"ownerMatches",           LuaFunctionWrapper<&ownerMatchesUnit>::invoke,                   false},
 			{"getSpell",               LuaMethodWrapper<&Mechanics::getSpell>::invoke,                 false},
 		};
 	}

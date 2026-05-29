@@ -52,6 +52,9 @@ public:
 	SlotID getSlot() const;
 	BattleHex getPosition() const;
 	int64_t getTotalHealth() const;
+	int64_t getAvailableHealth() const;
+	int32_t getCount() const;
+	uint32_t getMaxHealth() const;
 	bool coversPos(BattleHex pos) const;
 	int32_t getBaseAmount() const;
 

@@ -10,6 +10,36 @@ function Script:apply(mechanics, server, target)
 	return
 end
 
+--- Returns true if at least one valid target exists on the battlefield.
+--- Mirrors C++ UnitEffect::applicableGeneral (applicableUnit with alwaysSmart=false).
+function Script:applicableGeneral(mechanics, problem)
+	local found = mechanics:getBattle():getUnitsIf(function(unit)
+		if not self:isValidTarget(mechanics, unit) then return false end
+		if not self:isReceptive(mechanics, unit) then return false end
+		if mechanics:isSmart() and not mechanics:ownerMatches(unit) then return false end
+		return true
+	end)
+	if #found == 0 then
+		problem:addStandard(mechanics, ENUM.SpellCastProblem.noAppropriateTarget)
+		return false
+	end
+	return true
+end
+
+--- Returns true if at least one unit in target is valid.
+--- Mirrors C++ UnitEffect::applicableTarget (alwaysReceptive=true, alwaysSmart=false).
+function Script:applicableTarget(mechanics, problem, target)
+	for _, dest in ipairs(target) do
+		local unit = dest.unit
+		if unit and self:isValidTarget(mechanics, unit) then
+			if not mechanics:isSmart() or mechanics:ownerMatches(unit) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 --- Returns true if `unit` can be affected by this spell effect.
 --- Called for every candidate unit during target selection.
 function Script:isValidTarget(mechanics, unit)

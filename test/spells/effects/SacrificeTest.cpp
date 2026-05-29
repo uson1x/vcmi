@@ -415,6 +415,7 @@ TEST_F(SacrificeApplyTest, ResurrectsTarget)
 	EXPECT_CALL(targetUnit, unitBaseAmount()).WillRepeatedly(Return(unitAmount));
 	EXPECT_CALL(targetUnit, unitId()).WillRepeatedly(Return(unitId));
 	EXPECT_CALL(targetUnit, unitType()).WillRepeatedly(Return(pikeman));
+	EXPECT_CALL(targetUnit, creatureId()).WillRepeatedly(Return(CreatureID(unitId)));
 
 	EXPECT_CALL(mechanicsMock, getEffectPower()).Times(AtLeast(1)).WillRepeatedly(Return(effectPower));
 	// NOTE: seems to be incorrect assumption? Sacrifice is not affected by Sorcery, which is what applySpellBonus does

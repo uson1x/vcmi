@@ -18,11 +18,9 @@
 #include "Damage.h"
 #include "Dispel.h"
 #include "Effect.h"
-#include "Heal.h"
 #include "Moat.h"
 #include "Obstacle.h"
 #include "RemoveObstacle.h"
-#include "Sacrifice.h"
 #include "Timed.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -48,11 +46,9 @@ std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, 
 		{ "Clone",          &makeEffect<Clone> },
 		{ "Damage",         &makeEffect<Damage> },
 		{ "Dispel",         &makeEffect<Dispel> },
-		{ "Heal",           &makeEffect<Heal> },
 		{ "Moat",           &makeEffect<Moat> },
 		{ "Obstacle",       &makeEffect<Obstacle> },
 		{ "RemoveObstacle", &makeEffect<RemoveObstacle> },
-		{ "Sacrifice",      &makeEffect<Sacrifice> },
 		{ "Timed",          &makeEffect<Timed> },
 	};
 

@@ -348,6 +348,7 @@ TEST_P(HealApplyTest, Heals)
 	EXPECT_CALL(targetUnit, unitBaseAmount()).WillRepeatedly(Return(unitAmount));
 	EXPECT_CALL(targetUnit, unitId()).WillRepeatedly(Return(unitId));
 	EXPECT_CALL(targetUnit, unitType()).WillRepeatedly(Return(pikeman));
+	EXPECT_CALL(targetUnit, creatureId()).WillRepeatedly(Return(CreatureID(unitId)));
 
 	targetUnit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::STACK_HEALTH, BonusSource::CREATURE_ABILITY, unitHP, BonusSourceID()));
 
@@ -363,6 +364,7 @@ TEST_P(HealApplyTest, Heals)
 	mechanicsMock.caster = &actualCaster;
 	EXPECT_CALL(mechanicsMock, getEffectValue()).WillRepeatedly(Return(effectValue));
 	EXPECT_CALL(mechanicsMock, applySpellBonus(Eq(effectValue), Eq(&targetUnit))).WillRepeatedly(Return(effectValue));
+	EXPECT_CALL(mechanicsMock, getUnitCaster()).WillRepeatedly(Return(&actualCaster));
 	EXPECT_CALL(actualCaster, creatureId()).WillRepeatedly(Return(CreatureID(unitId)));
 	EXPECT_CALL(actualCaster, getHeroCaster()).WillRepeatedly(Return(nullptr));
 
@@ -502,7 +504,7 @@ TEST_F(HealApplyOneOffTest, GetHealthChangeReturnsHealedHP)
 	}
 
 	EXPECT_CALL(mechanicsMock, getEffectValue()).WillRepeatedly(Return(effectValue));
-	EXPECT_CALL(targetUnit, acquire()).WillRepeatedly(Return(targetUnitState));
+	EXPECT_CALL(targetUnit, acquireState()).WillRepeatedly(Return(targetUnitState));
 
 	Target target;
 	target.emplace_back(&targetUnit, BattleHex());
@@ -534,6 +536,7 @@ TEST_F(HealApplyOneOffTest, ApplyResurrectsFullyDeadUnit)
 	EXPECT_CALL(targetUnit, unitBaseAmount()).WillRepeatedly(Return(unitAmount));
 	EXPECT_CALL(targetUnit, unitId()).WillRepeatedly(Return(unitId));
 	EXPECT_CALL(targetUnit, unitType()).WillRepeatedly(Return(pikeman));
+	EXPECT_CALL(targetUnit, creatureId()).WillRepeatedly(Return(CreatureID(unitId)));
 
 	targetUnit.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::STACK_HEALTH, BonusSource::CREATURE_ABILITY, unitHP, BonusSourceID()));
 	unitsFake.setDefaultBonusExpectations();
@@ -587,12 +590,14 @@ TEST_F(HealApplyOneOffTest, ApplyHealsMultipleTargets)
 	EXPECT_CALL(targetUnit1, unitBaseAmount()).WillRepeatedly(Return(unitAmount));
 	EXPECT_CALL(targetUnit1, unitId()).WillRepeatedly(Return(unitId1));
 	EXPECT_CALL(targetUnit1, unitType()).WillRepeatedly(Return(pikeman));
+	EXPECT_CALL(targetUnit1, creatureId()).WillRepeatedly(Return(CreatureID(unitId1)));
 	targetUnit1.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::STACK_HEALTH, BonusSource::CREATURE_ABILITY, unitHP, BonusSourceID()));
 
 	auto & targetUnit2 = unitsFake.add(BattleSide::ATTACKER);
 	EXPECT_CALL(targetUnit2, unitBaseAmount()).WillRepeatedly(Return(unitAmount));
 	EXPECT_CALL(targetUnit2, unitId()).WillRepeatedly(Return(unitId2));
 	EXPECT_CALL(targetUnit2, unitType()).WillRepeatedly(Return(pikeman));
+	EXPECT_CALL(targetUnit2, creatureId()).WillRepeatedly(Return(CreatureID(unitId2)));
 	targetUnit2.addNewBonus(std::make_shared<Bonus>(BonusDuration::PERMANENT, BonusType::STACK_HEALTH, BonusSource::CREATURE_ABILITY, unitHP, BonusSourceID()));
 
 	unitsFake.setDefaultBonusExpectations();
@@ -617,7 +622,7 @@ TEST_F(HealApplyOneOffTest, ApplyHealsMultipleTargets)
 
 	EXPECT_CALL(*battleFake, updateUnit(Eq(unitId1), _, Gt(0))).Times(1);
 	EXPECT_CALL(*battleFake, updateUnit(Eq(unitId2), _, Gt(0))).Times(1);
-	EXPECT_CALL(serverMock, apply(Matcher<BattleUnitsChanged &>(_))).Times(1);
+	EXPECT_CALL(serverMock, apply(Matcher<BattleUnitsChanged &>(_))).Times(2);
 	EXPECT_CALL(serverMock, apply(Matcher<BattleLogMessage &>(_))).Times(AtLeast(1));
 
 	setupDefaultRNG();

@@ -13,8 +13,6 @@ This page describes the internal working of the Lua scripting module. For usage 
     - Damage -> UnitEffect
     - Dispel -> UnitEffect
     - Timed -> UnitEffect
-    - Heal -> UnitEffect
-    - Sacrifice -> Heal
     - RemoveObstacle -> LocationEffect
     - Catapult -> LocationEffect
     - Obstacle -> LocationEffect

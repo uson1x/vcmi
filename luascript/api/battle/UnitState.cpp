@@ -40,6 +40,9 @@ const std::vector<LuaUnitStateProxy::CustomRegType> LuaUnitStateProxy::REGISTER_
 	{"getSlot",             LuaMethodWrapper<&LuaUnitState::getSlot>::invoke,          false},
 	{"getPosition",         LuaMethodWrapper<&LuaUnitState::getPosition>::invoke,      false},
 	{"getTotalHealth",      LuaMethodWrapper<&LuaUnitState::getTotalHealth>::invoke,   false},
+	{"getAvailableHealth",  LuaMethodWrapper<&LuaUnitState::getAvailableHealth>::invoke, false},
+	{"getCount",            LuaMethodWrapper<&LuaUnitState::getCount>::invoke,         false},
+	{"getMaxHealth",        LuaMethodWrapper<&LuaUnitState::getMaxHealth>::invoke,     false},
 	{"coversPos",           LuaMethodWrapper<&LuaUnitState::coversPos>::invoke,        false},
 	{"getBaseAmount",       LuaMethodWrapper<&LuaUnitState::getBaseAmount>::invoke,    false},
 	{"hasAbsoluteImmunity", LuaFunctionWrapper<&LuaUnitStateProxy::hasAbsoluteImmunity>::invoke, false},
@@ -93,9 +96,12 @@ bool LuaUnitState::isSummoned()                 const { return state->summoned; 
 PlayerColor LuaUnitState::getOwner()     const { return state->unitOwner(); }
 SlotID      LuaUnitState::getSlot()      const { return state->unitSlot(); }
 BattleHex   LuaUnitState::getPosition()  const { return state->getPosition(); }
-int64_t     LuaUnitState::getTotalHealth() const { return state->getTotalHealth(); }
+int64_t     LuaUnitState::getTotalHealth()    const { return state->getTotalHealth(); }
+int64_t     LuaUnitState::getAvailableHealth() const { return state->getAvailableHealth(); }
+int32_t     LuaUnitState::getCount()         const { return state->getCount(); }
+uint32_t    LuaUnitState::getMaxHealth()     const { return state->getMaxHealth(); }
 bool        LuaUnitState::coversPos(BattleHex pos) const { return state->coversPos(pos); }
-int32_t     LuaUnitState::getBaseAmount() const { return state->unitBaseAmount(); }
+int32_t     LuaUnitState::getBaseAmount()    const { return state->unitBaseAmount(); }
 
 void LuaUnitState::setDefending(bool v)         { state->defending = v; }
 void LuaUnitState::setDefendingAnim(bool v)     { state->defendingAnim = v; }

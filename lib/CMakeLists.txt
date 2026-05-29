@@ -297,7 +297,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Dispel.cpp
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
-	spells/effects/Heal.cpp
 	spells/effects/LocationEffect.cpp
 	spells/effects/Moat.cpp
 	spells/effects/Obstacle.cpp
@@ -305,7 +304,6 @@ set(lib_MAIN_SRCS
 	spells/effects/UnitEffect.cpp
 	spells/effects/Timed.cpp
 	spells/effects/RemoveObstacle.cpp
-	spells/effects/Sacrifice.cpp
 
 	texts/CGeneralTextHandler.cpp
 	texts/CLegacyConfigParser.cpp
@@ -777,7 +775,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Effect.h
 	spells/effects/Effects.h
 	spells/effects/EffectsFwd.h
-	spells/effects/Heal.h
 	spells/effects/LocationEffect.h
 	spells/effects/Obstacle.h
 	spells/effects/SpellEffectHandler.h
@@ -785,7 +782,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/UnitEffect.h
 	spells/effects/Timed.h
 	spells/effects/RemoveObstacle.h
-	spells/effects/Sacrifice.h
 
 	texts/CGeneralTextHandler.h
 	texts/Languages.h

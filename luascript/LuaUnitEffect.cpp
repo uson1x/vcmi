@@ -24,6 +24,7 @@
 #include "../lib/serializer/JsonSerializeFormat.h"
 
 static const std::string ADJUST_TARGET_TYPES = "adjustTargetTypes";
+static const std::string APPLICABLE_GENERAL = "applicableGeneral";
 static const std::string APPLICABLE_TARGET = "applicableTarget";
 static const std::string TRANSFORM_TARGET = "transformTarget";
 static const std::string APPLY = "apply";
@@ -75,11 +76,14 @@ void LuaUnitEffect::adjustTargetTypes(std::vector<TargetType> & types, const Mec
 	types = context->callMethod<std::vector<TargetType>>(ADJUST_TARGET_TYPES, parameters, m, types);
 }
 
+bool LuaUnitEffect::applicableGeneral(Problem & problem, const Mechanics * m) const
+{
+	std::shared_ptr<LuaContext> context = resolveScript(m);
+	return context->callMethod<bool>(APPLICABLE_GENERAL, parameters, m, &problem);
+}
+
 bool LuaUnitEffect::applicableTarget(Problem & problem, const Mechanics * m, const Target & target) const
 {
-	if(target.size() <= 1)
-		return UnitEffect::applicableTarget(problem, m, target);
-
 	std::shared_ptr<LuaContext> context = resolveScript(m);
 	return context->callMethod<bool>(APPLICABLE_TARGET, parameters, m, &problem, target);
 }
