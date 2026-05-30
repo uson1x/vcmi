@@ -301,6 +301,8 @@
 	"vcmi.adventureOptions.smoothDragging.help": "{Smooth Map Dragging}\n\nWhen enabled, map dragging has a modern run out effect.",
 	"vcmi.adventureOptions.smoothDragging.hover": "Smooth Map Dragging",
 	"vcmi.artifact.charges": "Charges",
+	"vcmi.battle.surrender.marketplaceFailed": "Even after visiting the Marketplace, you do not have enough gold to purchase safe passage.",
+	"vcmi.battle.surrender.tryMarketplace": "You do not have enough gold to purchase safe passage.\n\nVisit the Marketplace to exchange resources for gold?",
 	"vcmi.battle.action.attack": "Use melee attack",
 	"vcmi.battle.action.attackLongWeapon": "Use Long Weapon attack",
 	"vcmi.battle.action.genie": "Cast random beneficial spell",

@@ -56,6 +56,9 @@ bool CBattleQuery::blocksPack(const CPackForServer * pack) const
 	if(dynamic_cast<const GamePause*>(pack) != nullptr)
 		return false;
 
+	if(const auto * trade = dynamic_cast<const TradeOnMarketplace *>(pack); trade && trade->mode == EMarketMode::RESOURCE_RESOURCE)
+		return false;
+
 	return true;
 }
 

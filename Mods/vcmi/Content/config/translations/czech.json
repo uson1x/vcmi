@@ -301,6 +301,8 @@
 	"vcmi.adventureOptions.smoothDragging.help": "{Plynulé posouvání mapy}\n\nPokud je tato možnost aktivována, posouvání mapy bude plynulé.",
 	"vcmi.adventureOptions.smoothDragging.hover": "Plynulé posouvání mapy",
 	"vcmi.artifact.charges": "Použití",
+	"vcmi.battle.surrender.marketplaceFailed": "Ani po návštěvě tržnice nemáš dost zlata na vykoupení bezpečného odchodu.",
+	"vcmi.battle.surrender.tryMarketplace": "Nemáš dost zlata na vykoupení bezpečného odchodu.\n\nNavštívit tržnici a směnit suroviny za zlato?",
 	"vcmi.battle.action.attack": "Použít útok zblízka",
 	"vcmi.battle.action.attackLongWeapon": "Použít útok dlouhou zbraní",
 	"vcmi.battle.action.genie": "Seslat náhodné podpůrné kouzlo",

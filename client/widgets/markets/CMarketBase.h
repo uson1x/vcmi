@@ -95,8 +95,13 @@ public:
 class CResourcesSelling : virtual public CMarketBase
 {
 public:
-	explicit CResourcesSelling(const CTradeableItem::ClickPressedFunctor & clickPressedCallback);
+	using ResourceAmountGetter = std::function<int64_t(EGameResID)>;
+
+	explicit CResourcesSelling(const CTradeableItem::ClickPressedFunctor & clickPressedCallback, ResourceAmountGetter resourceAmountGetter = {});
 	void updateSubtitles() const;
+
+private:
+	ResourceAmountGetter resourceAmountGetter;
 };
 
 class CMarketSlider : virtual public CMarketBase
