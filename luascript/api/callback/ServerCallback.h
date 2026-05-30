@@ -42,6 +42,7 @@ public:
 	static bool describeChanges(ServerCallback * object);
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusList bonusList);
 	static void addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, JsonNode data);
+	static void applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, JsonNode bonuses, bool cumulative);
 	static int healUnit(lua_State * L);
 	static int changeUnit(lua_State * L); // args: battleID, unitState, [healthDelta=0]
 	static int damageUnit(lua_State * L); // args: battleID, unit, damageAmount; returns: actualDamage, killedAmount

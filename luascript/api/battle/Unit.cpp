@@ -48,11 +48,13 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getMaxHealth",        LuaMethodWrapper<&ACreature::getMaxHealth, Unit>::invoke,  false},
 	{"coversPos",           LuaMethodWrapper<&Unit::coversPos>::invoke,                false},
 
-	{"getCreature",  LuaFunctionWrapper<&UnitProxy::getCreature>::invoke,  false},
-	{"getBaseAmount",LuaMethodWrapper<&Unit::unitBaseAmount, Unit>::invoke, false},
-	{"getHexes",     LuaFunctionWrapper<&UnitProxy::getHexes>::invoke,     false},
-	{"copy",         LuaFunctionWrapper<&UnitProxy::copy>::invoke,         false},
-	{"getBonuses",   LuaCallWrapper<&UnitProxy::getBonuses>::invoke,       false},
+	{"getCreature",    LuaFunctionWrapper<&UnitProxy::getCreature>::invoke,  false},
+	{"getBaseAmount",  LuaMethodWrapper<&Unit::unitBaseAmount, Unit>::invoke, false},
+	{"getHexes",       LuaFunctionWrapper<&UnitProxy::getHexes>::invoke,     false},
+	{"copy",           LuaFunctionWrapper<&UnitProxy::copy>::invoke,         false},
+	{"getBonuses",     LuaCallWrapper<&UnitProxy::getBonuses>::invoke,       false},
+	{"creatureLevel",  LuaMethodWrapper<&Unit::creatureLevel>::invoke,       false},
+	{"unitId",         LuaMethodWrapper<&IUnitInfo::unitId, Unit>::invoke,   false},
 };
 
 const Creature * UnitProxy::getCreature(const Unit * unit)

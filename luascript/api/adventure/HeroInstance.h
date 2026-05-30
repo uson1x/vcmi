@@ -31,6 +31,8 @@ class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroIns
 public:
 	using Wrapper = RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+
+	static int getBonuses(lua_State * L);
 };
 
 

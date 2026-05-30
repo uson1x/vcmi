@@ -299,7 +299,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Obstacle.cpp
 	spells/effects/SpellEffectHandler.cpp
 	spells/effects/UnitEffect.cpp
-	spells/effects/Timed.cpp
 	spells/effects/RemoveObstacle.cpp
 
 	texts/CGeneralTextHandler.cpp
@@ -774,7 +773,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/SpellEffectHandler.h
 	spells/effects/SpellEffectService.h
 	spells/effects/UnitEffect.h
-	spells/effects/Timed.h
 	spells/effects/RemoveObstacle.h
 
 	texts/CGeneralTextHandler.h

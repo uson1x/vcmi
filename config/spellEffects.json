@@ -216,9 +216,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"timed" : { 
-		"type" : "builtin",
-		"script" : "Timed",
+	"timed" : {
+		"type" : "luaUnit",
+		"script" : "timed",
 		"schema" : {
 			"properties" : {
 				"type" : {},

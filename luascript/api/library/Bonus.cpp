@@ -17,6 +17,7 @@
 #include "../../LuaCallWrapper.h"
 #include "../../../lib/GameLibrary.h"
 #include "../../../lib/CBonusTypeHandler.h"
+#include "../../../lib/bonuses/BonusParameters.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -27,16 +28,17 @@ namespace scripting::api::library
 
 const std::vector<BonusProxy::CustomRegType> BonusProxy::REGISTER_CUSTOM =
 {
-	{"getType",        LuaFunctionWrapper<&BonusProxy::getType>::invoke,        false},
-	{"getVal",         LuaFunctionWrapper<&BonusProxy::getVal>::invoke,         false},
-	{"getSubtype",     LuaFunctionWrapper<&BonusProxy::getSubtype>::invoke,     false},
-	{"getSourceID",    LuaFunctionWrapper<&BonusProxy::getSourceID>::invoke,    false},
-	{"getSource",      LuaFunctionWrapper<&BonusProxy::getSource>::invoke,      false},
-	{"getDuration",    LuaFunctionWrapper<&BonusProxy::getDuration>::invoke,    false},
-	{"getValType",     LuaFunctionWrapper<&BonusProxy::getValType>::invoke,     false},
-	{"getStacking",    LuaFunctionWrapper<&BonusProxy::getStacking>::invoke,    false},
-	{"getTurnsRemain", LuaFunctionWrapper<&BonusProxy::getTurnsRemain>::invoke, false},
-	{"isHidden",       LuaFunctionWrapper<&BonusProxy::isHidden>::invoke,       false},
+	{"getType",               LuaFunctionWrapper<&BonusProxy::getType>::invoke,               false},
+	{"getVal",                LuaFunctionWrapper<&BonusProxy::getVal>::invoke,                false},
+	{"getSubtype",            LuaFunctionWrapper<&BonusProxy::getSubtype>::invoke,            false},
+	{"getSourceID",           LuaFunctionWrapper<&BonusProxy::getSourceID>::invoke,           false},
+	{"getSource",             LuaFunctionWrapper<&BonusProxy::getSource>::invoke,             false},
+	{"getDuration",           LuaFunctionWrapper<&BonusProxy::getDuration>::invoke,           false},
+	{"getValType",            LuaFunctionWrapper<&BonusProxy::getValType>::invoke,            false},
+	{"getStacking",           LuaFunctionWrapper<&BonusProxy::getStacking>::invoke,           false},
+	{"getTurnsRemain",        LuaFunctionWrapper<&BonusProxy::getTurnsRemain>::invoke,        false},
+	{"isHidden",              LuaFunctionWrapper<&BonusProxy::isHidden>::invoke,              false},
+	{"getParametersAsNumber", LuaFunctionWrapper<&BonusProxy::getParametersAsNumber>::invoke, false},
 };
 
 std::string BonusProxy::getType(Bonus b)
@@ -52,6 +54,7 @@ si32        BonusProxy::getValType(Bonus b)    { return static_cast<si32>(b.valT
 std::string BonusProxy::getStacking(Bonus b)   { return b.stacking; }
 si16        BonusProxy::getTurnsRemain(Bonus b) { return b.turnsRemain; }
 bool        BonusProxy::isHidden(Bonus b)      { return b.hidden; }
+si32        BonusProxy::getParametersAsNumber(Bonus b) { return b.parameters ? b.parameters->toNumber() : 0; }
 
 std::vector<BonusDuration::BonusDuration> BonusProxy::getDuration(Bonus b)
 {

@@ -36,6 +36,7 @@ public:
 	static std::string getStacking(Bonus b);
 	static si16 getTurnsRemain(Bonus b);
 	static bool isHidden(Bonus b);
+	static si32 getParametersAsNumber(Bonus b);
 };
 
 class BonusListProxy : public CopyableWrapper<BonusList, BonusListProxy>

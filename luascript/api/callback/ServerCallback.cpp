@@ -50,6 +50,7 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
 	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
 	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
+	{ "applyUnitBonuses",  LuaFunctionWrapper<&ServerCallbackProxy::applyUnitBonuses>::invoke,  false },
 };
 
 bool ServerCallbackProxy::describeChanges(ServerCallback * object)
@@ -80,6 +81,27 @@ void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleI
 	SetStackEffect sse;
 	sse.battleID = battleID;
 	sse.toAdd.emplace_back(unitId, std::vector<Bonus>{b});
+	object->apply(sse);
+}
+
+void ServerCallbackProxy::applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, JsonNode bonuses, bool cumulative)
+{
+	std::vector<Bonus> buffer;
+	for(const auto & [name, bonusJson] : bonuses.Struct())
+	{
+		auto b = JsonUtils::parseBonus(bonusJson);
+		if(b)
+			buffer.push_back(*b);
+	}
+	if(buffer.empty())
+		return;
+
+	SetStackEffect sse;
+	sse.battleID = battleID;
+	if(cumulative)
+		sse.toAdd.emplace_back(unit->unitId(), buffer);
+	else
+		sse.toUpdate.emplace_back(unit->unitId(), buffer);
 	object->apply(sse);
 }
 

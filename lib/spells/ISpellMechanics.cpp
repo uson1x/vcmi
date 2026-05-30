@@ -18,7 +18,6 @@
 
 #include "adventure/AdventureSpellMechanics.h"
 #include "effects/Effects.h"
-#include "effects/Timed.h"
 
 #include "../GameLibrary.h"
 #include "../bonuses/Bonus.h"
@@ -97,26 +96,23 @@ public:
 			const CSpell::LevelInfo & levelInfo = s->getLevelInfo(level);
 			assert(levelInfo.battleEffects.isNull());
 
-			std::shared_ptr<effects::Effect> effect;
-
-			if(!levelInfo.effects.empty())
+			if(!levelInfo.effects.Struct().empty())
 			{
-				auto * timed = new effects::Timed();
-				timed->cumulative = false;
-				timed->bonus = levelInfo.effects;
-				effect.reset(timed);
+				JsonNode config;
+				config["timed"]["type"].String() = "core:timed";
+				config["timed"]["bonus"] = levelInfo.effects;
+				config.setModScope(s->modScope);
+				loadEffects(config, level);
 			}
-
-			if(!levelInfo.cumulativeEffects.empty())
+			else if(!levelInfo.cumulativeEffects.Struct().empty())
 			{
-				auto * timed = new effects::Timed();
-				timed->cumulative = true;
-				timed->bonus = levelInfo.cumulativeEffects;
-				effect.reset(timed);
+				JsonNode config;
+				config["timed"]["type"].String() = "core:timed";
+				config["timed"]["cumulative"].Bool() = true;
+				config["timed"]["bonus"] = levelInfo.cumulativeEffects;
+				config.setModScope(s->modScope);
+				loadEffects(config, level);
 			}
-
-			if(effect)
-				effects->add("timed", effect, level);
 		}
 	}
 };

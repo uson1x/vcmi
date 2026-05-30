@@ -32,7 +32,8 @@ class TimedApplyTest : public TestWithParam<bool>, public EffectFixture
 public:
 	bool cumulative = false;
 
-	const SpellID testSpellId = SpellID(456);
+	// Use a real game spell so SpellID::encode() round-trips correctly.
+	const SpellID testSpellId = SpellID::CURSE;
 	const int32_t duration = 57;
 
 	TimedApplyTest()
@@ -43,7 +44,8 @@ public:
 	void setDefaultExpectations()
 	{
 		unitsFake.setDefaultBonusExpectations();
-		EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(testSpellId));
+		EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+		EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 		EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(duration));
 		EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 	}
@@ -125,6 +127,8 @@ INSTANTIATE_TEST_SUITE_P
 class TimedTest : public Test, public EffectFixture
 {
 public:
+	const SpellID testSpellId = SpellID::CURSE;
+
 	TimedTest()
 		: EffectFixture("core:timed")
 	{
@@ -146,7 +150,8 @@ TEST_F(TimedTest, ApplySkipsDeadUnit)
 	options.setModScope(ModScope::scopeBuiltin());
 	setupEffect(options);
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(SpellID(0)));
+	EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+	EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -185,7 +190,8 @@ TEST_F(TimedTest, ApplyMultipleTargets)
 
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(SpellID(42)));
+	EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+	EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -195,7 +201,8 @@ TEST_F(TimedTest, ApplyMultipleTargets)
 
 	EXPECT_CALL(*battleFake, updateUnitBonus(Eq(unitId0), _)).Times(1);
 	EXPECT_CALL(*battleFake, updateUnitBonus(Eq(unitId1), _)).Times(1);
-	EXPECT_CALL(serverMock, apply(Matcher<SetStackEffect &>(_))).Times(1);
+	// Lua sends one SetStackEffect per unit, not batched
+	EXPECT_CALL(serverMock, apply(Matcher<SetStackEffect &>(_))).Times(2);
 
 	subject->apply(&serverMock, &mechanicsMock, target);
 }
@@ -217,7 +224,8 @@ TEST_F(TimedTest, ConvertBonusUsesSpellDurationWhenTurnsRemainIsZero)
 	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(1));
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(SpellID(42)));
+	EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+	EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(spellDuration));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -250,7 +258,8 @@ TEST_F(TimedTest, ConvertBonusKeepsExplicitTurnsRemain)
 	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(1));
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(SpellID(42)));
+	EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+	EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(57)); // different from customDuration
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -281,7 +290,8 @@ TEST_F(TimedTest, ConvertBonusInvertsShieldDamageReduction)
 	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(1));
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(SpellID::SHIELD));
+	EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+	EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(SpellID(SpellID::SHIELD).getNum())));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -309,8 +319,8 @@ TEST_F(TimedTest, ConvertBonusBindSetsCasterUnitId)
 	const int32_t casterUnitId = 99;
 	auto & casterUnit = unitsFake.add(BattleSide::ATTACKER);
 	mechanicsMock.caster = &casterUnit;
-	EXPECT_CALL(casterUnit, getHeroCaster()).WillRepeatedly(Return(nullptr));
-	EXPECT_CALL(casterUnit, getCasterUnitId()).WillRepeatedly(Return(casterUnitId));
+	EXPECT_CALL(casterUnit, unitId()).WillRepeatedly(Return(static_cast<uint32_t>(casterUnitId)));
+	EXPECT_CALL(mechanicsMock, getUnitCaster()).WillRepeatedly(Return(&casterUnit));
 
 	auto & targetUnit = unitsFake.add(BattleSide::DEFENDER);
 	targetUnit.makeAlive();
@@ -319,7 +329,8 @@ TEST_F(TimedTest, ConvertBonusBindSetsCasterUnitId)
 
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(SpellID::BIND));
+	EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+	EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(SpellID(SpellID::BIND).getNum())));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -345,7 +356,7 @@ class TimedHeroSpecialtyTest : public Test, public EffectFixture
 {
 public:
 	std::unique_ptr<CGHeroInstance> hero;
-	const SpellID testSpellId = SpellID(100);
+	const SpellID testSpellId = SpellID::BLESS;
 
 	TimedHeroSpecialtyTest()
 		: EffectFixture("core:timed")
@@ -358,6 +369,9 @@ protected:
 		EffectFixture::setUp();
 		hero = std::make_unique<CGHeroInstance>(nullptr);
 		mechanicsMock.caster = hero.get();
+		EXPECT_CALL(mechanicsMock, getHeroCaster()).WillRepeatedly(Return(hero.get()));
+		EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+		EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 	}
 
 	void setupSingleBonusEffect(int val = 10)
@@ -398,7 +412,6 @@ protected:
 		EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(creatureLevel));
 		unitsFake.setDefaultBonusExpectations();
 
-		EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(testSpellId));
 		EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 		EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -461,7 +474,6 @@ TEST_F(TimedHeroSpecialtyTest, AddValueEnchantAddsToBonus)
 	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(1));
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(testSpellId));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
@@ -489,7 +501,6 @@ TEST_F(TimedHeroSpecialtyTest, FixedValueEnchantOverridesBonus)
 	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(1));
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(mechanicsMock, getSpellId()).WillRepeatedly(Return(testSpellId));
 	EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(1));
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
