@@ -16,7 +16,9 @@
 
 #include "../../LuaStack.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
+#include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
+#include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/battle/CUnitState.h"
 #include "../../../lib/json/JsonNode.h"
 #include "../../../lib/texts/MetaString.h"
@@ -30,15 +32,37 @@ namespace api
 
 const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "createUnit",  LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,  false },
-	{ "updateUnit",  LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,  false },
-	{ "injureUnit",  LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke,  false },
-	{ "healUnit",    LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,         false },
-	{ "changeUnit",  LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,       false },
-	{ "removeUnit",  LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,  false },
-	{ "moveUnit",    LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,    false },
-	{ "appendLog",   LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,   false },
+	{ "createUnit",        LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,        false },
+	{ "updateUnit",        LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,        false },
+	{ "injureUnit",        LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke,        false },
+	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,               false },
+	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,             false },
+	{ "removeUnit",        LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,        false },
+	{ "moveUnit",          LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,          false },
+	{ "appendLog",         LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,         false },
+	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
+	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
 };
+
+bool ServerCallbackProxy::describeChanges(ServerCallback * object)
+{
+	return object->describeChanges();
+}
+
+void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusList bonusList)
+{
+	std::vector<Bonus> buffer;
+	for(const auto & b : bonusList)
+		buffer.emplace_back(*b);
+
+	if(buffer.empty())
+		return;
+
+	SetStackEffect sse;
+	sse.battleID = battleID;
+	sse.toRemove.emplace_back(unit->unitId(), buffer);
+	object->apply(sse);
+}
 
 void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
 {

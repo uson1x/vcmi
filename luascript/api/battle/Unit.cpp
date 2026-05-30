@@ -14,6 +14,7 @@
 
 #include "../../../lib/GameLibrary.h"
 #include "../../../lib/battle/CUnitState.h"
+#include "../../../lib/bonuses/BonusSelector.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
@@ -50,6 +51,7 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getBaseAmount",LuaMethodWrapper<&Unit::unitBaseAmount, Unit>::invoke, false},
 	{"getHexes",     LuaFunctionWrapper<&UnitProxy::getHexes>::invoke,     false},
 	{"copy",         LuaFunctionWrapper<&UnitProxy::copy>::invoke,         false},
+	{"getBonuses",   LuaCallWrapper<&UnitProxy::getBonuses>::invoke,       false},
 };
 
 const Creature * UnitProxy::getCreature(const Unit * unit)
@@ -70,6 +72,37 @@ bool UnitProxy::hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spe
 LuaUnitState UnitProxy::copy(const Unit * unit)
 {
 	return LuaUnitState(unit->acquireState());
+}
+
+int UnitProxy::getBonuses(lua_State * L)
+{
+	LuaStack S(L);
+	const Unit * unit = nullptr;
+	S.get(1, unit);
+
+	if (!unit || !lua_isfunction(L, 2))
+	{
+		S.clear();
+		return 0;
+	}
+
+	auto allBonuses = unit->getAllBonuses(Selector::all);
+
+	BonusList result;
+	for (const auto & bonus : *allBonuses)
+	{
+		lua_pushvalue(L, 2);
+		S.push(*bonus);
+		lua_call(L, 1, 1);
+		bool keep = lua_toboolean(L, -1);
+		lua_pop(L, 1);
+		if (keep)
+			result.push_back(bonus);
+	}
+
+	S.clear();
+	S.push(result);
+	return 1;
 }
 
 }

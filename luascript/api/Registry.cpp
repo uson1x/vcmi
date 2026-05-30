@@ -22,6 +22,7 @@
 #include "spells/Mechanics.h"
 #include "spells/Problem.h"
 #include "library/Artifact.h"
+#include "library/Bonus.h"
 #include "callback/IBattleInfoCallback.h"
 #include "library/Creature.h"
 #include "library/Faction.h"
@@ -45,6 +46,8 @@ Registry::Registry()
 {
 	registerPrivate<library::ServicesProxy>("library.Services");
 	registerPrivate<library::ArtifactProxy>("library.Artifact");
+	registerPrivate<library::BonusProxy>("library.Bonus");
+	registerPrivate<library::BonusListProxy>("library.BonusList");
 	registerPrivate<library::CreatureProxy>("library.Creature");
 	registerPrivate<library::FactionProxy>("library.Faction");
 	registerPrivate<library::HeroClassProxy>("library.HeroClass");

@@ -294,7 +294,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Catapult.cpp
 	spells/effects/Clone.cpp
 	spells/effects/Damage.cpp
-	spells/effects/Dispel.cpp
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
 	spells/effects/LocationEffect.cpp
@@ -771,7 +770,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Catapult.h
 	spells/effects/Clone.h
 	spells/effects/Damage.h
-	spells/effects/Dispel.h
 	spells/effects/Effect.h
 	spells/effects/Effects.h
 	spells/effects/EffectsFwd.h

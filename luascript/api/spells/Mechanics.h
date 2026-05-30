@@ -25,6 +25,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 			using Wrapper = RawPointerWrapper<::spells::Mechanics, MechanicsProxy>;
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+
+			static const ::spells::Spell * getSpellByKey(const ::spells::Mechanics * m, std::string key);
 		};
 	}
 }

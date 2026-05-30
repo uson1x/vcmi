@@ -20,6 +20,9 @@
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/spells/Problem.h"
 #include "../../../lib/mapObjects/CGHeroInstance.h"
+#include "../../../lib/constants/EntityIdentifiers.h"
+
+#include <vcmi/spells/Service.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -32,6 +35,11 @@ namespace scripting
 		static bool ownerMatchesUnit(const Mechanics * m, const battle::Unit * unit)
 		{
 			return m->ownerMatches(unit);
+		}
+
+		const spells::Spell * MechanicsProxy::getSpellByKey(const spells::Mechanics * m, std::string key)
+		{
+			return m->spells()->getByIndex(SpellID::decode(key));
 		}
 
 		const std::vector<MechanicsProxy::CustomRegType> MechanicsProxy::REGISTER_CUSTOM =
@@ -57,6 +65,7 @@ namespace scripting
 			{"isReceptive",            LuaMethodWrapper<&Mechanics::isReceptive>::invoke,              false},
 			{"ownerMatches",           LuaFunctionWrapper<&ownerMatchesUnit>::invoke,                   false},
 			{"getSpell",               LuaMethodWrapper<&Mechanics::getSpell>::invoke,                 false},
+			{"getSpellByKey",          LuaFunctionWrapper<&MechanicsProxy::getSpellByKey>::invoke,     false},
 		};
 	}
 }

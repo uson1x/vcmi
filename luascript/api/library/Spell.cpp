@@ -38,6 +38,7 @@ const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 	{"isDamage",            LuaMethodWrapper<&Spell::isDamage>::invoke,                  false},
 	{"isOffensive",         LuaMethodWrapper<&Spell::isOffensive>::invoke,               false},
 	{"isSpecial",           LuaMethodWrapper<&Spell::isSpecial>::invoke,                 false},
+	{"isPersistent",        LuaMethodWrapper<&Spell::isPersistent>::invoke,              false},
 
 	{"getCost",             LuaMethodWrapper<&Spell::getCost>::invoke,                   false},
 	{"getBasePower",        LuaMethodWrapper<&Spell::getBasePower>::invoke,              false},
