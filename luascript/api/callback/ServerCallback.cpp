@@ -9,6 +9,7 @@
  */
 #include "StdInc.h"
 
+#include "GameLibrary.h"
 #include "ServerCallback.h"
 
 #include "../Registry.h"
@@ -19,9 +20,14 @@
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/bonuses/BonusList.h"
+#include "../../../lib/bonuses/Bonus.h"
 #include "../../../lib/battle/CUnitState.h"
 #include "../../../lib/json/JsonNode.h"
 #include "../../../lib/texts/MetaString.h"
+#include "../../../lib/constants/EntityIdentifiers.h"
+#include "modding/IdentifierStorage.h"
+#include "modding/ModScope.h"
+#include "json/JsonBonus.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -34,7 +40,6 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 {
 	{ "createUnit",        LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,        false },
 	{ "updateUnit",        LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,        false },
-	{ "injureUnit",        LuaFunctionWrapper<&ServerCallbackProxy::injureUnit>::invoke,        false },
 	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,               false },
 	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,             false },
 	{ "removeUnit",        LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,        false },
@@ -42,6 +47,7 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "appendLog",         LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,         false },
 	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
 	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
+	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
 };
 
 bool ServerCallbackProxy::describeChanges(ServerCallback * object)
@@ -61,6 +67,17 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID ba
 	SetStackEffect sse;
 	sse.battleID = battleID;
 	sse.toRemove.emplace_back(unit->unitId(), buffer);
+	object->apply(sse);
+}
+
+void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, JsonNode data)
+{
+	Bonus b;
+	JsonUtils::parseBonus(data, &b);
+
+	SetStackEffect sse;
+	sse.battleID = battleID;
+	sse.toAdd.emplace_back(unitId, std::vector<Bonus>{b});
 	object->apply(sse);
 }
 
@@ -87,10 +104,6 @@ void ServerCallbackProxy::updateUnit(ServerCallback * object, BattleID battleID,
 	uc.healthDelta = healthDelta;
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
-}
-
-void ServerCallbackProxy::injureUnit()
-{
 }
 
 void ServerCallbackProxy::removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit)

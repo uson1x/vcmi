@@ -36,12 +36,12 @@ public:
 
 	static void createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data);
 	static void updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta);
-	static void injureUnit();
 	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
 	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);
 	static void appendLog(ServerCallback * object, BattleID battleID, JsonNode config);
 	static bool describeChanges(ServerCallback * object);
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusList bonusList);
+	static void addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, JsonNode data);
 	static int healUnit(lua_State * L);
 	static int changeUnit(lua_State * L); // args: battleID, unitState, [healthDelta=0]
 };

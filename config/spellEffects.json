@@ -18,9 +18,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"clone" : { 
-		"type" : "builtin",
-		"script" : "Clone",
+	"clone" : {
+		"type" : "luaUnit",
+		"script" : "clone",
 		"schema" : {
 			"properties" : {
 				"type" : {},

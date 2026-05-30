@@ -292,7 +292,6 @@ set(lib_MAIN_SRCS
 	spells/adventure/ViewWorldEffect.cpp
 
 	spells/effects/Catapult.cpp
-	spells/effects/Clone.cpp
 	spells/effects/Damage.cpp
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
@@ -768,7 +767,6 @@ set(lib_MAIN_HEADERS
 	spells/adventure/ViewWorldEffect.h
 
 	spells/effects/Catapult.h
-	spells/effects/Clone.h
 	spells/effects/Damage.h
 	spells/effects/Effect.h
 	spells/effects/Effects.h

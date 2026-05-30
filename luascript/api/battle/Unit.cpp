@@ -32,6 +32,7 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"getDefense",          LuaMethodWrapper<&ACreature::getDefense, Unit>::invoke,    false},
 	{"isAlive",             LuaMethodWrapper<&Unit::alive>::invoke,                    false},
 	{"isClone",             LuaMethodWrapper<&Unit::isClone>::invoke,                  false},
+	{"hasClone",            LuaMethodWrapper<&Unit::hasClone>::invoke,                 false},
 	{"isDead",              LuaMethodWrapper<&Unit::isDead>::invoke,                   false},
 	{"isGhost",             LuaMethodWrapper<&Unit::isGhost>::invoke,                  false},
 	{"isValidTarget",       LuaMethodWrapper<&Unit::isValidTarget>::invoke,            false},

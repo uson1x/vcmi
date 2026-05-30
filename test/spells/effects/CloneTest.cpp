@@ -115,7 +115,8 @@ TEST_F(CloneTest, RejectsTierExceedingMaxTier)
 	EXPECT_CALL(unit, isClone()).WillRepeatedly(Return(false));
 	EXPECT_CALL(unit, hasClone()).WillRepeatedly(Return(false));
 	EXPECT_CALL(unit, isValidTarget(Eq(false))).WillRepeatedly(Return(true));
-	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(4)); // exceeds maxTier=3
+	// CreatureID(6) = Swordsman, level 4 — exceeds maxTier=3
+	EXPECT_CALL(unit, creatureId()).WillRepeatedly(Return(CreatureID(6)));
 
 	EXPECT_CALL(mechanicsMock, adaptProblem(Eq(ESpellCastProblem::NO_APPROPRIATE_TARGET), Ref(problemMock))).WillOnce(Return(false));
 
@@ -135,7 +136,8 @@ TEST_F(CloneTest, AcceptsTierAtMaxTier)
 	EXPECT_CALL(unit, isClone()).WillRepeatedly(Return(false));
 	EXPECT_CALL(unit, hasClone()).WillRepeatedly(Return(false));
 	EXPECT_CALL(unit, isValidTarget(Eq(false))).WillRepeatedly(Return(true));
-	EXPECT_CALL(unit, creatureLevel()).WillRepeatedly(Return(3)); // equals maxTier=3
+	// CreatureID(4) = Griffin, level 3 — equals maxTier=3, should pass
+	EXPECT_CALL(unit, creatureId()).WillRepeatedly(Return(CreatureID(4)));
 	EXPECT_CALL(unit, isInvincible()).WillRepeatedly(Return(false));
 
 	EXPECT_CALL(mechanicsMock, isReceptive(Eq(&unit))).WillRepeatedly(Return(true));
@@ -200,8 +202,12 @@ public:
 
 		battleFake->setupEmptyBattlefield();
 
-		EXPECT_CALL(serverMock, apply(Matcher<BattleUnitsChanged &>(_))).Times(2);
+		// Lua emits 3 BattleUnitsChanged: ADD (createUnit) + UPDATE (clone flags) + UPDATE (original flags)
+		EXPECT_CALL(serverMock, apply(Matcher<BattleUnitsChanged &>(_))).Times(3);
 		EXPECT_CALL(serverMock, apply(Matcher<SetStackEffect &>(_))).Times(1);
+
+		EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
+		EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return("core:clone"));
 
 		EXPECT_CALL(mechanicsMock, getEffectDuration()).WillOnce(Return(effectDuration));
 		EXPECT_CALL(*battleFake, getUnitsIf(_)).Times(AtLeast(1));
