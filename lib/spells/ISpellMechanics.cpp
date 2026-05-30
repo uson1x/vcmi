@@ -18,7 +18,6 @@
 
 #include "adventure/AdventureSpellMechanics.h"
 #include "effects/Effects.h"
-#include "effects/Damage.h"
 #include "effects/Timed.h"
 
 #include "../GameLibrary.h"
@@ -97,12 +96,6 @@ public:
 		{
 			const CSpell::LevelInfo & levelInfo = s->getLevelInfo(level);
 			assert(levelInfo.battleEffects.isNull());
-
-			if(s->isOffensive())
-			{
-				//default constructed object should be enough
-				effects->add("directDamage", std::make_shared<effects::Damage>(), level);
-			}
 
 			std::shared_ptr<effects::Effect> effect;
 

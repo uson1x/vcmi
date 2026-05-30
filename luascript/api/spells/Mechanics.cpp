@@ -21,6 +21,9 @@
 #include "../../../lib/spells/Problem.h"
 #include "../../../lib/mapObjects/CGHeroInstance.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
+#include "../../../lib/GameLibrary.h"
+#include "../../../lib/texts/CGeneralTextHandler.h"
+#include "../../../lib/texts/Languages.h"
 
 #include <vcmi/spells/Service.h>
 
@@ -40,6 +43,12 @@ namespace scripting
 		const spells::Spell * MechanicsProxy::getSpellByKey(const spells::Mechanics * m, std::string key)
 		{
 			return m->spells()->getByIndex(SpellID::decode(key));
+		}
+
+		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics * m, std::string baseTextID, int32_t count)
+		{
+			std::string lang = LIBRARY->generaltexth->getPreferredLanguage();
+			return Languages::getPluralFormTextID(lang, count, baseTextID);
 		}
 
 		const std::vector<MechanicsProxy::CustomRegType> MechanicsProxy::REGISTER_CUSTOM =
@@ -63,9 +72,11 @@ namespace scripting
 			{"applySpecificSpellBonus", LuaMethodWrapper<&Mechanics::applySpecificSpellBonus>::invoke, false},
 			{"applySpellBonus",        LuaMethodWrapper<&Mechanics::applySpellBonus>::invoke,          false},
 			{"isReceptive",            LuaMethodWrapper<&Mechanics::isReceptive>::invoke,              false},
-			{"ownerMatches",           LuaFunctionWrapper<&ownerMatchesUnit>::invoke,                   false},
+			{"ownerMatches",           LuaFunctionWrapper<&ownerMatchesUnit>::invoke,                  false},
 			{"getSpell",               LuaMethodWrapper<&Mechanics::getSpell>::invoke,                 false},
 			{"getSpellByKey",          LuaFunctionWrapper<&MechanicsProxy::getSpellByKey>::invoke,     false},
+			{"adjustEffectValue",      LuaMethodWrapper<&Mechanics::adjustEffectValue>::invoke,        false},
+			{"getPluralFormTextID",    LuaFunctionWrapper<&MechanicsProxy::getPluralFormTextID>::invoke, false},
 		};
 	}
 }

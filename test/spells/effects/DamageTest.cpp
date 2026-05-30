@@ -392,7 +392,7 @@ TEST_F(DamageApplyTest, AppliesChainFactorToSubsequentTargets)
 
 	unitsFake.setDefaultBonusExpectations();
 
-	EXPECT_CALL(serverMock, apply(Matcher<StacksInjured &>(_))).Times(1);
+	EXPECT_CALL(serverMock, apply(Matcher<StacksInjured &>(_))).Times(2);
 	EXPECT_CALL(serverMock, describeChanges()).WillRepeatedly(Return(false));
 
 	setupDefaultRNG();

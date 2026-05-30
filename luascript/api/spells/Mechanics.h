@@ -27,6 +27,7 @@ VCMI_LIB_NAMESPACE_BEGIN
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
 			static const ::spells::Spell * getSpellByKey(const ::spells::Mechanics * m, std::string key);
+			static std::string getPluralFormTextID(const ::spells::Mechanics * m, std::string baseTextID, int32_t count);
 		};
 	}
 }

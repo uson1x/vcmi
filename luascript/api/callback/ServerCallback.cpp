@@ -19,6 +19,7 @@
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
+#include "../../../lib/CStack.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/Bonus.h"
 #include "../../../lib/battle/CUnitState.h"
@@ -40,8 +41,9 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 {
 	{ "createUnit",        LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,        false },
 	{ "updateUnit",        LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,        false },
-	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,               false },
-	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,             false },
+	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,              false },
+	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,            false },
+	{ "damageUnit",        LuaCallWrapper<&ServerCallbackProxy::damageUnit>::invoke,            false },
 	{ "removeUnit",        LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,        false },
 	{ "moveUnit",          LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,          false },
 	{ "appendLog",         LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,         false },
@@ -164,6 +166,38 @@ int ServerCallbackProxy::changeUnit(lua_State * L)
 	object->apply(buc);
 
 	return S.retVoid();
+}
+
+int ServerCallbackProxy::damageUnit(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	BattleID battleID;
+	const battle::Unit * unit = nullptr;
+	int64_t damageAmount = 0;
+
+	S.get(1, object);
+	S.get(2, battleID);
+	S.get(3, unit);
+	S.get(4, damageAmount);
+
+	BattleStackAttacked bsa;
+	bsa.damageAmount = damageAmount;
+	bsa.stackAttacked = unit->unitId();
+	bsa.attackerID = -1;
+	auto newState = unit->acquireState();
+	CStack::prepareAttacked(bsa, *object->getRNG(), newState);
+
+	StacksInjured si;
+	si.battleID = battleID;
+	si.stacks.push_back(bsa);
+	object->apply(si);
+
+	S.clear();
+	S.push(bsa.damageAmount);
+	S.push(static_cast<int64_t>(bsa.killedAmount));
+	return 2;
 }
 
 int ServerCallbackProxy::healUnit(lua_State * L)

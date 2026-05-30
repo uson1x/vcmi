@@ -14,7 +14,6 @@
 #include "../../json/JsonUtils.h"
 
 #include "Catapult.h"
-#include "Damage.h"
 #include "Effect.h"
 #include "Moat.h"
 #include "Obstacle.h"
@@ -41,7 +40,6 @@ std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, 
 
 	static const std::unordered_map<std::string, EffectFactoryFunctor> effectFactory = {
 		{ "Catapult",       &makeEffect<Catapult> },
-		{ "Damage",         &makeEffect<Damage> },
 		{ "Moat",           &makeEffect<Moat> },
 		{ "Obstacle",       &makeEffect<Obstacle> },
 		{ "RemoveObstacle", &makeEffect<RemoveObstacle> },

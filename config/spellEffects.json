@@ -35,8 +35,8 @@
 		}
 	},
 	"damage" : {
-		"type" : "builtin",
-		"script" : "Damage",
+		"type" : "luaUnit",
+		"script" : "damage",
 		"schema" : {
 			"properties" : {
 				"type" : {},
