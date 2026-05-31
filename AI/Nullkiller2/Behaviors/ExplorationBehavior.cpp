@@ -18,6 +18,7 @@
 #include "../Goals/CaptureObject.h"
 #include "../Goals/ExploreNeighbourTile.h"
 #include "../Helpers/ExplorationHelper.h"
+#include "../../../lib/CPlayerState.h"
 
 namespace NK2AI
 {
@@ -54,16 +55,30 @@ Goals::TGoalVec ExplorationBehavior::decompose(const Nullkiller * aiNk) const
 			case Obj::SUBTERRANEAN_GATE:
 			case Obj::WHIRLPOOL:
 			{
-				const auto tObj = dynamic_cast<const CGTeleport*>(obj);
-				for (auto exit : aiNk->cc->getTeleportChannelExits(tObj->channel))
+				const auto tObj = dynamic_cast<const CGTeleport *>(obj);
+				for(auto exit : aiNk->cc->getTeleportChannelExits(tObj->channel))
 				{
-					if (exit != tObj->id)
+					if(exit != tObj->id)
 					{
-						// TODO: Mircea: Looks like a bug. Should use isVisibleFor with aiNk->playerID
-						if (!aiNk->cc->isVisible(aiNk->cc->getObjInstance(exit)))
+						bool isExplored = false;
+						const CGObjectInstance * exitObj = aiNk->cc->getObjInstance(exit);
+
+						if(exitObj)
+						{
+							const auto teamState = aiNk->cc->getPlayerTeam(aiNk->playerID);
+							if(teamState && teamState->fogOfWarMap[exitObj->visitablePos()])
+							{
+								isExplored = true;
+							}
+						}
+
+						if(!isExplored)
+						{
 							tasks.push_back(sptr(Composition().addNext(ExplorationPoint(obj->visitablePos(), 50)).addNext(CaptureObject(obj))));
+						}
 					}
 				}
+				break;
 			}
 		}
 	}
