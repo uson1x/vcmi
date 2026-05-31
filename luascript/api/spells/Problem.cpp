@@ -17,14 +17,12 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 using ::spells::Problem;
 using ::spells::Mechanics;
 
-void ProblemProxy::addCustom(Problem * problem, JsonNode config)
+void ProblemProxy::addCustom(Problem * problem, const JsonNode & config)
 {
 	problem->add(MetaString::createFromLua(config));
 }
@@ -46,7 +44,6 @@ const std::vector<ProblemProxy::CustomRegType> ProblemProxy::REGISTER_CUSTOM =
 	{"addStandard", LuaFunctionWrapper<&ProblemProxy::addStandard>::invoke, false},
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

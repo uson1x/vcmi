@@ -26,17 +26,17 @@ public:
 	using Wrapper = CopyableWrapper<Bonus, BonusProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static std::string getType(Bonus b);
-	static si32 getVal(Bonus b);
-	static std::string getSubtype(Bonus b);
-	static std::string getSourceID(Bonus b);
-	static si32 getSource(Bonus b);
-	static std::vector<BonusDuration::BonusDuration> getDuration(Bonus b);
-	static si32 getValType(Bonus b);
-	static std::string getStacking(Bonus b);
-	static si16 getTurnsRemain(Bonus b);
-	static bool isHidden(Bonus b);
-	static si32 getParametersAsNumber(Bonus b);
+	static std::string getType(const Bonus & b);
+	static si32 getVal(const Bonus & b);
+	static std::string getSubtype(const Bonus & b);
+	static std::string getSourceID(const Bonus & b);
+	static si32 getSource(const Bonus & b);
+	static std::vector<BonusDuration::BonusDuration> getDuration(const Bonus & b);
+	static si32 getValType(const Bonus & b);
+	static std::string getStacking(const Bonus & b);
+	static si16 getTurnsRemain(const Bonus & b);
+	static bool isHidden(const Bonus & b);
+	static si32 getParametersAsNumber(const Bonus & b);
 };
 
 class BonusListProxy : public CopyableWrapper<BonusList, BonusListProxy>
@@ -45,8 +45,8 @@ public:
 	using Wrapper = CopyableWrapper<BonusList, BonusListProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static int32_t size(BonusList list);
-	static Bonus getBonus(BonusList list, int32_t index);
+	static int32_t size(const BonusList & list);
+	static Bonus getBonus(const BonusList & list, int32_t index);
 };
 
 }

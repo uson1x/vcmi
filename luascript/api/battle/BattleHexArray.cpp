@@ -54,7 +54,7 @@ int BattleHexArrayProxy::erase(lua_State * L)
 	return 0;
 }
 
-BattleHex BattleHexArrayProxy::at(BattleHexArray & hexes, int index)
+BattleHex BattleHexArrayProxy::at(const BattleHexArray & hexes, int index)
 {
 	return hexes.at(index - 1);
 }

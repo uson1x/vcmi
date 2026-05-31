@@ -29,23 +29,21 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
+namespace scripting::api
 {
-	namespace api
-	{
 		using ::spells::Mechanics;
 
-		static bool ownerMatchesUnit(const Mechanics * m, const battle::Unit * unit)
+		bool MechanicsProxy::ownerMatchesUnit(const Mechanics * m, const battle::Unit * unit)
 		{
 			return m->ownerMatches(unit);
 		}
 
-		const spells::Spell * MechanicsProxy::getSpellByKey(const spells::Mechanics * m, std::string key)
+		const spells::Spell * MechanicsProxy::getSpellByKey(const spells::Mechanics * m, const std::string & key)
 		{
 			return m->spells()->getByIndex(SpellID::decode(key));
 		}
 
-		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics * m, std::string baseTextID, int32_t count)
+		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics * m, const std::string & baseTextID, int32_t count)
 		{
 			std::string lang = LIBRARY->generaltexth->getPreferredLanguage();
 			return Languages::getPluralFormTextID(lang, count, baseTextID);
@@ -57,7 +55,7 @@ namespace scripting
 			{"isNegative",             LuaMethodWrapper<&Mechanics::isNegativeSpell>::invoke,          false},
 			{"isSmart",                LuaMethodWrapper<&Mechanics::isSmart>::invoke,                  false},
 			{"isMassive",              LuaMethodWrapper<&Mechanics::isMassive>::invoke,                false},
-			{"alwaysHitFirstTarget",   LuaMethodWrapper<&Mechanics::alwaysHitFirstTarget>::invoke,    false},
+			{"alwaysHitFirstTarget",   LuaMethodWrapper<&Mechanics::alwaysHitFirstTarget>::invoke,     false},
 			{"wouldResist",            LuaMethodWrapper<&Mechanics::wouldResist>::invoke,              false},
 
 			{"getEffectLevel",         LuaMethodWrapper<&Mechanics::getEffectLevel>::invoke,           false},
@@ -82,7 +80,6 @@ namespace scripting
 			{"adjustEffectValue",      LuaMethodWrapper<&Mechanics::adjustEffectValue>::invoke,        false},
 			{"getPluralFormTextID",    LuaFunctionWrapper<&MechanicsProxy::getPluralFormTextID>::invoke, false},
 		};
-	}
 }
 
 VCMI_LIB_NAMESPACE_END

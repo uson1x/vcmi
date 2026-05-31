@@ -21,9 +21,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 const std::vector<HeroInstanceProxy::CustomRegType> HeroInstanceProxy::REGISTER_CUSTOM =
 {
@@ -76,7 +74,6 @@ int HeroInstanceProxy::getBonuses(lua_State * L)
 	return 1;
 }
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -26,7 +26,7 @@ public:
 
 	static int insert(lua_State * L);
 	static int erase(lua_State * L);
-	static BattleHex at(BattleHexArray & hexes, int index);
+	static BattleHex at(const BattleHexArray & hexes, int index);
 };
 
 }

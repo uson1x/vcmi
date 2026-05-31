@@ -18,11 +18,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 using ::events::GameResumed;
 using ::events::PlayerGotTurn;
@@ -73,8 +69,6 @@ const std::vector<TurnStartedProxy::CustomRegType> TurnStartedProxy::REGISTER_CU
 	}
 };
 
-}
-}
 }
 
 

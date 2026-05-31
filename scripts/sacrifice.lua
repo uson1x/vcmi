@@ -2,6 +2,22 @@ local Base = require("unitEffect")
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
 
+local HEAL_LEVEL_FROM_STRING = {
+	heal      = ENUM.HealLevel.heal,
+	resurrect = ENUM.HealLevel.resurrect,
+	overHeal  = ENUM.HealLevel.overheal,
+}
+local HEAL_POWER_FROM_STRING = {
+	oneBattle = ENUM.HealPower.oneBattle,
+	permanent = ENUM.HealPower.permanent,
+}
+function Script:getHealLevel()
+	return HEAL_LEVEL_FROM_STRING[self.healLevel] or ENUM.HealLevel.resurrect
+end
+function Script:getHealPower()
+	return HEAL_POWER_FROM_STRING[self.healPower] or ENUM.HealPower.permanent
+end
+
 --- Accept any unit (dead or alive) as a potential target.
 function Script:isValidTarget(mechanics, unit)
 	return unit:isValidTarget(true)
@@ -65,7 +81,7 @@ function Script:transformTarget(mechanics, aimPoint, spellTarget)
 	return result
 end
 
-local function calculateHealValue(mechanics, victim)
+function Script:calculateHealValue(mechanics, victim)
 	return (mechanics:getEffectPower() + victim:getMaxHealth()
 		+ mechanics:calculateRawEffectValue(0, 1)) * victim:getCount()
 end
@@ -91,7 +107,7 @@ function Script:getHealthChange(mechanics, spellTarget)
 	else
 		-- alive unit shown in UI as sacrifice victim
 		return {
-			hpDelta   = calculateHealValue(mechanics, unit),
+			hpDelta   = self:calculateHealValue(mechanics, unit),
 			unitsDelta = -unit:getCount(),
 			unitType   = unit:getCreature():getIndex()
 		}
@@ -105,18 +121,18 @@ function Script:apply(mechanics, server, target)
 	local victim     = target[2].unit
 	if not deadTarget or not victim then return end
 
-	local healValue = calculateHealValue(mechanics, victim)
+	local healValue = self:calculateHealValue(mechanics, victim)
 	local battleID  = mechanics:getBattleID()
 
 	local _, resurrected = server:healUnit(
 		battleID, deadTarget, healValue,
-		ENUM.HealLevel.resurrect, ENUM.HealPower.permanent)
+		self:getHealLevel(), self:getHealPower())
 
 	server:removeUnit(battleID, victim)
 
 	if resurrected > 0 then
 		local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
-		local nameTextID = deadTarget:getCreature():getNameTextID(resurrected)
+		local nameTextID = deadTarget:getCreature():getNameTextID(deadTarget:getCount())
 		server:appendLog(battleID, {
 			append  = { textID },
 			replace = { resurrected, nameTextID }

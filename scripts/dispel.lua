@@ -2,7 +2,7 @@ local Base = require("unitEffect")
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
 
-local function getDispelableBonuses(self, mechanics, unit)
+function Script:getDispelableBonuses(mechanics, unit)
 	local currentSpellKey = mechanics:getSpell():getJsonKey()
 	return unit:getBonuses(function(bonus)
 		if bonus:getSource() ~= ENUM.BonusSource.spellEffect then return false end
@@ -20,7 +20,7 @@ end
 
 function Script:isValidTarget(mechanics, unit)
 	if not unit:isValidTarget(false) then return false end
-	return getDispelableBonuses(self, mechanics, unit):size() > 0
+	return self:getDispelableBonuses(mechanics, unit):size() > 0
 end
 
 function Script:apply(mechanics, server, target)
@@ -30,12 +30,12 @@ function Script:apply(mechanics, server, target)
 	for _, dest in ipairs(target) do
 		local unit = dest.unit
 		if unit then
-			local bonuses = getDispelableBonuses(self, mechanics, unit)
+			local bonuses = self:getDispelableBonuses(mechanics, unit)
 			if bonuses:size() > 0 then
 				if positiveOnly and server:describeChanges() then
 					server:appendLog(battleID, {
 						append  = { "core.genrltxt.555" },
-						replace = { unit:getCreature():getNameTextID(unit:getCount()) }
+						replace = { unit:getCreature():getNamePluralTextID() }
 					})
 				end
 				server:removeUnitBonuses(battleID, unit, bonuses)

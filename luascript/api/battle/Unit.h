@@ -20,11 +20,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace battle
+namespace scripting::api::battle
 {
 using ::battle::IUnitInfo;
 using ::battle::Unit;
@@ -42,8 +38,6 @@ public:
 	static int getBonuses(lua_State * L);
 };
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

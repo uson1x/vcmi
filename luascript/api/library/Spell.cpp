@@ -55,7 +55,7 @@ const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 std::vector<std::string> SpellProxy::getSchools(const Spell * spell)
 {
 	std::vector<std::string> result;
-	spell->forEachSchool([&](const SpellSchool & school, bool & stop)
+	spell->forEachSchool([&result](const SpellSchool & school, bool & stop)
 	{
 		result.push_back(BonusSubtypeID(school).toString());
 	});

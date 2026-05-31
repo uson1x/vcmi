@@ -2,7 +2,7 @@ local Base = require("unitEffect")
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
 
-local function sumBonusVal(unit, filterFn)
+function Script:sumBonusVal(unit, filterFn)
 	local total = 0
 	local list = unit:getBonuses(filterFn)
 	for i = 1, list:size() do
@@ -14,14 +14,14 @@ end
 function Script:isReceptive(mechanics, unit)
 	local spell = mechanics:getSpell()
 	if spell:isMagical() then
-		if sumBonusVal(unit, function(b)
+		if self:sumBonusVal(unit, function(b)
 			return b:getType() == "SPELL_DAMAGE_REDUCTION" and b:getSubtype() == "any"
 		end) >= 100 then
 			return false
 		end
 	end
 	for _, school in ipairs(spell:getSchools()) do
-		if sumBonusVal(unit, function(b)
+		if self:sumBonusVal(unit, function(b)
 			return b:getType() == "SPELL_DAMAGE_REDUCTION" and b:getSubtype() == school
 		end) >= 100 then
 			return false
@@ -30,7 +30,7 @@ function Script:isReceptive(mechanics, unit)
 	return Base.isReceptive(self, mechanics, unit)
 end
 
-local function damageForTarget(self, targetIndex, mechanics, unit)
+function Script:damageForTarget(targetIndex, mechanics, unit)
 	local base
 	if self.killByPercentage then
 		local toKill = math.floor(unit:getCount() * mechanics:getEffectValue() / 100)
@@ -52,7 +52,7 @@ function Script:getHealthChange(mechanics, spellTarget)
 	for i, dest in ipairs(spellTarget) do
 		local unit = dest.unit
 		if unit and unit:isAlive() then
-			local amount = damageForTarget(self, i - 1, mechanics, unit)
+			local amount = self:damageForTarget(i - 1, mechanics, unit)
 			local copy = unit:copy()
 			local hpBefore    = copy:getAvailableHealth()
 			local countBefore = copy:getCount()
@@ -72,7 +72,7 @@ function Script:apply(mechanics, server, target)
 	for i, dest in ipairs(target) do
 		local unit = dest.unit
 		if unit and unit:isAlive() then
-			local amount = damageForTarget(self, i - 1, mechanics, unit)
+			local amount = self:damageForTarget(i - 1, mechanics, unit)
 			local dmg, killed = server:damageUnit(battleID, unit, amount)
 			if describe then
 				if firstUnit then multiple = true else firstUnit = unit end

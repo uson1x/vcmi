@@ -26,9 +26,12 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-static int luaError(lua_State * L)
+namespace scripting
 {
-	int level = (int)luaL_optinteger(L, 2, 1);
+
+int LuaContext::luaError(lua_State * L)
+{
+	int level = luaL_optinteger(L, 2, 1);
 
 	if(level > 0 && lua_isstring(L, 1))
 	{
@@ -46,7 +49,7 @@ static int luaError(lua_State * L)
 	return lua_error(L);
 }
 
-static int luaAssert(lua_State * L)
+int LuaContext::luaAssert(lua_State * L)
 {
 	if(lua_toboolean(L, 1))
 		return lua_gettop(L);
@@ -62,10 +65,7 @@ static int luaAssert(lua_State * L)
 	return lua_error(L);
 }
 
-/// Custom text printing function for use in scripting
-/// based on luaB_print (part of Lua source code)
-/// adapted to C++ & VCMI logging facilities
-static int luaPrint(lua_State *L) {
+int LuaContext::luaPrint(lua_State *L) {
 	int n = lua_gettop(L);
 	lua_getglobal(L, "tostring");
 	std::string out;
@@ -86,9 +86,6 @@ static int luaPrint(lua_State *L) {
 	logScript->info("%s", out);
 	return 0;
 }
-
-namespace scripting
-{
 
 LuaContext::LuaContext(const Script * source, const Environment * env_):
 	L(luaL_newstate()),

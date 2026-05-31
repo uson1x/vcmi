@@ -422,7 +422,7 @@ TEST_P(HealApplyTest, Heals)
 				break;
 			case EHealLevel::OVERHEAL:
 				{
-					const int64_t available = (int64_t)unitAmount * unitHP / 2 + 1 + effectValue;
+					const int64_t available = static_cast<int64_t>(unitAmount) * unitHP / 2 + 1 + effectValue;
 					EXPECT_EQ(targetUnitState->health.getResurrected(), (int32_t)((available + unitHP - 1) / unitHP) - initialCount);
 				}
 				break;
@@ -544,7 +544,7 @@ TEST_F(HealApplyOneOffTest, ApplyResurrectsFullyDeadUnit)
 	auto targetUnitState = std::make_shared<CUnitStateDetached>(&targetUnit, &targetUnit);
 	targetUnitState->localInit(&unitEnvironmentMock);
 	{
-		int64_t initialDmg = (int64_t)unitAmount * unitHP;
+		int64_t initialDmg = static_cast<int64_t>(unitAmount) * unitHP;
 		targetUnitState->health.damage(initialDmg);
 	}
 
@@ -633,7 +633,7 @@ TEST_F(HealApplyOneOffTest, ApplyHealsMultipleTargets)
 
 	subject->apply(&serverMock, &mechanicsMock, target);
 
-	const int64_t available = (int64_t)unitAmount * unitHP / 2 + 1 + effectValue;
+	const int64_t available = static_cast<int64_t>(unitAmount) * unitHP / 2 + 1 + effectValue;
 	const int32_t expectedCount = static_cast<int32_t>((available + unitHP - 1) / unitHP);
 	EXPECT_EQ(state1->getCount(), expectedCount);
 	EXPECT_EQ(state2->getCount(), expectedCount);

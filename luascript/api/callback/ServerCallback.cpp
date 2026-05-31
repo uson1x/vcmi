@@ -32,9 +32,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
 const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
@@ -58,7 +56,7 @@ bool ServerCallbackProxy::describeChanges(ServerCallback * object)
 	return object->describeChanges();
 }
 
-void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusList bonusList)
+void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList)
 {
 	std::vector<Bonus> buffer;
 	for(const auto & b : bonusList)
@@ -73,7 +71,7 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID ba
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, JsonNode data)
+void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, const JsonNode & data)
 {
 	Bonus b;
 	JsonUtils::parseBonus(data, &b);
@@ -84,7 +82,7 @@ void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleI
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, JsonNode bonuses, bool cumulative)
+void ServerCallbackProxy::applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & bonuses, bool cumulative)
 {
 	std::vector<Bonus> buffer;
 	for(const auto & [name, bonusJson] : bonuses.Struct())
@@ -201,7 +199,7 @@ int ServerCallbackProxy::damageUnit(lua_State * L)
 
 	S.get(1, object);
 	S.get(2, battleID);
-	S.get(3, unit);
+	S.getNonNull(3, unit);
 	S.get(4, damageAmount);
 
 	BattleStackAttacked bsa;
@@ -235,7 +233,7 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 
 	S.get(1, object);
 	S.get(2, battleID);
-	S.get(3, unit);
+	S.getNonNull(3, unit);
 	S.get(4, healthDelta);
 	S.get(5, healLevel);
 	S.get(6, healPower);
@@ -260,8 +258,6 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	return 2;
 }
 
-
-}
 }
 
 VCMI_LIB_NAMESPACE_END

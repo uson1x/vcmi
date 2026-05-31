@@ -18,11 +18,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 
 class GameResumedProxy : public RawPointerWrapper<::events::GameResumed, GameResumedProxy>
@@ -46,8 +42,6 @@ public:
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

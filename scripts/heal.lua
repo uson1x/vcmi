@@ -12,26 +12,26 @@ local HEAL_POWER_FROM_STRING = {
 	permanent = ENUM.HealPower.permanent,
 }
 
-local function healLevel(self)
+function Script:getHealLevel()
 	return HEAL_LEVEL_FROM_STRING[self.healLevel] or ENUM.HealLevel.heal
 end
-local function healPower(self)
+function Script:getHealPower()
 	return HEAL_POWER_FROM_STRING[self.healPower] or ENUM.HealPower.permanent
 end
-local function minFullUnits(self)
+function Script:getMinFullUnits()
 	return self.minFullUnits or 0
 end
 
 --- Only injured units are valid; resurrect/overheal levels also accept dead units.
 function Script:isValidTarget(mechanics, unit)
-	local level = healLevel(self)
+	local level = self:getHealLevel()
 	local allowDead = level ~= ENUM.HealLevel.heal
 	if not unit:isValidTarget(allowDead) then return false end
 
 	local injuries = unit:getTotalHealth() - unit:getAvailableHealth()
 	if injuries <= 0 then return false end
 
-	local mfu = minFullUnits(self)
+	local mfu = self:getMinFullUnits()
 	if mfu > 0 then
 		local hpGained = math.min(mechanics:getEffectValue(), injuries)
 		if hpGained < mfu * unit:getMaxHealth() then return false end
@@ -58,7 +58,7 @@ function Script:getHealthChange(mechanics, spellTarget)
 		local unit = dest.unit
 		if unit then
 			local copy = unit:copy()
-			local healedHP, resurrected = copy:heal(mechanics:getEffectValue(), healLevel(self), healPower(self))
+			local healedHP, resurrected = copy:heal(mechanics:getEffectValue(), self:getHealLevel(), self:getHealPower())
 			result.hpDelta   = result.hpDelta   + healedHP
 			result.unitsDelta = result.unitsDelta + resurrected
 			result.unitType  = unit:getCreature():getIndex()
@@ -76,11 +76,11 @@ function Script:apply(mechanics, server, target)
 		local unit = dest.unit
 		if unit then
 			local healedHP, resurrected = server:healUnit(
-				battleID, unit, mechanics:getEffectValue(), healLevel(self), healPower(self))
+				battleID, unit, mechanics:getEffectValue(), self:getHealLevel(), self:getHealPower())
 
 			if resurrected > 0 then
 				local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
-				local nameTextID = unit:getCreature():getNameTextID(resurrected)
+				local nameTextID = unit:getCreature():getNameTextID(unit:getCount())
 				server:appendLog(battleID, {
 					append  = { textID },
 					replace = { resurrected, nameTextID }

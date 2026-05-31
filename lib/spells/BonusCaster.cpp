@@ -13,6 +13,7 @@
 
 #include <vcmi/spells/Spell.h>
 #include <vcmi/HeroType.h>
+#include <vcmi/Artifact.h>
 
 #include "../battle/Unit.h"
 #include "../bonuses/Bonus.h"

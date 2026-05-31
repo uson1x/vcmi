@@ -20,9 +20,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
 const std::vector<IGameInfoCallbackProxy::CustomRegType> IGameInfoCallbackProxy::REGISTER_CUSTOM =
@@ -31,7 +29,6 @@ const std::vector<IGameInfoCallbackProxy::CustomRegType> IGameInfoCallbackProxy:
 	{"getObj",  LuaMethodWrapper<&GameCb::getObj>::invoke,  false},
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

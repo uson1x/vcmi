@@ -18,11 +18,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 
 class ApplyDamageProxy : public RawPointerWrapper<::events::ApplyDamage, ApplyDamageProxy>
@@ -32,8 +28,6 @@ public:
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

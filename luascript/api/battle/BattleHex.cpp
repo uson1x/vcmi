@@ -29,7 +29,7 @@ const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM
 	{"getClosestTile", LuaFunctionWrapper<&BattleHexProxy::getClosestTile>::invoke,     false},
 };
 
-BattleHex BattleHexProxy::getClosestTile(const BattleHex & self, BattleSide side, BattleHexArray hexes)
+BattleHex BattleHexProxy::getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes)
 {
 	return BattleHex::getClosestTile(side, self, hexes);
 }

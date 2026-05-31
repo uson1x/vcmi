@@ -441,8 +441,6 @@ std::shared_ptr<CSpell> CSpellHandler::loadFromJson(const std::string & scope, c
 
 		CSpell::LevelInfo & levelObject = spell->levels[levelIndex];
 
-		const si32 levelPower     = levelObject.power = static_cast<si32>(levelNode["power"].Integer());
-
 		if (!levelNode["description"].String().empty())
 			LIBRARY->generaltexth->registerString(scope, spell->getDescriptionTextID(levelIndex), levelNode["description"]);
 

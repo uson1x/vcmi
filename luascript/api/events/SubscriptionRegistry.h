@@ -20,11 +20,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 
 
@@ -47,7 +43,6 @@ public:
 	static int subscribeBefore(lua_State * L)
 	{
 		LuaStack S(L);
-		// subscription = subscribeBefore(eventBus, callback)
 
 		//TODO: use capture by move from c++14
 		auto callbackRef = std::make_shared<LuaReference>(L);
@@ -137,8 +132,6 @@ public:
 };
 
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

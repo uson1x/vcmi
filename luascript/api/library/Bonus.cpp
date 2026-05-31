@@ -41,22 +41,22 @@ const std::vector<BonusProxy::CustomRegType> BonusProxy::REGISTER_CUSTOM =
 	{"getParametersAsNumber", LuaFunctionWrapper<&BonusProxy::getParametersAsNumber>::invoke, false},
 };
 
-std::string BonusProxy::getType(Bonus b)
+std::string BonusProxy::getType(const Bonus & b)
 {
 	return LIBRARY->bth->bonusToString(b.type);
 }
 
-si32        BonusProxy::getVal(Bonus b)        { return b.val; }
-std::string BonusProxy::getSubtype(Bonus b)    { return b.subtype.toString(); }
-std::string BonusProxy::getSourceID(Bonus b)   { return b.sid.toString(); }
-si32        BonusProxy::getSource(Bonus b)     { return static_cast<si32>(b.source); }
-si32        BonusProxy::getValType(Bonus b)    { return static_cast<si32>(b.valType); }
-std::string BonusProxy::getStacking(Bonus b)   { return b.stacking; }
-si16        BonusProxy::getTurnsRemain(Bonus b) { return b.turnsRemain; }
-bool        BonusProxy::isHidden(Bonus b)      { return b.hidden; }
-si32        BonusProxy::getParametersAsNumber(Bonus b) { return b.parameters ? b.parameters->toNumber() : 0; }
+si32        BonusProxy::getVal(const Bonus & b)        { return b.val; }
+std::string BonusProxy::getSubtype(const Bonus & b)    { return b.subtype.toString(); }
+std::string BonusProxy::getSourceID(const Bonus & b)   { return b.sid.toString(); }
+si32        BonusProxy::getSource(const Bonus & b)     { return static_cast<si32>(b.source); }
+si32        BonusProxy::getValType(const Bonus & b)    { return static_cast<si32>(b.valType); }
+std::string BonusProxy::getStacking(const Bonus & b)   { return b.stacking; }
+si16        BonusProxy::getTurnsRemain(const Bonus & b) { return b.turnsRemain; }
+bool        BonusProxy::isHidden(const Bonus & b)      { return b.hidden; }
+si32        BonusProxy::getParametersAsNumber(const Bonus & b) { return b.parameters ? b.parameters->toNumber() : 0; }
 
-std::vector<BonusDuration::BonusDuration> BonusProxy::getDuration(Bonus b)
+std::vector<BonusDuration::BonusDuration> BonusProxy::getDuration(const Bonus & b)
 {
 	static constexpr BonusDuration::BonusDuration all[] = {
 		BonusDuration::PERMANENT,
@@ -88,12 +88,12 @@ const std::vector<BonusListProxy::CustomRegType> BonusListProxy::REGISTER_CUSTOM
 	{"getBonus", LuaFunctionWrapper<&BonusListProxy::getBonus>::invoke, false},
 };
 
-int32_t BonusListProxy::size(BonusList list)
+int32_t BonusListProxy::size(const BonusList & list)
 {
 	return static_cast<int32_t>(list.size());
 }
 
-Bonus BonusListProxy::getBonus(BonusList list, int32_t index)
+Bonus BonusListProxy::getBonus(const BonusList & list, int32_t index)
 {
 	if (index < 1 || index > static_cast<int32_t>(list.size()))
 		throw std::out_of_range("BonusList index out of range");

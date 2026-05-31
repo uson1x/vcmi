@@ -19,11 +19,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 using ::events::ApplyDamage;
 
@@ -46,8 +42,6 @@ const std::vector<ApplyDamageProxy::CustomRegType> ApplyDamageProxy::REGISTER_CU
 
 };
 
-}
-}
 }
 
 

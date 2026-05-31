@@ -18,9 +18,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
 class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>
@@ -36,7 +34,6 @@ public:
 };
 
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

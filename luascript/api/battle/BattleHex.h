@@ -17,24 +17,18 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-	namespace scripting
+namespace scripting::api::battle
 {
-	namespace api
-	{
-		namespace battle
-		{
 
-			class BattleHexProxy : public CopyableWrapper<const BattleHex, BattleHexProxy>
-			{
-			public:
-				using Wrapper = CopyableWrapper<const BattleHex, BattleHexProxy>;
-				static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+class BattleHexProxy : public CopyableWrapper<const BattleHex, BattleHexProxy>
+{
+public:
+	using Wrapper = CopyableWrapper<const BattleHex, BattleHexProxy>;
+	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-				static BattleHex getClosestTile(const BattleHex & self, BattleSide side, BattleHexArray hexes);
-			};
+	static BattleHex getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes);
+};
 
-		}
-	}
 }
 
 VCMI_LIB_NAMESPACE_END

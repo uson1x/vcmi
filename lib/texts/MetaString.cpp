@@ -52,12 +52,8 @@ MetaString MetaString::createFromLua(const JsonNode & config)
 {
 	MetaString result;
 	for (const auto & entry : config["append"].Vector())
-	{
-		if (entry.isString())
-			result.appendTextID(entry.String());
-		else if (entry.isNumber())
-			result.appendNumber(entry.Integer());
-	}
+		result.appendTextID(entry.String());
+
 	for (const auto & entry : config["replace"].Vector())
 	{
 		if (entry.isString())

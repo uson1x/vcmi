@@ -2,7 +2,7 @@ local Base = require("unitEffect")
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
 
-local function deepCopyBonus(b)
+function Script:deepCopyBonus(b)
 	local copy = {}
 	for k, v in pairs(b) do
 		copy[k] = v
@@ -10,13 +10,13 @@ local function deepCopyBonus(b)
 	return copy
 end
 
-local function convertBonuses(self, mechanics)
+function Script:convertBonuses(mechanics)
 	local duration = mechanics:getEffectDuration()
 	local spellKey = mechanics:getSpell():getJsonKey()
 	local converted = {}
 
 	for name, b in pairs(self.bonus or {}) do
-		local nb = deepCopyBonus(b)
+		local nb = self:deepCopyBonus(b)
 
 		if not nb.turns or nb.turns == 0 then
 			nb.turns = duration
@@ -44,7 +44,7 @@ local function convertBonuses(self, mechanics)
 	return converted
 end
 
-local function applyHeroSpecialty(mechanics, buffer, unit)
+function Script:applyHeroSpecialty(mechanics, buffer, unit)
 	local hero = mechanics:getHeroCaster()
 	if not hero then return end
 
@@ -60,7 +60,7 @@ local function applyHeroSpecialty(mechanics, buffer, unit)
 		if mode == 0 then
 			if tier <= 2 then power = 3
 			elseif tier <= 4 then power = 2
-			else power = 1
+			elseif tier <= 6 then power = 1
 			end
 		end
 		if mechanics:isNegative() then power = -power end
@@ -92,7 +92,7 @@ local function applyHeroSpecialty(mechanics, buffer, unit)
 	end
 end
 
-local function describeEffect(server, battleID, unit, bonuses, singular, plural)
+function Script:describeEffect(server, battleID, unit, bonuses, singular, plural)
 	-- Age spell: STACK_HEALTH bonus with negative val gets a custom message
 	for _, nb in pairs(bonuses) do
 		if nb.type == "STACK_HEALTH" and (nb.val or 0) < 0 then
@@ -104,8 +104,11 @@ local function describeEffect(server, battleID, unit, bonuses, singular, plural)
 				oldHealth = oldHealth + healthBonuses:getBonus(i):getVal()
 			end
 			local lost = oldHealth - (oldHealth + nb.val)
+			local ageTextID = unit:getCount() == 1
+				and "core.genrltxt.551"
+				or  "core.genrltxt.552"
 			server:appendLog(battleID, {
-				append  = { "core.genrltxt.551" },
+				append  = { ageTextID },
 				replace = { unit:getCreature():getNameTextID(unit:getCount()), lost }
 			})
 			return
@@ -125,7 +128,7 @@ end
 function Script:apply(mechanics, server, target)
 	local battleID = mechanics:getBattleID()
 	local describe = server:describeChanges()
-	local converted = convertBonuses(self, mechanics)
+	local converted = self:convertBonuses(mechanics)
 
 	local singular, plural
 	if self.battleLogMessage then
@@ -141,13 +144,13 @@ function Script:apply(mechanics, server, target)
 
 		local buffer = {}
 		for name, nb in pairs(converted) do
-			buffer[name] = deepCopyBonus(nb)
+			buffer[name] = self:deepCopyBonus(nb)
 		end
 
-		applyHeroSpecialty(mechanics, buffer, unit)
+		self:applyHeroSpecialty(mechanics, buffer, unit)
 
 		if describe then
-			describeEffect(server, battleID, unit, buffer, singular, plural)
+			self:describeEffect(server, battleID, unit, buffer, singular, plural)
 		end
 
 		server:applyUnitBonuses(battleID, unit, buffer, self.cumulative or false)

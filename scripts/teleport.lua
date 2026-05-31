@@ -23,6 +23,11 @@ function Script:applicableTarget(mechanics, problem, target)
 	local fromHex = target[1].hex
 	local toHex   = target[2].hex
 
+	if not unit then
+		problem:addStandard(mechanics, ENUM.SpellCastProblem.wrongSpellTarget)
+		return false
+	end
+
 	if not toHex:isValid() or not mechanics:getBattle():isAccessibleForUnit(unit, toHex) then
 		problem:addStandard(mechanics, ENUM.SpellCastProblem.wrongSpellTarget)
 		return false

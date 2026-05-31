@@ -16,11 +16,7 @@
 #include "../Registry.h"
 #include "SubscriptionRegistry.h"
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 
 VCMI_REGISTER_SCRIPT_API(ObjectVisitStartedProxy, "events.ObjectVisitStarted");
@@ -34,8 +30,6 @@ const std::vector<ObjectVisitStartedProxy::CustomRegType> ObjectVisitStartedProx
 	{"getObject", LuaMethodWrapper<&ObjectVisitStarted::getObject>::invoke,  false},
 };
 
-}
-}
 }
 
 

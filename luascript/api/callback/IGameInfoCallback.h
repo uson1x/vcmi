@@ -18,9 +18,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 
 class IGameInfoCallbackProxy : public RawPointerWrapper<const GameCb, IGameInfoCallbackProxy>
@@ -32,7 +30,6 @@ public:
 
 };
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

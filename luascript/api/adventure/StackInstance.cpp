@@ -19,9 +19,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
+namespace scripting::api
 {
 const std::vector<StackInstanceProxy::CustomRegType> StackInstanceProxy::REGISTER_CUSTOM =
 {
@@ -30,7 +28,6 @@ const std::vector<StackInstanceProxy::CustomRegType> StackInstanceProxy::REGISTE
 };
 
 
-}
 }
 
 VCMI_LIB_NAMESPACE_END

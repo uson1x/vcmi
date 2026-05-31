@@ -16,11 +16,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 
 class EventBusProxy : public RawPointerWrapper<::events::EventBus, EventBusProxy>
@@ -30,8 +26,6 @@ public:
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 };
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

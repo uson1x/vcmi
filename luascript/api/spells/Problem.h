@@ -19,10 +19,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 namespace spells { class Mechanics; }
 
-namespace scripting
+namespace scripting::api
 {
-	namespace api
-	{
 		class ProblemProxy : public RawPointerWrapper<::spells::Problem, ProblemProxy>
 		{
 		public:
@@ -30,11 +28,10 @@ namespace scripting
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-			static void addCustom(::spells::Problem * problem, JsonNode config);
+			static void addCustom(::spells::Problem * problem, const JsonNode & config);
 			static void addGeneric(::spells::Problem * problem, const ::spells::Mechanics * mechanics);
 			static void addStandard(::spells::Problem * problem, const ::spells::Mechanics * mechanics, ESpellCastProblem spellProblem);
 		};
-	}
 }
 
 VCMI_LIB_NAMESPACE_END

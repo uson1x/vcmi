@@ -66,6 +66,13 @@ private:
 
 	//require global function
 	static int require(lua_State * L);
+	static int luaError(lua_State * L);
+	static int luaAssert(lua_State * L);
+
+	/// Custom text printing function for use in scripting
+	/// based on luaB_print (part of Lua source code)
+	/// adapted to C++ & VCMI logging facilities
+	static int luaPrint(lua_State * L);
 
 	//require function implementation
 	// Returns 1 on success (module table on stack).

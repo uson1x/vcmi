@@ -9,30 +9,41 @@ This page describes the internal working of the Lua scripting module. For usage 
   - convert HotA map scripts into Lua form
   - convert HotA (and possibly - H3) Seer Huts into scripts
   - Move all spell effects to Lua form:
-    - Clone -> UnitEffect
-    - Damage -> UnitEffect
-    - Dispel -> UnitEffect
-    - Timed -> UnitEffect
+    - LocationEffect
     - RemoveObstacle -> LocationEffect
     - Catapult -> LocationEffect
     - Obstacle -> LocationEffect
     - Moat -> Obstacle
+    - review ServerCallbackProxy API and expand / cleanup it
   - Implement support for scriptable map objects
   - Move damage calculator, or at least - damage formula to Lua, based on [existing PR](https://github.com/vcmi/vcmi/pull/5135)
   - Move map movement point limit calculation to Lua
   - Move starting armies and starting town building randomization to lua?
+  - switch battle events to use scripts
 - Document public scripting API. Decide approach on how to handle it:
   - Use .md form and place them as part of our docs, accessible from website
   - Use [Lua Language Server format](https://luals.github.io/wiki/definition-files/) to make docs accessible from IDE
   - Both .md and Lua Language Server
   - Document everything in code and make exporter to both .md and Lua Language Server
-- Review existing API and ensure that it follows rules described here
+- Review existing API and ensure that it follows rules described here:
+  - Make sure that all method names are verbs, not nouns. Including spell script methods
+  - try to remove or at least reduce usage of abbreviations
   - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
+  - Review UnitState class and check its mutable methods - do we need all of those? Should we name them differently?
 - Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
+- decide how to handle inheritance in Lua API. For example a lot of classes would need methods like getAllBonuses
+- consider changing list of exported methods to std::array in header. Or even add some registerMethods() and have this as implementation detail (and also support inheritance?)
+- reconsider approach to mutable methods (like BattleHexArrayProxy). Either remove or provide better API bindings approach for such cases
+- consider removing excessive namespace from scripting API, have all API classes directly in scripting::api namespace
+- remove getSpellByKey from Mechanics
+- try to remove remaining hardcoded bits of SpellID's CLONE, TELEPORT, SACRIFICE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
 - consider wrapping Lua userdata into std::any for better type safety
+- check if there is a way to wrap Lua function into C++ wrapper and pass it into LuaFunctionWrapper, or even LuaMethodWrapper
 - decide how to handle MetaString in Lua API. Make it Lua serializeable?
+- add guards against loading values from .json with same name as methods in Lua spell effect script
 - `battleLogMessage` entries in timed spell effects without a leading `@` are currently ignored in Lua scripts; C++ resolved them as hierarchical text IDs (`spell.{scope}.{id}.{effectName}.battleLogMessage.{field}`). Support for this needs to be added to the Lua Timed effect and the scripting infrastructure.
+  - add suport for list of strings that effect wants to register?
 
 ## General rules
 
@@ -68,7 +79,7 @@ When the engine calls a script function, it constructs a `self` table from the s
 The following global names are injected by `LuaContext` before the script runs:
 
 | Global | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `GAME` | `game.Game` | Read-only query interface to the current game state |
 | `LIBRARY` | `library.Services` | Access to entity databases (creatures, spells, etc.) |
 | `ENUM` | table | Integer constants for all engine enumerations |
@@ -79,7 +90,7 @@ The following standard Lua globals are **removed** for safety: `collectgarbage`,
 
 ## Architecture overview
 
-```
+```text
 ScriptingHandler (engine core)
   └── LuaModule  (DLL plugin, implements Service)
         ├── LuaSpellEffectFactory  (effect type "lua")
@@ -100,13 +111,14 @@ Global entry point for the Lua scripting system. Loaded as a dynamic library plu
 - `GetAiName` — returns the module display name `"Lua interpreter"`
 - `GetNewModule` — creates and returns a new `LuaModule` instance
 
-On `installScripting`, registers `LuaSpellEffectFactory` under the effect type key `"lua"` and `LuaUnitEffectFactory` under `"luaUnit"`. On `createPoolInstance`, creates a `LuaScriptPool` and registers all currently loaded scripts into it.
+On `installScripting`, registers `LuaSpellEffectFactory` under the effect type key `"lua"`. On `createPoolInstance`, creates a `LuaScriptPool` and registers all currently loaded scripts into it.
 
 ### LuaScriptInstance
 
-Stores the source code and identity of a single Lua script. Created by `LuaSpellEffectFactory` or `LuaUnitEffectFactory` when an effect type references a Lua script path. Persists for the lifetime of the module — across map restarts.
+Stores the source code and identity of a single Lua script. Created by `LuaSpellEffectFactory` when an effect type references a Lua script path. Persists for the lifetime of the module — across map restarts.
 
 Key fields:
+
 - `modScope` — the mod that owns this script (used to scope VFS lookups)
 - `sourcePath` — path inside the mod's `Scripts/` directory
 - `sourceText` — raw Lua source code loaded from VFS
@@ -124,6 +136,7 @@ Owned by `CGameState`. Created fresh on each map load via `LuaModule::createPool
 Manages a single `lua_State` for one script. Does **not** survive map restarts — it is destroyed and recreated with the owning `LuaScriptPool`.
 
 **Construction** (`LuaContext::LuaContext`):
+
 1. Opens a restricted subset of the standard library (`base`, `table`, `string`, `math`).
 2. Strips unsafe globals (`dofile`, `load`, `collectgarbage`, …).
 3. Registers all API types from `api::Registry` into the Lua registry and populates the `modules` table.
@@ -145,6 +158,7 @@ Handles `require("scope:path")` from scripts. Resolves the path through the VFS 
 RAII wrapper around the Lua registry (`luaL_ref` / `luaL_unref`). Holds a value (table, function, etc.) in the Lua registry so it is not garbage-collected. Provides `push()` to put the referenced value back on the active stack.
 
 Used inside `LuaContext` to hold:
+
 - `modules` — the table of all registered API modules
 - `scriptClosure` — the compiled but not-yet-executed script chunk
 - `scriptTable` — the table returned by the script on first execution
@@ -155,6 +169,7 @@ Central typed interface between C++ and the Lua stack. Constructed with a `lua_S
 
 **Pushing** (`push` overloads):
 Handles all VCMI types uniformly through template specialization:
+
 - Primitives: `bool`, integers, enums, `IdentifierBase` subtypes → `lua_pushinteger`
 - `std::string`, `const char *` → `lua_pushlstring`
 - `JsonNode` → Lua table (recursive)
@@ -165,8 +180,8 @@ Handles all VCMI types uniformly through template specialization:
 - `std::shared_ptr<ApiSharedPointer>` → userdata + metatable
 - `ApiCopyable` → userdata copy + metatable
 
-**Reading** (`tryGet` / `getOrThrow` / `getNonNullOrThrow`):
-Mirror image of push; returns `false` or throws `LuaApiException` on type mismatch. For pointer types, validates the userdata's metatable against the registry entry before casting.
+**Reading** ( `get` / `getNonNull` ):
+Mirror image of push; throws `LuaApiException` on type mismatch. For pointer types, validates the userdata's metatable against the registry entry before casting.
 
 ### LuaApiException
 
@@ -219,7 +234,7 @@ Singleton (access via `Registry::get()`). Constructed once at program startup; i
 `LuaSpellEffect` implements the full `spells::effects::Effect` interface by resolving the active `LuaContext` from the current `Mechanics` object and delegating each virtual method call to the correspondingly named Lua function:
 
 | C++ virtual | Lua function |
-|---|---|
+| ----------- | ------------ |
 | `adjustTargetTypes` | `adjustTargetTypes` |
 | `adjustAffectedHexes` | `adjustAffectedHexes` |
 | `applicableGeneral` | `applicableGeneral` |
@@ -230,10 +245,6 @@ Singleton (access via `Registry::get()`). Constructed once at program startup; i
 | `getHealthChange` | `getHealthChange` |
 
 JSON effect parameters (from the spell definition) are serialized into the `self` table passed to each Lua call.
-
-### LuaUnitEffect and LuaUnitEffectFactory
-
-Parallel to the above, but for the `"luaUnit"` effect type. `LuaUnitEffect` extends `spells::effects::UnitEffect` and delegates `apply`, `isReceptive`, `isValidTarget`, and `getHealthChange` to Lua.
 
 ## Exposing a class to Lua scripts
 
@@ -256,7 +267,7 @@ Parallel to the above, but for the `"luaUnit"` effect type. `LuaUnitEffect` exte
 
 ## Data flow: a spell effect call
 
-```
+```text
 Engine calls LuaSpellEffect::apply(server, mechanics, target)
   → resolveScript(mechanics) → LuaScriptPool::getContext(script) → LuaContext
   → LuaContext::callMethod<void>("apply", parameters, server, mechanics, target)
