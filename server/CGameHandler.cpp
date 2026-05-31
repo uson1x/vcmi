@@ -872,9 +872,8 @@ bool CGameHandler::moveHero(ObjectInstanceID hid, int3 dst, EMovementMode moveme
 	}
 
 	const bool embarking = !h->inBoat() && objectToVisit && objectToVisit->ID == Obj::BOAT;
-	const bool disembarking = h->inBoat()
-		&& t.isLand()
-		&& layer == EPathfindingLayer::LAND
+	const bool disembarking =
+		h->inBoat() && t.isLand() && (layer == EPathfindingLayer::LAND || h->getBoat()->layer == EPathfindingLayer::SAIL)
 		&& (dst == h->pos || ((h->getBoat()->layer == EPathfindingLayer::SAIL || h->getBoat()->layer == EPathfindingLayer::AVIATE) && !t.blocked()));
 
 	//result structure for start - movement failed, no move points used
