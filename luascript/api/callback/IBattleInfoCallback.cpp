@@ -33,10 +33,11 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
 
-	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke, false },
-	{ "getUnitsIf",           LuaCallWrapper<&IBattleInfoCallbackProxy::getUnitsIf>::invoke,      false },
+	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke,         false },
+	{ "getUnitsIf",           LuaCallWrapper<&IBattleInfoCallbackProxy::getUnitsIf>::invoke,              false },
 	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
 	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
+	{ "getUnitByPos",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getUnitByPos>::invoke,        false },
 };
 
 bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex)
@@ -76,6 +77,11 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 	BattleHex result = object->getAvailableHex(creature, side, hexVal);
 	S.push(result);
 	return 1;
+}
+
+const battle::Unit * IBattleInfoCallbackProxy::getUnitByPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyAlive)
+{
+	return object->battleGetUnitByPos(hex, onlyAlive);
 }
 
 int IBattleInfoCallbackProxy::getUnitsIf(lua_State * L)

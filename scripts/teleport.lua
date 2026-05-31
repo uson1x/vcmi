@@ -32,14 +32,14 @@ function Script:applicableTarget(mechanics, problem, target)
 	return true
 end
 
---- C++ has already applied immunity filtering to the unit target.
---- Re-attach the destination hex from the original aimPoint.
-function Script:transformTarget(mechanics, filteredTarget, aimPoint)
-	if #filteredTarget == 0 then return {} end
+--- Filter the unit target via the base, then re-attach the destination hex.
+function Script:transformTarget(mechanics, aimPoint, spellTarget)
+	local filtered = Base.transformTarget(self, mechanics, aimPoint, spellTarget)
+	if #filtered == 0 then return {} end
 	if #aimPoint >= 2 then
-		filteredTarget[2] = aimPoint[2]
+		filtered[2] = aimPoint[2]
 	end
-	return filteredTarget
+	return filtered
 end
 
 --- Move the unit to the destination hex via a teleport (no path, no distance cost).

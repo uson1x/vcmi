@@ -19,7 +19,7 @@
 		}
 	},
 	"clone" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "clone",
 		"schema" : {
 			"properties" : {
@@ -28,14 +28,13 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"maxTier" : { "type" : "number" }
 			},
 			"additionalProperties" : false
 		}
 	},
 	"damage" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "damage",
 		"schema" : {
 			"properties" : {
@@ -52,7 +51,7 @@
 		}
 	},
 	"demonSummon" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "demonSummon",
 		"schema" : {
 			"properties" : {
@@ -61,7 +60,6 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"id" : { "type" : "string" },
 				"permanent" : { "type" : "boolean" }
 			},
@@ -69,7 +67,7 @@
 		}
 	},
 	"dispel" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "dispel",
 		"schema" : {
 			"properties" : {
@@ -78,7 +76,6 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"dispelPositive" : { "type" : "boolean" },
 				"dispelNegative" : { "type" : "boolean" },
 				"dispelNeutral" : { "type" : "boolean" }
@@ -87,7 +84,7 @@
 		}
 	},
 	"heal" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "heal",
 		"schema" : {
 			"properties" : {
@@ -96,7 +93,6 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"healLevel" : { "type" : "string" },
 				"healPower" : { "type" : "string" },
 				"minFullUnits" : { "type" : "number" }
@@ -105,7 +101,7 @@
 		}
 	},
 	"sacrifice" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "sacrifice",
 		"schema" : {
 			"properties" : {
@@ -114,7 +110,6 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"healLevel" : { "type" : "string" },
 				"healPower" : { "type" : "string" },
 				"minFullUnits" : { "type" : "number" }
@@ -200,7 +195,7 @@
 		}
 	},
 	"teleport" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "teleport",
 		"schema" : {
 			"properties" : {
@@ -209,7 +204,6 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"isWallPassable" : { "type" : "boolean" },
 				"isMoatPassable" : { "type" : "boolean" }
 			},
@@ -217,7 +211,7 @@
 		}
 	},
 	"timed" : {
-		"type" : "luaUnit",
+		"type" : "lua",
 		"script" : "timed",
 		"schema" : {
 			"properties" : {
@@ -226,7 +220,6 @@
 				"optional" : {},
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
-				"chainFactor" : { "type" : "number" },
 				"cumulative" : { "type" : "boolean" },
 				"battleLogMessage" : {
 					"type" : "object",

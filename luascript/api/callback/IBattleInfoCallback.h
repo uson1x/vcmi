@@ -31,6 +31,7 @@ public:
 	static int getUnitsIf(lua_State * L);
 	static bool isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex);
 	static bool hasPenaltyOnLine(const IBattleInfoCallback * object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat);
+	static const battle::Unit * getUnitByPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyAlive);
 };
 
 }

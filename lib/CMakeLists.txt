@@ -298,7 +298,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Moat.cpp
 	spells/effects/Obstacle.cpp
 	spells/effects/SpellEffectHandler.cpp
-	spells/effects/UnitEffect.cpp
 	spells/effects/RemoveObstacle.cpp
 
 	texts/CGeneralTextHandler.cpp
@@ -772,7 +771,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Obstacle.h
 	spells/effects/SpellEffectHandler.h
 	spells/effects/SpellEffectService.h
-	spells/effects/UnitEffect.h
 	spells/effects/RemoveObstacle.h
 
 	texts/CGeneralTextHandler.h

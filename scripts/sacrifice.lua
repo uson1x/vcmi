@@ -50,10 +50,11 @@ function Script:applicableTarget(mechanics, problem, target)
 	return true
 end
 
---- Keep only the dead target from the filtered result; append a live victim from aimPoint.
-function Script:transformTarget(mechanics, filteredTarget, aimPoint)
-	if #filteredTarget == 0 then return {} end
-	local result = { filteredTarget[1] }
+--- Filter the dead target via the base, then append a live victim from aimPoint.
+function Script:transformTarget(mechanics, aimPoint, spellTarget)
+	local filtered = Base.transformTarget(self, mechanics, aimPoint, spellTarget)
+	if #filtered == 0 then return {} end
+	local result = { filtered[1] }
 	if #aimPoint >= 2 then
 		local victim = aimPoint[2].unit
 		if victim and victim:isAlive() and mechanics:isReceptive(victim)

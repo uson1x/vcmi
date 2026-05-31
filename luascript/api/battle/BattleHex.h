@@ -12,6 +12,7 @@
 
 #include <vcmi/scripting/Service.h>
 #include "../../../lib/battle/BattleHex.h"
+#include "../../../lib/battle/BattleHexArray.h"
 #include "../../LuaWrapper.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -28,6 +29,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 			public:
 				using Wrapper = CopyableWrapper<const BattleHex, BattleHexProxy>;
 				static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+
+				static BattleHex getClosestTile(const BattleHex & self, BattleSide side, BattleHexArray hexes);
 			};
 
 		}

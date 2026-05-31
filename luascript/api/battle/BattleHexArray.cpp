@@ -19,14 +19,39 @@ namespace scripting::api::battle
 
 const std::vector<BattleHexArrayProxy::CustomRegType> BattleHexArrayProxy::REGISTER_CUSTOM =
 {
-	{"insert", LuaFunctionWrapper<&BattleHexArrayProxy::insert>::invoke,                                               false},
-	{"size",   LuaMethodWrapper<&BattleHexArray::size>::invoke,                                                         false},
-	{"at",     LuaFunctionWrapper<&BattleHexArrayProxy::at>::invoke,                                                   false},
+	{"insert",   LuaCallWrapper<&BattleHexArrayProxy::insert>::invoke,                false},
+	{"erase",    LuaCallWrapper<&BattleHexArrayProxy::erase>::invoke,                 false},
+	{"contains", LuaMethodWrapper<&BattleHexArray::contains>::invoke,                 false},
+	{"size",     LuaMethodWrapper<&BattleHexArray::size>::invoke,                     false},
+	{"at",       LuaFunctionWrapper<&BattleHexArrayProxy::at>::invoke,                false},
 };
 
-void BattleHexArrayProxy::insert(BattleHexArray & hexes, BattleHex target)
+int BattleHexArrayProxy::insert(lua_State * L)
 {
-	hexes.insert(target);
+	LuaStack S(L);
+	void * raw = luaL_checkudata(L, 1, api::Registry::get()->getTypeName<BattleHexArray>());
+	BattleHex hex;
+	S.get(2, hex);
+	S.clear();
+	if(raw)
+		static_cast<BattleHexArray *>(raw)->insert(hex);
+	return 0;
+}
+
+int BattleHexArrayProxy::erase(lua_State * L)
+{
+	LuaStack S(L);
+	void * raw = luaL_checkudata(L, 1, api::Registry::get()->getTypeName<BattleHexArray>());
+	BattleHex hex;
+	S.get(2, hex);
+	S.clear();
+	if(raw)
+	{
+		auto * hexes = static_cast<BattleHexArray *>(raw);
+		if(hexes->contains(hex))
+			hexes->erase(hex);
+	}
+	return 0;
 }
 
 BattleHex BattleHexArrayProxy::at(BattleHexArray & hexes, int index)

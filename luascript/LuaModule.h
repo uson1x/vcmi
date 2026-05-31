@@ -17,7 +17,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace spells::effects
 {
 class LuaSpellEffectFactory;
-class LuaUnitEffectFactory;
 }
 
 namespace scripting
@@ -42,7 +41,6 @@ private:
 	using ScriptMap = std::map<std::string, ScriptPtr>;
 
 	std::shared_ptr<spells::effects::LuaSpellEffectFactory> luaSpellEffects;
-	std::shared_ptr<spells::effects::LuaUnitEffectFactory> luaUnitEffects;
 };
 }
 

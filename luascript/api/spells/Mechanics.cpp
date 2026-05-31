@@ -56,6 +56,9 @@ namespace scripting
 			{"isPositive",             LuaMethodWrapper<&Mechanics::isPositiveSpell>::invoke,          false},
 			{"isNegative",             LuaMethodWrapper<&Mechanics::isNegativeSpell>::invoke,          false},
 			{"isSmart",                LuaMethodWrapper<&Mechanics::isSmart>::invoke,                  false},
+			{"isMassive",              LuaMethodWrapper<&Mechanics::isMassive>::invoke,                false},
+			{"alwaysHitFirstTarget",   LuaMethodWrapper<&Mechanics::alwaysHitFirstTarget>::invoke,    false},
+			{"wouldResist",            LuaMethodWrapper<&Mechanics::wouldResist>::invoke,              false},
 
 			{"getEffectLevel",         LuaMethodWrapper<&Mechanics::getEffectLevel>::invoke,           false},
 			{"getRangeLevel",          LuaMethodWrapper<&Mechanics::getRangeLevel>::invoke,            false},

@@ -24,7 +24,8 @@ public:
 	using Wrapper = CopyableWrapper<const BattleHexArray, BattleHexArrayProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static void insert(BattleHexArray & hexes, BattleHex target);
+	static int insert(lua_State * L);
+	static int erase(lua_State * L);
 	static BattleHex at(BattleHexArray & hexes, int index);
 };
 
