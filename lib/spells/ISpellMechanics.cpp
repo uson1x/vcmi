@@ -314,7 +314,7 @@ bool BaseMechanics::adaptGenericProblem(Problem & target) const
 	// %s recites the incantations but they seem to have no effect.
 	text.appendLocalString(EMetaText::GENERAL_TXT, 541);
 	assert(caster);
-	caster->getCasterName(text);
+	text.replaceTextID(caster->getCasterNameTextID());
 
 	target.add(std::move(text), spells::Problem::NORMAL);
 	return false;
@@ -343,7 +343,7 @@ bool BaseMechanics::adaptProblem(ESpellCastProblem source, Problem & target) con
 				//The %s prevents %s from casting 3rd level or higher spells.
 				text.appendLocalString(EMetaText::GENERAL_TXT, 536);
 				text.replaceName(b->sid.as<ArtifactID>());
-				caster->getCasterName(text);
+				text.replaceTextID(caster->getCasterNameTextID());
 				target.add(std::move(text), spells::Problem::NORMAL);
 			}
 			else if(b && b->source == BonusSource::TERRAIN_OVERLAY && LIBRARY->battlefields()->getById(b->sid.as<BattleField>())->identifier == "cursed_ground")
@@ -393,6 +393,11 @@ SpellID BaseMechanics::getSpellId() const
 std::string BaseMechanics::getSpellName() const
 {
 	return owner->getNameTranslated();
+}
+
+std::string BaseMechanics::getCasterNameTextID() const
+{
+	return caster->getCasterNameTextID();
 }
 
 int32_t BaseMechanics::getSpellLevel() const

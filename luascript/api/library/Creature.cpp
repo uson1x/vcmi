@@ -36,6 +36,7 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"getSingularName",       LuaMethodWrapper<&Creature::getNameSingularTranslated>::invoke,      false},
 	{"getNamePluralTextID",   LuaMethodWrapper<&Creature::getNamePluralTextID>::invoke,            false},
 	{"getNameSingularTextID", LuaMethodWrapper<&Creature::getNameSingularTextID>::invoke,          false},
+	{"getNameTextID",         LuaFunctionWrapper<&CreatureProxy::getNameTextID>::invoke,           false},
 
 	{"getAdvMapAmountMin",    LuaMethodWrapper<&Creature::getAdvMapAmountMin>::invoke,             false},
 	{"getAdvMapAmountMax",    LuaMethodWrapper<&Creature::getAdvMapAmountMax>::invoke,             false},
@@ -58,6 +59,11 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"getRecruitCost",        LuaMethodWrapper<&Creature::getRecruitCost>::invoke,                 false},
 	{"isDoubleWide",          LuaMethodWrapper<&Creature::isDoubleWide>::invoke,                   false},
 };
+
+std::string CreatureProxy::getNameTextID(const Creature * creature, int amount)
+{
+	return amount == 1 ? creature->getNameSingularTextID() : creature->getNamePluralTextID();
+}
 
 }
 

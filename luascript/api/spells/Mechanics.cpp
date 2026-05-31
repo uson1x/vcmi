@@ -69,6 +69,7 @@ namespace scripting
 			{"getCasterSide",          LuaMethodWrapper<&Mechanics::getCasterSide>::invoke,            false},
 			{"getHeroCaster",          LuaMethodWrapper<&Mechanics::getHeroCaster>::invoke,            false},
 			{"getUnitCaster",          LuaMethodWrapper<&Mechanics::getUnitCaster>::invoke,            false},
+			{"getCasterNameTextID",    LuaMethodWrapper<&Mechanics::getCasterNameTextID>::invoke,      false},
 			{"getBattle",              LuaMethodWrapper<&Mechanics::battle>::invoke,                   false},
 			{"getBattleID",            LuaMethodWrapper<&Mechanics::getBattleID>::invoke,              false},
 			{"calculateRawEffectValue", LuaMethodWrapper<&Mechanics::calculateRawEffectValue>::invoke, false},

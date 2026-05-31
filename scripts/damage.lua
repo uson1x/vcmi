@@ -91,8 +91,8 @@ function Script:describeEffect(server, battleID, mechanics, firstUnit, kills, da
 	local spell    = mechanics:getSpell()
 	local spellKey = spell:getJsonKey()
 
-	if spellKey == "core.deathStare" and not multiple then
-		local casterNameID = mechanics:getUnitCaster():getCreature():getNamePluralTextID()
+	if spellKey:find("deathStare") and not multiple then
+		local casterNameID = mechanics:getCasterNameTextID()
 		if kills > 1 then
 			server:appendLog(battleID, {
 				append  = { "core.genrltxt.119" },
@@ -110,10 +110,10 @@ function Script:describeEffect(server, battleID, mechanics, firstUnit, kills, da
 			"vcmi.battleWindow.accurateShot.resultDescription", kills)
 		server:appendLog(battleID, {
 			append  = { textID },
-			replace = { kills, firstUnit:getCreature():getNamePluralTextID() }
+			replace = { kills, firstUnit:getCreature():getNameTextID(kills) }
 		})
 
-	elseif spellKey == "core.thunderbolt" and not multiple then
+	elseif spellKey:find("thunderbolt") and not multiple then
 		server:appendLog(battleID, {
 			append  = { "core.genrltxt.367" },
 			replace = { firstUnit:getCreature():getNamePluralTextID() }

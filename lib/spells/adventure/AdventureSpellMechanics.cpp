@@ -138,7 +138,7 @@ bool AdventureSpellMechanics::canBeCast(spells::Problem & problem, const IGameIn
 		if(castsLimit > 0 && castsLimit <= castsAlreadyPerformedThisTurn ) //limit casts per turn
 		{
 			MetaString message = MetaString::createFromTextID("core.genrltxt.338");
-			caster->getCasterName(message);
+			message.replaceTextID(caster->getCasterNameTextID());
 			problem.add(std::move(message));
 			return false;
 		}

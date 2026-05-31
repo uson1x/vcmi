@@ -13,8 +13,12 @@ function Script:adjustTargetTypes(mechanics, types)
 end
 
 --- Validate the destination hex (two-target phase only).
---- Single-unit validity and immunity are handled by the C++ UnitEffect layer.
+--- Single-target phase (unit hover) delegates to the base UnitEffect check.
 function Script:applicableTarget(mechanics, problem, target)
+	if #target <= 1 then
+		return Base.applicableTarget(self, mechanics, problem, target)
+	end
+
 	local unit    = target[1].unit
 	local fromHex = target[1].hex
 	local toHex   = target[2].hex

@@ -32,6 +32,7 @@ This page describes the internal working of the Lua scripting module. For usage 
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
 - consider wrapping Lua userdata into std::any for better type safety
 - decide how to handle MetaString in Lua API. Make it Lua serializeable?
+- `battleLogMessage` entries in timed spell effects without a leading `@` are currently ignored in Lua scripts; C++ resolved them as hierarchical text IDs (`spell.{scope}.{id}.{effectName}.battleLogMessage.{field}`). Support for this needs to be added to the Lua Timed effect and the scripting infrastructure.
 
 ## General rules
 

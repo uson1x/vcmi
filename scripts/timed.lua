@@ -106,7 +106,7 @@ local function describeEffect(server, battleID, unit, bonuses, singular, plural)
 			local lost = oldHealth - (oldHealth + nb.val)
 			server:appendLog(battleID, {
 				append  = { "core.genrltxt.551" },
-				replace = { unit:getCreature():getNameSingularTextID(), lost }
+				replace = { unit:getCreature():getNameTextID(unit:getCount()), lost }
 			})
 			return
 		end
@@ -115,9 +115,7 @@ local function describeEffect(server, battleID, unit, bonuses, singular, plural)
 	if not plural or plural == "" then return end
 
 	local textID = (singular and singular ~= "" and unit:getCount() == 1) and singular or plural
-	local nameTextID = unit:getCount() == 1
-		and unit:getCreature():getNameSingularTextID()
-		or  unit:getCreature():getNamePluralTextID()
+	local nameTextID = unit:getCreature():getNameTextID(unit:getCount())
 	server:appendLog(battleID, {
 		append  = { textID },
 		replace = { nameTextID }

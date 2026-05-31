@@ -80,9 +80,7 @@ function Script:apply(mechanics, server, target)
 
 			if resurrected > 0 then
 				local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
-				local nameTextID = resurrected == 1
-					and unit:getCreature():getNameSingularTextID()
-					or  unit:getCreature():getNamePluralTextID()
+				local nameTextID = unit:getCreature():getNameTextID(resurrected)
 				server:appendLog(battleID, {
 					append  = { textID },
 					replace = { resurrected, nameTextID }
