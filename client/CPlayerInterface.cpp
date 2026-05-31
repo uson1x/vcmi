@@ -130,7 +130,6 @@ namespace
 {
 	constexpr int LEVEL_UP_REQUEST_NONE = -1;
 	constexpr int LEVEL_UP_REQUEST_WAITING_FOR_REPLY = -2;
-	constexpr int LEVEL_UP_REQUEST_AUTO_RESOLVED = -3;
 }
 
 std::shared_ptr<BattleInterface> CPlayerInterface::battleInt;
@@ -532,7 +531,9 @@ void CPlayerInterface::heroGotLevel(const CGHeroInstance *hero, PrimarySkill psk
 
 	closePendingLevelUpDialog();
 
-	pendingLevelUpRequestID = queryID < 0 ? LEVEL_UP_REQUEST_AUTO_RESOLVED : LEVEL_UP_REQUEST_WAITING_FOR_REPLY;
+	const bool closeImmediately = queryID < 0;
+	pendingLevelUpRequestID = closeImmediately ? LEVEL_UP_REQUEST_NONE : LEVEL_UP_REQUEST_WAITING_FOR_REPLY;
+
 	auto levelWindow = std::make_shared<CLevelWindow>(hero, pskill, skills, [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
@@ -540,8 +541,11 @@ void CPlayerInterface::heroGotLevel(const CGHeroInstance *hero, PrimarySkill psk
 
 		pendingLevelUpRequestID = cb->selectionMade(selection, queryID);
 	});
-	levelWindow->setCloseOnSelection(false);
-	pendingLevelUpDialog = levelWindow;
+
+	levelWindow->setCloseOnSelection(closeImmediately);
+	if(!closeImmediately)
+		pendingLevelUpDialog = levelWindow;
+
 	ENGINE->windows().pushWindow(levelWindow);
 }
 
@@ -1319,12 +1323,6 @@ void CPlayerInterface::requestRealized( PackageApplied *pa )
 		if(pendingLevelUpRequestID == static_cast<int>(pa->requestID))
 			closePendingLevelUpDialog();
 		movementController->onQueryReplyApplied();
-	}
-	else if(pendingLevelUpDialog && pendingLevelUpRequestID == LEVEL_UP_REQUEST_AUTO_RESOLVED)
-	{
-		// Auto-resolved levelups (queryID < 0) have no QueryReply from client,
-		// so close pending window once current server request is fully applied.
-		closePendingLevelUpDialog();
 	}
 }
 
