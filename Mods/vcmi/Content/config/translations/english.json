@@ -230,6 +230,8 @@
 	"spellSchool.core.water.name": "Water",
 	"vcmi.adventureMap.confirmQuickLoadGame": "Are you sure you want to load the quicksave?",
 	"vcmi.adventureMap.confirmRestartGame": "Are you sure you want to restart the game?",
+	"vcmi.adventureMap.disembark.help": "{Disembark from airship}\n\nHero gets down from airship to the next tile.",
+	"vcmi.adventureMap.disambark.hover": "Disembark from airship",
 	"vcmi.adventureMap.dwelling2": "{%s}\n\nWould you like to recruit %s or %s?",
 	"vcmi.adventureMap.dwelling3": "{%s}\n\nWould you like to recruit %s, %s, or %s?",
 	"vcmi.adventureMap.dwelling5": "{%s}\n\nWould you like to recruit %s, %s, %s, %s, or %s?",
