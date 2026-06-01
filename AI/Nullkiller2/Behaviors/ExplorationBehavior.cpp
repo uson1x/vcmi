@@ -54,10 +54,10 @@ Goals::TGoalVec ExplorationBehavior::decompose(const Nullkiller * aiNk) const
 			case Obj::SUBTERRANEAN_GATE:
 			case Obj::WHIRLPOOL:
 			{
-				const auto tObj = dynamic_cast<const CGTeleport *>(obj);
-				for(auto exit : aiNk->cc->getTeleportChannelExits(tObj->channel))
+				const auto tObj = dynamic_cast<const CGTeleport*>(obj);
+				for (auto exit : aiNk->cc->getTeleportChannelExits(tObj->channel))
 				{
-					if(exit != tObj->id)
+					if (exit != tObj->id)
 					{
 						const CGObjectInstance * exitObj = aiNk->cc->getObjInstance(exit);
 
