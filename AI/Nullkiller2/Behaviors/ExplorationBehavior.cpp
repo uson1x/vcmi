@@ -18,7 +18,6 @@
 #include "../Goals/CaptureObject.h"
 #include "../Goals/ExploreNeighbourTile.h"
 #include "../Helpers/ExplorationHelper.h"
-#include "../../../lib/CPlayerState.h"
 
 namespace NK2AI
 {
@@ -60,19 +59,9 @@ Goals::TGoalVec ExplorationBehavior::decompose(const Nullkiller * aiNk) const
 				{
 					if(exit != tObj->id)
 					{
-						bool isExplored = false;
 						const CGObjectInstance * exitObj = aiNk->cc->getObjInstance(exit);
 
-						if(exitObj)
-						{
-							const auto teamState = aiNk->cc->getPlayerTeam(aiNk->playerID);
-							if(teamState && teamState->fogOfWarMap[exitObj->visitablePos()])
-							{
-								isExplored = true;
-							}
-						}
-
-						if(!isExplored)
+						if(exitObj && !aiNk->cc->isVisible(exitObj->visitablePos()))
 						{
 							tasks.push_back(sptr(Composition().addNext(ExplorationPoint(obj->visitablePos(), 50)).addNext(CaptureObject(obj))));
 						}
