@@ -50,7 +50,7 @@ struct AIPathNode : public CGPathNode
 
 	void addSpecialAction(std::shared_ptr<const SpecialAction> action);
 
-	inline void reset(EPathfindingLayer layer, EPathAccessibility accessibility)
+	STRONG_INLINE void reset(EPathfindingLayer layer, EPathAccessibility accessibility)
 	{
 		CGPathNode::reset();
 
@@ -176,7 +176,7 @@ private:
 	uint8_t turnDistanceLimit[2];
 
 public:
-	/// more than 1 chain layer for each hero allows us to have more than 1 path to each tile so we can chose more optimal one.	
+	/// more than 1 chain layer for each hero allows us to have more than 1 path to each tile so we can chose more optimal one.
 	AINodeStorage(Nullkiller * aiNk, const int3 & sizes);
 	~AINodeStorage() override;
 
@@ -214,26 +214,26 @@ public:
 		float cost,
 		bool saveToCommitted = true) const;
 
-	inline const AIPathNode * getAINode(const CGPathNode * node) const
+	STRONG_INLINE const AIPathNode * getAINode(const CGPathNode * node) const
 	{
 		return static_cast<const AIPathNode *>(node);
 	}
 
-	inline void updateAINode(CGPathNode * node, std::function<void (AIPathNode *)> updater)
+	STRONG_INLINE void updateAINode(CGPathNode * node, std::function<void (AIPathNode *)> updater)
 	{
 		auto * aiNode = static_cast<AIPathNode *>(node);
 
 		updater(aiNode);
 	}
 
-	inline const CGHeroInstance * getHero(const CGPathNode * node) const
+	STRONG_INLINE const CGHeroInstance * getHero(const CGPathNode * node) const
 	{
 		const auto * aiNode = getAINode(node);
 
 		return aiNode->actor->hero;
 	}
 
-	inline bool blocked(const int3 & tile, EPathfindingLayer layer) const
+	STRONG_INLINE bool blocked(const int3 & tile, EPathfindingLayer layer) const
 	{
 		EPathAccessibility accessible = getAccessibility(tile, layer);
 
@@ -246,7 +246,7 @@ public:
 
 	template<class NodeRange>
 	bool hasBetterChain(
-		const CGPathNode * source, 
+		const CGPathNode * source,
 		const AIPathNode & destinationNode,
 		const NodeRange & chains) const;
 
@@ -278,18 +278,28 @@ public:
 
 	uint64_t evaluateArmyLoss(const CGHeroInstance * hero, uint64_t armyValue, uint64_t danger) const;
 
-	inline EPathAccessibility getAccessibility(const int3 & tile, EPathfindingLayer layer) const
+	STRONG_INLINE EPathAccessibility getAccessibility(const int3 & tile, EPathfindingLayer layer) const
 	{
 		return (*this->accessibility)[tile.z][tile.x][tile.y][layer.getNum()];
 	}
 
-	inline void resetTile(const int3 & tile, EPathfindingLayer layer, EPathAccessibility tileAccessibility)
+	STRONG_INLINE void resetTile(const int3 & tile, EPathfindingLayer layer, EPathAccessibility tileAccessibility)
 	{
 		(*this->accessibility)[tile.z][tile.x][tile.y][layer.getNum()] = tileAccessibility;
 	}
 
 	void calculateTownPortalTeleportations(std::vector<CGPathNode *> & neighbours);
-	void fillChainInfo(const AIPathNode * node, AIPath & path, int parentIndex) const;
+
+	using RealMoveMasksByHero = std::map<const CGHeroInstance *, uint64_t>;
+
+	STRONG_INLINE bool isRealMovementNode(const AIPathNode * node) const
+	{
+		return node && node->actor && node->actor->hero && node->coord != node->actor->hero->visitablePos();
+	}
+
+	// Reconstructs an AIPath by walking theNodeBefore / chainOther, appending branch nodes first and linking them via parentIndex
+	// Returns false when reconstruction would assign conflicting real-move chainMasks to the same hero
+	bool tryReconstructChainInfo(const AIPathNode * node, AIPath & path, int & parentIndex, RealMoveMasksByHero & realMoveMasks) const;
 
 	template<typename Fn>
 	void iterateValidNodes(const int3 & pos, EPathfindingLayer layer, Fn fn)
