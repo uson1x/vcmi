@@ -144,7 +144,7 @@ HeroTypeID MapReaderH3M::readHeroPortrait()
 	return remapper.remapPortrait(result);
 }
 
-CreatureID MapReaderH3M::readCreature32()
+CreatureID MapReaderH3M::readCreature32(const std::string & context)
 {
 	CreatureID result(reader->readUInt32());
 
@@ -161,11 +161,14 @@ CreatureID MapReaderH3M::readCreature32()
 	if (randomIndex.getNum() > -16)
 		return randomIndex;
 
-	logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	if(context.empty())
+		logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	else
+		logGlobal->warn("Map contains invalid creature %d in %s. Will be removed!", result.getNum(), context);
 	return CreatureID::NONE;
 }
 
-CreatureID MapReaderH3M::readCreature()
+CreatureID MapReaderH3M::readCreature(const std::string & context)
 {
 	CreatureID result;
 
@@ -187,7 +190,10 @@ CreatureID MapReaderH3M::readCreature()
 	if (randomIndex.getNum() > -16)
 		return randomIndex;
 
-	logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	if(context.empty())
+		logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	else
+		logGlobal->warn("Map contains invalid creature %d in %s. Will be removed!", result.getNum(), context);
 	return CreatureID::NONE;
 }
 
