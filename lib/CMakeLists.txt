@@ -298,7 +298,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Moat.cpp
 	spells/effects/Obstacle.cpp
 	spells/effects/SpellEffectHandler.cpp
-	spells/effects/RemoveObstacle.cpp
 
 	texts/CGeneralTextHandler.cpp
 	texts/CLegacyConfigParser.cpp
@@ -771,7 +770,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Obstacle.h
 	spells/effects/SpellEffectHandler.h
 	spells/effects/SpellEffectService.h
-	spells/effects/RemoveObstacle.h
 
 	texts/CGeneralTextHandler.h
 	texts/Languages.h

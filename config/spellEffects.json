@@ -161,9 +161,9 @@
 			"additionalProperties" : false
 		}
 	},
-	"removeObstacle" : { 
-		"type" : "builtin",
-		"script" : "RemoveObstacle",
+	"removeObstacle" : {
+		"type" : "lua",
+		"script" : "removeObstacle",
 		"schema" : {
 			"properties" : {
 				"type" : {},

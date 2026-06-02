@@ -20,6 +20,8 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+struct CObstacleInstance;
+
 namespace battle { class Unit; }
 
 namespace scripting::api
@@ -35,6 +37,7 @@ public:
 	static void createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data);
 	static void updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta);
 	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
+	static void removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle);
 	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);
 	static void appendLog(ServerCallback * object, BattleID battleID, JsonNode config);
 	static bool describeChanges(ServerCallback * object);

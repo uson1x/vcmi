@@ -17,7 +17,6 @@
 #include "Effect.h"
 #include "Moat.h"
 #include "Obstacle.h"
-#include "RemoveObstacle.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -41,7 +40,6 @@ std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, 
 		{ "Catapult",       &makeEffect<Catapult> },
 		{ "Moat",           &makeEffect<Moat> },
 		{ "Obstacle",       &makeEffect<Obstacle> },
-		{ "RemoveObstacle", &makeEffect<RemoveObstacle> },
 	};
 
 	return effectFactory.at(name)();

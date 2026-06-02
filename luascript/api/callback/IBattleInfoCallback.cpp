@@ -19,6 +19,7 @@
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/battle/AccessibilityInfo.h"
 #include "../../../lib/battle/CBattleInfoCallback.h"
+#include "../../../lib/battle/CObstacleInstance.h"
 #include "../../../lib/BattleFieldHandler.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -38,6 +39,8 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
 	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
 	{ "getUnitByPos",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getUnitByPos>::invoke,        false },
+	{ "getAllObstacles",      LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllObstacles>::invoke,     false },
+	{ "getObstaclesOnPos",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::getObstaclesOnPos>::invoke,   false },
 };
 
 bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex)
@@ -82,6 +85,16 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 const battle::Unit * IBattleInfoCallbackProxy::getUnitByPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyAlive)
 {
 	return object->battleGetUnitByPos(hex, onlyAlive);
+}
+
+std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getAllObstacles(const IBattleInfoCallback * object)
+{
+	return object->battleGetAllObstacles(BattleSide::ALL_KNOWING);
+}
+
+std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getObstaclesOnPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyBlocking)
+{
+	return object->battleGetAllObstaclesOnPos(hex, onlyBlocking);
 }
 
 int IBattleInfoCallbackProxy::getUnitsIf(lua_State * L)

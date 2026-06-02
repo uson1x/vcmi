@@ -15,6 +15,7 @@
 
 #include "../../lib/constants/Enumerations.h"
 #include "../../lib/bonuses/BonusEnum.h"
+#include "../../lib/battle/CObstacleInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -32,6 +33,7 @@ class Enums : public scripting::ApiSerializable<Enums>
 	EnumMap<spells::AimType> exportAimType() const;
 	EnumMap<BonusDuration::BonusDuration> exportBonusDuration() const;
 	EnumMap<si32> exportBonusSource() const;
+	EnumMap<CObstacleInstance::EObstacleType> exportObstacleType() const;
 
 public:
 	template<typename Serializer>
@@ -43,6 +45,7 @@ public:
 		s("AimType", exportAimType());
 		s("BonusDuration", exportBonusDuration());
 		s("BonusSource", exportBonusSource());
+		s("ObstacleType", exportObstacleType());
 	}
 };
 

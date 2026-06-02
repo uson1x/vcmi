@@ -81,6 +81,16 @@ Enums::EnumMap<BonusDuration::BonusDuration> Enums::exportBonusDuration() const
 	};
 }
 
+Enums::EnumMap<CObstacleInstance::EObstacleType> Enums::exportObstacleType() const
+{
+	return {
+		{ "usual",        CObstacleInstance::USUAL },
+		{ "absolute",     CObstacleInstance::ABSOLUTE_OBSTACLE },
+		{ "spellCreated", CObstacleInstance::SPELL_CREATED },
+		{ "moat",         CObstacleInstance::MOAT },
+	};
+}
+
 Enums::EnumMap<si32> Enums::exportBonusSource() const
 {
 	return {

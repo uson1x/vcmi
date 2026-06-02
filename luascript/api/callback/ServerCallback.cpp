@@ -19,6 +19,7 @@
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
+#include "../../../lib/battle/CObstacleInstance.h"
 #include "../../../lib/CStack.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/Bonus.h"
@@ -43,6 +44,7 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,            false },
 	{ "damageUnit",        LuaCallWrapper<&ServerCallbackProxy::damageUnit>::invoke,            false },
 	{ "removeUnit",        LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,        false },
+	{ "removeObstacle",    LuaFunctionWrapper<&ServerCallbackProxy::removeObstacle>::invoke,    false },
 	{ "moveUnit",          LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,          false },
 	{ "appendLog",         LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,         false },
 	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
@@ -137,6 +139,19 @@ void ServerCallbackProxy::removeUnit(ServerCallback * object, BattleID battleID,
 	uc.id = unit->unitId();
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
+}
+
+void ServerCallbackProxy::removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle)
+{
+	if(!obstacle)
+		return;
+
+	BattleObstaclesChanged pack;
+	pack.battleID = battleID;
+	pack.changes.emplace_back(obstacle->uniqueID, BattleChanges::EOperation::REMOVE);
+	auto * serializable = const_cast<CObstacleInstance*>(obstacle.get());
+	serializable->toInfo(pack.changes.back(), BattleChanges::EOperation::REMOVE);
+	object->apply(pack);
 }
 
 void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport)

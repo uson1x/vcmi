@@ -15,6 +15,7 @@
 #include "battle/UnitState.h"
 #include "battle/BattleHex.h"
 #include "battle/BattleHexArray.h"
+#include "battle/Obstacle.h"
 #include "events/BattleEvents.h"
 #include "events/EventBus.h"
 #include "events/GenericEvents.h"
@@ -62,6 +63,7 @@ Registry::Registry()
 	registerPrivate<battle::BattleHexArrayProxy>("battle.BattleHexArray");
 	registerPrivate<battle::UnitProxy>("battle.Unit");
 	registerPrivate<battle::LuaUnitStateProxy>("battle.UnitState");
+	registerPrivate<battle::ObstacleProxy>("battle.Obstacle");
 	registerPrivate<ProblemProxy>("battle.SpellProblem");
 	registerPrivate<MechanicsProxy>("battle.SpellMechanics");
 

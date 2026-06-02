@@ -17,6 +17,7 @@ set(lualib_SRCS
 		api/battle/UnitState.cpp
 		api/battle/BattleHexArray.cpp
 		api/battle/BattleHex.cpp
+		api/battle/Obstacle.cpp
 
 		api/events/BattleEvents.cpp
 		api/events/EventBus.cpp
@@ -62,6 +63,7 @@ set(lualib_HDRS
 		api/battle/UnitState.h
 		api/battle/BattleHexArray.h
 		api/battle/BattleHex.h
+		api/battle/Obstacle.h
 
 		api/events/BattleEvents.h
 		api/events/EventBus.h
