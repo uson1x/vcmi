@@ -872,10 +872,28 @@ bool CGameHandler::moveHero(ObjectInstanceID hid, int3 dst, EMovementMode moveme
 	}
 
 	const bool embarking = !h->inBoat() && objectToVisit && objectToVisit->ID == Obj::BOAT;
-	const bool disembarking = h->inBoat()
-		&& t.isLand()
-		&& layer == EPathfindingLayer::LAND
-		&& (dst == h->pos || ((h->getBoat()->layer == EPathfindingLayer::SAIL || h->getBoat()->layer == EPathfindingLayer::AVIATE) && !t.blocked()));
+
+	bool disembarking = false;
+
+	if(h->inBoat() && t.isLand())
+	{
+		const auto * boat = h->getBoat();
+
+		// AI pathfinder may incorrectly keep the WATER layer when moving to land.
+		// Normal boats cannot fly, so moving to land MUST be a disembark action.
+		// Airships fly over land, so they rely solely on the explicit LAND layer request.
+		const bool isExplicitDisembark = (layer == EPathfindingLayer::LAND);
+		const bool isForcedBoatDisembark = (boat->layer == EPathfindingLayer::SAIL);
+		const bool hasDisembarkIntent = isExplicitDisembark || isForcedBoatDisembark;
+
+		// Ensure the destination tile is physically valid for the current vehicle
+		const bool isStayingInPlace = (dst == h->pos);
+		const bool isValidVehicleType = (boat->layer == EPathfindingLayer::SAIL || boat->layer == EPathfindingLayer::AVIATE);
+		const bool isDestinationFree = !t.blocked();
+		const bool isValidDestination = isStayingInPlace || (isValidVehicleType && isDestinationFree);
+
+		disembarking = hasDisembarkIntent && isValidDestination;
+	}
 
 	//result structure for start - movement failed, no move points used
 	TryMoveHero tmh;
