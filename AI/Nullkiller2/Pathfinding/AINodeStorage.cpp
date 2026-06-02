@@ -985,7 +985,7 @@ void AINodeStorage::setTownsAndDwellings(
 		}
 	}
 
-	/*auto dayOfWeek = cb->getDate(Date::DAY_OF_WEEK);
+	/*auto dayOfWeek = cb->getCalendar().getDayOfWeek();
 	auto waitForGrowth = dayOfWeek > 4;*/
 
 	for(auto obj: visitableObjs)
