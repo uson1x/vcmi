@@ -611,7 +611,7 @@
     <message>
         <location filename="../mapsettings/heroessettings.h" line="49"/>
         <source>Banned Heroes</source>
-        <translation type="unfinished">Zakázaní hrdinové</translation>
+        <translation>Zakázaní hrdinové</translation>
     </message>
 </context>
 <context>
@@ -4997,27 +4997,27 @@ Stráž: %3</translation>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
         <source>Terrain Selector</source>
-        <translation type="unfinished">Výběr terénu</translation>
+        <translation>Výběr terénu</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
         <source>Spell Selector</source>
-        <translation type="unfinished">Výběr kouzel</translation>
+        <translation>Výběr kouzel</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
         <source>Artifact Selector</source>
-        <translation type="unfinished">Výběr artefaktů</translation>
+        <translation>Výběr artefaktů</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
         <source>Skill Selector</source>
-        <translation type="unfinished">Výběr dovedností</translation>
+        <translation>Výběr dovedností</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
         <source>Hero Type Selector</source>
-        <translation type="unfinished">Výběr typu hrdiny</translation>
+        <translation>Výběr typu hrdiny</translation>
     </message>
 </context>
 </TS>
