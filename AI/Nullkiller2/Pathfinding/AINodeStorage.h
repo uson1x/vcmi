@@ -50,7 +50,7 @@ struct AIPathNode : public CGPathNode
 
 	void addSpecialAction(std::shared_ptr<const SpecialAction> action);
 
-	STRONG_INLINE void reset(EPathfindingLayer layer, EPathAccessibility accessibility)
+	inline void reset(EPathfindingLayer layer, EPathAccessibility accessibility)
 	{
 		CGPathNode::reset();
 
@@ -214,26 +214,26 @@ public:
 		float cost,
 		bool saveToCommitted = true) const;
 
-	STRONG_INLINE const AIPathNode * getAINode(const CGPathNode * node) const
+	inline const AIPathNode * getAINode(const CGPathNode * node) const
 	{
 		return static_cast<const AIPathNode *>(node);
 	}
 
-	STRONG_INLINE void updateAINode(CGPathNode * node, std::function<void (AIPathNode *)> updater)
+	inline void updateAINode(CGPathNode * node, std::function<void (AIPathNode *)> updater)
 	{
 		auto * aiNode = static_cast<AIPathNode *>(node);
 
 		updater(aiNode);
 	}
 
-	STRONG_INLINE const CGHeroInstance * getHero(const CGPathNode * node) const
+	inline const CGHeroInstance * getHero(const CGPathNode * node) const
 	{
 		const auto * aiNode = getAINode(node);
 
 		return aiNode->actor->hero;
 	}
 
-	STRONG_INLINE bool blocked(const int3 & tile, EPathfindingLayer layer) const
+	inline bool blocked(const int3 & tile, EPathfindingLayer layer) const
 	{
 		EPathAccessibility accessible = getAccessibility(tile, layer);
 
@@ -278,12 +278,12 @@ public:
 
 	uint64_t evaluateArmyLoss(const CGHeroInstance * hero, uint64_t armyValue, uint64_t danger) const;
 
-	STRONG_INLINE EPathAccessibility getAccessibility(const int3 & tile, EPathfindingLayer layer) const
+	inline EPathAccessibility getAccessibility(const int3 & tile, EPathfindingLayer layer) const
 	{
 		return (*this->accessibility)[tile.z][tile.x][tile.y][layer.getNum()];
 	}
 
-	STRONG_INLINE void resetTile(const int3 & tile, EPathfindingLayer layer, EPathAccessibility tileAccessibility)
+	inline void resetTile(const int3 & tile, EPathfindingLayer layer, EPathAccessibility tileAccessibility)
 	{
 		(*this->accessibility)[tile.z][tile.x][tile.y][layer.getNum()] = tileAccessibility;
 	}
@@ -292,7 +292,7 @@ public:
 
 	using RealMoveMasksByHero = std::map<const CGHeroInstance *, uint64_t>;
 
-	STRONG_INLINE bool isRealMovementNode(const AIPathNode * node) const
+	inline bool isRealMovementNode(const AIPathNode * node) const
 	{
 		return node && node->actor && node->actor->hero && node->coord != node->actor->hero->visitablePos();
 	}
