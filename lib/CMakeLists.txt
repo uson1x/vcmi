@@ -82,6 +82,7 @@ set(lib_MAIN_SRCS
 	bonuses/Updaters.cpp
 
 	callback/CAdventureAI.cpp
+	callback/Calendar.cpp
 	callback/CBattleCallback.cpp
 	callback/CCallback.cpp
 	callback/CDynLibHandler.cpp
@@ -493,6 +494,7 @@ set(lib_MAIN_HEADERS
 	bonuses/Updaters.h
 
 	callback/CAdventureAI.h
+	callback/Calendar.h
 	callback/CBattleCallback.h
 	callback/CBattleGameInterface.h
 	callback/CCallback.h

@@ -671,11 +671,9 @@ void CGameHandler::onNewTurn()
 {
 	logGlobal->trace("Turn %d", gameState().day+1);
 
-	int daysPerWeek = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
-	int daysPerMonth = LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_WEEKS_PER_MONTH) * daysPerWeek;
-
-	bool firstTurn = !gameInfo().getDate(Date::DAY);
-	bool newMonth = gameInfo().getDate(Date::DAY_OF_MONTH) == daysPerMonth;
+	auto calendar = gameInfo().getCalendar();
+	bool firstTurn = !calendar.getCurrentDay();
+	bool newMonth = calendar.getDayOfMonth() == calendar.getDaysInMonth();
 
 	if (firstTurn)
 	{
@@ -1146,7 +1144,7 @@ void CGameHandler::setOwner(const CGObjectInstance * obj, const PlayerColor owne
 	if (town) //town captured
 	{
 		if(owner.isValidPlayer())
-			statistics->getPlayerAccumulator(owner).lastCapturedTownDay = gameState().getDate(Date::DAY);
+			statistics->getPlayerAccumulator(owner).lastCapturedTownDay = gameState().getCalendar().getCurrentDay();
 
 		if (owner.isValidPlayer() && town->hasBuilt(BuildingSubID::PORTAL_OF_SUMMONING))
 			setPortalDwelling(town, true, false);

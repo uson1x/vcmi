@@ -256,7 +256,7 @@ void CPlayerInterface::playerStartsTurn(PlayerColor player)
 void CPlayerInterface::performAutosave()
 {
 	int frequency = static_cast<int>(settings["general"]["saveFrequency"].Integer());
-	if(frequency > 0 && cb->getDate() % frequency == 0)
+	if(frequency > 0 && cb->getCalendar().getCurrentDay() % frequency == 0)
 	{
 		bool usePrefix = settings["general"]["useSavePrefix"].Bool();
 		std::string prefix = std::string();
@@ -294,9 +294,10 @@ void CPlayerInterface::performAutosave()
 		}
 		else
 		{
-			std::string stringifiedDate = std::to_string(cb->getDate(Date::MONTH))
-					+ std::to_string(cb->getDate(Date::WEEK))
-					+ std::to_string(cb->getDate(Date::DAY_OF_WEEK));
+			auto calendar = cb->getCalendar();
+			std::string stringifiedDate = std::to_string(calendar.getMonth())
+					+ std::to_string(calendar.getWeek())
+					+ std::to_string(calendar.getDayOfWeek());
 
 			cb->save("Saves/Autosave/" + prefix + stringifiedDate, false);
 		}
