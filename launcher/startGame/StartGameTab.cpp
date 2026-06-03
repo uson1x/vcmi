@@ -262,6 +262,27 @@ void StartGameTab::on_buttonGameEditor_clicked()
 }
 
 QStringList StartGameTab::selectImportFiles()
+{
+#ifndef VCMI_MOBILE
+	QString filter =
+		tr("All supported files") + " (*.h3m *.vmap *.h3c *.vcmp *.vsgm1 *.zip *.json *.exe);;" +
+		tr("Maps") + " (*.h3m *.vmap);;" +
+		tr("Campaigns") + " (*.h3c *.vcmp);;" +
+		tr("Saves") + " (*.vsgm1);;" +
+		tr("Configs") + " (*.json);;" +
+		tr("Mods") + " (*.zip);;" +
+		tr("Gog files") + " (*.exe)";
+#else
+	//Workaround for sometimes incorrect mime for some extensions (e.g. for exe)
+	QString filter = tr("All files (*.*)");
+#endif
+	return QFileDialog::getOpenFileNames(
+		this,
+		tr("Select files (configs, mods, saves, maps, campaigns, gog files) to install..."),
+		QDir::homePath(),
+		filter);
+}
+
 void StartGameTab::on_buttonInstallGame_clicked()
 {
 	int result = QMessageBox::question(
@@ -283,28 +304,6 @@ void StartGameTab::on_buttonInstallGame_clicked()
 	writer->Bool() = false;
 
 	Helper::getMainWindow()->enterSetup();
-}
-
-void StartGameTab::on_buttonImportFiles_clicked()
-{
-#ifndef VCMI_MOBILE
-	QString filter =
-		tr("All supported files") + " (*.h3m *.vmap *.h3c *.vcmp *.vsgm1 *.zip *.json *.exe);;" +
-		tr("Maps") + " (*.h3m *.vmap);;" +
-		tr("Campaigns") + " (*.h3c *.vcmp);;" +
-		tr("Saves") + " (*.vsgm1);;" +
-		tr("Configs") + " (*.json);;" +
-		tr("Mods") + " (*.zip);;" +
-		tr("Gog files") + " (*.exe)";
-#else
-	//Workaround for sometimes incorrect mime for some extensions (e.g. for exe)
-	QString filter = tr("All files (*.*)");
-#endif
-	return QFileDialog::getOpenFileNames(
-		this,
-		tr("Select files (configs, mods, saves, maps, campaigns, gog files) to install..."),
-		QDir::homePath(),
-		filter);
 }
 
 QStringList StartGameTab::stageUnreadableFiles(const QStringList & files)
