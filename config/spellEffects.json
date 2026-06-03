@@ -1,7 +1,7 @@
 {
 	"catapult" : {
-		"type" : "builtin",
-		"script" : "Catapult",
+		"type" : "lua",
+		"script" : "catapult",
 		"schema" : {
 			"properties" : {
 				"type" : {},

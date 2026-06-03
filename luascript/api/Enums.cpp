@@ -91,6 +91,30 @@ Enums::EnumMap<CObstacleInstance::EObstacleType> Enums::exportObstacleType() con
 	};
 }
 
+Enums::EnumMap<EWallPart> Enums::exportWallPart() const
+{
+	return {
+		{ "invalid",     EWallPart::INVALID },
+		{ "keep",        EWallPart::KEEP },
+		{ "bottomTower", EWallPart::BOTTOM_TOWER },
+		{ "bottomWall",  EWallPart::BOTTOM_WALL },
+		{ "belowGate",   EWallPart::BELOW_GATE },
+		{ "overGate",    EWallPart::OVER_GATE },
+		{ "upperWall",   EWallPart::UPPER_WALL },
+		{ "upperTower",  EWallPart::UPPER_TOWER },
+		{ "gate",        EWallPart::GATE },
+	};
+}
+
+Enums::EnumMap<BattleSide> Enums::exportBattleSide() const
+{
+	return {
+		{ "none",       BattleSide::NONE },
+		{ "attacker",   BattleSide::ATTACKER },
+		{ "defender",   BattleSide::DEFENDER },
+	};
+}
+
 Enums::EnumMap<si32> Enums::exportBonusSource() const
 {
 	return {

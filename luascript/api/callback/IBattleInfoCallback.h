@@ -36,6 +36,12 @@ public:
 	static const battle::Unit * getUnitByPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyAlive);
 	static std::vector<std::shared_ptr<const CObstacleInstance>> getAllObstacles(const IBattleInfoCallback * object);
 	static std::vector<std::shared_ptr<const CObstacleInstance>> getObstaclesOnPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyBlocking);
+	static bool hasFortifications(const IBattleInfoCallback * object);
+	static EWallState getWallState(const IBattleInfoCallback * object, EWallPart part);
+	static bool isWallPartAttackable(const IBattleInfoCallback * object, EWallPart part);
+	static BattleHex wallPartToBattleHex(const IBattleInfoCallback * object, EWallPart part);
+	static EWallPart hexToWallPart(const IBattleInfoCallback * object, BattleHex hex);
+	static BattleHex getTowerShooterHex(const IBattleInfoCallback * object, EWallPart part);
 };
 
 }

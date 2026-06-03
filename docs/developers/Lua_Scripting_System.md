@@ -41,6 +41,7 @@ This page describes the internal working of the Lua scripting module. For usage 
 - consider wrapping Lua userdata into std::any for better type safety
 - check if there is a way to wrap Lua function into C++ wrapper and pass it into LuaFunctionWrapper, or even LuaMethodWrapper
 - decide how to handle MetaString in Lua API. Make it Lua serializeable?
+- decide on how to handle RNG support for Lua scripts
 - add guards against loading values from .json with same name as methods in Lua spell effect script
 - `battleLogMessage` entries in timed spell effects without a leading `@` are currently ignored in Lua scripts; C++ resolved them as hierarchical text IDs (`spell.{scope}.{id}.{effectName}.battleLogMessage.{field}`). Support for this needs to be added to the Lua Timed effect and the scripting infrastructure.
   - add suport for list of strings that effect wants to register?

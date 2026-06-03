@@ -17,6 +17,7 @@
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/json/JsonNode.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
+#include "../../../lib/constants/Enumerations.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -44,6 +45,8 @@ public:
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList);
 	static void addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, const JsonNode & data);
 	static void applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & bonuses, bool cumulative);
+	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, int32_t killedTowerShooter);
+	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]
 	static int healUnit(lua_State * L);
 	static int changeUnit(lua_State * L); // args: battleID, unitState, [healthDelta=0]
 	static int damageUnit(lua_State * L); // args: battleID, unit, damageAmount; returns: actualDamage, killedAmount

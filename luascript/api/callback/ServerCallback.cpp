@@ -31,6 +31,8 @@
 #include "modding/ModScope.h"
 #include "json/JsonBonus.h"
 
+#include <vstd/RNG.h>
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
@@ -51,6 +53,8 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
 	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
 	{ "applyUnitBonuses",  LuaFunctionWrapper<&ServerCallbackProxy::applyUnitBonuses>::invoke,  false },
+	{ "catapultAttack",    LuaFunctionWrapper<&ServerCallbackProxy::catapultAttack>::invoke,    false },
+	{ "rngInt",            LuaCallWrapper<&ServerCallbackProxy::rngInt>::invoke,                false },
 };
 
 bool ServerCallbackProxy::describeChanges(ServerCallback * object)
@@ -152,6 +156,37 @@ void ServerCallbackProxy::removeObstacle(ServerCallback * object, BattleID battl
 	auto * serializable = const_cast<CObstacleInstance*>(obstacle.get());
 	serializable->toInfo(pack.changes.back(), BattleChanges::EOperation::REMOVE);
 	object->apply(pack);
+}
+
+void ServerCallbackProxy::catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, int32_t killedTowerShooter)
+{
+	CatapultAttack ca;
+	ca.battleID = battleID;
+	ca.attacker = attacker ? attacker->unitId() : -1;
+	ca.attackedPart = attackedPart;
+	ca.destinationTile = destinationTile.toInt();
+	ca.damageDealt = static_cast<ui8>(std::clamp(damageDealt, 0, 255));
+	ca.killedTowerShooter = killedTowerShooter;
+	object->apply(ca);
+}
+
+int ServerCallbackProxy::rngInt(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	int low = 0;
+	int high = 0;
+
+	S.get(1, object);
+	S.get(2, low);
+	S.get(3, high);
+
+	int result = object->getRNG()->nextInt(low, high);
+
+	S.clear();
+	S.push(result);
+	return 1;
 }
 
 void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport)
