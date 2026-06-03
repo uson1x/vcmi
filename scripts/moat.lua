@@ -27,7 +27,7 @@ function Script:apply(mechanics, server, target)
 		obstacleType = ENUM.ObstacleType.moat
 	end
 
-	local nextId = battle:nextObstacleId()
+	local nextId = battle:nextObstacleID()
 	for _, patch in ipairs(self.moatHexes or {}) do
 	    server:addObstacle(battleID, {
 			uniqueID         = nextId,

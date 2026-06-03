@@ -37,8 +37,8 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"getNameSingularTextID", LuaMethodWrapper<&Creature::getNameSingularTextID>::invoke,          false},
 	{"getNameTextID",         LuaFunctionWrapper<&CreatureProxy::getNameTextID>::invoke,           false},
 
-	{"getAdvMapAmountMin",    LuaMethodWrapper<&Creature::getAdvMapAmountMin>::invoke,             false},
-	{"getAdvMapAmountMax",    LuaMethodWrapper<&Creature::getAdvMapAmountMax>::invoke,             false},
+	{"getMapAmountMin",       LuaMethodWrapper<&Creature::getAdvMapAmountMin>::invoke,             false},
+	{"getMapAmountMax",       LuaMethodWrapper<&Creature::getAdvMapAmountMax>::invoke,             false},
 	{"getAIValue",            LuaMethodWrapper<&Creature::getAIValue>::invoke,                     false},
 	{"getFightValue",         LuaMethodWrapper<&Creature::getFightValue>::invoke,                  false},
 	{"getLevel",              LuaMethodWrapper<&Creature::getLevel>::invoke,                       false},

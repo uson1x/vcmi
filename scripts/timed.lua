@@ -34,7 +34,7 @@ function Script:convertBonuses(mechanics)
 		-- Bind: store caster unit ID when cast by a unit (not a hero)
 		if spellKey == "core:bind" and nb.type == "BIND_EFFECT" then
 			if not mechanics:getHeroCaster() then
-				nb.addInfo = mechanics:getUnitCaster():unitId()
+				nb.addInfo = mechanics:getUnitCaster():unitID()
 			end
 		end
 

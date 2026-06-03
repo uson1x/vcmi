@@ -57,7 +57,7 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"copy",           LuaFunctionWrapper<&UnitProxy::copy>::invoke,         false},
 	{"getBonuses",     LuaCallWrapper<&UnitProxy::getBonuses>::invoke,       false},
 	{"creatureLevel",  LuaMethodWrapper<&Unit::creatureLevel>::invoke,       false},
-	{"unitId",         LuaMethodWrapper<&IUnitInfo::unitId, Unit>::invoke,   false},
+	{"unitID",         LuaMethodWrapper<&IUnitInfo::unitId, Unit>::invoke,   false},
 };
 
 const Creature * UnitProxy::getCreature(const Unit * unit)

@@ -29,7 +29,7 @@ const std::vector<ArtifactProxy::CustomRegType> ArtifactProxy::REGISTER_CUSTOM =
 	{"getJsonKey",     LuaMethodWrapper<&Entity::getJsonKey, Artifact>::invoke,             false},
 	{"getName",        LuaMethodWrapper<&Entity::getNameTranslated, Artifact>::invoke,      false},
 
-	{"getId",          LuaMethodWrapper<&EntityT<ArtifactID>::getId, Artifact>::invoke,     false},
+	{"getID",          LuaMethodWrapper<&EntityT<ArtifactID>::getId, Artifact>::invoke,     false},
 	{"getBonusBearer", LuaMethodWrapper<&IConstBonusProvider::getBonusBearer, Artifact>::invoke, false},
 
 	{"getDescription", LuaMethodWrapper<&Artifact::getDescriptionTranslated>::invoke,      false},

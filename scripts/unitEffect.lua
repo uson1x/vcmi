@@ -119,7 +119,7 @@ function Script:transformByRange(mechanics, aimPoint, spellTarget)
 	local targetsOrder = {}
 
 	local function addUnit(unit)
-		local id = unit:unitId()
+		local id = unit:unitID()
 		if not targetsSet[id] then
 			targetsSet[id] = unit
 			table.insert(targetsOrder, unit)
@@ -189,7 +189,7 @@ function Script:transformByChain(mechanics, aimPoint, spellTarget, chainLength)
 
 	local function buildPossibleHexes()
 		local units = battle:getUnitsIf(function(u)
-			return isEligible(u) and not processedIds[u:unitId()]
+			return isEligible(u) and not processedIds[u:unitID()]
 		end)
 		if #units == 0 then return nil end
 		local hexes = units[1]:getHexes()
@@ -226,7 +226,7 @@ function Script:transformByChain(mechanics, aimPoint, spellTarget, chainLength)
 			end
 		elseif isEligible(unit) and wouldResist then
 			-- unit skipped, no resistance animation (H3 logic); don't advance targetIndex
-			processedIds[unit:unitId()] = true
+			processedIds[unit:unitID()] = true
 			local hexes = buildPossibleHexes()
 			if not hexes then break end
 			destHex = destHex:getClosestTile(unit:unitSide(), hexes)
@@ -235,7 +235,7 @@ function Script:transformByChain(mechanics, aimPoint, spellTarget, chainLength)
 			table.insert(effectTarget, {})
 		end
 
-		processedIds[unit:unitId()] = true
+		processedIds[unit:unitID()] = true
 
 		local hexes = buildPossibleHexes()
 		if not hexes then break end

@@ -94,7 +94,7 @@ function Script:towerShooterIdIfDestroyed(battle, part, damage)
 	local towerHex = battle:getTowerShooterHex(part)
 	local unit = battle:getUnitByPos(towerHex, false)
 	if not unit or unit:isGhost() then return -1 end
-	return unit:unitId()
+	return unit:unitID()
 end
 
 function Script:fireAt(server, battle, battleID, attacker, part, damage)

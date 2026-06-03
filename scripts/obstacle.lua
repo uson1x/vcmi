@@ -215,7 +215,7 @@ function Script:apply(mechanics, server, target)
 		end
 	end
 
-	local nextId = battle:nextObstacleId()
+	local nextId = battle:nextObstacleID()
 	for _, hex in ipairs(destinations) do
 		local customSize = {}
 		for _, shape in ipairs(shapes) do

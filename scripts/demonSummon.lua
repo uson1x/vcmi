@@ -71,7 +71,7 @@ function Script:apply(mechanics, server, target)
 
 		server:createUnit(
 			mechanics:getBattleID(),
-			mechanics:getBattle():getNextUnitId(),
+			mechanics:getBattle():getNextUnitID(),
 			{
 				count    = finalAmount,
 				type     = creatureType:getJsonKey(),

@@ -30,7 +30,7 @@ namespace scripting::api
 
 const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "getNextUnitId",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
+	{ "getNextUnitID",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
 	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
 	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
@@ -44,7 +44,7 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "getObstaclesOnPos",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::getObstaclesOnPos>::invoke,   false },
 	{ "hasFortifications",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasFortifications>::invoke,   false },
 	{ "hasMoat",              LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasMoat>::invoke,             false },
-	{ "nextObstacleId",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::nextObstacleId>::invoke,      false },
+	{ "nextObstacleID",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::nextObstacleId>::invoke,      false },
 	{ "hasNativeStack",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasNativeStack>::invoke,      false },
 	{ "getAllPossibleHexes",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllPossibleHexes>::invoke, false },
 	{ "getWallState",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getWallState>::invoke,        false },

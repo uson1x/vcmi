@@ -28,7 +28,7 @@ function Script:apply(mechanics, server, target)
 		)
 		if not hex:isValid() then break end
 
-		local cloneId = mechanics:getBattle():getNextUnitId()
+		local cloneId = mechanics:getBattle():getNextUnitID()
 		server:createUnit(battleID, cloneId, {
 			count    = unit:getCount(),
 			type     = creature:getJsonKey(),
