@@ -104,6 +104,11 @@ void EffectFixture::setUp()
 	ON_CALL(serverMock, apply(Matcher<CatapultAttack &>(_))).WillByDefault(Invoke(battleFake.get(),  &battle::BattleFake::accept<CatapultAttack>));
 }
 
+static int getIntRange(int lower, int upper)
+{
+	return (lower + upper)/2;
+}
+
 static int64_t getInt64Range(int64_t lower, int64_t upper)
 {
 	return (lower + upper)/2;
@@ -117,6 +122,7 @@ static double getDoubleRange(double lower, double upper)
 void EffectFixture::setupDefaultRNG()
 {
 	EXPECT_CALL(serverMock, getRNG()).Times(AtLeast(0));
+	EXPECT_CALL(rngMock, nextInt(_,_)).WillRepeatedly(Invoke(&getIntRange));
 	EXPECT_CALL(rngMock, nextInt64(_,_)).WillRepeatedly(Invoke(&getInt64Range));
 	EXPECT_CALL(rngMock, nextDouble(_,_)).WillRepeatedly(Invoke(&getDoubleRange));
 }

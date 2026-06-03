@@ -190,6 +190,11 @@ bool CBattleInfoEssentials::hasFortifications() const
 	return town != nullptr && town->fortificationsLevel().wallsHealth > 0;
 }
 
+bool CBattleInfoEssentials::hasMoat() const
+{
+	return battleGetFortifications().hasMoat;
+}
+
 BattleHex CBattleInfoEssentials::getTowerShooterHex(EWallPart part) const
 {
 	switch(part)

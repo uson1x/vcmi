@@ -42,6 +42,7 @@ public:
 	MOCK_CONST_METHOD2(getAllAffectedObstaclesByStack, std::vector<std::shared_ptr<const CObstacleInstance>>(const battle::Unit *, const BattleHexArray &));
 
 	MOCK_CONST_METHOD0(hasFortifications, bool());
+	MOCK_CONST_METHOD0(hasMoat, bool());
 	MOCK_CONST_METHOD1(battleGetWallState, EWallState(EWallPart));
 	MOCK_CONST_METHOD1(isWallPartAttackable, bool(EWallPart));
 	MOCK_CONST_METHOD1(wallPartToBattleHex, BattleHex(EWallPart));

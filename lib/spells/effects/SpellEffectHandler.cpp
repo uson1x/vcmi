@@ -14,38 +14,15 @@
 #include "../../json/JsonUtils.h"
 
 #include "Effect.h"
-#include "Moat.h"
-#include "Obstacle.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace spells::effects
 {
 
-void BuiltinEffectFactory::initialize(const std::string & scope, const std::string & name)
-{}
-
-template <typename T>
-std::shared_ptr<Effect> makeEffect()
-{
-	return std::make_shared<T>();
-}
-
-std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, const std::string & name) const
-{
-	using EffectFactoryFunctor = std::shared_ptr<Effect>(*)();
-
-	static const std::unordered_map<std::string, EffectFactoryFunctor> effectFactory = {
-		{ "Moat",           &makeEffect<Moat> },
-		{ "Obstacle",       &makeEffect<Obstacle> },
-	};
-
-	return effectFactory.at(name)();
-}
-
 SpellEffectHandler::SpellEffectHandler()
 {
-	registerFactory("builtin", std::make_unique<BuiltinEffectFactory>());
+
 }
 
 std::shared_ptr<Effect> SpellEffectHandler::create(SpellEffectID effectID) const

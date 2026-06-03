@@ -19,6 +19,7 @@
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/battle/AccessibilityInfo.h"
 #include "../../../lib/battle/CBattleInfoCallback.h"
+#include "../../../lib/battle/CBattleInfoEssentials.h"
 #include "../../../lib/battle/CObstacleInstance.h"
 #include "../../../lib/BattleFieldHandler.h"
 
@@ -42,6 +43,10 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "getAllObstacles",      LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllObstacles>::invoke,     false },
 	{ "getObstaclesOnPos",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::getObstaclesOnPos>::invoke,   false },
 	{ "hasFortifications",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasFortifications>::invoke,   false },
+	{ "hasMoat",              LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasMoat>::invoke,             false },
+	{ "nextObstacleId",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::nextObstacleId>::invoke,      false },
+	{ "hasNativeStack",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasNativeStack>::invoke,      false },
+	{ "getAllPossibleHexes",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllPossibleHexes>::invoke, false },
 	{ "getWallState",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getWallState>::invoke,        false },
 	{ "isWallPartAttackable", LuaFunctionWrapper<&IBattleInfoCallbackProxy::isWallPartAttackable>::invoke,false },
 	{ "wallPartToBattleHex",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::wallPartToBattleHex>::invoke, false },
@@ -108,9 +113,35 @@ bool IBattleInfoCallbackProxy::hasFortifications(const IBattleInfoCallback * obj
 	return object->hasFortifications();
 }
 
-EWallState IBattleInfoCallbackProxy::getWallState(const IBattleInfoCallback * object, EWallPart part)
+bool IBattleInfoCallbackProxy::hasMoat(const IBattleInfoCallback * object)
 {
-	return object->battleGetWallState(part);
+	return object->hasMoat();
+}
+
+int32_t IBattleInfoCallbackProxy::nextObstacleId(const IBattleInfoCallback * object)
+{
+	return object->nextObstacleId();
+}
+
+bool IBattleInfoCallbackProxy::hasNativeStack(const IBattleInfoCallback * object, BattleSide side)
+{
+	return object->battleHasNativeStack(side);
+}
+
+BattleHexArray IBattleInfoCallbackProxy::getAllPossibleHexes(const IBattleInfoCallback *)
+{
+	BattleHexArray result;
+	for(int i = 0; i < GameConstants::BFIELD_SIZE; i++)
+		result.insert(BattleHex(static_cast<si16>(i)));
+	return result;
+}
+
+std::optional<EWallState> IBattleInfoCallbackProxy::getWallState(const IBattleInfoCallback * object, EWallPart part)
+{
+	EWallState state = object->battleGetWallState(part);
+	if(state == EWallState::NONE)
+		return std::nullopt;
+	return state;
 }
 
 bool IBattleInfoCallbackProxy::isWallPartAttackable(const IBattleInfoCallback * object, EWallPart part)

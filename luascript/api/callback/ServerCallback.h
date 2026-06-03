@@ -44,6 +44,8 @@ public:
 	static bool describeChanges(ServerCallback * object);
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList);
 	static void addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, const JsonNode & data);
+	static void addBattleBonus(ServerCallback * object, BattleID battleID, const JsonNode & data);
+	static void addObstacle(ServerCallback * object, BattleID battleID, const JsonNode & descriptor);
 	static void applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & bonuses, bool cumulative);
 	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, int32_t killedTowerShooter);
 	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]

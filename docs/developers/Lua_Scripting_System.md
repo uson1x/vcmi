@@ -8,13 +8,7 @@ This page describes the internal working of the Lua scripting module. For usage 
 - (MAJOR) expand usage of scripts:
   - convert HotA map scripts into Lua form
   - convert HotA (and possibly - H3) Seer Huts into scripts
-  - Move all spell effects to Lua form:
-    - LocationEffect
-    - RemoveObstacle -> LocationEffect
-    - Catapult -> LocationEffect
-    - Obstacle -> LocationEffect
-    - Moat -> Obstacle
-    - review ServerCallbackProxy API and expand / cleanup it
+  - review ServerCallbackProxy API and expand / cleanup it
   - Implement support for scriptable map objects
   - Move damage calculator, or at least - damage formula to Lua, based on [existing PR](https://github.com/vcmi/vcmi/pull/5135)
   - Move map movement point limit calculation to Lua

@@ -87,7 +87,7 @@ end
 function Script:towerShooterIdIfDestroyed(battle, part, damage)
 	if not isTower(part) then return -1 end
 	local stateBefore = battle:getWallState(part)
-	if stateBefore == WALL_DESTROYED then return -1 end
+	if stateBefore == nil then return -1 end
 	local stateAfter = self:applyWallDamage(stateBefore, damage)
 	if stateAfter ~= WALL_DESTROYED then return -1 end
 

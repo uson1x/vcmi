@@ -20,13 +20,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace spells::effects
 {
 
-class BuiltinEffectFactory final : public ISpellEffectFactory
-{
-public:
-	void initialize(const std::string & scope, const std::string & name) override;
-	std::shared_ptr<Effect> create(const std::string & scope, const std::string & name) const override;
-};
-
 struct SpellEffectType
 {
 	std::string identifier;

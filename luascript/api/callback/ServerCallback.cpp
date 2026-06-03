@@ -20,6 +20,7 @@
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/battle/CObstacleInstance.h"
+#include "../../../lib/filesystem/ResourcePath.h"
 #include "../../../lib/CStack.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/Bonus.h"
@@ -52,6 +53,8 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
 	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
 	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
+	{ "addBattleBonus",    LuaFunctionWrapper<&ServerCallbackProxy::addBattleBonus>::invoke,    false },
+	{ "addObstacle",       LuaFunctionWrapper<&ServerCallbackProxy::addObstacle>::invoke,       false },
 	{ "applyUnitBonuses",  LuaFunctionWrapper<&ServerCallbackProxy::applyUnitBonuses>::invoke,  false },
 	{ "catapultAttack",    LuaFunctionWrapper<&ServerCallbackProxy::catapultAttack>::invoke,    false },
 	{ "rngInt",            LuaCallWrapper<&ServerCallbackProxy::rngInt>::invoke,                false },
@@ -86,6 +89,76 @@ void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleI
 	sse.battleID = battleID;
 	sse.toAdd.emplace_back(unitId, std::vector<Bonus>{b});
 	object->apply(sse);
+}
+
+void ServerCallbackProxy::addBattleBonus(ServerCallback * object, BattleID battleID, const JsonNode & data)
+{
+	Bonus b;
+	JsonUtils::parseBonus(data, &b);
+
+	GiveBonus gb(GiveBonus::ETarget::BATTLE);
+	gb.id = battleID;
+	gb.bonus = b;
+	object->apply(gb);
+}
+
+static std::string optString(const JsonNode & node, const std::string & key)
+{
+	if(node.Struct().count(key) == 0)
+		return {};
+	return node[key].String();
+}
+
+static bool optBool(const JsonNode & node, const std::string & key, bool fallback = false)
+{
+	if(node.Struct().count(key) == 0)
+		return fallback;
+	return node[key].Bool();
+}
+
+static int64_t optInt(const JsonNode & node, const std::string & key, int64_t fallback = 0)
+{
+	if(node.Struct().count(key) == 0)
+		return fallback;
+	return node[key].Integer();
+}
+
+void ServerCallbackProxy::addObstacle(ServerCallback * object, BattleID battleID, const JsonNode & descriptor)
+{
+	SpellCreatedObstacle obstacle;
+	obstacle.uniqueID       = static_cast<si32>(optInt(descriptor, "uniqueID", -1));
+	obstacle.pos            = BattleHex(static_cast<si16>(optInt(descriptor, "pos", BattleHex::INVALID)));
+	obstacle.obstacleType   = static_cast<CObstacleInstance::EObstacleType>(optInt(descriptor, "obstacleType", CObstacleInstance::SPELL_CREATED));
+	obstacle.ID             = static_cast<si32>(optInt(descriptor, "spellIndex", -1));
+	obstacle.turnsRemaining = static_cast<int32_t>(optInt(descriptor, "turnsRemaining", -1));
+	obstacle.casterSpellPower = static_cast<int32_t>(optInt(descriptor, "casterSpellPower", 0));
+	obstacle.spellLevel     = static_cast<int32_t>(optInt(descriptor, "spellLevel", 0));
+	obstacle.casterSide     = static_cast<BattleSide>(optInt(descriptor, "casterSide", static_cast<int64_t>(BattleSide::ATTACKER)));
+	obstacle.minimalDamage  = static_cast<int32_t>(optInt(descriptor, "minimalDamage", 0));
+	obstacle.hidden         = optBool(descriptor, "hidden", false);
+	obstacle.passable       = optBool(descriptor, "passable", false);
+	obstacle.trap           = optBool(descriptor, "trap", false);
+	obstacle.removeOnTrigger = optBool(descriptor, "removeOnTrigger", false);
+	obstacle.nativeVisible  = optBool(descriptor, "nativeVisible", true);
+
+	const std::string triggerKey = optString(descriptor, "trigger");
+	obstacle.trigger = triggerKey.empty() ? SpellID(SpellID::NONE) : SpellID(SpellID::decode(triggerKey));
+
+	obstacle.appearSound     = AudioPath::builtin(optString(descriptor, "appearSound"));
+	obstacle.appearAnimation = AnimationPath::builtin(optString(descriptor, "appearAnimation"));
+	obstacle.animation       = AnimationPath::builtin(optString(descriptor, "animation"));
+
+	if(descriptor.Struct().count("customSize") != 0)
+	{
+		for(const auto & hexNode : descriptor["customSize"].Vector())
+			obstacle.customSize.insert(BattleHex(static_cast<si16>(hexNode.Integer())));
+	}
+
+	BattleObstaclesChanged pack;
+	pack.battleID = battleID;
+	pack.changes.emplace_back();
+	obstacle.toInfo(pack.changes.back());
+	object->apply(pack);
 }
 
 void ServerCallbackProxy::applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & bonuses, bool cumulative)

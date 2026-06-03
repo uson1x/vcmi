@@ -294,8 +294,6 @@ set(lib_MAIN_SRCS
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
 	spells/effects/LocationEffect.cpp
-	spells/effects/Moat.cpp
-	spells/effects/Obstacle.cpp
 	spells/effects/SpellEffectHandler.cpp
 
 	texts/CGeneralTextHandler.cpp
@@ -765,7 +763,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Effects.h
 	spells/effects/EffectsFwd.h
 	spells/effects/LocationEffect.h
-	spells/effects/Obstacle.h
 	spells/effects/SpellEffectHandler.h
 	spells/effects/SpellEffectService.h
 
