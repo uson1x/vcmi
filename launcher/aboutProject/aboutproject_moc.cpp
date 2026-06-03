@@ -32,10 +32,9 @@ namespace
 void addLastSaveToArchiveIfAvailable(CZipSaver & saver)
 {
 	const auto json = JsonUtils::assembleFromFiles("config/settings.json");
-	if(json["general"].isNull() || json["general"]["lastSave"].isNull())
-		return;
-
 	const auto lastSavePath = json["general"]["lastSave"].String();
+	if (lastSavePath.empty())
+		return;
 	const auto rsave = ResourcePath(lastSavePath, EResType::SAVEGAME);
 	const auto * rhandler = CResourceHandler::get();
 	if(!rhandler->existsResource(rsave))
