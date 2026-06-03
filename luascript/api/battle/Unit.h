@@ -1,5 +1,5 @@
 /*
- * UnitProxy.h, part of VCMI engine
+ * Unit.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -15,14 +15,12 @@
 #include <vcmi/spells/Spell.h>
 
 #include "../../LuaWrapper.h"
+#include "../library/Bonus.h"
+#include "UnitState.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace battle
+namespace scripting::api::battle
 {
 using ::battle::IUnitInfo;
 using ::battle::Unit;
@@ -33,15 +31,13 @@ public:
 	using Wrapper = RawPointerWrapper<const Unit, UnitProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static void heal(Unit *, int64_t & amount, EHealLevel level, EHealPower power);
 	static const Creature * getCreature(const Unit *);
-	static int32_t getBaseAmount(const Unit *);
 	static BattleHexArray getHexes(const Unit *);
 	static bool hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell);
+	static LuaUnitState copy(const Unit * unit);
+	static int getBonuses(lua_State * L);
 };
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

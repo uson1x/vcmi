@@ -1,5 +1,5 @@
 /*
- * SubscriptionRegistryProxy.h, part of VCMI engine
+ * SubscriptionRegistry.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -20,11 +20,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 
 
@@ -47,14 +43,17 @@ public:
 	static int subscribeBefore(lua_State * L)
 	{
 		LuaStack S(L);
-		// subscription = subscribeBefore(eventBus, callback)
 
 		//TODO: use capture by move from c++14
 		auto callbackRef = std::make_shared<LuaReference>(L);
 
 		::events::EventBus * eventBus = nullptr;
 
-		if(!S.tryGet(1, eventBus))
+		try
+		{
+			S.getNonNull(1, eventBus);
+		}
+		catch(const LuaApiException &)
 		{
 			S.push("No event bus");
 			return 1;
@@ -73,7 +72,8 @@ public:
 			if(lua_pcall(L, 1, 0, 0) != 0)
 			{
 				std::string msg;
-				S.tryGet(1, msg);
+				if(lua_isstring(L, 1))
+					S.get(1, msg);
 				logMod->error("Script callback error: %s", msg);
 			}
 
@@ -94,7 +94,11 @@ public:
 
 		::events::EventBus * eventBus = nullptr;
 
-		if(!S.tryGet(1, eventBus))
+		try
+		{
+			S.getNonNull(1, eventBus);
+		}
+		catch(const LuaApiException &)
 		{
 			S.push("No event bus");
 			return 1;
@@ -113,7 +117,8 @@ public:
 			if(lua_pcall(L, 1, 0, 0) != 0)
 			{
 				std::string msg;
-				S.tryGet(1, msg);
+				if(lua_isstring(L, 1))
+					S.get(1, msg);
 				logMod->error("Script callback error: %s", msg);
 			}
 
@@ -127,8 +132,6 @@ public:
 };
 
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

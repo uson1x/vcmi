@@ -1,5 +1,5 @@
 /*
- * EventBusProxy.cpp, part of VCMI engine
+ * EventBus.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,7 +9,7 @@
  */
 #include "StdInc.h"
 
-#include "EventBusProxy.h"
+#include "EventBus.h"
 
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
@@ -18,17 +18,11 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 //No methods here, just an empty metatable for type safety.
 const std::vector<EventBusProxy::CustomRegType> EventBusProxy::REGISTER_CUSTOM = {};
 
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

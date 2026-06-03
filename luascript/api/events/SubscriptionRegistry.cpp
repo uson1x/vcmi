@@ -1,5 +1,5 @@
 /*
- * SubscriptionRegistryProxy.cpp, part of VCMI engine
+ * SubscriptionRegistry.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,22 +9,16 @@
  */
 #include "StdInc.h"
 
-#include "SubscriptionRegistryProxy.h"
+#include "SubscriptionRegistry.h"
 
 #include "../Registry.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting
-{
-namespace api
-{
-namespace events
+namespace scripting::api::events
 {
 //No methods here, just an empty metatable for type safety.
 const std::vector<EventSubscriptionProxy::CustomRegType> EventSubscriptionProxy::REGISTER_CUSTOM = {};
-}
-}
 }
 
 VCMI_LIB_NAMESPACE_END

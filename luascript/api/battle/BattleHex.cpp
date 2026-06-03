@@ -1,5 +1,5 @@
 /*
- * BattleHexProxy.cpp, part of VCMI engine
+ * BattleHex.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,7 +10,7 @@
 
 #include "StdInc.h"
 
-#include "BattleHexProxy.h"
+#include "BattleHex.h"
 
 #include "../../../lib/GameLibrary.h"
 #include "../../LuaStack.h"
@@ -24,9 +24,15 @@ namespace scripting::api::battle
 
 const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM =
 {
-	{"isValid", LuaMethodWrapper<BattleHex, decltype(&BattleHex::isValid), &BattleHex::isValid>::invoke, false},
-	{"toInteger", LuaMethodWrapper<BattleHex, decltype(&BattleHex::toInt), &BattleHex::toInt>::invoke, false},
+	{"isValid",       LuaMethodWrapper<&BattleHex::isValid>::invoke,                    false},
+	{"toInteger",     LuaMethodWrapper<&BattleHex::toInt>::invoke,                      false},
+	{"getClosestTile", LuaFunctionWrapper<&BattleHexProxy::getClosestTile>::invoke,     false},
 };
+
+BattleHex BattleHexProxy::getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes)
+{
+	return BattleHex::getClosestTile(side, self, hexes);
+}
 
 }
 
