@@ -15,10 +15,10 @@
 
 #include "../../lib/GameLibrary.h"
 #include "../../lib/TerrainHandler.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/CSkillHandler.h"
 #include "../../lib/entities/artifact/CArtHandler.h"
 #include "../../lib/entities/hero/CHeroHandler.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 template<typename T, typename Variant>
 size_t countInVariantSet(const Variant& var, const T& val) {
@@ -65,7 +65,8 @@ EntitiesSelector::EntitiesSelector(EntityIds & entities) :
 	entitiesSelected(entities)
 {
 	ui->setupUi(this);
-	
+	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+
 	setWindowModality(Qt::ApplicationModal);
 
 	HandlerVariant handler;

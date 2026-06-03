@@ -301,7 +301,7 @@ static inline QString classifyTargetByExt(const QString &baseName)
 	if(ends(".lod") || ends(".snd") || ends(".vid") || ends(".pak"))
 		return QStringLiteral("Data");
 
-	if(ends(".h3m"))
+	if(ends(".h3m") || ends(".tut"))
 		return QStringLiteral("Maps");
 
 	if(ends(".mp3"))

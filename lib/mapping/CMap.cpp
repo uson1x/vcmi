@@ -748,7 +748,7 @@ void CMap::banWaterSkills()
 {
 	vstd::erase_if(allowedAbilities, [&](SecondarySkill skill)
 	{
-		return skill.toSkill()->onlyOnWaterMap && !isWaterMap();
+		return skill.toSkill()->isOnlyOnWaterMap() && !isWaterMap();
 	});
 }
 
@@ -862,12 +862,15 @@ CArtifactInstance * CMap::createScroll(const SpellID & spellId)
 
 CArtifactInstance * CMap::createArtifactComponent(const ArtifactID & artId)
 {
-	auto newArtifact = artId.hasValue() ?
-		std::make_shared<CArtifactInstance>(cb, artId.toArtifact()):
-		std::make_shared<CArtifactInstance>(cb);
+	auto art = artId.toArtifact();
+	auto newArtifact = std::make_shared<CArtifactInstance>(cb, art);
 
 	newArtifact->setId(ArtifactInstanceID(artInstances.size()));
 	artInstances.push_back(newArtifact);
+
+	for (const auto & bonus : art->instanceBonuses)
+		newArtifact->addNewBonus(std::make_shared<Bonus>(*bonus, newArtifact->getId()));
+
 	return newArtifact.get();
 }
 
@@ -905,9 +908,6 @@ CArtifactInstance * CMap::createArtifact(const ArtifactID & artID, const SpellID
 		artInst->addNewBonus(bonus);
 		artInst->addCharges(art->getDefaultStartCharges());
 	}
-
-	for (const auto & bonus : art->instanceBonuses)
-		artInst->addNewBonus(std::make_shared<Bonus>(*bonus, artInst->getId()));
 
 	return artInst;
 }
@@ -1010,14 +1010,15 @@ ObjectInstanceID CMap::allocateUniqueInstanceID()
 void CMap::parseUidCounter()
 {
 	int max_index = -1;
-	for (const auto& entry : instanceNames) {
-		const std::string& key = entry.first;
+
+	auto updateMaxIndex = [&](const std::string & key)
+	{
 		const size_t pos = key.find_last_of('_');
 
 		// Validate underscore position
 		if (pos == std::string::npos || pos + 1 >= key.size()) {
 			logGlobal->error("Instance name '%s' is not valid.", key);
-			continue;
+			return;
 		}
 
 		const std::string index_part = key.substr(pos + 1);
@@ -1030,6 +1031,16 @@ void CMap::parseUidCounter()
 		}
 		catch (const std::out_of_range&) {
 			logGlobal->error("Instance name %s index part is overflow.", key);
+		}
+	};
+
+	for (const auto & entry : instanceNames) {
+		updateMaxIndex(entry.first);
+	}
+
+	for (const auto & hero : heroesPool) {
+		if (hero && !hero->instanceName.empty()) {
+			updateMaxIndex(hero->instanceName);
 		}
 	}
 

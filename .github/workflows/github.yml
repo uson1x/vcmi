@@ -1,4 +1,4 @@
-name: VCMI
+name: Daily Builds and Tests
 
 on:
   push:
@@ -60,7 +60,7 @@ jobs:
           - platform: msvc-x64
             arch: x64
             toolset: '14.29'
-            os: windows-2025
+            os: windows-2025-vs2026
             pack: 1
             upload: 0
             pack_type: RelWithDebInfo
@@ -74,7 +74,7 @@ jobs:
           - platform: msvc-x86
             arch: amd64_x86
             toolset: '14.29'
-            os: windows-2025
+            os: windows-2025-vs2026
             pack: 1
             upload: 0
             pack_type: RelWithDebInfo
@@ -132,16 +132,20 @@ jobs:
             os: ubuntu-24.04
             upload: 1
             preset: linux-gcc-release-appimage
+            conan_profile: linux-x64
+            conan_prebuilts: dependencies-linux-x64
+            before_install: linux_appimage.sh
             extension: AppImage
-            before_install: linux_qt6.sh
             artifact_platform: x86_64
 
           - platform: linux-appimage-arm64
             os: ubuntu-24.04-arm
             upload: 1
             preset: linux-gcc-release-arm64-appimage
+            conan_profile: linux-arm64
+            conan_prebuilts: dependencies-linux-arm64
+            before_install: linux_appimage.sh
             extension: AppImage
-            before_install: linux_qt6.sh
             artifact_platform: arm64
 
     runs-on: ${{ matrix.os }}
@@ -213,6 +217,25 @@ jobs:
         path: ${{ runner.temp }}/apt-cache
         key: ${{ steps.aptcache.outputs.cache-primary-key }}
 
+    - name: Detect Visual Studio version (Windows)
+      if: ${{ startsWith(matrix.platform, 'msvc') }}
+      shell: pwsh
+      run: |
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $vsInstallationVersion = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationVersion
+        $vsMajor = ($vsInstallationVersion -split '\.')[0]
+        echo "MSBUILD_VS_VERSION=$vsMajor" >> $env:GITHUB_ENV
+
+    - name: Install MSVC v142 toolset (Windows non-ARM)
+      if: ${{ startsWith(matrix.platform, 'msvc') && matrix.arch != 'arm64' }}
+      shell: pwsh
+      run: |
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $installPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+
+        $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
+        & $installer modify --installPath "$installPath" --add Microsoft.VisualStudio.Component.VC.v142.x86.x64 --quiet --norestart
+
     - name: Install Conan Dependencies
       if: "${{ matrix.conan_prebuilts != '' }}"
       run: |
@@ -267,14 +290,6 @@ jobs:
         ccache --set-config=hash_dir=true
         ccache --set-config=sloppiness=time_macros
 
-    # TODO: remove once v4.13 is available in Homebrew
-    - name: Install ccache v4.13
-      if: ${{ matrix.platform == 'ios' }}
-      run: |
-        curl -L https://github.com/ccache/ccache/releases/download/v4.13/ccache-4.13-darwin.tar.gz \
-          | tar -xf -
-        echo "$(pwd)/ccache-4.13-darwin" >> $GITHUB_PATH
-
     - name: Install Conan profile
       if: "${{ matrix.conan_profile != '' }}"
       run: |
@@ -285,7 +300,8 @@ jobs:
           --build=never \
           --profile=dependencies/conan_profiles/${{ matrix.conan_profile }} \
           --conf="tools.cmake.cmaketoolchain:generator=Ninja" \
-          ${{ matrix.conan_options }}
+          ${{ matrix.conan_options }} \
+          ${{ startsWith(matrix.platform, 'msvc') && '--conf="tools.microsoft.msbuild:vs_version=${MSBUILD_VS_VERSION}"' || '' }}
         ${{ startsWith(matrix.platform, 'msvc') && 'echo CONANRUN_PWSH_SCRIPT="$outFolder/conanrun.ps1" >> $GITHUB_ENV' || '' }}
 
     # Can't be set in Gradle project
@@ -366,7 +382,7 @@ jobs:
         ARCH: ${{ matrix.artifact_platform }}
       run: |
         chmod +x CI/create_appimage.sh
-        CI/create_appimage.sh
+        CI/create_appimage.sh --use-conan
 
     - name: Kill XProtect to work around CPack issue on macOS
       if: ${{ startsWith(matrix.platform, 'mac') }}
@@ -416,27 +432,25 @@ jobs:
 
     - name: Upload Artifact
       id: upload_artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}
-        compression-level: 9
+        archive: false
         path: |
           ${{github.workspace}}/out/build/${{matrix.preset}}/${{ env.VCMI_PACKAGE_FILE_NAME }}.${{ matrix.extension }}
 
     - name: Upload AAB Artifact
       id: upload_aab
       if: ${{ startsWith(matrix.platform, 'android') && github.ref == 'refs/heads/master' }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}-aab
-        compression-level: 9
+        archive: false
         path: |
           ${{github.workspace}}/out/build/${{matrix.preset}}/${{ env.VCMI_PACKAGE_FILE_NAME }}.aab
 
     - name: Upload MSVC debug symbols
       id: upload_symbols
       if: ${{ startsWith(matrix.platform, 'msvc') }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}-symbols
         compression-level: 9
@@ -453,7 +467,7 @@ jobs:
         echo IOS_APPSTORE_SYMBOLS_DIR="$IOS_APPSTORE_SYMBOLS_DIR" >> $GITHUB_ENV
     - name: Upload iOS AppStore debug symbols
       if: ${{ matrix.platform == 'ios' }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}-symbols
         compression-level: 9
@@ -461,14 +475,14 @@ jobs:
             ${{ env.IOS_APPSTORE_SYMBOLS_DIR }}
 
     - name: Upload build to download.vcmi.eu
-      if: ${{ matrix.upload == 1 && github.event.number == '' && env.DEPLOY_RSA != '' }}
+      if: ${{ matrix.upload == 1 && github.event.number == '' && env.BUILDS_UPLOADER_PRIVATE_KEY != '' }}
       run: |
         if [ -z '${{ env.ANDROID_APK_PATH }}' ] ; then
           cd '${{github.workspace}}/out/build/${{matrix.preset}}'
         fi
         source '${{github.workspace}}/CI/upload_package.sh'
       env:
-        DEPLOY_RSA: ${{ secrets.DEPLOY_RSA }}
+        BUILDS_UPLOADER_PRIVATE_KEY: ${{ secrets.BUILDS_UPLOADER_PRIVATE_KEY }}
         PACKAGE_EXTENSION: ${{ matrix.extension }}
 
     - name: Prepare partial JSON with build informations
@@ -482,7 +496,7 @@ jobs:
         python3 CI/emit_partial.py
 
     - name: Upload partial JSON with build informations
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: partial-json-${{ matrix.platform }}
         path: .summary/${{ matrix.platform }}.json
@@ -513,10 +527,9 @@ jobs:
 
         - name: Upload source code archive
           id: upload_source
-          uses: actions/upload-artifact@v6
+          uses: actions/upload-artifact@v7
           with:
-            name: ${{ env.VCMI_PACKAGE_FILE_NAME }}
-            compression-level: 9
+            archive: false
             path: |
               ./release.tar.gz
 
@@ -529,7 +542,7 @@ jobs:
             JSON
 
         - name: Upload partial JSON with source informations
-          uses: actions/upload-artifact@v6
+          uses: actions/upload-artifact@v7
           with:
             name: partial-json-source
             path: .summary/source.json
@@ -658,8 +671,9 @@ jobs:
         fi
 
   lobby:
-    name: Test VCMI Lobby
-    runs-on: ubuntu-latest
+    name: Build VCMI Lobby
+    # Warning: Lobby .deb must be build on the same Ubuntu version and arch as our server. Do not change to ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -669,15 +683,34 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Prepare CI
-      run: sudo apt update && sudo apt install cmake zlib1g-dev libboost-dev libboost-program-options-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libboost-iostreams-dev libminizip-dev
+      run: sudo apt update && sudo apt install cmake devscripts debhelper build-essential zlib1g-dev libboost-dev libboost-program-options-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libboost-iostreams-dev libminizip-dev
 
-    - name: Configure
+    - name: Build Number
       run: |
-        cmake --preset linux-gcc-release-lobby
+        source '${{github.workspace}}/CI/get_package_name.sh'
+        VCMI_PACKAGE_FILE_NAME+="-x64"
+        echo VCMI_PACKAGE_FILE_NAME="$VCMI_PACKAGE_FILE_NAME" >> $GITHUB_ENV
+        echo VCMI_PACKAGE_BUILD="$VCMI_PACKAGE_BUILD" >> $GITHUB_ENV
+        echo VCMI_PACKAGE_NAME_SUFFIX="$VCMI_PACKAGE_NAME_SUFFIX" >> $GITHUB_ENV
+        echo VCMI_PACKAGE_GOLDMASTER="$VCMI_PACKAGE_GOLDMASTER" >> $GITHUB_ENV
+      env:
+        PULL_REQUEST: ${{ github.event.pull_request.number }}
 
-    - name: Build
-      run: |
-        cmake --build --preset linux-gcc-release-lobby
+    - name: Prepare debian directory
+      run: mv debian/controlLobby debian/control && mv debian/rulesLobby debian/rules
+
+    - name: Build .deb
+      run: debuild -us -uc -b
+
+    - name: Move .deb package
+      run: mv ../vcmi-lobby_*_amd64.deb "${{ env.VCMI_PACKAGE_FILE_NAME }}.deb"
+
+    - name: Upload Artifact
+      id: upload_artifact
+      uses: actions/upload-artifact@v7
+      with:
+        archive: false
+        path: ${{github.workspace}}/${{ env.VCMI_PACKAGE_FILE_NAME }}.deb
 
   windows-installer:
     needs: build
@@ -739,15 +772,10 @@ jobs:
         PULL_REQUEST: ${{ github.event.pull_request.number }}
 
     - name: Download Artifact
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}
+        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}.zip
         path: ${{github.workspace}}/artifact
-
-    - name: Extract Artifact
-      run: |
-        mkdir artifact/extracted
-        unzip "artifact/${{ env.VCMI_PACKAGE_FILE_NAME }}.zip" -d artifact/extracted
 
     - name: Ensure Inno Setup is installed
       run: |
@@ -763,26 +791,25 @@ jobs:
         "${{ matrix.arch }}"
         "VCMI ${{ env.VCMI_PACKAGE_NAME_SUFFIX }}"
         "${{ env.VCMI_PACKAGE_FILE_NAME }}"
-        "${{ github.workspace }}\artifact\extracted"
+        "${{ github.workspace }}\artifact"
         "${{ github.workspace }}\ucrt"
       shell: cmd
 
     - name: Upload VCMI Installer Artifacts
       id: upload_installer
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
-        name: ${{ env.VCMI_PACKAGE_FILE_NAME }}-${{ matrix.platform }}-installer
-        compression-level: 9
+        archive: false
         path: |
           ${{ github.workspace }}/CI/wininstaller/Output/*.exe
 
     - name: Upload Installer
-      if: ${{ github.event.number == '' && env.DEPLOY_RSA != '' }}
+      if: ${{ github.event.number == '' && env.BUILDS_UPLOADER_PRIVATE_KEY != '' }}
       run: |
         cd '${{github.workspace}}/CI/wininstaller/Output'
         source '${{github.workspace}}/CI/upload_package.sh'
       env:
-        DEPLOY_RSA: ${{ secrets.DEPLOY_RSA }}
+        BUILDS_UPLOADER_PRIVATE_KEY: ${{ secrets.BUILDS_UPLOADER_PRIVATE_KEY }}
         PACKAGE_EXTENSION: exe
 
     - name: Prepare partial JSON with installer informations
@@ -797,7 +824,7 @@ jobs:
         JSON
 
     - name: Upload partial JSON with installer informations
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: partial-json-${{ matrix.platform }}-installer
         path: .summary/installer-${{ matrix.platform }}.json
@@ -824,8 +851,12 @@ jobs:
             sudo apt install python3-jstyleson
             python3 CI/validate_json.py
 
+        - name: Validate relative local includes
+          run: |
+            python3 CI/normalize_relative_includes.py --repo .
+
         - name: Validate Markdown
-          uses: DavidAnson/markdownlint-cli2-action@v22
+          uses: DavidAnson/markdownlint-cli2-action@v23
           with:
             config: 'CI/example.markdownlint-cli2.jsonc'
             globs: '**/*.md'
@@ -844,7 +875,7 @@ jobs:
 
       - name: Download all partial JSON artifacts
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: partial-json-*
           merge-multiple: true

@@ -112,7 +112,7 @@
 #include "../lib/serializer/CTypeList.h"
 #include "../lib/serializer/ESerializationVersion.h"
 
-#include "../lib/spells/CSpellHandler.h"
+#include "../lib/spells/CSpell.h"
 
 #include "../lib/texts/TextOperations.h"
 
@@ -125,6 +125,12 @@
 #define EVENT_HANDLER_CALLED_BY_CLIENT
 
 #define BATTLE_EVENT_POSSIBLE_RETURN	if (GAME->interface() != this) return; if (isAutoFightOn && !battleInt) return
+
+namespace
+{
+	constexpr int LEVEL_UP_REQUEST_NONE = -1;
+	constexpr int LEVEL_UP_REQUEST_WAITING_FOR_REPLY = -2;
+}
 
 std::shared_ptr<BattleInterface> CPlayerInterface::battleInt;
 
@@ -522,27 +528,48 @@ void CPlayerInterface::heroGotLevel(const CGHeroInstance *hero, PrimarySkill psk
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
-	ENGINE->windows().createAndPushWindow<CLevelWindow>(hero, pskill, skills, [this, queryID](ui32 selection)
+
+	closePendingLevelUpDialog();
+
+	const bool closeImmediately = queryID < 0;
+	pendingLevelUpRequestID = closeImmediately ? LEVEL_UP_REQUEST_NONE : LEVEL_UP_REQUEST_WAITING_FOR_REPLY;
+
+	auto levelWindow = std::make_shared<CLevelWindow>(hero, pskill, skills, [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
 			return;
 
-		cb->selectionMade(selection, queryID);
+		pendingLevelUpRequestID = cb->selectionMade(selection, queryID);
 	});
+
+	levelWindow->setCloseOnSelection(closeImmediately);
+	if(!closeImmediately)
+		pendingLevelUpDialog = levelWindow;
+
+	ENGINE->windows().pushWindow(levelWindow);
 }
 
-void CPlayerInterface::commanderGotLevel (const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
+void CPlayerInterface::commanderGotLevel(const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	waitWhileDialog();
 	ENGINE->sound().playSound(soundBase::heroNewLevel);
-	ENGINE->windows().createAndPushWindow<CStackWindow>(commander, skills, [this, queryID](ui32 selection)
+
+	closePendingLevelUpDialog();
+
+	const bool closeImmediately = queryID < 0;
+	pendingLevelUpRequestID = closeImmediately ? LEVEL_UP_REQUEST_NONE : LEVEL_UP_REQUEST_WAITING_FOR_REPLY;
+	auto levelWindow = std::make_shared<CStackWindow>(commander, skills, [this, queryID](ui32 selection)
 	{
 		if(queryID < 0)
 			return;
 
-		cb->selectionMade(selection, queryID);
+		pendingLevelUpRequestID = cb->selectionMade(selection, queryID);
 	});
+	levelWindow->setCloseOnSelection(closeImmediately);
+	if(!closeImmediately)
+		pendingLevelUpDialog = levelWindow;
+	ENGINE->windows().pushWindow(levelWindow);
 }
 
 void CPlayerInterface::heroInGarrisonChange(const CGTownInstance *town)
@@ -693,7 +720,7 @@ void CPlayerInterface::battleUnitsChanged(const BattleID & battleID, const std::
 	{
 		switch(info.operation)
 		{
-		case UnitChanges::EOperation::RESET_STATE:
+		case UnitChanges::EOperation::UPDATE:
 			{
 				const CStack * stack = cb->getBattle(battleID)->battleGetStackByID(info.id );
 
@@ -1268,7 +1295,7 @@ void CPlayerInterface::moveHero( const CGHeroInstance *h, const CGPath& path )
 	movementController->requestMovementStart(h, path);
 }
 
-void CPlayerInterface::showGarrisonDialog( const CArmedInstance *up, const CGHeroInstance *down, bool removableUnits, QueryID queryID)
+void CPlayerInterface::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	auto onEnd = [this, queryID](){ cb->selectionMade(0, queryID); };
@@ -1281,7 +1308,7 @@ void CPlayerInterface::showGarrisonDialog( const CArmedInstance *up, const CGHer
 
 	waitForAllDialogs();
 
-	auto cgw = std::make_shared<CGarrisonWindow>(up, down, removableUnits);
+	auto cgw = std::make_shared<CGarrisonWindow>(up, down, removableUnits, customTitle);
 	cgw->quit->addCallback(onEnd);
 	ENGINE->windows().pushWindow(cgw);
 }
@@ -1292,7 +1319,24 @@ void CPlayerInterface::requestRealized( PackageApplied *pa )
 		movementController->onMoveHeroApplied();
 
 	if(pa->packType == CTypeList::getInstance().getTypeID<QueryReply>(nullptr))
+	{
+		if(pendingLevelUpRequestID == static_cast<int>(pa->requestID))
+			closePendingLevelUpDialog();
 		movementController->onQueryReplyApplied();
+	}
+}
+
+void CPlayerInterface::closePendingLevelUpDialog()
+{
+	if(!pendingLevelUpDialog)
+	{
+		pendingLevelUpRequestID = LEVEL_UP_REQUEST_NONE;
+		return;
+	}
+
+	pendingLevelUpDialog->close();
+	pendingLevelUpDialog.reset();
+	pendingLevelUpRequestID = LEVEL_UP_REQUEST_NONE;
 }
 
 void CPlayerInterface::showHeroExchange(ObjectInstanceID hero1, ObjectInstanceID hero2)
@@ -1742,12 +1786,14 @@ void CPlayerInterface::artifactPut(const ArtifactLocation &al)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	adventureInt->onHeroChanged(cb->getHero(al.artHolder));
+	garrisonsChanged(al.artHolder, ObjectInstanceID());
 }
 
 void CPlayerInterface::artifactRemoved(const ArtifactLocation &al)
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	adventureInt->onHeroChanged(cb->getHero(al.artHolder));
+	garrisonsChanged(al.artHolder, ObjectInstanceID());
 	artifactController->artifactRemoved();
 }
 
@@ -1755,6 +1801,7 @@ void CPlayerInterface::artifactMoved(const ArtifactLocation &src, const Artifact
 {
 	EVENT_HANDLER_CALLED_BY_CLIENT;
 	adventureInt->onHeroChanged(cb->getHero(dst.artHolder));
+	garrisonsChanged(src.artHolder, dst.artHolder);
 	artifactController->artifactMoved();
 }
 

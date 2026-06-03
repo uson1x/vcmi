@@ -62,9 +62,12 @@ enum class ESerializationVersion : int32_t
 	DISABLE_TACTICS, // disable tactics
 	REWARDABLE_EXTENSIONS_2, // movement points limiter for rewardables
 	BONUS_TRIGGER, // bonus that allows triggered effects in combat
+	CUSTOM_GARRISON_TITLE, // GarrisonDialog pack now has custom title parameter
+	LUA_SCRIPTS,
 
 	RELEASE_170 = HOTA_MAP_STACK_COUNT,
-	CURRENT = BONUS_TRIGGER,
+	RELEASE_174 = CUSTOM_GARRISON_TITLE,
+	CURRENT = LUA_SCRIPTS,
 };
 
 static_assert(ESerializationVersion::MINIMAL <= ESerializationVersion::CURRENT, "Invalid serialization version definition!");

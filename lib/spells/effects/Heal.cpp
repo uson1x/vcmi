@@ -10,7 +10,6 @@
 #include "StdInc.h"
 
 #include "Heal.h"
-#include "Registry.h"
 #include "../ISpellMechanics.h"
 
 #include "../../battle/IBattleState.h"
@@ -27,12 +26,12 @@ namespace spells
 namespace effects
 {
 
-void Heal::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Heal::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	apply(m->getEffectValue(), server, m, target);
 }
 
-SpellEffectValue Heal::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
+SpellEffectValue Heal::getHealthChange(const Mechanics * m, const Target & spellTarget) const
 {
 	SpellEffectValue result;
 
@@ -49,7 +48,7 @@ SpellEffectValue Heal::getHealthChange(const Mechanics * m, const EffectTarget &
 	return result;
 }
 
-void Heal::apply(int64_t value, ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Heal::apply(int64_t value, ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	BattleLogMessage logMessage;
 	logMessage.battleID = m->battle()->getBattle()->getBattleID();
@@ -137,7 +136,7 @@ SpellEffectValue Heal::getHealEffectValue(int64_t value, const Mechanics * m, co
 	return result;
 }
 
-void Heal::prepareHealEffect(int64_t value, BattleUnitsChanged & pack, BattleLogMessage & logMessage, RNG & rng, const Mechanics * m, const EffectTarget & target) const
+void Heal::prepareHealEffect(int64_t value, BattleUnitsChanged & pack, BattleLogMessage & logMessage, RNG & rng, const Mechanics * m, const Target & target) const
 {
 	for(const auto & oneTarget : target)
 	{
@@ -174,9 +173,9 @@ void Heal::prepareHealEffect(int64_t value, BattleUnitsChanged & pack, BattleLog
 
 				if(healValue.hpDelta > 0)
 				{
-					UnitChanges info(state->unitId(), UnitChanges::EOperation::RESET_STATE);
+					UnitChanges info(state->unitId(), UnitChanges::EOperation::UPDATE);
 					info.healthDelta = healValue.hpDelta;
-					state->save(info.data);
+					info.data = state->save();
 					pack.changedStacks.push_back(info);
 				}
 			}

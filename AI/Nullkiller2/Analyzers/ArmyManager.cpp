@@ -139,15 +139,17 @@ std::vector<SlotInfo>::iterator ArmyManager::getBestUnitForScout(std::vector<Slo
 
 		if (terrainHasPenalty)
 		{
-			auto leftNativeTerrain = left.creature->getFactionID().toFaction()->nativeTerrain;
-			auto rightNativeTerrain = right.creature->getFactionID().toFaction()->nativeTerrain;
+			const auto leftFaction = left.creature->getFactionID().toFaction();
+			const auto rightFaction = right.creature->getFactionID().toFaction();
+			const bool leftIsNative = leftFaction->isNativeTerrain(armyTerrain);
+			const bool rightIsNative = rightFaction->isNativeTerrain(armyTerrain);
 
-			if (leftNativeTerrain != rightNativeTerrain)
+			if (leftIsNative != rightIsNative)
 			{
-				if (leftNativeTerrain == armyTerrain)
+				if (leftIsNative)
 					return true;
 
-				if (rightNativeTerrain == armyTerrain)
+				if (rightIsNative)
 					return false;
 			}
 		}
@@ -195,6 +197,10 @@ std::vector<SlotInfo> ArmyManager::getBestArmy(const IBonusBearer * armyCarrier,
 	uint64_t armyValue = 0;
 	TemporaryArmy newArmyInstance;
 
+	const auto & badMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_BAD_MORALE_CHANCE);
+	const auto & highMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_GOOD_MORALE_CHANCE);
+	int moraleDiceSize = cpsic->getSettings().getInteger(EGameSettings::COMBAT_MORALE_DICE_SIZE);
+
 	while(allowedFactions.size() < alignmentMap.size())
 	{
 		auto strongestAlignment = vstd::maxElementByFun(alignmentMap, [&](std::pair<FactionID, uint64_t> pair) -> uint64_t
@@ -228,10 +234,6 @@ std::vector<SlotInfo> ArmyManager::getBestArmy(const IBonusBearer * armyCarrier,
 		{
 			auto morale = slot.second->moraleVal();
 			auto multiplier = 1.0f;
-
-			const auto & badMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_BAD_MORALE_CHANCE);
-			const auto & highMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_GOOD_MORALE_CHANCE);
-			int moraleDiceSize = cpsic->getSettings().getInteger(EGameSettings::COMBAT_MORALE_DICE_SIZE);
 
 			if(morale < 0 && !badMoraleChance.empty())
 			{

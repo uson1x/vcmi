@@ -23,8 +23,8 @@
 #include "cdownloadmanager_moc.h"
 #include "chroniclesextractor.h"
 #include "../settingsView/csettingsview_moc.h"
-#include "../vcmiqt/launcherdirs.h"
-#include "../vcmiqt/jsonutils.h"
+#include "../../vcmiqt/launcherdirs.h"
+#include "../../vcmiqt/jsonutils.h"
 #include "../helper.h"
 
 #include "../../lib/CConfigHandler.h"
@@ -36,6 +36,8 @@
 #include "../../lib/modding/ModDescription.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/texts/Languages.h"
+
+#include "../../vcmiqt/launcherdirs.h"
 
 #include <future>
 
@@ -159,10 +161,28 @@ CModListView::CModListView(QWidget * parent)
 #endif
 }
 
+bool CModListView::isDemoDataPresent()
+{
+	// Use CResourceHandler so LOD archives are also checked (same as firstlaunch_moc.cpp and EntryPoint.cpp)
+	bool hasFullData = CResourceHandler::get()->existsResource(ResourcePath("DATA/TENTCOLR.TXT"));
+	if (hasFullData)
+		return false;
+
+	return CResourceHandler::get()->existsResource(ResourcePath("MAPS/H3DEMO.H3M"));
+}
+
+void CModListView::showEvent(QShowEvent * event)
+{
+	QWidget::showEvent(event);
+	filterModel->reloadFilter();
+}
+
 void CModListView::reload(const QString & modToSelect)
 {
 	modStateModel->reloadLocalState();
 	modModel->reloadViewModel();
+
+	filterModel->reloadFilter();
 
 	if (!modToSelect.isEmpty())
 	{
@@ -828,28 +848,46 @@ void CModListView::downloadFile(QString file, QUrl url, QString description, qin
 	{
 		dlManager = new CDownloadManager();
 		ui->progressWidget->setVisible(true);
-		connect(dlManager, SIGNAL(downloadProgress(qint64,qint64)),
-			this, SLOT(downloadProgress(qint64,qint64)));
+		connect(dlManager, SIGNAL(downloadProgress(QString,qint64,qint64)),
+			this, SLOT(downloadProgress(QString,qint64,qint64)));
+		connect(dlManager, SIGNAL(downloadFileFinished(QString)),
+			this, SLOT(onDownloadFileFinished(QString)));
 
 		connect(dlManager, SIGNAL(finished(QStringList,QStringList,QStringList)),
 			this, SLOT(downloadFinished(QStringList,QStringList,QStringList)));
 
 		connect(modModel, &ModStateItemModel::dataChanged, filterModel, &QAbstractItemModel::dataChanged);
-
-		const auto progressBarFormat = tr("Downloading %1. %p% (%v MB out of %m MB) finished").arg(description);
-		ui->progressBar->setFormat(progressBarFormat);
 	}
+
+	enqueuedDownloadDescriptions[file] = description;
+	enqueuedDownloadFiles.push_back(file);
+	if(activeDownloadFile.isEmpty())
+		activeDownloadFile = file;
 
 	Helper::keepScreenOn(true);
 	dlManager->downloadFile(url, file, sizeBytes);
 }
 
-void CModListView::downloadProgress(qint64 current, qint64 max)
+void CModListView::downloadProgress(QString currentFile, qint64 current, qint64 max)
 {
+	Q_UNUSED(currentFile);
+
 	// display progress, in megabytes
+	const auto currentDescription = enqueuedDownloadDescriptions.value(activeDownloadFile, activeDownloadFile);
+	const auto progressBarFormat = tr("Downloading %1. %p% (%v MB out of %m MB) finished").arg(currentDescription);
+	ui->progressBar->setFormat(progressBarFormat);
+
 	ui->progressBar->setVisible(true);
 	ui->progressBar->setMaximum(max / (1024 * 1024));
 	ui->progressBar->setValue(current / (1024 * 1024));
+}
+
+void CModListView::onDownloadFileFinished(QString fileName)
+{
+	enqueuedDownloadFiles.removeAll(fileName);
+
+	if(activeDownloadFile == fileName)
+		activeDownloadFile = enqueuedDownloadFiles.empty() ? QString() : enqueuedDownloadFiles.front();
 }
 
 void CModListView::extractionProgress(qint64 current, qint64 max)
@@ -874,7 +912,7 @@ void CModListView::downloadFinished(QStringList savedFiles, QStringList failedFi
 {
 	QString title = tr("Download failed");
 	QString firstLine = tr("Unable to download all files.\n\nEncountered errors:\n\n");
-	QString lastLine = tr("\n\nInstall successfully downloaded?");
+	QString lastLine = tr("\n\nProcess successfully downloaded files?");
 	bool doInstallFiles = false;
 
 	// if all files were d/loaded there should be no errors. And on failure there must be an error
@@ -901,6 +939,9 @@ void CModListView::downloadFinished(QStringList savedFiles, QStringList failedFi
 	}
 
 	enqueuedModDownloads.clear();
+	enqueuedDownloadFiles.clear();
+	enqueuedDownloadDescriptions.clear();
+	activeDownloadFile.clear();
 	dlManager->deleteLater();
 	dlManager = nullptr;
 
@@ -1363,6 +1404,7 @@ void CModListView::installMods(QStringList archives)
 {
 	QStringList modNames;
 	QStringList modsToEnable;
+	QMap<QString, QMap<QString, bool>> submodStateBeforeUpdate;
 
 	for(QString archive : archives)
 	{
@@ -1384,8 +1426,14 @@ void CModListView::installMods(QStringList archives)
 	{
 		if(modStateModel->isModExists(mod) && modStateModel->getMod(mod).isInstalled())
 		{
+			// Update flow is uninstall + install. Save submod states now so we can restore
+			// user configuration after reinstall (including nested "main.sub.another" ids).
+			const auto modSettings = modStateModel->getModSettings(mod);
+			for(const auto & settingID : modSettings.keys())
+				submodStateBeforeUpdate[mod][mod + '.' + settingID] = modSettings.value(settingID);
+
 			logGlobal->info("Uninstalling old version of mod '%s'", mod.toStdString());
-			if (modStateModel->isModEnabled(mod))
+			if(modStateModel->isModEnabled(mod))
 				modsToEnable.push_back(mod);
 
 			doUninstallMod(mod, true);
@@ -1403,23 +1451,43 @@ void CModListView::installMods(QStringList archives)
 	{
 		logGlobal->info("Installing mod '%s'", modNames[i].toStdString());
 		QString modDisplayName = modNames[i];
-		if (modStateModel->isModExists(modNames[i]))
+		if(modStateModel->isModExists(modNames[i]))
 			modDisplayName = modStateModel->getMod(modNames[i]).getName();
 
 		ui->progressBar->setFormat(tr("Installing mod %1").arg(modDisplayName));
 
 		manager->installMod(modNames[i], archives[i]);
 
-		if (i == modNames.size() - 1 && modStateModel->isModExists(modNames[i]))
+		if(i == modNames.size() - 1 && modStateModel->isModExists(modNames[i]))
 			lastInstalled = modStateModel->getMod(modNames[i]).getID();
 	}
 
 
 	reload(lastInstalled);
 
-	if (!modsToEnable.empty())
+	if(!modsToEnable.empty())
 	{
 		manager->enableMods(modsToEnable);
+	}
+
+	for(const auto & mod : modNames)
+	{
+		if(!modStateModel->isModExists(mod) || !modStateModel->isModEnabled(mod))
+			continue;
+
+		const auto submodsForMod = submodStateBeforeUpdate.value(mod);
+		for(const auto & submod : submodsForMod.keys())
+		{
+			const bool wasEnabled = submodsForMod.value(submod);
+
+			if(!modStateModel->isModExists(submod))
+				continue;
+
+			if(wasEnabled && !modStateModel->isModEnabled(submod))
+				manager->enableMods({submod});
+			else if(!wasEnabled && modStateModel->isModEnabled(submod))
+				manager->disableMod(submod);
+		}
 	}
 
 	checkManagerErrors();
@@ -1549,6 +1617,10 @@ void CModListView::on_abortButton_clicked()
 {
 	delete dlManager;
 	dlManager = nullptr;
+	enqueuedModDownloads.clear();
+	enqueuedDownloadFiles.clear();
+	enqueuedDownloadDescriptions.clear();
+	activeDownloadFile.clear();
 	Helper::keepScreenOn(false);
 	hideProgressBar();
 }

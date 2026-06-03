@@ -10,28 +10,29 @@
 #include "StdInc.h"
 #include "rewardswidget.h"
 #include "ui_rewardswidget.h"
-#include "../lib/GameLibrary.h"
-#include "../lib/CSkillHandler.h"
-#include "../lib/spells/CSpellHandler.h"
-#include "../lib/CBonusTypeHandler.h"
-#include "../lib/CCreatureHandler.h"
-#include "../lib/constants/StringConstants.h"
-#include "../lib/entities/artifact/CArtifact.h"
-#include "../lib/entities/ResourceTypeHandler.h"
-#include "../lib/mapping/CMap.h"
-#include "../lib/modding/IdentifierStorage.h"
-#include "../lib/modding/ModScope.h"
-#include "../lib/rewardable/Configuration.h"
-#include "../lib/rewardable/Limiter.h"
-#include "../lib/rewardable/Reward.h"
-#include "../lib/mapObjects/CGPandoraBox.h"
-#include "../lib/mapObjects/CQuest.h"
+#include "../../lib/GameLibrary.h"
+#include "../../lib/CSkillHandler.h"
+#include "../../lib/CBonusTypeHandler.h"
+#include "../../lib/CCreatureHandler.h"
+#include "../../lib/constants/StringConstants.h"
+#include "../../lib/entities/artifact/CArtifact.h"
+#include "../../lib/entities/ResourceTypeHandler.h"
+#include "../../lib/mapping/CMap.h"
+#include "../../lib/modding/IdentifierStorage.h"
+#include "../../lib/modding/ModScope.h"
+#include "../../lib/rewardable/Configuration.h"
+#include "../../lib/rewardable/Limiter.h"
+#include "../../lib/rewardable/Reward.h"
+#include "../../lib/mapObjects/CGPandoraBox.h"
+#include "../../lib/mapObjects/CQuest.h"
 
 #include <vcmi/ArtifactService.h>
 #include <vcmi/HeroTypeService.h>
 #include <vcmi/HeroType.h>
 #include <vcmi/HeroClassService.h>
 #include <vcmi/HeroClass.h>
+#include <vcmi/spells/Service.h>
+#include <vcmi/spells/Spell.h>
 
 RewardsWidget::RewardsWidget(CMap & m, CRewardableObject & p, QWidget *parent) :
 	QDialog(parent),
@@ -40,7 +41,7 @@ RewardsWidget::RewardsWidget(CMap & m, CRewardableObject & p, QWidget *parent) :
 	ui(new Ui::RewardsWidget)
 {
 	ui->setupUi(this);
-	
+
 	//fill core elements
 	for(const auto & s : Rewardable::VisitModeString)
 		ui->visitMode->addItem(QString::fromUtf8(s.data(), s.size()));

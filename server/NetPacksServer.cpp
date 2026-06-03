@@ -24,8 +24,8 @@
 #include "../lib/gameState/CGameState.h"
 #include "../lib/battle/IBattleState.h"
 #include "../lib/battle/Unit.h"
-#include "../lib/spells/CSpellHandler.h"
 #include "../lib/spells/ISpellMechanics.h"
+#include "../lib/spells/CSpell.h"
 
 void ApplyGhNetPackVisitor::visitSaveGame(SaveGame & pack)
 {
@@ -63,7 +63,7 @@ void ApplyGhNetPackVisitor::visitMoveHero(MoveHero & pack)
 
 	for (auto const & dest : pack.path)
 	{
-		if (!gh.moveHero(pack.hid, dest, EMovementMode::STANDARD, pack.transit, pack.player))
+		if (!gh.moveHero(pack.hid, dest, EMovementMode::STANDARD, pack.transit, pack.player, pack.layer))
 		{
 			result = false;
 			return;

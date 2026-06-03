@@ -14,12 +14,13 @@
 #include "AdventureSpellEffect.h"
 #include "DimensionDoorEffect.h"
 #include "RemoveObjectEffect.h"
+#include "ReinforcementsEffect.h"
 #include "SummonBoatEffect.h"
 #include "TownPortalEffect.h"
 #include "ViewWorldEffect.h"
 
-#include "../CSpellHandler.h"
 #include "../Problem.h"
+#include "../CSpell.h"
 
 #include "../../json/JsonBonus.h"
 #include "../../mapObjects/CGHeroInstance.h"
@@ -42,6 +43,8 @@ std::unique_ptr<IAdventureSpellEffect> AdventureSpellMechanics::createAdventureE
 		return std::make_unique<SummonBoatEffect>(s, node);
 	if(typeID == "townPortal")
 		return std::make_unique<TownPortalEffect>(s, node);
+	if(typeID == "reinforcements")
+		return std::make_unique<ReinforcementsEffect>(s, node);
 	if(typeID == "viewWorld")
 		return std::make_unique<ViewWorldEffect>(s, node);
 
@@ -116,7 +119,8 @@ bool AdventureSpellMechanics::canBeCast(spells::Problem & problem, const IGameIn
 
 		std::stringstream cachingStr;
 		cachingStr << "source_" << vstd::to_underlying(BonusSource::SPELL_EFFECT) << "id_" << owner->id.num;
-		int castsAlreadyPerformedThisTurn = caster->getHeroCaster()->getBonuses(Selector::source(BonusSource::SPELL_EFFECT, BonusSourceID(owner->id)), cachingStr.str())->size();
+		auto selectorForCastCounter = Selector::source(BonusSource::SPELL_EFFECT, BonusSourceID(owner->id)).And(Selector::type()(BonusType::SPELL_CAST_COUNTER));
+		int castsAlreadyPerformedThisTurn = caster->getHeroCaster()->valOfBonuses(selectorForCastCounter, cachingStr.str());
 		int3 mapSize = cb->getMapSize();
 		bool mapSizeIsAtLeastXL = mapSize.x * mapSize.y * mapSize.z >= GameConstants::TOURNAMENT_RULES_DD_MAP_TILES_THRESHOLD;
 		bool useAlternativeLimit = mapSizeIsAtLeastXL && getLevel(caster).castsPerDayXL != 0;
@@ -166,7 +170,7 @@ void AdventureSpellMechanics::giveBonuses(SpellCastEnvironment * env, const Adve
 
 	GiveBonus gb;
 	gb.id = ObjectInstanceID(parameters.caster->getCasterUnitId());
-	gb.bonus = Bonus(BonusDuration::ONE_DAY, BonusType::NONE, BonusSource::SPELL_EFFECT, 0, BonusSourceID(owner->id));
+	gb.bonus = Bonus(BonusDuration::ONE_DAY, BonusType::SPELL_CAST_COUNTER, BonusSource::SPELL_EFFECT, 1, BonusSourceID(owner->id));
 	env->apply(gb);
 }
 

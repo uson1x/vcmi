@@ -269,7 +269,19 @@
 		"blockDescriptionPropagation": true
 	},
 
+	"LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE":
+	{
+		"hidden": true,
+		"blockDescriptionPropagation": true
+	},
+
 	"LEARN_BATTLE_SPELL_LEVEL_LIMIT":
+	{
+		"hidden": true,
+		"blockDescriptionPropagation": true
+	},
+
+	"LEARN_BATTLE_SPELL_LEVEL_LIMIT_PRE_BATTLE":
 	{
 		"hidden": true,
 		"blockDescriptionPropagation": true
@@ -533,6 +545,10 @@
 	{
 	},
 
+	"LONG_WEAPON":
+	{
+	},
+
 	"PRISM_HEX_ATTACK_BREATH":
 	{
 	},
@@ -616,4 +632,3 @@
 		"blockDescriptionPropagation": true
 	}
 }
-

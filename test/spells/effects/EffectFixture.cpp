@@ -17,6 +17,7 @@
 #include "../../../lib/networkPacks/SetStackEffect.h"
 
 #include "../../../lib/serializer/JsonDeserializer.h"
+#include "../../../lib/spells/effects/SpellEffectService.h"
 
 bool battle::operator==(const Destination& left, const Destination& right)
 {
@@ -53,18 +54,9 @@ EffectFixture::~EffectFixture() = default;
 
 void EffectFixture::setupEffect(const JsonNode & effectConfig)
 {
-	subject = Effect::create(GlobalRegistry::get(), effectName);
-	ASSERT_TRUE(subject);
+	SpellEffectID effectID(*LIBRARY->identifiers()->getIdentifier(ModScope::scopeGame(), "spellEffect", effectName));
 
-	JsonNode effectConfigActual = effectConfig;
-	effectConfigActual.setModScope("game");
-	JsonDeserializer deser(nullptr, effectConfigActual);
-	subject->serializeJson(deser);
-}
-
-void EffectFixture::setupEffect(Registry * registry, const JsonNode & effectConfig)
-{
-	subject = Effect::create(registry, effectName);
+	subject = LIBRARY->spellEffects()->create(effectID);
 	ASSERT_TRUE(subject);
 
 	JsonNode effectConfigActual = effectConfig;
@@ -76,24 +68,30 @@ void EffectFixture::setupEffect(Registry * registry, const JsonNode & effectConf
 
 void EffectFixture::setUp()
 {
-#if SCRIPTING_ENABLED
-	pool = std::make_shared<PoolMock>();
-	battleFake = std::make_shared<battle::BattleFake>(pool);
-#else
+	EXPECT_CALL(environmentMock, game()).WillRepeatedly(Return(&gameMock));
+	EXPECT_CALL(environmentMock, logger()).WillRepeatedly(Return(&loggerMock));
+	EXPECT_CALL(environmentMock, eventBus()).WillRepeatedly(Return(&eventBus));
+	EXPECT_CALL(environmentMock, services()).WillRepeatedly(Return(&servicesMock));
+
+	pool = LIBRARY->scripts()->createPoolInstance(&environmentMock);
 	battleFake = std::make_shared<battle::BattleFake>();
-#endif
 	battleFake->setUp();
 
 	EXPECT_CALL(mechanicsMock, game()).WillRepeatedly(Return(&gameMock));
 	EXPECT_CALL(mechanicsMock, battle()).WillRepeatedly(Return(battleFake.get()));
+	EXPECT_CALL(mechanicsMock, getBattleID()).WillRepeatedly(Return(BattleID()));
+	EXPECT_CALL(mechanicsMock, getHeroCaster()).WillRepeatedly(Return(nullptr));
+
+	EXPECT_CALL(*battleFake, getBattleID()).Times(AtLeast(0));
+
+	EXPECT_CALL(*battleFake, getScriptContextPool()).WillRepeatedly(ReturnRef(*pool));
+
+	EXPECT_CALL(servicesMock, creatures()).WillRepeatedly(Return(&creatureServiceMock));
+	EXPECT_CALL(mechanicsMock, creatures()).WillRepeatedly(Return(&creatureServiceMock));
 
 	ON_CALL(*battleFake, getUnitsIf(_)).WillByDefault(Invoke(&unitsFake, &battle::UnitsFake::getUnitsIf));
 	ON_CALL(mechanicsMock, spells()).WillByDefault(Return(&spellServiceMock));
 	ON_CALL(spellServiceMock, getById(_)).WillByDefault(Return(&spellStub));
-
-	ON_CALL(mechanicsMock, creatures()).WillByDefault(Return(&creatureServiceMock));
-	ON_CALL(creatureServiceMock, getById(_)).WillByDefault(Return(&creatureStub));
-	ON_CALL(creatureServiceMock, getByIndex(_)).WillByDefault(Return(&creatureStub));
 
 	ON_CALL(serverMock, getRNG()).WillByDefault(Return(&rngMock));
 

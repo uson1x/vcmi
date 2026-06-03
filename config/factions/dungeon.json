@@ -2,7 +2,7 @@
 	"dungeon" :
 	{
 		"index" : 5,
-		"nativeTerrain": "subterra",
+		"nativeTerrain": [ "subterra" ],
 		"alignment" : "evil",
 		"preferUndergroundPlacement": true,
 		"creatureBackground" :

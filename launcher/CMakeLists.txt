@@ -21,6 +21,7 @@ set(launcher_SRCS
 		startGame/StartGameTab.cpp
 		firstLaunch/firstlaunch_moc.cpp
 		firstLaunch/progressoverlay.cpp
+		demo.cpp
 		main.cpp
 		helper.cpp
 		innoextract.cpp
@@ -64,6 +65,7 @@ set(launcher_HEADERS
 		mainwindow_moc.h
 		languages.h
 		updatedialog_moc.h
+		demo.h
 		main.h
 		helper.h
 		innoextract.h
@@ -112,6 +114,7 @@ set(launcher_TS
 	"${translationsDir}/serbian.ts"
 	"${translationsDir}/spanish.ts"
 	"${translationsDir}/swedish.ts"
+	"${translationsDir}/tchinese.ts"
 	"${translationsDir}/turkish.ts"
 	"${translationsDir}/ukrainian.ts"
 	"${translationsDir}/vietnamese.ts"
@@ -204,6 +207,8 @@ if(ANDROID)
 	list(APPEND launcher_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/config.qrc")
 	generate_binary_resource("Mods" "${CMAKE_SOURCE_DIR}/Mods")
 	list(APPEND launcher_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/Mods.qrc")
+	generate_binary_resource("scripts" "${CMAKE_SOURCE_DIR}/scripts")
+	list(APPEND launcher_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/scripts.qrc")
 endif()
 
 target_sources(vcmilauncher PRIVATE
@@ -287,8 +292,29 @@ else()
 	install(TARGETS vcmilauncher DESTINATION ${BIN_DIR})
 
 	# Install icons and desktop file on Linux
-	if(NOT WIN32 AND NOT APPLE)
-		install(FILES "vcmilauncher.desktop" DESTINATION share/applications)
-		install(FILES "eu.vcmi.VCMI.metainfo.xml" DESTINATION share/metainfo)
+	if(NOT WIN32 AND NOT APPLE AND ENABLE_TRANSLATIONS)
+
+		add_custom_command(
+			TARGET vcmilauncher POST_BUILD
+			COMMAND msgfmt --xml
+			    -d ${CMAKE_CURRENT_SOURCE_DIR}/po/
+				-o ${CMAKE_CURRENT_BINARY_DIR}/eu.vcmi.VCMI.metainfo.xml
+				--template=${CMAKE_CURRENT_SOURCE_DIR}/eu.vcmi.VCMI.metainfo.xml
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMENT "Translating eu.vcmi.VCMI.metainfo.xml"
+		)
+
+	    add_custom_command(
+			TARGET vcmilauncher POST_BUILD
+			COMMAND msgfmt --desktop
+			    -d ${CMAKE_CURRENT_SOURCE_DIR}/po/
+				-o ${CMAKE_CURRENT_BINARY_DIR}/vcmilauncher.desktop
+				--template=${CMAKE_CURRENT_SOURCE_DIR}/vcmilauncher.desktop
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			COMMENT "Translating vcmilauncher.desktop"
+		)
+
+	    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/vcmilauncher.desktop" DESTINATION share/applications)
+		install(FILES "${CMAKE_CURRENT_BINARY_DIR}/eu.vcmi.VCMI.metainfo.xml" DESTINATION share/metainfo)
 	endif()
 endif()

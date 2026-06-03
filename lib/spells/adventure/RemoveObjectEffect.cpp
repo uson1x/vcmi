@@ -11,7 +11,7 @@
 #include "StdInc.h"
 #include "RemoveObjectEffect.h"
 
-#include "../CSpellHandler.h"
+#include "../CSpell.h"
 
 #include "../../callback/IGameInfoCallback.h"
 #include "../../mapObjects/CGHeroInstance.h"

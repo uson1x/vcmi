@@ -18,10 +18,10 @@
 #include "../mapObjects/CGHeroInstance.h"
 #include "../mapObjects/CGTownInstance.h"
 #include "../mapObjects/MiscObjects.h"
+#include "../spells/CSpell.h"
 #include "../StartInfo.h"
 #include "../battle/BattleInfo.h"
 #include "../IGameSettings.h"
-#include "../spells/CSpellHandler.h"
 #include "../mapping/CMap.h"
 #include "../CPlayerState.h"
 
@@ -171,6 +171,11 @@ const StartInfo * CGameInfoCallback::getStartInfo() const
 const StartInfo * CGameInfoCallback::getInitialStartInfo() const
 {
 	return gameState().getInitialStartInfo();
+}
+
+const scripting::Pool & CGameInfoCallback::getScriptContextPool() const
+{
+	return gameState().getScriptContextPool();
 }
 
 int32_t CGameInfoCallback::getSpellCost(const spells::Spell * sp, const CGHeroInstance * caster) const
@@ -934,12 +939,5 @@ bool CGameInfoCallback::checkForVisitableDir(const int3 & src, const int3 & dst)
 	const TerrainTile * pom = &map.getTile(dst);
 	return map.checkForVisitableDir(src, pom, dst);
 }
-
-#if SCRIPTING_ENABLED
-scripting::Pool * CGameInfoCallback::getGlobalContextPool() const
-{
-	return nullptr; // TODO
-}
-#endif
 
 VCMI_LIB_NAMESPACE_END

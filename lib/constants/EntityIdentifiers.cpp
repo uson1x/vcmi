@@ -11,7 +11,7 @@
 #include "StdInc.h"
 
 #ifndef VCMI_NO_EXTRA_VERSION
-#include "../Version.h"
+#include "../../Version.h"
 #endif
 #include <vcmi/Artifact.h>
 #include <vcmi/ArtifactService.h>
@@ -32,16 +32,16 @@
 #include "modding/ModScope.h"
 #include "GameLibrary.h"
 #include "CCreatureHandler.h"
-#include "spells/CSpellHandler.h"
-#include "spells/SpellSchoolHandler.h"
 #include "CSkillHandler.h"
+#include "constants/StringConstants.h"
 #include "entities/artifact/CArtifact.h"
 #include "entities/faction/CFaction.h"
 #include "entities/hero/CHero.h"
 #include "entities/hero/CHeroClass.h"
 #include "entities/ResourceTypeHandler.h"
 #include "mapObjectConstructors/AObjectTypeHandler.h"
-#include "constants/StringConstants.h"
+#include "spells/CSpell.h"
+#include "spells/SpellSchoolHandler.h"
 #include "texts/CGeneralTextHandler.h"
 #include "TerrainHandler.h"
 #include "RiverHandler.h"
@@ -82,6 +82,8 @@ const SpellSchool SpellSchool::AIR(0);
 const SpellSchool SpellSchool::FIRE(1);
 const SpellSchool SpellSchool::EARTH(2);
 const SpellSchool SpellSchool::WATER(3);
+
+const SpellEffectID SpellEffectID::NONE(-1);
 
 const FactionID FactionID::NONE(-2);
 const FactionID FactionID::DEFAULT(-1);

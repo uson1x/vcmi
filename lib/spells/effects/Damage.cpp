@@ -10,8 +10,6 @@
 #include "StdInc.h"
 
 #include "Damage.h"
-#include "Registry.h"
-#include "../CSpellHandler.h"
 #include "../ISpellMechanics.h"
 
 #include "../../CStack.h"
@@ -21,7 +19,7 @@
 #include "../../texts/CGeneralTextHandler.h"
 #include "../../texts/Languages.h"
 #include "../../serializer/JsonSerializeFormat.h"
-#include "../lib/CRandomGenerator.h"
+#include "../../CRandomGenerator.h"
 
 #include <vcmi/spells/Spell.h>
 
@@ -33,7 +31,7 @@ namespace spells
 namespace effects
 {
 
-void Damage::apply(ServerCallback * server, const Mechanics * m, const EffectTarget & target) const
+void Damage::apply(ServerCallback * server, const Mechanics * m, const Target & target) const
 {
 	StacksInjured stacksInjured;
 	BattleLogMessage blm;
@@ -86,7 +84,7 @@ void Damage::apply(ServerCallback * server, const Mechanics * m, const EffectTar
 		server->apply(blm);
 }
 
-SpellEffectValue Damage::getHealthChange(const Mechanics * m, const EffectTarget & spellTarget) const
+SpellEffectValue Damage::getHealthChange(const Mechanics * m, const Target & spellTarget) const
 {
 	SpellEffectValue result {};
 

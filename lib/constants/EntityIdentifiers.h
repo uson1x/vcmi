@@ -733,7 +733,7 @@ class DLL_LINKAGE EPathfindingLayerBase : public IdentifierBase
 public:
 	enum Type : int32_t
 	{
-		LAND = 0, SAIL = 1, WATER, AIR, NUM_LAYERS, WRONG, AUTO
+		LAND = 0, SAIL = 1, WATER, AVIATE, AIR, NUM_LAYERS, WRONG, AUTO
 	};
 };
 
@@ -1068,6 +1068,15 @@ public:
 	static std::string encode(const si32 index);
 	static std::string entityType();
 };
+
+class DLL_LINKAGE SpellEffectID : public StaticIdentifier<SpellEffectID>
+{
+public:
+	using StaticIdentifier<SpellEffectID>::StaticIdentifier;
+
+	static const SpellEffectID NONE;
+};
+
 
 class GameResIDBase : public IdentifierBase
 {

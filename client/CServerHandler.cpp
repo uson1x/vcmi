@@ -80,6 +80,7 @@ CServerHandler::~CServerHandler()
 	serverRunner.reset();
 	if (threadNetwork.joinable())
 	{
+		//ENGINE->interfaceMutex must have been locked by the current thread, otherwise an unlock will cause undefined behavior
 		auto unlockInterface = vstd::makeUnlockGuard(ENGINE->interfaceMutex);
 		threadNetwork.join();
 	}
@@ -93,6 +94,7 @@ void CServerHandler::endNetwork()
 
 	if (threadNetwork.joinable())
 	{
+		//ENGINE->interfaceMutex must have been locked by the current thread, otherwise an unlock will cause undefined behavior
 		auto unlockInterface = vstd::makeUnlockGuard(ENGINE->interfaceMutex);
 		threadNetwork.join();
 	}
@@ -109,6 +111,7 @@ CServerHandler::CServerHandler()
 	, screenType(ESelectionScreen::unknown)
 	, serverMode(EServerMode::NONE)
 	, loadMode(ELoadMode::NONE)
+	, hotseatMode(false)
 	, battleMode(false)
 	, client(nullptr)
 {
@@ -139,7 +142,10 @@ void CServerHandler::resetStateForLobby(EStartMode mode, ESelectionScreen screen
 	hostClientId = GameConnectionID::INVALID;
 	setState(EClientState::NONE);
 	serverMode = newServerMode;
+	loadMode = ELoadMode::NONE;
 	mapToStart = nullptr;
+	hotseatMode = false;
+	battleMode = false;
 	th = std::make_unique<CStopWatch>();
 	logicConnection.reset();
 	si = std::make_shared<StartInfo>();
@@ -336,6 +342,18 @@ bool CServerHandler::isHost() const
 bool CServerHandler::isGuest() const
 {
 	return !logicConnection || hostClientId != logicConnection->connectionID;
+}
+
+bool CServerHandler::hasRemoteClientInLobby() const
+{
+	for(const auto & playerEntry : playerNames)
+	{
+		const auto connectionId = playerEntry.second.connection;
+		if(connectionId != GameConnectionID::INVALID && connectionId != hostClientId)
+			return true;
+	}
+
+	return false;
 }
 
 const std::string & CServerHandler::getLocalHostname() const
@@ -586,7 +604,12 @@ bool CServerHandler::validateGameStart(bool allowOnlyAI) const
 	catch(std::exception & e)
 	{
 		logGlobal->error("Exception during startScenario: %s", e.what());
-		showServerError(std::string("Unable to start map!\nReason: ") + e.what());
+		MetaString message;
+		message.appendTextID("vcmi.lobby.system.unableStartMap");
+		message.appendRawString("\n");
+		message.appendTextID("vcmi.lobby.system.reason");
+		message.replaceRawString(e.what());
+		showServerError(message.toString());
 		return false;
 	}
 
@@ -673,7 +696,8 @@ void CServerHandler::showHighScoresAndEndGameplay(PlayerColor player, bool victo
 
 		endGameplay();
 		GAME->mainmenu()->menu->switchToTab("main");
-		ENGINE->windows().createAndPushWindow<CHighScoreInputScreen>(victory, scenarioHighScores, statistic);
+		if(!ENGINE->isDemoData())
+			ENGINE->windows().createAndPushWindow<CHighScoreInputScreen>(victory, scenarioHighScores, statistic);
 	}
 }
 
@@ -978,7 +1002,12 @@ void CServerHandler::waitForServerShutdown()
 	if (!serverRunner)
 		return; // may not exist for guest in MP
 
-	serverRunner->wait();
+	{
+		// Release interfaceMutex while waiting for server thread to finish
+		// to avoid blocking the GUI thread (same pattern as endNetwork())
+		auto unlockInterface = vstd::makeUnlockGuard(ENGINE->interfaceMutex);
+		serverRunner->wait();
+	}
 	int exitCode = serverRunner->exitCode();
 	serverRunner.reset();
 

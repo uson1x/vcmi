@@ -16,6 +16,7 @@ set(lib_SRCS
 	filesystem/MinizipExtensions.cpp
 	filesystem/ResourcePath.cpp
 
+	json/JsonFormatException.cpp
 	json/JsonNode.cpp
 	json/JsonParser.cpp
 	json/JsonUtils.cpp
@@ -39,6 +40,7 @@ set(lib_SRCS
 	CConfigHandler.cpp
 	CConsoleHandler.cpp
 	CThreadHelper.cpp
+	ExceptionsCommon.cpp
 	VCMIDirs.cpp
 )
 
@@ -97,6 +99,7 @@ set(lib_MAIN_SRCS
 	campaign/CampaignRegionsHandler.cpp
 
 	constants/EntityIdentifiers.cpp
+	constants/IdentifierBase.cpp
 
 	entities/artifact/ArtifactUtils.cpp
 	entities/artifact/ArtSlotInfo.cpp
@@ -124,6 +127,7 @@ set(lib_MAIN_SRCS
 
 	json/JsonBonus.cpp
 	json/JsonRandom.cpp
+	json/JsonKeyExtractor.cpp
 
 	gameState/CGameState.cpp
 	gameState/CGameStateCampaign.cpp
@@ -192,6 +196,7 @@ set(lib_MAIN_SRCS
 	modding/ContentTypeHandler.cpp
 	modding/IdentifierStorage.cpp
 	modding/ModDescription.cpp
+	modding/ModIncompatibility.cpp
 	modding/ModManager.cpp
 	modding/ModUtility.cpp
 	modding/ModVerificationInfo.cpp
@@ -220,6 +225,7 @@ set(lib_MAIN_SRCS
 	rmg/CRmgTemplate.cpp
 	rmg/CRmgTemplateStorage.cpp
 	rmg/CZonePlacer.cpp
+	rmg/CZoneGridPlacer.cpp
 	rmg/CRoadRandomizer.cpp
 	rmg/TileInfo.cpp
 	rmg/Zone.cpp
@@ -263,6 +269,7 @@ set(lib_MAIN_SRCS
 	spells/AbilityCaster.cpp
 	spells/BattleSpellMechanics.cpp
 	spells/BonusCaster.cpp
+	spells/CSpell.cpp
 	spells/CSpellHandler.cpp
 	spells/ExternalCaster.cpp
 	spells/ISpellMechanics.cpp
@@ -277,14 +284,15 @@ set(lib_MAIN_SRCS
 	spells/adventure/AdventureSpellMechanics.cpp
 	spells/adventure/DimensionDoorEffect.cpp
 	spells/adventure/RemoveObjectEffect.cpp
+	spells/adventure/ReinforcementsEffect.cpp
 	spells/adventure/SummonBoatEffect.cpp
+	spells/adventure/TownRelatedAdventureSpellEffect.cpp
 	spells/adventure/TownPortalEffect.cpp
 	spells/adventure/ViewWorldEffect.cpp
 
 	spells/effects/Catapult.cpp
 	spells/effects/Clone.cpp
 	spells/effects/Damage.cpp
-	spells/effects/DemonSummon.cpp
 	spells/effects/Dispel.cpp
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
@@ -292,9 +300,8 @@ set(lib_MAIN_SRCS
 	spells/effects/LocationEffect.cpp
 	spells/effects/Moat.cpp
 	spells/effects/Obstacle.cpp
-	spells/effects/Registry.cpp
+	spells/effects/SpellEffectHandler.cpp
 	spells/effects/UnitEffect.cpp
-	spells/effects/Summon.cpp
 	spells/effects/Teleport.cpp
 	spells/effects/Timed.cpp
 	spells/effects/RemoveObstacle.cpp
@@ -310,11 +317,12 @@ set(lib_MAIN_SRCS
 	CAndroidVMHelper.cpp
 	CBonusTypeHandler.cpp
 	CCreatureHandler.cpp
+	ConditionalWait.cpp
 	CPlayerState.cpp
 	CRandomGenerator.cpp
-	CScriptingModule.cpp
 	CSkillHandler.cpp
 	CStack.cpp
+	ExceptionsCommon.cpp
 	GameSettings.cpp
 	IHandlerBase.cpp
 	LoadProgress.cpp
@@ -325,7 +333,6 @@ set(lib_MAIN_SRCS
 	RiverHandler.cpp
 	RoadHandler.cpp
 	MapLayerHandler.cpp
-	ScriptHandler.cpp
 	TerrainHandler.cpp
 	TurnTimerInfo.cpp
 	GameLibrary.cpp
@@ -414,6 +421,7 @@ set(lib_MAIN_HEADERS
 	../include/vcmi/events/SubscriptionRegistry.h
 	../include/vcmi/events/TurnStarted.h
 
+	../include/vcmi/scripting/ApiTags.h
 	../include/vcmi/scripting/Service.h
 
 	../include/vcmi/spells/Caster.h
@@ -553,6 +561,7 @@ set(lib_MAIN_HEADERS
 
 	json/JsonBonus.h
 	json/JsonRandom.h
+	json/JsonKeyExtractor.h
 
 	gameState/CGameState.h
 	gameState/CGameStateCampaign.h
@@ -686,6 +695,7 @@ set(lib_MAIN_HEADERS
 	rmg/CRmgTemplate.h
 	rmg/CRmgTemplateStorage.h
 	rmg/CZonePlacer.h
+	rmg/CZoneGridPlacer.h
 	rmg/CRoadRandomizer.h
 	rmg/TileInfo.h
 	rmg/Zone.h
@@ -738,12 +748,14 @@ set(lib_MAIN_HEADERS
 	spells/AbilityCaster.h
 	spells/BattleSpellMechanics.h
 	spells/BonusCaster.h
+	spells/CSpell.h
 	spells/CSpellHandler.h
 	spells/ExternalCaster.h
 	spells/ISpellMechanics.h
 	spells/ObstacleCasterProxy.h
 	spells/Problem.h
 	spells/ProxyCaster.h
+	spells/SpellAnimationItem.h
 	spells/SpellSchoolHandler.h
 	spells/TargetCondition.h
 	spells/ViewSpellInt.h
@@ -752,6 +764,7 @@ set(lib_MAIN_HEADERS
 	spells/adventure/AdventureSpellEffect.h
 	spells/adventure/DimensionDoorEffect.h
 	spells/adventure/RemoveObjectEffect.h
+	spells/adventure/ReinforcementsEffect.h
 	spells/adventure/SummonBoatEffect.h
 	spells/adventure/TownPortalEffect.h
 	spells/adventure/ViewWorldEffect.h
@@ -759,7 +772,6 @@ set(lib_MAIN_HEADERS
 	spells/effects/Catapult.h
 	spells/effects/Clone.h
 	spells/effects/Damage.h
-	spells/effects/DemonSummon.h
 	spells/effects/Dispel.h
 	spells/effects/Effect.h
 	spells/effects/Effects.h
@@ -767,9 +779,9 @@ set(lib_MAIN_HEADERS
 	spells/effects/Heal.h
 	spells/effects/LocationEffect.h
 	spells/effects/Obstacle.h
-	spells/effects/Registry.h
+	spells/effects/SpellEffectHandler.h
+	spells/effects/SpellEffectService.h
 	spells/effects/UnitEffect.h
-	spells/effects/Summon.h
 	spells/effects/Teleport.h
 	spells/effects/Timed.h
 	spells/effects/RemoveObstacle.h
@@ -791,7 +803,6 @@ set(lib_MAIN_HEADERS
 	Color.h
 	CPlayerState.h
 	CRandomGenerator.h
-	CScriptingModule.h
 	CSkillHandler.h
 	CSoundBase.h
 	CStack.h
@@ -815,7 +826,6 @@ set(lib_MAIN_HEADERS
 	RiverHandler.h
 	RoadHandler.h
 	MapLayerHandler.h
-	ScriptHandler.h
 	ScopeGuard.h
 	StartInfo.h
 	TerrainHandler.h
@@ -839,8 +849,8 @@ endif()
 
 set_target_properties(vcmi PROPERTIES COMPILE_DEFINITIONS "VCMI_DLL=1")
 target_link_libraries(vcmi PUBLIC
-	minizip::minizip ZLIB::ZLIB
-	${SYSTEM_LIBS} Boost::boost Boost::filesystem Boost::program_options Boost::locale Boost::date_time
+	minizip::minizip ZLIB::ZLIB Iconv::Iconv
+	${SYSTEM_LIBS} Boost::boost Boost::filesystem Boost::program_options Boost::date_time
 )
 
 if (NOT ENABLE_MINIMAL_LIB)
@@ -850,9 +860,7 @@ endif()
 if(ENABLE_STATIC_LIBS AND ENABLE_CLIENT)
 	target_compile_definitions(vcmi PRIVATE STATIC_AI)
 	target_link_libraries(vcmi PRIVATE EmptyAI)
-	if(ENABLE_NULLKILLER_AI)
-		target_link_libraries(vcmi PRIVATE Nullkiller)
-	endif()
+	target_link_libraries(vcmi PRIVATE vcmiLua)
 
 	if(ENABLE_NULLKILLER2_AI)
 		target_link_libraries(vcmi PRIVATE Nullkiller2)
@@ -924,8 +932,10 @@ if(COPY_CONFIG_ON_BUILD)
 	add_custom_command(TARGET vcmi POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/config
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/Mods
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/scripts
 		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_modules/create_link.cmake ${CMAKE_SOURCE_DIR}/config ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/config
 		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_modules/create_link.cmake ${CMAKE_SOURCE_DIR}/Mods ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/Mods
+		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_modules/create_link.cmake ${CMAKE_SOURCE_DIR}/scripts ${CMAKE_BINARY_DIR}/bin/${CMAKE_CFG_INTDIR}/scripts
 	)
 endif()
 

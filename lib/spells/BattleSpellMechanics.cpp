@@ -12,7 +12,7 @@
 #include "BattleSpellMechanics.h"
 
 #include "Problem.h"
-#include "CSpellHandler.h"
+#include "CSpell.h"
 
 #include "../battle/IBattleState.h"
 #include "../battle/CBattleInfoCallback.h"
@@ -167,7 +167,7 @@ void BattleSpellMechanics::applyEffects(ServerCallback * server, const Target & 
 			}
 			else
 			{
-				EffectTarget filtered = effect->filterTarget(this, targets);
+				Target filtered = effect->filterTarget(this, targets);
 				effect->apply(server, this, filtered);
 			}
 		}
@@ -312,11 +312,11 @@ std::vector<const CStack *> BattleSpellMechanics::getAffectedStacks(const Target
 {
 	Target spellTarget = transformSpellTarget(target);
 
-	EffectTarget all;
+	Target all;
 
 	effects->forEachEffect(getEffectLevel(), [&all, &target, &spellTarget, this](const effects::Effect * e, bool & stop)
 	{
-		EffectTarget one = e->transformTarget(this, target, spellTarget);
+		Target one = e->transformTarget(this, target, spellTarget);
 		vstd::concatenate(all, one);
 	});
 
@@ -675,86 +675,9 @@ std::vector<AimType> BattleSpellMechanics::getTargetTypes() const
 	{
 		effects->forEachEffect(getEffectLevel(), [&](const effects::Effect * e, bool & stop)
 		{
-			e->adjustTargetTypes(ret);
+			e->adjustTargetTypes(ret, this);
 			stop = ret.empty();
 		});
-	}
-
-	return ret;
-}
-
-std::vector<Destination> BattleSpellMechanics::getPossibleDestinations(size_t index, AimType aimType, const Target & current, bool fast) const
-{
-	//TODO: BattleSpellMechanics::getPossibleDestinations
-
-	if(index != 0)
-		return std::vector<Destination>();
-
-	std::vector<Destination> ret;
-
-	switch(aimType)
-	{
-	case AimType::CREATURE:
-	{
-		auto stacks = battle()->battleGetAllStacks();
-
-		for(auto stack : stacks)
-		{
-			Target tmp = current;
-			tmp.emplace_back(stack->getPosition());
-
-			if(canBeCastAt(tmp))
-				ret.emplace_back(stack->getPosition());
-		}
-
-		break;
-	}
-
-	case AimType::LOCATION:
-		if(fast)
-		{
-			auto stacks = battle()->battleGetAllStacks();
-			BattleHexArray hexesToCheck;
-
-			for(auto stack : stacks)
-			{
-				hexesToCheck.insert(stack->getPosition());
-				hexesToCheck.insert(stack->getPosition().getNeighbouringTiles());
-			}
-
-			for(const auto & hex : hexesToCheck)
-			{
-				if(hex.isAvailable())
-				{
-					Target tmp = current;
-					tmp.emplace_back(hex);
-
-					if(canBeCastAt(tmp))
-						ret.emplace_back(hex);
-				}
-			}
-		}
-		else
-		{
-			for(int i = 0; i < GameConstants::BFIELD_SIZE; i++)
-			{
-				BattleHex dest(i);
-				if(dest.isAvailable())
-				{
-					Target tmp = current;
-					tmp.emplace_back(dest);
-
-					if(canBeCastAt(tmp))
-						ret.emplace_back(dest);
-				}
-			}
-		}
-		break;
-	case AimType::NO_TARGET:
-		ret.emplace_back();
-		break;
-	default:
-		break;
 	}
 
 	return ret;

@@ -24,18 +24,11 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-bool INativeTerrainProvider::isNativeTerrain(TerrainId terrain) const
-{
-	auto native = getNativeTerrain();
-	return native == terrain || native == ETerrainId::ANY_TERRAIN;
-}
-
-TerrainId AFactionMember::getNativeTerrain() const
+bool AFactionMember::isNativeTerrain(TerrainId terrain) const
 {
 	//this code is used in the TerrainLimiter::limit to setup battle bonuses
 	//and in the CGHeroInstance::getNativeTerrain() to setup movement bonuses or/and penalties.
-	return getBonusBearer()->hasBonusOfType(BonusType::TERRAIN_NATIVE)
-			 ? TerrainId::ANY_TERRAIN : getFactionID().toEntity(LIBRARY)->getNativeTerrain();
+	return getBonusBearer()->hasBonusOfType(BonusType::TERRAIN_NATIVE) || getFactionID().toEntity(LIBRARY)->isNativeTerrain(terrain);
 }
 
 int32_t AFactionMember::magicResistance() const

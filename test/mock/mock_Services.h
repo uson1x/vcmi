@@ -22,9 +22,7 @@ public:
 	MOCK_CONST_METHOD0(heroClasses, const HeroClassService *());
 	MOCK_CONST_METHOD0(heroTypes, const HeroTypeService *());
 	MOCK_CONST_METHOD0(resources, const ResourceTypeService *());
-#if SCRIPTING_ENABLED
 	MOCK_CONST_METHOD0(scripts, const scripting::Service *());
-#endif
 	MOCK_CONST_METHOD0(spells, const spells::Service *());
 	MOCK_CONST_METHOD0(skills, const SkillService * ());
 	MOCK_CONST_METHOD0(battlefields, const BattleFieldService *());
@@ -33,8 +31,7 @@ public:
 
 	MOCK_METHOD3(updateEntity, void(Metatype, int32_t, const JsonNode &));
 
-	MOCK_CONST_METHOD0(spellEffects, const spells::effects::Registry *());
-	MOCK_METHOD0(spellEffects, spells::effects::Registry *());
+	MOCK_CONST_METHOD0(spellEffects, const spells::effects::SpellEffectService *());
 };
 
 
