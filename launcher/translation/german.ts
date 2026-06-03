@@ -1596,12 +1596,12 @@ Bin (%n Bytes):
     <message>
         <location filename="../languages.cpp" line="26"/>
         <source>Simplified Chinese</source>
-        <translation type="unfinished"></translation>
+        <translation>Vereinfachtes Chinesisch</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="27"/>
         <source>Traditional Chinese</source>
-        <translation type="unfinished"></translation>
+        <translation>Traditionelles Chinesisch</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="28"/>
