@@ -596,22 +596,22 @@
     <message>
         <location filename="../mapsettings/heroessettings.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Formular</translation>
+        <translation>Formular</translation>
     </message>
     <message>
         <location filename="../mapsettings/heroessettings.h" line="47"/>
         <source>All heroes</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle Helden</translation>
     </message>
     <message>
         <location filename="../mapsettings/heroessettings.h" line="48"/>
         <source>Exclusive heroes</source>
-        <translation type="unfinished"></translation>
+        <translation>Exklusive Helden</translation>
     </message>
     <message>
         <location filename="../mapsettings/heroessettings.h" line="49"/>
         <source>Banned Heroes</source>
-        <translation type="unfinished">Verbotene Helden</translation>
+        <translation>Verbotene Helden</translation>
     </message>
 </context>
 <context>
@@ -4996,27 +4996,27 @@ Wächter: %3</translation>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
         <source>Terrain Selector</source>
-        <translation type="unfinished">Terrain-Wähler</translation>
+        <translation>Terrain-Wähler</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
         <source>Spell Selector</source>
-        <translation type="unfinished">Zauberauswahl</translation>
+        <translation>Zauberauswahl</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
         <source>Artifact Selector</source>
-        <translation type="unfinished">Artefaktauswahl</translation>
+        <translation>Artefaktauswahl</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
         <source>Skill Selector</source>
-        <translation type="unfinished">Fertigkeitenauswahl</translation>
+        <translation>Fertigkeitenauswahl</translation>
     </message>
     <message>
         <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
         <source>Hero Type Selector</source>
-        <translation type="unfinished">Heldentypauswahl</translation>
+        <translation>Heldentypauswahl</translation>
     </message>
 </context>
 </TS>

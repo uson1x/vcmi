@@ -1603,12 +1603,12 @@ Bin (%n байтів):
     <message>
         <location filename="../languages.cpp" line="26"/>
         <source>Simplified Chinese</source>
-        <translation type="unfinished"></translation>
+        <translation>Спрощена китайська</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="27"/>
         <source>Traditional Chinese</source>
-        <translation type="unfinished"></translation>
+        <translation>Традиційна китайська</translation>
     </message>
     <message>
         <location filename="../languages.cpp" line="28"/>
