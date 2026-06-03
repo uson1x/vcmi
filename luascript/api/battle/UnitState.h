@@ -24,9 +24,6 @@ class Creature;
 namespace scripting::api
 {
 
-using ::battle::Unit;
-using ::battle::HealInfo;
-
 class LuaUnitState : public scripting::ApiCopyable<LuaUnitState>
 {
 	std::shared_ptr<::battle::CUnitState> state;

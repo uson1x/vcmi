@@ -18,6 +18,7 @@
 
 namespace scripting::api
 {
+using ::events::ObjectVisitStarted;
 
 VCMI_REGISTER_SCRIPT_API(ObjectVisitStartedProxy, "events.ObjectVisitStarted");
 

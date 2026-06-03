@@ -23,6 +23,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
 {
+using ::battle::IUnitInfo;
+using ::battle::Unit;
 
 const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 {
