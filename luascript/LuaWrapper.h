@@ -147,6 +147,30 @@ protected:
 	void adjustMetatable(lua_State * L) const override
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
+
+		lua_pushstring(L, "__eq");
+		lua_pushcfunction(L, &equalityImpl);
+		lua_rawset(L, -3);
+	}
+
+private:
+	static int equalityImpl(lua_State * L)
+	{
+		void * lhsRaw = lua_touserdata(L, 1);
+		void * rhsRaw = lua_touserdata(L, 2);
+
+		if(!lhsRaw || !rhsRaw)
+		{
+			lua_pushboolean(L, 0);
+			return 1;
+		}
+
+		// Userdata block holds a T* (or const T*) by value; read both as void* to compare addresses.
+		void * lhsPtr = *static_cast<void **>(lhsRaw);
+		void * rhsPtr = *static_cast<void **>(rhsRaw);
+
+		lua_pushboolean(L, lhsPtr == rhsPtr ? 1 : 0);
+		return 1;
 	}
 };
 
@@ -197,6 +221,29 @@ protected:
 	void adjustMetatable(lua_State * L) const override
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
+
+		lua_pushstring(L, "__eq");
+		lua_pushcfunction(L, &equalityImpl);
+		lua_rawset(L, -3);
+	}
+
+private:
+	static int equalityImpl(lua_State * L)
+	{
+		void * lhsRaw = lua_touserdata(L, 1);
+		void * rhsRaw = lua_touserdata(L, 2);
+
+		if(!lhsRaw || !rhsRaw)
+		{
+			lua_pushboolean(L, 0);
+			return 1;
+		}
+
+		auto * lhs = static_cast<UDataType *>(lhsRaw);
+		auto * rhs = static_cast<UDataType *>(rhsRaw);
+
+		lua_pushboolean(L, lhs->get() == rhs->get() ? 1 : 0);
+		return 1;
 	}
 };
 
@@ -247,6 +294,32 @@ protected:
 	void adjustMetatable(lua_State * L) const override
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
+
+		if constexpr(std::equality_comparable<UDataType>)
+		{
+			lua_pushstring(L, "__eq");
+			lua_pushcfunction(L, &equalityImpl);
+			lua_rawset(L, -3);
+		}
+	}
+
+private:
+	static int equalityImpl(lua_State * L) requires std::equality_comparable<UDataType>
+	{
+		void * lhsRaw = lua_touserdata(L, 1);
+		void * rhsRaw = lua_touserdata(L, 2);
+
+		if(!lhsRaw || !rhsRaw)
+		{
+			lua_pushboolean(L, 0);
+			return 1;
+		}
+
+		auto * lhs = static_cast<UDataType *>(lhsRaw);
+		auto * rhs = static_cast<UDataType *>(rhsRaw);
+
+		lua_pushboolean(L, *lhs == *rhs ? 1 : 0);
+		return 1;
 	}
 };
 
