@@ -24,12 +24,10 @@ This page describes the internal working of the Lua scripting module. For usage 
   - try to remove or at least reduce usage of abbreviations
   - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
   - Review UnitState class and check its mutable methods - do we need all of those? Should we name them differently?
-- Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type)
 - decide how to handle inheritance in Lua API. For example a lot of classes would need methods like getAllBonuses
 - consider changing list of exported methods to std::array in header. Or even add some registerMethods() and have this as implementation detail (and also support inheritance?)
-- reconsider approach to mutable methods (like BattleHexArrayProxy). Either remove or provide better API bindings approach for such cases
+- reconsider approach to mutable methods (like BattleHexArrayProxy). Either remove or provide better API bindings approach for such cases. Or convert it to pure Lua class
 - consider removing excessive namespace from scripting API, have all API classes directly in scripting::api namespace
-- remove getSpellByKey from Mechanics
 - try to remove remaining hardcoded bits of SpellID's CLONE, TELEPORT, SACRIFICE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
 - implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
 - consider wrapping Lua userdata into std::any for better type safety
@@ -39,6 +37,11 @@ This page describes the internal working of the Lua scripting module. For usage 
 - add guards against loading values from .json with same name as methods in Lua spell effect script
 - `battleLogMessage` entries in timed spell effects without a leading `@` are currently ignored in Lua scripts; C++ resolved them as hierarchical text IDs (`spell.{scope}.{id}.{effectName}.battleLogMessage.{field}`). Support for this needs to be added to the Lua Timed effect and the scripting infrastructure.
   - add suport for list of strings that effect wants to register?
+
+## Future improvements
+
+- Spell Effect: Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type). Would require some way to store references to Lua table in different LuaContext's in LuaSpellEffect class, for example - shared_ptr<LuaReference> in LuaContext, and weak_ptr<LuaReference> in LuaSpellEffect.
+
 
 ## General rules
 

@@ -91,6 +91,7 @@ void EffectFixture::setUp()
 
 	ON_CALL(*battleFake, getUnitsIf(_)).WillByDefault(Invoke(&unitsFake, &battle::UnitsFake::getUnitsIf));
 	ON_CALL(mechanicsMock, spells()).WillByDefault(Return(&spellServiceMock));
+	EXPECT_CALL(servicesMock, spells()).WillRepeatedly(Return(&spellServiceMock));
 	ON_CALL(spellServiceMock, getById(_)).WillByDefault(Return(&spellStub));
 
 	ON_CALL(serverMock, getRNG()).WillByDefault(Return(&rngMock));

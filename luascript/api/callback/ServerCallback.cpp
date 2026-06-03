@@ -251,7 +251,7 @@ int ServerCallbackProxy::rngInt(lua_State * L)
 	int low = 0;
 	int high = 0;
 
-	S.get(1, object);
+	S.getNonNull(1, object);
 	S.get(2, low);
 	S.get(3, high);
 
@@ -275,7 +275,7 @@ void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, c
 	object->apply(pack);
 }
 
-void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, JsonNode config)
+void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, const JsonNode & config)
 {
 	BattleLogMessage msg;
 	msg.battleID = battleID;

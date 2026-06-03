@@ -142,7 +142,7 @@ TEST_F(CatapultApplyTest, DamageToIntactPart)
 
 	CatapultAttack capturedPack;
 	EXPECT_CALL(serverMock, apply(Matcher<CatapultAttack &>(_)))
-		.WillOnce(Invoke([&](CatapultAttack & pack)
+		.WillOnce(Invoke([this, &capturedPack](CatapultAttack & pack)
 		{
 			capturedPack = pack;
 			BattleStatePackVisitor visitor(*battleFake);
@@ -184,7 +184,7 @@ TEST_F(CatapultApplyTest, TargetedHitOnSpecifiedPart)
 
 	CatapultAttack capturedPack;
 	EXPECT_CALL(serverMock, apply(Matcher<CatapultAttack &>(_)))
-		.WillOnce(Invoke([&](CatapultAttack & pack)
+		.WillOnce(Invoke([this, &capturedPack](CatapultAttack & pack)
 		{
 			capturedPack = pack;
 			BattleStatePackVisitor visitor(*battleFake);
@@ -229,7 +229,7 @@ TEST_F(CatapultApplyTest, TargetedMissRedirectsToPotentialTarget)
 
 	CatapultAttack capturedPack;
 	EXPECT_CALL(serverMock, apply(Matcher<CatapultAttack &>(_)))
-		.WillOnce(Invoke([&](CatapultAttack & pack)
+		.WillOnce(Invoke([this, &capturedPack](CatapultAttack & pack)
 		{
 			capturedPack = pack;
 			BattleStatePackVisitor visitor(*battleFake);
@@ -277,7 +277,7 @@ TEST_F(CatapultApplyTest, RemovesTowerShooterOnKeepDestroyed)
 
 	CatapultAttack capturedPack;
 	EXPECT_CALL(serverMock, apply(Matcher<CatapultAttack &>(_)))
-		.WillOnce(Invoke([&](CatapultAttack & pack)
+		.WillOnce(Invoke([this, &capturedPack](CatapultAttack & pack)
 		{
 			capturedPack = pack;
 			BattleStatePackVisitor visitor(*battleFake);
@@ -316,7 +316,7 @@ TEST_F(CatapultApplyTest, MassiveAttacksMultipleParts)
 
 	std::vector<CatapultAttack> capturedPacks;
 	EXPECT_CALL(serverMock, apply(Matcher<CatapultAttack &>(_)))
-		.WillRepeatedly(Invoke([&](CatapultAttack & pack)
+		.WillRepeatedly(Invoke([this, &capturedPacks](CatapultAttack & pack)
 		{
 			capturedPacks.push_back(pack);
 			BattleStatePackVisitor visitor(*battleFake);

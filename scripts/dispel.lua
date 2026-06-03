@@ -7,7 +7,7 @@ function Script:getDispelableBonuses(mechanics, unit)
 	return unit:getBonuses(function(bonus)
 		if bonus:getSource() ~= ENUM.BonusSource.spellEffect then return false end
 		if bonus:getSourceID() == currentSpellKey then return false end
-		local sourceSpell = mechanics:getSpellByKey(bonus:getSourceID())
+		local sourceSpell = LIBRARY:getSpellByName(bonus:getSourceID())
 		if not sourceSpell then return false end
 		if sourceSpell:isPersistent() then return false end
 		if sourceSpell:isAdventure()  then return false end

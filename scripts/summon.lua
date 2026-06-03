@@ -30,14 +30,6 @@ function Script:summonedCreatureAmount(mechanics)
 	end
 end
 
--- TODO
--- initializes parameters of the script using spell effect json
--- returns converted parameters that contain resolved identifiers
-function Script:initialize()
-	self.creature = LIBRARY:getCreatureByName(self.id)
-	return self
-end
-
 --- Returns true if spell can be casted in general
 --- if no valid targets exist, script needs to call `problem:add`
 --- to explain the reason to the player

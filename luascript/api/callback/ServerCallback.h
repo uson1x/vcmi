@@ -40,7 +40,7 @@ public:
 	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
 	static void removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle);
 	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);
-	static void appendLog(ServerCallback * object, BattleID battleID, JsonNode config);
+	static void appendLog(ServerCallback * object, BattleID battleID, const JsonNode & config);
 	static bool describeChanges(ServerCallback * object);
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList);
 	static void addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, const JsonNode & data);

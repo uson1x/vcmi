@@ -60,7 +60,7 @@ public:
 	{
 		EXPECT_CALL(serverMock, apply(Matcher<BattleObstaclesChanged &>(_)))
 			.Times(AnyNumber())
-			.WillRepeatedly(Invoke([this](BattleObstaclesChanged & pack)
+			.WillRepeatedly(Invoke([this](const BattleObstaclesChanged & pack)
 			{
 				for(const auto & change : pack.changes)
 					capturedPack.changes.push_back(change);

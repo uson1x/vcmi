@@ -25,7 +25,6 @@ namespace scripting::api
 		static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
 		static bool ownerMatchesUnit(const ::spells::Mechanics * m, const battle::Unit * unit);
-		static const ::spells::Spell * getSpellByKey(const ::spells::Mechanics * m, const std::string & key);
 		static std::string getPluralFormTextID(const ::spells::Mechanics * m, const std::string & baseTextID, int32_t count);
 	};
 }
