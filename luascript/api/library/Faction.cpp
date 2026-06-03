@@ -23,7 +23,6 @@ namespace scripting::api::library
 
 const std::vector<FactionProxy::CustomRegType> FactionProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex", LuaMethodWrapper<&Entity::getIconIndex, Faction>::invoke,      false},
 	{"getIndex",     LuaMethodWrapper<&Entity::getIndex, Faction>::invoke,          false},
 	{"getJsonKey",   LuaMethodWrapper<&Entity::getJsonKey, Faction>::invoke,        false},
 	{"getName",      LuaMethodWrapper<&Entity::getNameTranslated, Faction>::invoke, false},

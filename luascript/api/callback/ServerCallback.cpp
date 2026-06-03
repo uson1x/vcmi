@@ -55,7 +55,6 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
 	{ "addBattleBonus",    LuaFunctionWrapper<&ServerCallbackProxy::addBattleBonus>::invoke,    false },
 	{ "addObstacle",       LuaFunctionWrapper<&ServerCallbackProxy::addObstacle>::invoke,       false },
-	{ "applyUnitBonuses",  LuaFunctionWrapper<&ServerCallbackProxy::applyUnitBonuses>::invoke,  false },
 	{ "catapultAttack",    LuaFunctionWrapper<&ServerCallbackProxy::catapultAttack>::invoke,    false },
 	{ "rngInt",            LuaCallWrapper<&ServerCallbackProxy::rngInt>::invoke,                false },
 };
@@ -80,14 +79,17 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID ba
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, const JsonNode & data)
+void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & data, bool cumulative)
 {
 	Bonus b;
 	JsonUtils::parseBonus(data, &b);
 
 	SetStackEffect sse;
 	sse.battleID = battleID;
-	sse.toAdd.emplace_back(unitId, std::vector<Bonus>{b});
+	if(cumulative)
+		sse.toAdd.emplace_back(unit->unitId(), std::vector<Bonus>{b});
+	else
+		sse.toUpdate.emplace_back(unit->unitId(), std::vector<Bonus>{b});
 	object->apply(sse);
 }
 
@@ -161,26 +163,6 @@ void ServerCallbackProxy::addObstacle(ServerCallback * object, BattleID battleID
 	object->apply(pack);
 }
 
-void ServerCallbackProxy::applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & bonuses, bool cumulative)
-{
-	std::vector<Bonus> buffer;
-	for(const auto & [name, bonusJson] : bonuses.Struct())
-	{
-		auto b = JsonUtils::parseBonus(bonusJson);
-		if(b)
-			buffer.push_back(*b);
-	}
-	if(buffer.empty())
-		return;
-
-	SetStackEffect sse;
-	sse.battleID = battleID;
-	if(cumulative)
-		sse.toAdd.emplace_back(unit->unitId(), buffer);
-	else
-		sse.toUpdate.emplace_back(unit->unitId(), buffer);
-	object->apply(sse);
-}
 
 void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
 {

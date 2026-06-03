@@ -25,7 +25,6 @@ namespace scripting::api::library
 
 const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex",          LuaMethodWrapper<&Entity::getIconIndex, Creature>::invoke,           false},
 	{"getIndex",              LuaMethodWrapper<&Entity::getIndex, Creature>::invoke,               false},
 	{"getJsonKey",            LuaMethodWrapper<&Entity::getJsonKey, Creature>::invoke,             false},
 	{"getName",               LuaMethodWrapper<&Entity::getNameTranslated, Creature>::invoke,      false},

@@ -153,7 +153,9 @@ function Script:apply(mechanics, server, target)
 			self:describeEffect(server, battleID, unit, buffer, singular, plural)
 		end
 
-		server:applyUnitBonuses(battleID, unit, buffer, self.cumulative or false)
+		for _, nb in pairs(buffer) do
+			server:addUnitBonus(battleID, unit, nb, self.cumulative or false)
+		end
 
 		::continue::
 	end

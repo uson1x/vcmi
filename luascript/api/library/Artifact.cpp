@@ -25,7 +25,6 @@ namespace scripting::api::library
 
 const std::vector<ArtifactProxy::CustomRegType> ArtifactProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex",   LuaMethodWrapper<&Entity::getIconIndex, Artifact>::invoke,           false},
 	{"getIndex",       LuaMethodWrapper<&Entity::getIndex, Artifact>::invoke,               false},
 	{"getJsonKey",     LuaMethodWrapper<&Entity::getJsonKey, Artifact>::invoke,             false},
 	{"getName",        LuaMethodWrapper<&Entity::getNameTranslated, Artifact>::invoke,      false},

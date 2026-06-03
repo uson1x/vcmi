@@ -29,7 +29,7 @@ This page describes the internal working of the Lua scripting module. For usage 
 - reconsider approach to mutable methods (like BattleHexArrayProxy). Either remove or provide better API bindings approach for such cases. Or convert it to pure Lua class
 - consider removing excessive namespace from scripting API, have all API classes directly in scripting::api namespace
 - try to remove remaining hardcoded bits of SpellID's CLONE, TELEPORT, SACRIFICE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
-- implement comparison operator of exposed API classes by auto-implementing `__eq` Lua field for all exported classes
+- Actually use comparison operator of exposed API classes - currently hard to change without breaking tests
 - consider wrapping Lua userdata into std::any for better type safety
 - check if there is a way to wrap Lua function into C++ wrapper and pass it into LuaFunctionWrapper, or even LuaMethodWrapper
 - decide how to handle MetaString in Lua API. Make it Lua serializeable?

@@ -48,14 +48,14 @@ function Script:apply(mechanics, server, target)
 		originalState:setCloneID(cloneId)
 		server:changeUnit(battleID, originalState)
 
-		server:addUnitBonus(battleID, cloneId, {
+		server:addUnitBonus(battleID, cloneUnit, {
 			duration   = ENUM.BonusDuration.nTurns,
 			type       = "NONE",
 			sourceType = ENUM.BonusSource.spellEffect,
 			val        = 0,
 			sourceID   = mechanics:getSpell():getJsonKey(),
 			turns      = mechanics:getEffectDuration()
-		})
+		}, true)
 
 		::continue::
 	end
