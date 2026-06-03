@@ -20,7 +20,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
 using ::battle::IUnitInfo;
 using ::battle::Unit;

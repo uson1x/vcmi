@@ -21,7 +21,7 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 class Creature;
 
-namespace scripting::api::battle
+namespace scripting::api
 {
 
 using ::battle::Unit;

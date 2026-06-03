@@ -17,7 +17,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
 
 class ObstacleProxy : public SharedPointerWrapper<const CObstacleInstance, ObstacleProxy>

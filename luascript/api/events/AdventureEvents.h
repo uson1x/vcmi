@@ -16,7 +16,7 @@
 
 #include "EventBus.h"
 
-namespace scripting::api::events
+namespace scripting::api
 {
 
 using ::events::ObjectVisitStarted;

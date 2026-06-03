@@ -15,7 +15,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::events
+namespace scripting::api
 {
 //No methods here, just an empty metatable for type safety.
 const std::vector<EventSubscriptionProxy::CustomRegType> EventSubscriptionProxy::REGISTER_CUSTOM = {};

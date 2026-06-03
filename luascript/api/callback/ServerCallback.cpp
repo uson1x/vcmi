@@ -271,7 +271,7 @@ int ServerCallbackProxy::changeUnit(lua_State * L)
 
 	ServerCallback * object = nullptr;
 	BattleID battleID;
-	battle::LuaUnitState unitState;
+	LuaUnitState unitState;
 	int64_t healthDelta = 0;
 
 	S.get(1, object);

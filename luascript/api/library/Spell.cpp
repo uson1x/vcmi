@@ -19,7 +19,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 using ::spells::Spell;

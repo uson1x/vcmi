@@ -19,7 +19,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
 
 const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM =

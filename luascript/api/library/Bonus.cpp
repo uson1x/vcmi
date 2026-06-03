@@ -21,7 +21,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 // --- BonusProxy ---

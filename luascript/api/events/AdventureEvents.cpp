@@ -16,7 +16,7 @@
 #include "../Registry.h"
 #include "SubscriptionRegistry.h"
 
-namespace scripting::api::events
+namespace scripting::api
 {
 
 VCMI_REGISTER_SCRIPT_API(ObjectVisitStartedProxy, "events.ObjectVisitStarted");
