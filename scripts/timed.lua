@@ -92,7 +92,7 @@ function Script:applyHeroSpecialty(mechanics, buffer, unit)
 	end
 end
 
-function Script:describeEffect(server, battleID, unit, bonuses, singular, plural)
+function Script:describeEffect(server, battle, unit, bonuses, singular, plural)
 	-- Age spell: STACK_HEALTH bonus with negative val gets a custom message
 	for _, nb in pairs(bonuses) do
 		if nb.type == "STACK_HEALTH" and (nb.val or 0) < 0 then
@@ -107,7 +107,7 @@ function Script:describeEffect(server, battleID, unit, bonuses, singular, plural
 			local ageTextID = unit:getCount() == 1
 				and "core.genrltxt.551"
 				or  "core.genrltxt.552"
-			server:appendLog(battleID, {
+			server:appendLog(battle, {
 				append         = { ageTextID },
 				replaceStrings = { unit:getCreature():getNameTextID(unit:getCount()) },
 				replaceNumbers = { lost }
@@ -120,14 +120,14 @@ function Script:describeEffect(server, battleID, unit, bonuses, singular, plural
 
 	local textID = (singular and singular ~= "" and unit:getCount() == 1) and singular or plural
 	local nameTextID = unit:getCreature():getNameTextID(unit:getCount())
-	server:appendLog(battleID, {
+	server:appendLog(battle, {
 		append         = { textID },
 		replaceStrings = { nameTextID }
 	})
 end
 
 function Script:apply(mechanics, server, target)
-	local battleID = mechanics:getBattleID()
+	local battle   = mechanics:getBattle()
 	local describe = server:describeChanges()
 	local converted = self:convertBonuses(mechanics)
 
@@ -151,11 +151,11 @@ function Script:apply(mechanics, server, target)
 		self:applyHeroSpecialty(mechanics, buffer, unit)
 
 		if describe then
-			self:describeEffect(server, battleID, unit, buffer, singular, plural)
+			self:describeEffect(server, battle, unit, buffer, singular, plural)
 		end
 
 		for _, nb in pairs(buffer) do
-			server:addUnitBonus(battleID, unit, nb, self.cumulative or false)
+			server:addUnitBonus(battle, unit, nb, self.cumulative or false)
 		end
 
 		::continue::

@@ -65,7 +65,7 @@ function Script:getHealthChange(mechanics, spellTarget)
 end
 
 function Script:apply(mechanics, server, target)
-	local battleID = mechanics:getBattleID()
+	local battle   = mechanics:getBattle()
 	local describe = server:describeChanges()
 	local firstUnit, totalDamage, totalKilled, multiple = nil, 0, 0, false
 
@@ -73,7 +73,7 @@ function Script:apply(mechanics, server, target)
 		local unit = dest.unit
 		if unit and unit:isAlive() then
 			local amount = self:damageForTarget(i - 1, mechanics, unit)
-			local dmg, killed = server:damageUnit(battleID, unit, amount)
+			local dmg, killed = server:damageUnit(battle, unit, amount)
 			if describe then
 				if firstUnit then multiple = true else firstUnit = unit end
 				totalDamage = totalDamage + dmg
@@ -83,24 +83,24 @@ function Script:apply(mechanics, server, target)
 	end
 
 	if describe and firstUnit and totalDamage > 0 then
-		self:describeEffect(server, battleID, mechanics, firstUnit, totalKilled, totalDamage, multiple)
+		self:describeEffect(server, battle, mechanics, firstUnit, totalKilled, totalDamage, multiple)
 	end
 end
 
-function Script:describeEffect(server, battleID, mechanics, firstUnit, kills, damage, multiple)
+function Script:describeEffect(server, battle, mechanics, firstUnit, kills, damage, multiple)
 	local spell    = mechanics:getSpell()
 	local spellKey = spell:getJsonKey()
 
 	if spellKey:find("deathStare") and not multiple then
 		local casterNameID = mechanics:getCasterNameTextID()
 		if kills > 1 then
-			server:appendLog(battleID, {
+			server:appendLog(battle, {
 				append         = { "core.genrltxt.119" },
 				replaceStrings = { firstUnit:getCreature():getNamePluralTextID(), casterNameID },
 				replaceNumbers = { kills }
 			})
 		else
-			server:appendLog(battleID, {
+			server:appendLog(battle, {
 				append         = { "core.genrltxt.118" },
 				replaceStrings = { firstUnit:getCreature():getNameSingularTextID(), casterNameID }
 			})
@@ -109,38 +109,38 @@ function Script:describeEffect(server, battleID, mechanics, firstUnit, kills, da
 	elseif spellKey:find("accurateShot") and not multiple then
 		local textID = mechanics:getPluralFormTextID(
 			"vcmi.battleWindow.accurateShot.resultDescription", kills)
-		server:appendLog(battleID, {
+		server:appendLog(battle, {
 			append         = { textID },
 			replaceStrings = { firstUnit:getCreature():getNameTextID(kills) },
 			replaceNumbers = { kills }
 		})
 
 	elseif spellKey:find("thunderbolt") and not multiple then
-		server:appendLog(battleID, {
+		server:appendLog(battle, {
 			append         = { "core.genrltxt.367" },
 			replaceStrings = { firstUnit:getCreature():getNamePluralTextID() }
 		})
-		server:appendLog(battleID, {
+		server:appendLog(battle, {
 			append         = { "core.genrltxt.343" },
 			replaceNumbers = { damage }
 		})
 
 	else
-		server:appendLog(battleID, {
+		server:appendLog(battle, {
 			append         = { "core.genrltxt.376" },
 			replaceStrings = { spell:getNameTextID() },
 			replaceNumbers = { damage }
 		})
 		if kills > 0 then
 			if kills > 1 then
-				server:appendLog(battleID, {
+				server:appendLog(battle, {
 					append         = { "core.genrltxt.379" },
 					replaceStrings = { multiple and "core.genrltxt.43"
 					                            or firstUnit:getCreature():getNamePluralTextID() },
 					replaceNumbers = { kills }
 				})
 			else
-				server:appendLog(battleID, {
+				server:appendLog(battle, {
 					append         = { "core.genrltxt.378" },
 					replaceStrings = { multiple and "core.genrltxt.42"
 					                            or firstUnit:getCreature():getNameSingularTextID() }

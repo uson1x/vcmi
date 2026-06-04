@@ -23,6 +23,7 @@
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/battle/CObstacleInstance.h"
+#include "../../../lib/battle/IBattleState.h"
 #include "../../../lib/CStack.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/Bonus.h"
@@ -63,7 +64,7 @@ bool ServerCallbackProxy::describeChanges(ServerCallback * object)
 	return object->describeChanges();
 }
 
-void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList)
+void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, const BonusList & bonusList)
 {
 	std::vector<Bonus> buffer;
 	for(const auto & b : bonusList)
@@ -73,17 +74,17 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID ba
 		return;
 
 	SetStackEffect sse;
-	sse.battleID = battleID;
+	sse.battleID = battle.getBattle()->getBattleID();
 	sse.toRemove.emplace_back(unit->unitId(), buffer);
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusDescriptor data, bool cumulative)
+void ServerCallbackProxy::addUnitBonus(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BonusDescriptor data, bool cumulative)
 {
 	Bonus b = data.toBonus();
 
 	SetStackEffect sse;
-	sse.battleID = battleID;
+	sse.battleID = battle.getBattle()->getBattleID();
 	if(cumulative)
 		sse.toAdd.emplace_back(unit->unitId(), std::vector<Bonus>{b});
 	else
@@ -91,66 +92,66 @@ void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleI
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::addBattleBonus(ServerCallback * object, BattleID battleID, BonusDescriptor data)
+void ServerCallbackProxy::addBattleBonus(ServerCallback * object, const IBattleInfoCallback & battle, BonusDescriptor data)
 {
 	GiveBonus gb(GiveBonus::ETarget::BATTLE);
-	gb.id = battleID;
+	gb.id = battle.getBattle()->getBattleID();
 	gb.bonus = data.toBonus();
 	object->apply(gb);
 }
 
-void ServerCallbackProxy::addObstacle(ServerCallback * object, BattleID battleID, SpellObstacleDescriptor descriptor)
+void ServerCallbackProxy::addObstacle(ServerCallback * object, const IBattleInfoCallback & battle, SpellObstacleDescriptor descriptor)
 {
 	SpellCreatedObstacle obstacle = descriptor.toObstacle();
 
 	BattleObstaclesChanged pack;
-	pack.battleID = battleID;
+	pack.battleID = battle.getBattle()->getBattleID();
 	pack.changes.emplace_back();
 	obstacle.toInfo(pack.changes.back());
 	object->apply(pack);
 }
 
 
-void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, battle::UnitInfo info)
+void ServerCallbackProxy::createUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info)
 {
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
-	buc.battleID = battleID;
+	buc.battleID = battle.getBattle()->getBattleID();
 	uc.id = info.id;
 	info.save(uc.data);
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
 }
 
-void ServerCallbackProxy::removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit)
+void ServerCallbackProxy::removeUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit)
 {
 	BattleUnitsChanged buc;
 	UnitChanges uc;
-	buc.battleID = battleID;
+	buc.battleID = battle.getBattle()->getBattleID();
 	uc.operation = UnitChanges::EOperation::REMOVE;
 	uc.id = unit->unitId();
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
 }
 
-void ServerCallbackProxy::removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle)
+void ServerCallbackProxy::removeObstacle(ServerCallback * object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle)
 {
 	if(!obstacle)
 		return;
 
 	BattleObstaclesChanged pack;
-	pack.battleID = battleID;
+	pack.battleID = battle.getBattle()->getBattleID();
 	pack.changes.emplace_back(obstacle->uniqueID, BattleChanges::EOperation::REMOVE);
 	auto * serializable = const_cast<CObstacleInstance*>(obstacle.get());
 	serializable->toInfo(pack.changes.back(), BattleChanges::EOperation::REMOVE);
 	object->apply(pack);
 }
 
-void ServerCallbackProxy::catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter)
+void ServerCallbackProxy::catapultAttack(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter)
 {
 	CatapultAttack ca;
-	ca.battleID = battleID;
+	ca.battleID = battle.getBattle()->getBattleID();
 	ca.attacker = attacker ? attacker->unitId() : -1;
 	ca.attackedPart = attackedPart;
 	ca.destinationTile = destinationTile.toInt();
@@ -178,10 +179,10 @@ int ServerCallbackProxy::rngInt(lua_State * L)
 	return 1;
 }
 
-void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport)
+void ServerCallbackProxy::moveUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BattleHex destination, bool isTeleport)
 {
 	BattleStackMoved pack;
-	pack.battleID = battleID;
+	pack.battleID = battle.getBattle()->getBattleID();
 	pack.stack = unit->unitId();
 	pack.distance = 0;
 	pack.teleporting = isTeleport;
@@ -191,10 +192,10 @@ void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, c
 	object->apply(pack);
 }
 
-void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, LuaMetaString config)
+void ServerCallbackProxy::appendLog(ServerCallback * object, const IBattleInfoCallback & battle, LuaMetaString config)
 {
 	BattleLogMessage msg;
-	msg.battleID = battleID;
+	msg.battleID = battle.getBattle()->getBattleID();
 	msg.lines.push_back(config.toMetaString());
 	object->apply(msg);
 }
@@ -204,12 +205,12 @@ int ServerCallbackProxy::changeUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleID battleID;
+	const IBattleInfoCallback * battle = nullptr;
 	LuaUnitState unitState;
 	int64_t healthDelta = 0;
 
 	S.get(1, object);
-	S.get(2, battleID);
+	S.getNonNull(2, battle);
 	S.get(3, unitState);
 	if(S.stackSize() >= 4)
 		S.get(4, healthDelta);
@@ -218,7 +219,7 @@ int ServerCallbackProxy::changeUnit(lua_State * L)
 
 	BattleUnitsChanged buc;
 	UnitChanges uc(cstate->unitId(), UnitChanges::EOperation::UPDATE);
-	buc.battleID = battleID;
+	buc.battleID = battle->getBattle()->getBattleID();
 	uc.data = cstate->save();
 	uc.healthDelta = healthDelta;
 	buc.changedStacks.push_back(uc);
@@ -232,12 +233,12 @@ int ServerCallbackProxy::damageUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleID battleID;
+	const IBattleInfoCallback * battle = nullptr;
 	const battle::Unit * unit = nullptr;
 	int64_t damageAmount = 0;
 
 	S.get(1, object);
-	S.get(2, battleID);
+	S.getNonNull(2, battle);
 	S.getNonNull(3, unit);
 	S.get(4, damageAmount);
 
@@ -249,7 +250,7 @@ int ServerCallbackProxy::damageUnit(lua_State * L)
 	CStack::prepareAttacked(bsa, *object->getRNG(), newState);
 
 	StacksInjured si;
-	si.battleID = battleID;
+	si.battleID = battle->getBattle()->getBattleID();
 	si.stacks.push_back(bsa);
 	object->apply(si);
 
@@ -264,14 +265,14 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleID battleID;
+	const IBattleInfoCallback * battle = nullptr;
 	const battle::Unit * unit = nullptr;
 	int64_t healthDelta;
 	EHealLevel healLevel;
 	EHealPower healPower;
 
 	S.get(1, object);
-	S.get(2, battleID);
+	S.getNonNull(2, battle);
 	S.getNonNull(3, unit);
 	S.get(4, healthDelta);
 	S.get(5, healLevel);
@@ -282,7 +283,7 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 
 	BattleUnitsChanged buc;
 	UnitChanges uc;
-	buc.battleID = battleID;
+	buc.battleID = battle->getBattle()->getBattleID();
 	uc.operation = UnitChanges::EOperation::UPDATE;
 	uc.id = unit->unitId();
 	uc.data = changedUnit->save();

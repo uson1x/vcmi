@@ -24,7 +24,7 @@ function Script:isValidTarget(mechanics, unit)
 end
 
 function Script:apply(mechanics, server, target)
-	local battleID    = mechanics:getBattleID()
+	local battle       = mechanics:getBattle()
 	local positiveOnly = self.dispelPositive and not self.dispelNegative and not self.dispelNeutral
 
 	for _, dest in ipairs(target) do
@@ -33,12 +33,12 @@ function Script:apply(mechanics, server, target)
 			local bonuses = self:getDispelableBonuses(mechanics, unit)
 			if bonuses:size() > 0 then
 				if positiveOnly and server:describeChanges() then
-					server:appendLog(battleID, {
+					server:appendLog(battle, {
 						append         = { "core.genrltxt.555" },
 						replaceStrings = { unit:getCreature():getNamePluralTextID() }
 					})
 				end
-				server:removeUnitBonuses(battleID, unit, bonuses)
+				server:removeUnitBonuses(battle, unit, bonuses)
 			end
 		end
 	end

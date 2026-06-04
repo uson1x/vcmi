@@ -122,18 +122,18 @@ function Script:apply(mechanics, server, target)
 	if not deadTarget or not victim then return end
 
 	local healValue = self:calculateHealValue(mechanics, victim)
-	local battleID  = mechanics:getBattleID()
+	local battle    = mechanics:getBattle()
 
 	local _, resurrected = server:healUnit(
-		battleID, deadTarget, healValue,
+		battle, deadTarget, healValue,
 		self:getHealLevel(), self:getHealPower())
 
-	server:removeUnit(battleID, victim)
+	server:removeUnit(battle, victim)
 
 	if resurrected > 0 then
 		local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
 		local nameTextID = deadTarget:getCreature():getNameTextID(deadTarget:getCount())
-		server:appendLog(battleID, {
+		server:appendLog(battle, {
 			append         = { textID },
 			replaceStrings = { nameTextID },
 			replaceNumbers = { resurrected }

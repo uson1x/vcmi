@@ -69,26 +69,26 @@ end
 
 --- Heals each target unit and emits battle log messages.
 function Script:apply(mechanics, server, target)
-	local battleID    = mechanics:getBattleID()
+	local battle       = mechanics:getBattle()
 	local isUnitCaster = mechanics:getHeroCaster() == nil
 
 	for _, dest in ipairs(target) do
 		local unit = dest.unit
 		if unit then
 			local healedHP, resurrected = server:healUnit(
-				battleID, unit, mechanics:getEffectValue(), self:getHealLevel(), self:getHealPower())
+				battle, unit, mechanics:getEffectValue(), self:getHealLevel(), self:getHealPower())
 
 			if resurrected > 0 then
 				local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
 				local nameTextID = unit:getCreature():getNameTextID(unit:getCount())
-				server:appendLog(battleID, {
+				server:appendLog(battle, {
 					append         = { textID },
 					replaceStrings = { nameTextID },
 					replaceNumbers = { resurrected }
 				})
 			elseif healedHP > 0 and isUnitCaster then
 				local casterUnit = mechanics:getUnitCaster()
-				server:appendLog(battleID, {
+				server:appendLog(battle, {
 					append         = { "core.genrltxt.414" },
 					replaceStrings = {
 						casterUnit:getCreature():getNameSingularTextID(),

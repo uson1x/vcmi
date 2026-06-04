@@ -42,6 +42,7 @@ end
 --- Raise demons from each target corpse and remove the corpse.
 function Script:apply(mechanics, server, target)
 	local creatureType = LIBRARY:getCreatureByName(self.id)
+	local battle       = mechanics:getBattle()
 
 	for _, dest in ipairs(target) do
 		local targetStack = dest.unit
@@ -51,7 +52,7 @@ function Script:apply(mechanics, server, target)
 			break
 		end
 
-		local hex = mechanics:getBattle():getAvailableHex(
+		local hex = battle:getAvailableHex(
 			creatureType,
 			mechanics:getCasterSide(),
 			targetStack:getPosition():toInteger()
@@ -70,9 +71,9 @@ function Script:apply(mechanics, server, target)
 		end
 
 		server:createUnit(
-			mechanics:getBattleID(),
+			battle,
 			{
-				id       = mechanics:getBattle():getNextUnitID(),
+				id       = battle:getNextUnitID(),
 				count    = finalAmount,
 				type     = creatureType:getJsonKey(),
 				side     = mechanics:getCasterSide(),
@@ -81,7 +82,7 @@ function Script:apply(mechanics, server, target)
 			}
 		)
 
-		server:removeUnit(mechanics:getBattleID(), targetStack)
+		server:removeUnit(battle, targetStack)
 	end
 end
 

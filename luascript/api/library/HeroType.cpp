@@ -23,7 +23,6 @@ namespace scripting::api
 
 const std::vector<HeroTypeProxy::CustomRegType> HeroTypeProxy::REGISTER_CUSTOM =
 {
-	{"getIndex",     LuaMethodWrapper<&Entity::getIndex, HeroType>::invoke,          false},
 	{"getJsonKey",   LuaMethodWrapper<&Entity::getJsonKey, HeroType>::invoke,        false},
 	{"getName",      LuaMethodWrapper<&Entity::getNameTranslated, HeroType>::invoke, false},
 };

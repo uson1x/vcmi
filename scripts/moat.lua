@@ -16,7 +16,6 @@ function Script:apply(mechanics, server, target)
 	local battle = mechanics:getBattle()
 	if not battle:hasMoat() then return end
 
-	local battleID = mechanics:getBattleID()
 	local spell    = mechanics:getSpell()
 	local defender = self.defender or {}
 
@@ -29,7 +28,7 @@ function Script:apply(mechanics, server, target)
 
 	local nextId = battle:nextObstacleID()
 	for _, patch in ipairs(self.moatHexes or {}) do
-	    server:addObstacle(battleID, {
+	    server:addObstacle(battle, {
 			uniqueID         = nextId,
 			pos              = patch[1],
 			obstacleType     = obstacleType,
@@ -66,7 +65,7 @@ function Script:apply(mechanics, server, target)
 		nb.sourceType = "SPELL_EFFECT"
 		nb.sourceID   = spell:getJsonKey()
 		nb.limiters   = { type = "UNIT_ON_HEXES", hexes = flatHexes }
-		server:addBattleBonus(battleID, nb)
+		server:addBattleBonus(battle, nb)
 	end
 end
 

@@ -179,7 +179,6 @@ end
 
 function Script:apply(mechanics, server, target)
 	local battle    = mechanics:getBattle()
-	local battleID  = mechanics:getBattleID()
 	local side      = mechanics:getCasterSide()
 	local opts      = sideOptions(self, side)
 	local shapes    = shapesFor(opts)
@@ -225,7 +224,7 @@ function Script:apply(mechanics, server, target)
 		local descriptor = buildDescriptor(self, mechanics, side, hex, customSize)
 		descriptor.uniqueID = nextId
 		nextId = nextId + 1
-		server:addObstacle(battleID, descriptor)
+		server:addObstacle(battle, descriptor)
 	end
 end
 

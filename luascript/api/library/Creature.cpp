@@ -44,7 +44,6 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"getLevel",              LuaMethodWrapper<&Creature::getLevel>::invoke,                       false},
 	{"getGrowth",             LuaMethodWrapper<&Creature::getGrowth>::invoke,                      false},
 	{"getHorde",              LuaMethodWrapper<&Creature::getHorde>::invoke,                       false},
-	{"getFactionID",          LuaMethodWrapper<&Creature::getFactionID, Creature>::invoke,          false},
 
 	{"getBaseAttack",         LuaMethodWrapper<&Creature::getBaseAttack>::invoke,                  false},
 	{"getBaseDefense",        LuaMethodWrapper<&Creature::getBaseDefense>::invoke,                 false},

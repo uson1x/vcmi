@@ -63,7 +63,6 @@ namespace scripting::api
 			{"getUnitCaster",          LuaMethodWrapper<&Mechanics::getUnitCaster>::invoke,            false},
 			{"getCasterNameTextID",    LuaMethodWrapper<&Mechanics::getCasterNameTextID>::invoke,      false},
 			{"getBattle",              LuaMethodWrapper<&Mechanics::battle>::invoke,                   false},
-			{"getBattleID",            LuaMethodWrapper<&Mechanics::getBattleID>::invoke,              false},
 			{"calculateRawEffectValue", LuaMethodWrapper<&Mechanics::calculateRawEffectValue>::invoke, false},
 			{"applySpecificSpellBonus", LuaMethodWrapper<&Mechanics::applySpecificSpellBonus>::invoke, false},
 			{"applySpellBonus",        LuaMethodWrapper<&Mechanics::applySpellBonus>::invoke,          false},

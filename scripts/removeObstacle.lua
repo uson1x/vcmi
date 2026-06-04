@@ -55,9 +55,9 @@ function Script:applicableTarget(mechanics, problem, target)
 end
 
 function Script:apply(mechanics, server, target)
-	local battleID = mechanics:getBattleID()
+	local battle = mechanics:getBattle()
 	for _, obstacle in ipairs(self:getTargets(mechanics, target, false)) do
-		server:removeObstacle(battleID, obstacle)
+		server:removeObstacle(battle, obstacle)
 	end
 end
 

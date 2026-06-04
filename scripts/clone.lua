@@ -14,22 +14,22 @@ function Script:isValidTarget(mechanics, unit)
 end
 
 function Script:apply(mechanics, server, target)
-	local battleID = mechanics:getBattleID()
+	local battle = mechanics:getBattle()
 	for _, dest in ipairs(target) do
 		local unit = dest.unit
 		if unit == nil then goto continue end
 		if unit:getCount() < 1 then goto continue end
 
 		local creature = unit:getCreature()
-		local hex = mechanics:getBattle():getAvailableHex(
+		local hex = battle:getAvailableHex(
 			creature,
 			mechanics:getCasterSide(),
 			unit:getPosition():toInteger()
 		)
 		if not hex:isValid() then break end
 
-		local cloneId = mechanics:getBattle():getNextUnitID()
-		server:createUnit(battleID, {
+		local cloneId = battle:getNextUnitID()
+		server:createUnit(battle, {
 			id       = cloneId,
 			count    = unit:getCount(),
 			type     = creature:getJsonKey(),
@@ -38,18 +38,18 @@ function Script:apply(mechanics, server, target)
 			summoned = true
 		})
 
-		local cloneUnit = mechanics:getBattle():getUnitById(cloneId)
+		local cloneUnit = battle:getUnitById(cloneId)
 		if cloneUnit == nil then break end
 
 		local cloneState = cloneUnit:copy()
 		cloneState:setCloned(true)
-		server:changeUnit(battleID, cloneState)
+		server:changeUnit(battle, cloneState)
 
 		local originalState = unit:copy()
 		originalState:setCloneID(cloneId)
-		server:changeUnit(battleID, originalState)
+		server:changeUnit(battle, originalState)
 
-		server:addUnitBonus(battleID, cloneUnit, {
+		server:addUnitBonus(battle, cloneUnit, {
 			duration   = ENUM.BonusDuration.nTurns,
 			type       = "NONE",
 			sourceType = ENUM.BonusSource.spellEffect,

@@ -85,11 +85,12 @@ end
 --- use `server` parameter to apply changes on specified target(s)
 function Script:apply(mechanics, server, target)
 	local creature = LIBRARY:getCreatureByName(self.id)
+	local battle   = mechanics:getBattle()
 
 	for _, dest in ipairs(target) do
 		if dest.unit ~= nil then
 			server:healUnit(
-				mechanics:getBattleID(),
+				battle,
 				dest.unit,
 				self:summonedCreatureHealth(mechanics),
 				ENUM.HealLevel.overheal,
@@ -99,9 +100,9 @@ function Script:apply(mechanics, server, target)
 			print("SpellEffectSummon. Hex: ", dest.hex)
 			assert(dest.hex ~= nil)
 			server:createUnit(
-				mechanics:getBattleID(),
+				battle,
 				{
-					id = mechanics:getBattle():getNextUnitID(),
+					id = battle:getNextUnitID(),
 					count = self:summonedCreatureAmount(mechanics),
 					type = creature:getJsonKey(),
 					side = mechanics:getCasterSide(),

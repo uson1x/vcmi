@@ -23,7 +23,6 @@ namespace scripting::api
 
 const std::vector<SkillProxy::CustomRegType> SkillProxy::REGISTER_CUSTOM =
 {
-	{"getIndex",     LuaMethodWrapper<&Entity::getIndex, Skill>::invoke,          false},
 	{"getJsonKey",   LuaMethodWrapper<&Entity::getJsonKey, Skill>::invoke,        false},
 	{"getName",      LuaMethodWrapper<&Entity::getNameTranslated, Skill>::invoke, false},
 };

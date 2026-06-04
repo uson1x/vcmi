@@ -14,6 +14,7 @@
 
 #include "../../LuaWrapper.h"
 #include "../../../lib/battle/BattleHex.h"
+#include "../../../lib/battle/IBattleInfoCallback.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 #include "../../../lib/constants/Enumerations.h"
@@ -38,21 +39,21 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static void createUnit(ServerCallback * object, BattleID battleID, battle::UnitInfo info);
-	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
-	static void removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle);
-	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);
-	static void appendLog(ServerCallback * object, BattleID battleID, LuaMetaString config);
+	static void createUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info);
+	static void removeUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit);
+	static void removeObstacle(ServerCallback * object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle);
+	static void moveUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BattleHex destination, bool isTeleport);
+	static void appendLog(ServerCallback * object, const IBattleInfoCallback & battle, LuaMetaString config);
 	static bool describeChanges(ServerCallback * object);
-	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList);
-	static void addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusDescriptor data, bool cumulative);
-	static void addBattleBonus(ServerCallback * object, BattleID battleID, BonusDescriptor data);
-	static void addObstacle(ServerCallback * object, BattleID battleID, SpellObstacleDescriptor descriptor);
-	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
+	static void removeUnitBonuses(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, const BonusList & bonusList);
+	static void addUnitBonus(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BonusDescriptor data, bool cumulative);
+	static void addBattleBonus(ServerCallback * object, const IBattleInfoCallback & battle, BonusDescriptor data);
+	static void addObstacle(ServerCallback * object, const IBattleInfoCallback & battle, SpellObstacleDescriptor descriptor);
+	static void catapultAttack(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
 	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]
 	static int healUnit(lua_State * L);
-	static int changeUnit(lua_State * L); // args: battleID, unitState, [healthDelta=0]
-	static int damageUnit(lua_State * L); // args: battleID, unit, damageAmount; returns: actualDamage, killedAmount
+	static int changeUnit(lua_State * L); // args: battle, unitState, [healthDelta=0]
+	static int damageUnit(lua_State * L); // args: battle, unit, damageAmount; returns: actualDamage, killedAmount
 };
 
 }

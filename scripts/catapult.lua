@@ -97,15 +97,14 @@ function Script:towerShooterIfDestroyed(battle, part, damage)
 	return unit
 end
 
-function Script:fireAt(server, battle, battleID, attacker, part, damage)
+function Script:fireAt(server, battle, attacker, part, damage)
 	local killedUnit = self:towerShooterIfDestroyed(battle, part, damage)
 	local destinationTile = battle:wallPartToBattleHex(part)
-	server:catapultAttack(battleID, attacker, part, destinationTile, damage, killedUnit)
+	server:catapultAttack(battle, attacker, part, destinationTile, damage, killedUnit)
 end
 
 function Script:apply(mechanics, server, target)
 	local battle    = mechanics:getBattle()
-	local battleID  = mechanics:getBattleID()
 	local attacker  = mechanics:getUnitCaster()
 	local N         = self.targetsToAttack or 0
 
@@ -122,7 +121,7 @@ function Script:apply(mechanics, server, target)
 			damagePerPart[part] = damagePerPart[part] + self:randomDamage(server)
 		end
 		for _, part in ipairs(order) do
-			self:fireAt(server, battle, battleID, attacker, part, damagePerPart[part])
+			self:fireAt(server, battle, attacker, part, damagePerPart[part])
 		end
 	else
 		local desired = battle:hexToWallPart(target[1].hex)
@@ -136,7 +135,7 @@ function Script:apply(mechanics, server, target)
 				if #pool == 0 then break end
 				actual = pool[server:rngInt(1, #pool)]
 			end
-			self:fireAt(server, battle, battleID, attacker, actual, self:randomDamage(server))
+			self:fireAt(server, battle, attacker, actual, self:randomDamage(server))
 		end
 	end
 end
