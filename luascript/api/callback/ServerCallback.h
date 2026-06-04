@@ -29,6 +29,7 @@ namespace scripting::api
 {
 
 struct BonusDescriptor;
+struct SpellObstacleDescriptor;
 
 class ServerCallbackProxy : public RawPointerWrapper<ServerCallback, ServerCallbackProxy>
 {
@@ -47,7 +48,7 @@ public:
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList);
 	static void addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusDescriptor data, bool cumulative);
 	static void addBattleBonus(ServerCallback * object, BattleID battleID, BonusDescriptor data);
-	static void addObstacle(ServerCallback * object, BattleID battleID, const JsonNode & descriptor);
+	static void addObstacle(ServerCallback * object, BattleID battleID, SpellObstacleDescriptor descriptor);
 	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
 	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]
 	static int healUnit(lua_State * L);

@@ -18,6 +18,7 @@ set(lualib_SRCS
 		api/battle/BattleHexArray.cpp
 		api/battle/BattleHex.cpp
 		api/battle/Obstacle.cpp
+		api/battle/SpellObstacleDescriptor.cpp
 
 		api/events/BattleEvents.cpp
 		api/events/EventBus.cpp
@@ -65,6 +66,7 @@ set(lualib_HDRS
 		api/battle/BattleHexArray.h
 		api/battle/BattleHex.h
 		api/battle/Obstacle.h
+		api/battle/SpellObstacleDescriptor.h
 
 		api/events/BattleEvents.h
 		api/events/EventBus.h
