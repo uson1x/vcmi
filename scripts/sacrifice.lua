@@ -134,8 +134,9 @@ function Script:apply(mechanics, server, target)
 		local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
 		local nameTextID = deadTarget:getCreature():getNameTextID(deadTarget:getCount())
 		server:appendLog(battleID, {
-			append  = { textID },
-			replace = { resurrected, nameTextID }
+			append         = { textID },
+			replaceStrings = { nameTextID },
+			replaceNumbers = { resurrected }
 		})
 	end
 end

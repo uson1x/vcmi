@@ -11,7 +11,7 @@
 
 #include "Problem.h"
 
-#include "../../../lib/json/JsonNode.h"
+#include "../LuaMetaString.h"
 #include "../../../lib/spells/ISpellMechanics.h"
 #include "../../../lib/texts/MetaString.h"
 
@@ -22,9 +22,9 @@ namespace scripting::api
 using ::spells::Problem;
 using ::spells::Mechanics;
 
-void ProblemProxy::addCustom(Problem * problem, const JsonNode & config)
+void ProblemProxy::addCustom(Problem * problem, LuaMetaString config)
 {
-	problem->add(MetaString::createFromLua(config));
+	problem->add(config.toMetaString());
 }
 
 void ProblemProxy::addGeneric(Problem * problem, const Mechanics * mechanics)

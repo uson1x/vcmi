@@ -12,6 +12,7 @@
 #include "GameLibrary.h"
 #include "ServerCallback.h"
 
+#include "../LuaMetaString.h"
 #include "../Registry.h"
 #include "../battle/UnitState.h"
 #include "../battle/SpellObstacleDescriptor.h"
@@ -205,11 +206,11 @@ void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, c
 	object->apply(pack);
 }
 
-void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, const JsonNode & config)
+void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, LuaMetaString config)
 {
 	BattleLogMessage msg;
 	msg.battleID = battleID;
-	msg.lines.push_back(MetaString::createFromLua(config));
+	msg.lines.push_back(config.toMetaString());
 	object->apply(msg);
 }
 

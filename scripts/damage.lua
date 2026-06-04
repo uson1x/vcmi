@@ -95,13 +95,14 @@ function Script:describeEffect(server, battleID, mechanics, firstUnit, kills, da
 		local casterNameID = mechanics:getCasterNameTextID()
 		if kills > 1 then
 			server:appendLog(battleID, {
-				append  = { "core.genrltxt.119" },
-				replace = { kills, firstUnit:getCreature():getNamePluralTextID(), casterNameID }
+				append         = { "core.genrltxt.119" },
+				replaceStrings = { firstUnit:getCreature():getNamePluralTextID(), casterNameID },
+				replaceNumbers = { kills }
 			})
 		else
 			server:appendLog(battleID, {
-				append  = { "core.genrltxt.118" },
-				replace = { firstUnit:getCreature():getNameSingularTextID(), casterNameID }
+				append         = { "core.genrltxt.118" },
+				replaceStrings = { firstUnit:getCreature():getNameSingularTextID(), casterNameID }
 			})
 		end
 
@@ -109,37 +110,40 @@ function Script:describeEffect(server, battleID, mechanics, firstUnit, kills, da
 		local textID = mechanics:getPluralFormTextID(
 			"vcmi.battleWindow.accurateShot.resultDescription", kills)
 		server:appendLog(battleID, {
-			append  = { textID },
-			replace = { kills, firstUnit:getCreature():getNameTextID(kills) }
+			append         = { textID },
+			replaceStrings = { firstUnit:getCreature():getNameTextID(kills) },
+			replaceNumbers = { kills }
 		})
 
 	elseif spellKey:find("thunderbolt") and not multiple then
 		server:appendLog(battleID, {
-			append  = { "core.genrltxt.367" },
-			replace = { firstUnit:getCreature():getNamePluralTextID() }
+			append         = { "core.genrltxt.367" },
+			replaceStrings = { firstUnit:getCreature():getNamePluralTextID() }
 		})
 		server:appendLog(battleID, {
-			append  = { "core.genrltxt.343" },
-			replace = { damage }
+			append         = { "core.genrltxt.343" },
+			replaceNumbers = { damage }
 		})
 
 	else
 		server:appendLog(battleID, {
-			append  = { "core.genrltxt.376" },
-			replace = { spell:getNameTextID(), damage }
+			append         = { "core.genrltxt.376" },
+			replaceStrings = { spell:getNameTextID() },
+			replaceNumbers = { damage }
 		})
 		if kills > 0 then
 			if kills > 1 then
 				server:appendLog(battleID, {
-					append  = { "core.genrltxt.379" },
-					replace = { kills, multiple and "core.genrltxt.43"
-					                            or firstUnit:getCreature():getNamePluralTextID() }
+					append         = { "core.genrltxt.379" },
+					replaceStrings = { multiple and "core.genrltxt.43"
+					                            or firstUnit:getCreature():getNamePluralTextID() },
+					replaceNumbers = { kills }
 				})
 			else
 				server:appendLog(battleID, {
-					append  = { "core.genrltxt.378" },
-					replace = { multiple and "core.genrltxt.42"
-					                      or firstUnit:getCreature():getNameSingularTextID() }
+					append         = { "core.genrltxt.378" },
+					replaceStrings = { multiple and "core.genrltxt.42"
+					                            or firstUnit:getCreature():getNameSingularTextID() }
 				})
 			end
 		end

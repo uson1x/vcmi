@@ -62,8 +62,8 @@ function Script:applicableGeneral(mechanics, problem)
 
 			if hero ~= nil then
 				problem:addCustom({
-					append = { "core.genrltxt.538" },
-					replace = {
+					append         = { "core.genrltxt.538" },
+					replaceStrings = {
 						hero:getNameTextID(),
 						elemental:getCreature():getNamePluralTextID(),
 						himHer

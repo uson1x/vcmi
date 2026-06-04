@@ -82,18 +82,19 @@ function Script:apply(mechanics, server, target)
 				local textID = resurrected == 1 and "core.genrltxt.117" or "core.genrltxt.116"
 				local nameTextID = unit:getCreature():getNameTextID(unit:getCount())
 				server:appendLog(battleID, {
-					append  = { textID },
-					replace = { resurrected, nameTextID }
+					append         = { textID },
+					replaceStrings = { nameTextID },
+					replaceNumbers = { resurrected }
 				})
 			elseif healedHP > 0 and isUnitCaster then
 				local casterUnit = mechanics:getUnitCaster()
 				server:appendLog(battleID, {
-					append  = { "core.genrltxt.414" },
-					replace = {
+					append         = { "core.genrltxt.414" },
+					replaceStrings = {
 						casterUnit:getCreature():getNameSingularTextID(),
-						unit:getCreature():getNameSingularTextID(),
-						healedHP
-					}
+						unit:getCreature():getNameSingularTextID()
+					},
+					replaceNumbers = { healedHP }
 				})
 			end
 		end

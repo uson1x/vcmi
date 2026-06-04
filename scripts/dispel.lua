@@ -34,8 +34,8 @@ function Script:apply(mechanics, server, target)
 			if bonuses:size() > 0 then
 				if positiveOnly and server:describeChanges() then
 					server:appendLog(battleID, {
-						append  = { "core.genrltxt.555" },
-						replace = { unit:getCreature():getNamePluralTextID() }
+						append         = { "core.genrltxt.555" },
+						replaceStrings = { unit:getCreature():getNamePluralTextID() }
 					})
 				end
 				server:removeUnitBonuses(battleID, unit, bonuses)

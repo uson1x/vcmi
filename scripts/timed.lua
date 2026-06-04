@@ -108,8 +108,9 @@ function Script:describeEffect(server, battleID, unit, bonuses, singular, plural
 				and "core.genrltxt.551"
 				or  "core.genrltxt.552"
 			server:appendLog(battleID, {
-				append  = { ageTextID },
-				replace = { unit:getCreature():getNameTextID(unit:getCount()), lost }
+				append         = { ageTextID },
+				replaceStrings = { unit:getCreature():getNameTextID(unit:getCount()) },
+				replaceNumbers = { lost }
 			})
 			return
 		end
@@ -120,8 +121,8 @@ function Script:describeEffect(server, battleID, unit, bonuses, singular, plural
 	local textID = (singular and singular ~= "" and unit:getCount() == 1) and singular or plural
 	local nameTextID = unit:getCreature():getNameTextID(unit:getCount())
 	server:appendLog(battleID, {
-		append  = { textID },
-		replace = { nameTextID }
+		append         = { textID },
+		replaceStrings = { nameTextID }
 	})
 end
 
