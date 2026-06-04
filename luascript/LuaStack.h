@@ -268,6 +268,12 @@ public:
 
 			lua_getfield(L, position, keyName.c_str());
 
+			if (lua_isnil(L, -1))
+			{
+				lua_pop(L, 1);
+				return;
+			}
+
 			try {
 				get(absindex(-1), data);
 			} catch (...) {

@@ -29,6 +29,7 @@ set(lualib_SRCS
 
 		api/library/Artifact.cpp
 		api/library/Bonus.cpp
+		api/library/BonusDescriptor.cpp
 		api/library/Creature.cpp
 		api/library/Faction.cpp
 		api/library/HeroClass.cpp
@@ -72,6 +73,7 @@ set(lualib_HDRS
 
 		api/library/Artifact.h
 		api/library/Bonus.h
+		api/library/BonusDescriptor.h
 		api/library/Creature.h
 		api/library/Faction.h
 		api/library/HeroClass.h

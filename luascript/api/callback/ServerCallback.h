@@ -28,6 +28,8 @@ namespace battle { class Unit; class UnitInfo; }
 namespace scripting::api
 {
 
+struct BonusDescriptor;
+
 class ServerCallbackProxy : public RawPointerWrapper<ServerCallback, ServerCallbackProxy>
 {
 public:
@@ -43,8 +45,8 @@ public:
 	static void appendLog(ServerCallback * object, BattleID battleID, const JsonNode & config);
 	static bool describeChanges(ServerCallback * object);
 	static void removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList);
-	static void addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & data, bool cumulative);
-	static void addBattleBonus(ServerCallback * object, BattleID battleID, const JsonNode & data);
+	static void addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusDescriptor data, bool cumulative);
+	static void addBattleBonus(ServerCallback * object, BattleID battleID, BonusDescriptor data);
 	static void addObstacle(ServerCallback * object, BattleID battleID, const JsonNode & descriptor);
 	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
 	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]

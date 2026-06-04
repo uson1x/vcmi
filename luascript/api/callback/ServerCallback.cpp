@@ -14,6 +14,7 @@
 
 #include "../Registry.h"
 #include "../battle/UnitState.h"
+#include "../library/BonusDescriptor.h"
 
 #include "../../LuaStack.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
@@ -30,7 +31,6 @@
 #include "../../../lib/constants/EntityIdentifiers.h"
 #include "modding/IdentifierStorage.h"
 #include "modding/ModScope.h"
-#include "json/JsonBonus.h"
 
 #include <vstd/RNG.h>
 
@@ -79,10 +79,9 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID ba
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & data, bool cumulative)
+void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BonusDescriptor data, bool cumulative)
 {
-	Bonus b;
-	JsonUtils::parseBonus(data, &b);
+	Bonus b = data.toBonus();
 
 	SetStackEffect sse;
 	sse.battleID = battleID;
@@ -93,14 +92,11 @@ void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleI
 	object->apply(sse);
 }
 
-void ServerCallbackProxy::addBattleBonus(ServerCallback * object, BattleID battleID, const JsonNode & data)
+void ServerCallbackProxy::addBattleBonus(ServerCallback * object, BattleID battleID, BonusDescriptor data)
 {
-	Bonus b;
-	JsonUtils::parseBonus(data, &b);
-
 	GiveBonus gb(GiveBonus::ETarget::BATTLE);
 	gb.id = battleID;
-	gb.bonus = b;
+	gb.bonus = data.toBonus();
 	object->apply(gb);
 }
 
