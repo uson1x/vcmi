@@ -83,24 +83,24 @@ function Script:applicableGeneral(mechanics, problem)
 	return true
 end
 
--- Look up the unit sitting on a tower; returns its ID or -1.
-function Script:towerShooterIdIfDestroyed(battle, part, damage)
-	if not isTower(part) then return -1 end
+-- Look up the unit sitting on a tower; returns the unit or nil.
+function Script:towerShooterIfDestroyed(battle, part, damage)
+	if not isTower(part) then return nil end
 	local stateBefore = battle:getWallState(part)
-	if stateBefore == nil then return -1 end
+	if stateBefore == nil then return nil end
 	local stateAfter = self:applyWallDamage(stateBefore, damage)
-	if stateAfter ~= WALL_DESTROYED then return -1 end
+	if stateAfter ~= WALL_DESTROYED then return nil end
 
 	local towerHex = battle:getTowerShooterHex(part)
 	local unit = battle:getUnitByPos(towerHex, false)
-	if not unit or unit:isGhost() then return -1 end
-	return unit:unitID()
+	if not unit or unit:isGhost() then return nil end
+	return unit
 end
 
 function Script:fireAt(server, battle, battleID, attacker, part, damage)
-	local killedId = self:towerShooterIdIfDestroyed(battle, part, damage)
+	local killedUnit = self:towerShooterIfDestroyed(battle, part, damage)
 	local destinationTile = battle:wallPartToBattleHex(part)
-	server:catapultAttack(battleID, attacker, part, destinationTile, damage, killedId)
+	server:catapultAttack(battleID, attacker, part, destinationTile, damage, killedUnit)
 end
 
 function Script:apply(mechanics, server, target)

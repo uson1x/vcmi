@@ -213,7 +213,7 @@ void ServerCallbackProxy::removeObstacle(ServerCallback * object, BattleID battl
 	object->apply(pack);
 }
 
-void ServerCallbackProxy::catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, int32_t killedTowerShooter)
+void ServerCallbackProxy::catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter)
 {
 	CatapultAttack ca;
 	ca.battleID = battleID;
@@ -221,7 +221,7 @@ void ServerCallbackProxy::catapultAttack(ServerCallback * object, BattleID battl
 	ca.attackedPart = attackedPart;
 	ca.destinationTile = destinationTile.toInt();
 	ca.damageDealt = static_cast<ui8>(std::clamp(damageDealt, 0, 255));
-	ca.killedTowerShooter = killedTowerShooter;
+	ca.killedTowerShooter = killedTowerShooter ? killedTowerShooter->unitId() : -1;
 	object->apply(ca);
 }
 

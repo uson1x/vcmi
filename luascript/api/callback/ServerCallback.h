@@ -46,7 +46,7 @@ public:
 	static void addUnitBonus(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & data, bool cumulative);
 	static void addBattleBonus(ServerCallback * object, BattleID battleID, const JsonNode & data);
 	static void addObstacle(ServerCallback * object, BattleID battleID, const JsonNode & descriptor);
-	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, int32_t killedTowerShooter);
+	static void catapultAttack(ServerCallback * object, BattleID battleID, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
 	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]
 	static int healUnit(lua_State * L);
 	static int changeUnit(lua_State * L); // args: battleID, unitState, [healthDelta=0]
