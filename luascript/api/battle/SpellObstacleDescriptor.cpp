@@ -22,7 +22,6 @@ namespace scripting::api
 SpellCreatedObstacle SpellObstacleDescriptor::toObstacle() const
 {
 	SpellCreatedObstacle obstacle;
-	obstacle.uniqueID         = uniqueID;
 	obstacle.pos              = BattleHex(static_cast<si16>(pos));
 	obstacle.obstacleType     = obstacleType;
 	obstacle.ID               = spellIndex;

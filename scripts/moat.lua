@@ -26,10 +26,8 @@ function Script:apply(mechanics, server, target)
 		obstacleType = ENUM.ObstacleType.moat
 	end
 
-	local nextId = battle:nextObstacleID()
 	for _, patch in ipairs(self.moatHexes or {}) do
 	    server:addObstacle(battle, {
-			uniqueID         = nextId,
 			pos              = patch[1],
 			obstacleType     = obstacleType,
 			spellIndex       = spell:getIndex(),
@@ -49,7 +47,6 @@ function Script:apply(mechanics, server, target)
 			animation        = defender.animation or "",
 			customSize       = patch,
 		})
-		nextId = nextId + 1
 	end
 
 	local flatHexes = {}

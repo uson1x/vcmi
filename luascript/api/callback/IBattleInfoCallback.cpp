@@ -30,9 +30,7 @@ namespace scripting::api
 
 const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "getNextUnitID",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
 	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
-	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
 
 	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke,         false },
@@ -44,7 +42,6 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "getObstaclesOnPos",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::getObstaclesOnPos>::invoke,   false },
 	{ "hasFortifications",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasFortifications>::invoke,   false },
 	{ "hasMoat",              LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasMoat>::invoke,             false },
-	{ "nextObstacleID",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::nextObstacleId>::invoke,      false },
 	{ "hasNativeStack",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasNativeStack>::invoke,      false },
 	{ "getAllPossibleHexes",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllPossibleHexes>::invoke, false },
 	{ "getWallState",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getWallState>::invoke,        false },
@@ -116,11 +113,6 @@ bool IBattleInfoCallbackProxy::hasFortifications(const IBattleInfoCallback * obj
 bool IBattleInfoCallbackProxy::hasMoat(const IBattleInfoCallback * object)
 {
 	return object->hasMoat();
-}
-
-int32_t IBattleInfoCallbackProxy::nextObstacleId(const IBattleInfoCallback * object)
-{
-	return object->nextObstacleId();
 }
 
 bool IBattleInfoCallbackProxy::hasNativeStack(const IBattleInfoCallback * object, BattleSide side)

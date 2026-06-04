@@ -38,7 +38,6 @@ public:
 	static std::vector<std::shared_ptr<const CObstacleInstance>> getObstaclesOnPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyBlocking);
 	static bool hasFortifications(const IBattleInfoCallback * object);
 	static bool hasMoat(const IBattleInfoCallback * object);
-	static int32_t nextObstacleId(const IBattleInfoCallback * object);
 	static bool hasNativeStack(const IBattleInfoCallback * object, BattleSide side);
 	static BattleHexArray getAllPossibleHexes(const IBattleInfoCallback * object);
 	static std::optional<EWallState> getWallState(const IBattleInfoCallback * object, EWallPart part);

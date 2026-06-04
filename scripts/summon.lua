@@ -99,10 +99,9 @@ function Script:apply(mechanics, server, target)
 		else
 			print("SpellEffectSummon. Hex: ", dest.hex)
 			assert(dest.hex ~= nil)
-			server:createUnit(
+			server:addUnit(
 				battle,
 				{
-					id = battle:getNextUnitID(),
 					count = self:summonedCreatureAmount(mechanics),
 					type = creature:getJsonKey(),
 					side = mechanics:getCasterSide(),

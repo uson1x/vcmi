@@ -196,7 +196,6 @@ public:
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("id", id);
 		s("count", count);
 		s("type", type);
 		s("side", side);

@@ -42,7 +42,7 @@ namespace scripting::api
 
 const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "createUnit",        LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,        false },
+	{ "addUnit",           LuaFunctionWrapper<&ServerCallbackProxy::addUnit>::invoke,           false },
 	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,              false },
 	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,            false },
 	{ "damageUnit",        LuaCallWrapper<&ServerCallbackProxy::damageUnit>::invoke,            false },
@@ -103,6 +103,7 @@ void ServerCallbackProxy::addBattleBonus(ServerCallback * object, const IBattleI
 void ServerCallbackProxy::addObstacle(ServerCallback * object, const IBattleInfoCallback & battle, SpellObstacleDescriptor descriptor)
 {
 	SpellCreatedObstacle obstacle = descriptor.toObstacle();
+	obstacle.uniqueID = battle.nextObstacleId();
 
 	BattleObstaclesChanged pack;
 	pack.battleID = battle.getBattle()->getBattleID();
@@ -111,9 +112,10 @@ void ServerCallbackProxy::addObstacle(ServerCallback * object, const IBattleInfo
 	object->apply(pack);
 }
 
-
-void ServerCallbackProxy::createUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info)
+const battle::Unit * ServerCallbackProxy::addUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info)
 {
+	info.id = battle.battleNextUnitId();
+
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
@@ -122,6 +124,8 @@ void ServerCallbackProxy::createUnit(ServerCallback * object, const IBattleInfoC
 	info.save(uc.data);
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
+
+	return battle.battleGetUnitByID(info.id);
 }
 
 void ServerCallbackProxy::removeUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit)

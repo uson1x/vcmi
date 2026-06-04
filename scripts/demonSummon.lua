@@ -70,10 +70,9 @@ function Script:apply(mechanics, server, target)
 			break
 		end
 
-		server:createUnit(
+		server:addUnit(
 			battle,
 			{
-				id       = battle:getNextUnitID(),
 				count    = finalAmount,
 				type     = creatureType:getJsonKey(),
 				side     = mechanics:getCasterSide(),

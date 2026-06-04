@@ -214,7 +214,6 @@ function Script:apply(mechanics, server, target)
 		end
 	end
 
-	local nextId = battle:nextObstacleID()
 	for _, hex in ipairs(destinations) do
 		local customSize = {}
 		for _, shape in ipairs(shapes) do
@@ -222,8 +221,6 @@ function Script:apply(mechanics, server, target)
 			customSize[#customSize+1] = shaped:toInteger()
 		end
 		local descriptor = buildDescriptor(self, mechanics, side, hex, customSize)
-		descriptor.uniqueID = nextId
-		nextId = nextId + 1
 		server:addObstacle(battle, descriptor)
 	end
 end

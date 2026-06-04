@@ -72,7 +72,7 @@ public:
 
 	// Mutable — other public fields
 	void setPosition(BattleHex hex);
-	void setCloneID(int32_t id);
+	void setClone(const ::battle::Unit & unit);
 
 	// Mutable — health via public CUnitState API
 	int64_t damage(int64_t amount); // clamps to available health, returns actual damage dealt

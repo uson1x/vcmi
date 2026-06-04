@@ -27,7 +27,6 @@ namespace scripting::api
 /// POD descriptor for a spell-created obstacle passed from Lua scripts.
 struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 {
-	si32 uniqueID = -1;
 	si32 pos = BattleHex::INVALID;
 	CObstacleInstance::EObstacleType obstacleType = CObstacleInstance::SPELL_CREATED;
 	si32 spellIndex = -1;
@@ -56,7 +55,6 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("uniqueID",         uniqueID);
 		s("pos",              pos);
 		s("obstacleType",     obstacleType);
 		s("spellIndex",       spellIndex);

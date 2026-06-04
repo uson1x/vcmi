@@ -39,7 +39,7 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static void createUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info);
+	static const battle::Unit * addUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info);
 	static void removeUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit);
 	static void removeObstacle(ServerCallback * object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle);
 	static void moveUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BattleHex destination, bool isTeleport);

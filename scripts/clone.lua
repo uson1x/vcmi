@@ -28,17 +28,13 @@ function Script:apply(mechanics, server, target)
 		)
 		if not hex:isValid() then break end
 
-		local cloneId = battle:getNextUnitID()
-		server:createUnit(battle, {
-			id       = cloneId,
+		local cloneUnit = server:addUnit(battle, {
 			count    = unit:getCount(),
 			type     = creature:getJsonKey(),
 			side     = mechanics:getCasterSide(),
 			position = hex,
 			summoned = true
 		})
-
-		local cloneUnit = battle:getUnitById(cloneId)
 		if cloneUnit == nil then break end
 
 		local cloneState = cloneUnit:copy()
@@ -46,7 +42,7 @@ function Script:apply(mechanics, server, target)
 		server:changeUnit(battle, cloneState)
 
 		local originalState = unit:copy()
-		originalState:setCloneID(cloneId)
+		originalState:setClone(cloneUnit)
 		server:changeUnit(battle, originalState)
 
 		server:addUnitBonus(battle, cloneUnit, {
