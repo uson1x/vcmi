@@ -69,15 +69,14 @@ For platform-specific build and test instructions see [`docs/developers/Building
 - **lobby/** - Standalone global lobby server (SQLite-backed, separate from game server)
 - **launcher/** - Qt-based game launcher
 - **mapeditor/** - Qt-based map editor
-- **scripting/** - Scripting module host
-  - **erm/** - ERM (Event-Related Magic) scripting language support
-  - **lua/** - Lua scripting support
+- **luascript/** - Lua scripting module host
+- **config/** - Game configuration file (json-with-comments format)
+- **scripts/** - Lua scripts used by the game
 - **AI/** - AI modules
-  - **BattleAI/** - Battle AI (used by default for combat)
-  - **Nullkiller/** - Modern adventure map AI (recommended)
-  - **Nullkiller2/** - Alternative modern adventure map AI
-  - **MMAI/** - Machine-learning-based AI (experimental)
-  - **StupidAI/** - Minimal AI for neutral/passive players
+  - **BattleAI/** - combat AI (default)
+  - **Nullkiller2/** - Modern adventure map AI (default)
+  - **MMAI/** - Machine-learning-based combat AI (experimental)
+  - **StupidAI/** - Minimal combat AI for neutral/passive players
   - **EmptyAI/** - Stub AI (no-op, used for testing)
 
 ### Key Concepts

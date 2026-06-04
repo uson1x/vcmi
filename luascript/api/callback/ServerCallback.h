@@ -23,7 +23,7 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 struct CObstacleInstance;
 
-namespace battle { class Unit; }
+namespace battle { class Unit; class UnitInfo; }
 
 namespace scripting::api
 {
@@ -35,7 +35,7 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static void createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data);
+	static void createUnit(ServerCallback * object, BattleID battleID, battle::UnitInfo info);
 	static void updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta);
 	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
 	static void removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle);

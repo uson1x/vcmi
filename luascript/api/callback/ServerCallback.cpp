@@ -164,14 +164,14 @@ void ServerCallbackProxy::addObstacle(ServerCallback * object, BattleID battleID
 }
 
 
-void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
+void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, battle::UnitInfo info)
 {
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
 	buc.battleID = battleID;
-	uc.id = id;
-	uc.data = std::move(data);
+	uc.id = info.id;
+	info.save(uc.data);
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
 }

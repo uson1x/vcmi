@@ -100,12 +100,12 @@ function Script:apply(mechanics, server, target)
 			assert(dest.hex ~= nil)
 			server:createUnit(
 				mechanics:getBattleID(),
-				mechanics:getBattle():getNextUnitID(),
 				{
+					id = mechanics:getBattle():getNextUnitID(),
 					count = self:summonedCreatureAmount(mechanics),
 					type = creature:getJsonKey(),
 					side = mechanics:getCasterSide(),
-					position = dest.hex:toInteger(),
+					position = dest.hex,
 					summoned = not self.permanent
 				}
 			)

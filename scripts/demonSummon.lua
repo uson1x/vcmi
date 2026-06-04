@@ -71,12 +71,12 @@ function Script:apply(mechanics, server, target)
 
 		server:createUnit(
 			mechanics:getBattleID(),
-			mechanics:getBattle():getNextUnitID(),
 			{
+				id       = mechanics:getBattle():getNextUnitID(),
 				count    = finalAmount,
 				type     = creatureType:getJsonKey(),
 				side     = mechanics:getCasterSide(),
-				position = hex:toInteger(),
+				position = hex,
 				summoned = not self.permanent
 			}
 		)
