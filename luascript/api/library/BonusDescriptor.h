@@ -22,7 +22,7 @@ namespace scripting::api
 {
 
 /// POD descriptor for a Bonus configuration passed from Lua scripts.
-struct DLL_LINKAGE BonusDescriptor final : ApiSerializable<BonusDescriptor>
+struct BonusDescriptor final : ApiSerializable<BonusDescriptor>
 {
 	si32 val = 0;
 	si32 turns = 0;

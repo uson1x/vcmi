@@ -27,7 +27,6 @@
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/Bonus.h"
 #include "../../../lib/battle/CUnitState.h"
-#include "../../../lib/json/JsonNode.h"
 #include "../../../lib/texts/MetaString.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 #include "modding/IdentifierStorage.h"
@@ -43,7 +42,6 @@ namespace scripting::api
 const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
 {
 	{ "createUnit",        LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,        false },
-	{ "updateUnit",        LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,        false },
 	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,              false },
 	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,            false },
 	{ "damageUnit",        LuaCallWrapper<&ServerCallbackProxy::damageUnit>::invoke,            false },
@@ -121,19 +119,6 @@ void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID,
 	buc.battleID = battleID;
 	uc.id = info.id;
 	info.save(uc.data);
-	buc.changedStacks.push_back(uc);
-	object->apply(buc);
-}
-
-void ServerCallbackProxy::updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta)
-{
-	BattleUnitsChanged buc;
-	UnitChanges uc;
-	uc.operation = UnitChanges::EOperation::UPDATE;
-	buc.battleID = battleID;
-	uc.id = id;
-	uc.data = std::move(data);
-	uc.healthDelta = healthDelta;
 	buc.changedStacks.push_back(uc);
 	object->apply(buc);
 }

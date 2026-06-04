@@ -15,7 +15,6 @@
 #include "../../LuaWrapper.h"
 #include "../../../lib/battle/BattleHex.h"
 #include "../../../lib/bonuses/BonusList.h"
-#include "../../../lib/json/JsonNode.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 #include "../../../lib/constants/Enumerations.h"
 
@@ -40,7 +39,6 @@ public:
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
 	static void createUnit(ServerCallback * object, BattleID battleID, battle::UnitInfo info);
-	static void updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta);
 	static void removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit);
 	static void removeObstacle(ServerCallback * object, BattleID battleID, std::shared_ptr<const CObstacleInstance> obstacle);
 	static void moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport);

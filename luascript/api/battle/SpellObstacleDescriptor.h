@@ -25,7 +25,7 @@ namespace scripting::api
 {
 
 /// POD descriptor for a spell-created obstacle passed from Lua scripts.
-struct DLL_LINKAGE SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
+struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 {
 	si32 uniqueID = -1;
 	si32 pos = BattleHex::INVALID;
