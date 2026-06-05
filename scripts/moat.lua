@@ -30,7 +30,7 @@ function Script:apply(mechanics, server, target)
 	    server:addObstacle(battle, {
 			pos              = patch[1],
 			obstacleType     = obstacleType,
-			spellIndex       = spell:getIndex(),
+			spell            = spell,
 			casterSpellPower = mechanics:getEffectPower(),
 			spellLevel       = mechanics:getEffectLevel(),
 			casterSide       = ENUM.BattleSide.defender,

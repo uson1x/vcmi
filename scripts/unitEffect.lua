@@ -57,7 +57,7 @@ end
 
 --- Returns health change preview data for hover tooltip.
 function Script:getHealthChange(mechanics, spellTarget)
-	return { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+	return { hpDelta = 0, unitsDelta = 0 }
 end
 
 --- Adjusts the spell's required target types. Return the (possibly modified) types array.

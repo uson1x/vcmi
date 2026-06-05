@@ -17,6 +17,8 @@
 #include "../../../lib/battle/CObstacleInstance.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 
+#include <vcmi/spells/Spell.h>
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 struct SpellCreatedObstacle;
@@ -29,7 +31,7 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 {
 	si32 pos = BattleHex::INVALID;
 	CObstacleInstance::EObstacleType obstacleType = CObstacleInstance::SPELL_CREATED;
-	si32 spellIndex = -1;
+	const ::spells::Spell * spell = nullptr;
 	int32_t turnsRemaining = -1;
 	int32_t casterSpellPower = 0;
 	int32_t spellLevel = 0;
@@ -57,7 +59,7 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 	{
 		s("pos",              pos);
 		s("obstacleType",     obstacleType);
-		s("spellIndex",       spellIndex);
+		s("spell",            spell);
 		s("turnsRemaining",   turnsRemaining);
 		s("casterSpellPower", casterSpellPower);
 		s("spellLevel",       spellLevel);

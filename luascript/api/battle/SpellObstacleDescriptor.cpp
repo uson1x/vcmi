@@ -24,7 +24,7 @@ SpellCreatedObstacle SpellObstacleDescriptor::toObstacle() const
 	SpellCreatedObstacle obstacle;
 	obstacle.pos              = BattleHex(static_cast<si16>(pos));
 	obstacle.obstacleType     = obstacleType;
-	obstacle.ID               = spellIndex;
+	obstacle.ID               = spell ? spell->getId() : SpellID(SpellID::NONE);
 	obstacle.turnsRemaining   = turnsRemaining;
 	obstacle.casterSpellPower = casterSpellPower;
 	obstacle.spellLevel       = spellLevel;

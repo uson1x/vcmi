@@ -141,7 +141,7 @@ local function buildDescriptor(self, mechanics, side, hex, customSize)
 	return {
 		pos              = hex:toInteger(),
 		obstacleType     = ENUM.ObstacleType.spellCreated,
-		spellIndex       = spell:getIndex(),
+		spell            = spell,
 		casterSpellPower = mechanics:getEffectPower(),
 		spellLevel       = mechanics:getEffectLevel(),
 		casterSide       = side,

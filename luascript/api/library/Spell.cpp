@@ -26,7 +26,6 @@ using ::spells::Spell;
 
 const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 {
-	{"getIndex",            LuaMethodWrapper<&Entity::getIndex, Spell>::invoke,          false},
 	{"getJsonKey",          LuaMethodWrapper<&Entity::getJsonKey, Spell>::invoke,        false},
 	{"getName",             LuaMethodWrapper<&Entity::getNameTranslated, Spell>::invoke, false},
 	{"getNameTextID",       LuaMethodWrapper<&Entity::getNameTextID, Spell>::invoke,     false},

@@ -147,8 +147,8 @@ static std::string prepareSpellEffectText(int gnrlTextID, const spells::effects:
 
 	if(value.unitsDelta > 0)
 	{
-		auto unitTypeName = value.unitsDelta == 1 ? LIBRARY->creatures()->getById(value.unitType)->getNameSingularTranslated()
-												  : LIBRARY->creatures()->getById(value.unitType)->getNamePluralTranslated();
+		auto unitTypeName = value.unitsDelta == 1 ? value.unitType->getNameSingularTranslated()
+												  : value.unitType->getNamePluralTranslated();
 		return baseText +" (+ "+ std::to_string(value.unitsDelta) +" "+ unitTypeName +")";
 	}
 

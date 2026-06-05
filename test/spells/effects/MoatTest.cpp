@@ -72,7 +72,7 @@ public:
 		EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(5));
 		EXPECT_CALL(mechanicsMock, getEffectLevel()).WillRepeatedly(Return(2));
 		EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
-		EXPECT_CALL(spellStub, getIndex()).WillRepeatedly(Return(testSpellId.getNum()));
+		EXPECT_CALL(spellStub, getId()).WillRepeatedly(Return(testSpellId));
 		EXPECT_CALL(spellStub, getJsonKey()).WillRepeatedly(Return(SpellID::encode(testSpellId.getNum())));
 		EXPECT_CALL(mechanicsMock, isMassive()).WillRepeatedly(Return(true));
 	}

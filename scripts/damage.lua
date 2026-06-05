@@ -48,7 +48,7 @@ function Script:damageForTarget(targetIndex, mechanics, unit)
 end
 
 function Script:getHealthChange(mechanics, spellTarget)
-	local result = { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+	local result = { hpDelta = 0, unitsDelta = 0 }
 	for i, dest in ipairs(spellTarget) do
 		local unit = dest.unit
 		if unit and unit:isAlive() then

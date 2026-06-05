@@ -53,7 +53,7 @@ end
 
 --- Returns HP and unit count change for hover tooltip.
 function Script:getHealthChange(mechanics, spellTarget)
-	local result = { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+	local result = { hpDelta = 0, unitsDelta = 0 }
 	for _, dest in ipairs(spellTarget) do
 		local unit = dest.unit
 		if unit then
@@ -61,7 +61,7 @@ function Script:getHealthChange(mechanics, spellTarget)
 			local healedHP, resurrected = copy:heal(mechanics:getEffectValue(), self:getHealLevel(), self:getHealPower())
 			result.hpDelta   = result.hpDelta   + healedHP
 			result.unitsDelta = result.unitsDelta + resurrected
-			result.unitType  = unit:getCreature():getIndex()
+			result.unitType  = unit:getCreature()
 		end
 	end
 	return result

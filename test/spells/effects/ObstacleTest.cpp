@@ -164,7 +164,7 @@ public:
 		EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(5));
 		EXPECT_CALL(mechanicsMock, getEffectLevel()).WillRepeatedly(Return(2));
 		EXPECT_CALL(mechanicsMock, getSpell()).WillRepeatedly(Return(&spellStub));
-		EXPECT_CALL(spellStub, getIndex()).WillRepeatedly(Return(13));
+		EXPECT_CALL(spellStub, getId()).WillRepeatedly(Return(SpellID(13)));
 	}
 
 protected:

@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <vcmi/Creature.h>
 #include <vcmi/spells/Magic.h>
 
 #include "../../constants/EntityIdentifiers.h"
@@ -43,13 +44,13 @@ struct SpellEffectValue : public scripting::ApiSerializable<SpellEffectValue>
 {
 	int64_t hpDelta = 0; // positive -> healed health points, negative -> damage
 	int64_t unitsDelta = 0; // positive -> resurrected / summoned (demons) / animated (undeads), negative -> kills
-	CreatureID unitType = CreatureID::NONE; // type of creatures summoned / resurrected / animated / etc.
+	const Creature * unitType = nullptr; // type of creatures summoned / resurrected / animated / etc.
 
 	SpellEffectValue & operator+=(const SpellEffectValue & rhs) noexcept
 	{
 		hpDelta += rhs.hpDelta;
 		unitsDelta += rhs.unitsDelta;
-		if(unitType == CreatureID::NONE)
+		if(unitType == nullptr)
 			unitType = rhs.unitType;
 
 		return *this;

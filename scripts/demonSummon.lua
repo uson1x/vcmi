@@ -95,12 +95,12 @@ function Script:getHealthChange(mechanics, spellTarget)
 			return {
 				hpDelta    = 0,
 				unitsDelta = amount,
-				unitType   = creatureType:getIndex()
+				unitType   = creatureType
 			}
 		end
 	end
 
-	return { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+	return { hpDelta = 0, unitsDelta = 0 }
 end
 
 return Script

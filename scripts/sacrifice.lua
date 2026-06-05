@@ -89,11 +89,11 @@ end
 --- Returns HP change preview.
 function Script:getHealthChange(mechanics, spellTarget)
 	if #spellTarget == 0 then
-		return { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+		return { hpDelta = 0, unitsDelta = 0 }
 	end
 	local unit = spellTarget[1].unit
 	if not unit then
-		return { hpDelta = 0, unitsDelta = 0, unitType = -1 }
+		return { hpDelta = 0, unitsDelta = 0 }
 	end
 	if not unit:isAlive() then
 		-- dead target: show maximum possible resurrection
@@ -102,14 +102,14 @@ function Script:getHealthChange(mechanics, spellTarget)
 		return {
 			hpDelta   = baseAmount * maxHP,
 			unitsDelta = baseAmount,
-			unitType   = unit:getCreature():getIndex()
+			unitType   = unit:getCreature()
 		}
 	else
 		-- alive unit shown in UI as sacrifice victim
 		return {
 			hpDelta   = self:calculateHealValue(mechanics, unit),
 			unitsDelta = -unit:getCount(),
-			unitType   = unit:getCreature():getIndex()
+			unitType   = unit:getCreature()
 		}
 	end
 end
