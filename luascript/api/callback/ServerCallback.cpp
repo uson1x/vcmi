@@ -19,6 +19,7 @@
 #include "../library/BonusDescriptor.h"
 
 #include "../../LuaStack.h"
+#include "../../../lib/battle/SiegeInfo.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
@@ -153,15 +154,28 @@ void ServerCallbackProxy::removeObstacle(ServerCallback & object, const IBattleI
 	object.apply(pack);
 }
 
-void ServerCallbackProxy::catapultAttack(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter)
+void ServerCallbackProxy::catapultAttack(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & attacker, EWallPart attackedPart, int32_t damageDealt)
 {
 	CatapultAttack ca;
 	ca.battleID = battle.getBattle()->getBattleID();
 	ca.attacker = attacker.unitId();
 	ca.attackedPart = attackedPart;
-	ca.destinationTile = destinationTile.toInt();
+	ca.destinationTile = battle.wallPartToBattleHex(attackedPart).toInt();
 	ca.damageDealt = static_cast<ui8>(std::clamp(damageDealt, 0, 255));
-	ca.killedTowerShooter = killedTowerShooter ? killedTowerShooter->unitId() : -1;
+
+	ca.killedTowerShooter = -1;
+	if(attackedPart == EWallPart::KEEP || attackedPart == EWallPart::BOTTOM_TOWER || attackedPart == EWallPart::UPPER_TOWER)
+	{
+		EWallState stateAfter = SiegeInfo::applyDamage(battle.battleGetWallState(attackedPart), ca.damageDealt);
+		if(stateAfter == EWallState::DESTROYED)
+		{
+			BattleHex towerHex = battle.getTowerShooterHex(attackedPart);
+			const battle::Unit * shooter = battle.battleGetUnitByPos(towerHex, false);
+			if(shooter && !shooter->isGhost())
+				ca.killedTowerShooter = shooter->unitId();
+		}
+	}
+
 	object.apply(ca);
 }
 

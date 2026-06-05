@@ -2,23 +2,11 @@ local Base = require("spellEffect")
 local Script = setmetatable({}, {__index = Base})
 Script.__index = Script
 
--- Raw EWallState values from lib/constants/Enumerations.h
-local WALL_DESTROYED  = 0
-local WALL_DAMAGED    = 1
-local WALL_INTACT     = 2
-local WALL_REINFORCED = 3
-
 local WALLS  = { ENUM.WallPart.bottomWall, ENUM.WallPart.belowGate,
                  ENUM.WallPart.overGate,   ENUM.WallPart.upperWall }
 local TOWERS = { ENUM.WallPart.bottomTower, ENUM.WallPart.keep,
                  ENUM.WallPart.upperTower }
 local GATE   = ENUM.WallPart.gate
-
-local function isTower(part)
-	return part == ENUM.WallPart.keep
-	    or part == ENUM.WallPart.bottomTower
-	    or part == ENUM.WallPart.upperTower
-end
 
 function Script:hitChance(part)
 	if part == GATE                  then return self.chanceToHitGate  or 0 end
@@ -39,21 +27,6 @@ function Script:randomDamage(server)
 		if r < acc then return dmg end
 	end
 	return 0
-end
-
--- Mirror of C++ SiegeInfo::applyDamage: each damage point lowers the wall state by one level.
-function Script:applyWallDamage(state, damage)
-	while damage > 0 do
-		if state == WALL_REINFORCED then
-			state = WALL_INTACT
-		elseif state == WALL_INTACT then
-			state = WALL_DAMAGED
-		elseif state == WALL_DAMAGED then
-			state = WALL_DESTROYED
-		end
-		damage = damage - 1
-	end
-	return state
 end
 
 function Script:potentialTargets(battle, bypassGate, bypassTower)
@@ -83,26 +56,6 @@ function Script:applicableGeneral(mechanics, problem)
 	return true
 end
 
--- Look up the unit sitting on a tower; returns the unit or nil.
-function Script:towerShooterIfDestroyed(battle, part, damage)
-	if not isTower(part) then return nil end
-	local stateBefore = battle:getWallState(part)
-	if stateBefore == nil then return nil end
-	local stateAfter = self:applyWallDamage(stateBefore, damage)
-	if stateAfter ~= WALL_DESTROYED then return nil end
-
-	local towerHex = battle:getTowerShooterHex(part)
-	local unit = battle:getUnitByPos(towerHex, false)
-	if not unit or unit:isGhost() then return nil end
-	return unit
-end
-
-function Script:fireAt(server, battle, attacker, part, damage)
-	local killedUnit = self:towerShooterIfDestroyed(battle, part, damage)
-	local destinationTile = battle:wallPartToBattleHex(part)
-	server:catapultAttack(battle, attacker, part, destinationTile, damage, killedUnit)
-end
-
 function Script:apply(mechanics, server, target)
 	local battle    = mechanics:getBattle()
 	local attacker  = mechanics:getUnitCaster()
@@ -121,7 +74,7 @@ function Script:apply(mechanics, server, target)
 			damagePerPart[part] = damagePerPart[part] + self:randomDamage(server)
 		end
 		for _, part in ipairs(order) do
-			self:fireAt(server, battle, attacker, part, damagePerPart[part])
+			server:catapultAttack(battle, attacker, part, damagePerPart[part])
 		end
 	else
 		local desired = battle:hexToWallPart(target[1].hex)
@@ -135,7 +88,7 @@ function Script:apply(mechanics, server, target)
 				if #pool == 0 then break end
 				actual = pool[server:rngInt(1, #pool)]
 			end
-			self:fireAt(server, battle, attacker, actual, self:randomDamage(server))
+			server:catapultAttack(battle, attacker, actual, self:randomDamage(server))
 		end
 	end
 end
