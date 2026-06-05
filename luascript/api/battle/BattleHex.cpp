@@ -24,10 +24,10 @@ namespace scripting::api
 
 void BattleHexProxy::registerMethods(MethodRegistrar & R)
 {
-	R.method<&BattleHex::isValid>            ("isValid",         "True if this hex value identifies a valid battlefield position.");
-	R.method<&BattleHex::isAvailable>        ("isAvailable",     "True if the hex is on the battlefield and not in the first or last column.");
-	R.method<&BattleHex::toInt>              ("toInteger",       "Returns the underlying integer representation of the hex.");
-	R.function<&BattleHexProxy::getClosestTile>("getClosestTile","Returns the hex from the array closest to this one, picked from the given battle side.");
+	R.method<&BattleHex::isValid>            ("isValid",         "Returns true if this hex value identifies a valid battlefield position.");
+	R.method<&BattleHex::isAvailable>        ("isAvailable",     "Returns true if the hex is on the battlefield and is not located in the first or last column, which are reserved for back tile of war machines and are not accessible for regular movement.");
+	R.method<&BattleHex::toInt>              ("toInteger",       "DEPRECATED. Returns the underlying integer representation of the hex.");
+	R.function<&BattleHexProxy::getClosestTile>("getClosestTile","Returns the hex from the array closest to this one. If multiple equidistance hexes are found, this function will return one closest to specified battle side.");
 	R.method<&BattleHex::copyToNorthWest>    ("copyToNorthWest", "Returns the neighbouring hex one step north-west.");
 	R.method<&BattleHex::copyToNorthEast>    ("copyToNorthEast", "Returns the neighbouring hex one step north-east.");
 	R.method<&BattleHex::copyToEast>         ("copyToEast",      "Returns the neighbouring hex one step east.");

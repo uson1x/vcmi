@@ -20,11 +20,6 @@ set(lualib_SRCS
 		api/battle/Obstacle.cpp
 		api/battle/SpellObstacleDescriptor.cpp
 
-		api/events/BattleEvents.cpp
-		api/events/EventBus.cpp
-		api/events/GenericEvents.cpp
-		api/events/SubscriptionRegistry.cpp
-
 		api/spells/Mechanics.cpp
 		api/spells/Problem.cpp
 
@@ -68,11 +63,6 @@ set(lualib_HDRS
 		api/battle/BattleHex.h
 		api/battle/Obstacle.h
 		api/battle/SpellObstacleDescriptor.h
-
-		api/events/BattleEvents.h
-		api/events/EventBus.h
-		api/events/GenericEvents.h
-		api/events/SubscriptionRegistry.h
 
 		api/library/Artifact.h
 		api/library/Bonus.h

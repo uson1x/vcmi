@@ -16,10 +16,6 @@
 #include "battle/BattleHex.h"
 #include "battle/BattleHexArray.h"
 #include "battle/Obstacle.h"
-#include "events/BattleEvents.h"
-#include "events/EventBus.h"
-#include "events/GenericEvents.h"
-#include "events/SubscriptionRegistry.h"
 #include "spells/Mechanics.h"
 #include "spells/Problem.h"
 #include "library/Artifact.h"
@@ -67,16 +63,9 @@ Registry::Registry()
 	registerPrivate<ProblemProxy>("battle.SpellProblem");
 	registerPrivate<MechanicsProxy>("battle.SpellMechanics");
 
-	registerPrivate<ApplyDamageProxy>("events.ApplyDamage");
-	registerPrivate<GameResumedProxy>("events.GameResumed");
-	registerPrivate<PlayerGotTurnProxy>("events.PlayerGotTurn");
-	registerPrivate<TurnStartedProxy>("events.TurnStarted");
-
 	registerPrivate<IBattleInfoCallbackProxy>("game.Battle");
 	registerPrivate<IGameInfoCallbackProxy>("game.Game");
 	registerPrivate<ServerCallbackProxy>("game.Server");
-	registerPrivate<EventBusProxy>("game.EventBus");
-	registerPrivate<EventSubscriptionProxy>("game.EventSubscription");
 }
 
 const Registry * Registry::get()
