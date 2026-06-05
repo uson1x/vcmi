@@ -33,7 +33,7 @@ std::shared_ptr<Effect> SpellEffectHandler::create(SpellEffectID effectID) const
 	const auto & effect = effectTypes.at(effectID.getNum());
 	const auto & factory = effectTypeFactories.at(effect.type);
 
-	return factory->create(effect.modScope, effect.scriptName);
+	return factory->create(effect.effectId);
 }
 
 void SpellEffectHandler::registerFactory(const std::string & typeName, std::shared_ptr<ISpellEffectFactory> factory)
@@ -59,11 +59,20 @@ void SpellEffectHandler::loadObject(std::string scope, std::string name, const J
 	for(const auto & item : data["stringRegistrations"].Vector())
 		newEffect.stringRegistrations.push_back(item.String());
 
-	registerObject(scope, "spellEffect", name, data, effectTypes.size());
-	effectTypes.push_back(newEffect);
+	const JsonNode & patchesNode = data["patches"];
+	if (patchesNode.isVector())
+	{
+		for (const auto & patchEntry : patchesNode.Vector())
+			newEffect.patches.emplace_back(patchEntry.getModScope(), patchEntry.String());
+	}
 
-	const auto & factory = effectTypeFactories.at(newEffect.type);
-	factory->initialize(newEffect.modScope, newEffect.scriptName);
+	newEffect.effectId = scope + ':' + name;
+	registerObject(scope, "spellEffect", name, data, effectTypes.size());
+	effectTypes.push_back(std::move(newEffect));
+
+	const auto & back = effectTypes.back();
+	const auto & factory = effectTypeFactories.at(back.type);
+	factory->initialize(back.effectId, back.modScope, back.scriptName, back.patches);
 }
 
 void SpellEffectHandler::loadObject(std::string scope, std::string name, const JsonNode & data, size_t index)

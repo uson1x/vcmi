@@ -45,15 +45,17 @@ LuaSpellEffectFactory::LuaSpellEffectFactory(scripting::LuaModule & host)
 
 LuaSpellEffectFactory::~LuaSpellEffectFactory() = default;
 
-void LuaSpellEffectFactory::initialize(const std::string & scope, const std::string & name)
+void LuaSpellEffectFactory::initialize(const std::string & effectId,
+	const std::string & scope, const std::string & name,
+	const std::vector<PatchEntry> & patches)
 {
-	auto loadedScript = std::make_unique<scripting::LuaScriptInstance>(host, scope,name);
-	loadedScripts[loadedScript->getIdentifier()] = std::move(loadedScript);
+	auto loadedScript = std::make_unique<scripting::LuaScriptInstance>(host, scope, name, patches);
+	loadedScripts[effectId] = std::move(loadedScript);
 }
 
-std::shared_ptr<Effect> LuaSpellEffectFactory::create(const std::string & scope, const std::string & name) const
+std::shared_ptr<Effect> LuaSpellEffectFactory::create(const std::string & effectId) const
 {
-	return std::make_shared<LuaSpellEffect>(loadedScripts.at(scope + ':' + name).get());
+	return std::make_shared<LuaSpellEffect>(loadedScripts.at(effectId).get());
 }
 
 void LuaSpellEffectFactory::registerScripts(scripting::LuaScriptPool * pool)

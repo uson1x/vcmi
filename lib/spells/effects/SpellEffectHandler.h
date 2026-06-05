@@ -24,8 +24,10 @@ struct SpellEffectType
 {
 	std::string identifier;
 	std::string modScope;
+	std::string effectId; ///< modScope + ':' + identifier
 	std::string type;
 	std::string scriptName;
+	std::vector<ISpellEffectFactory::PatchEntry> patches; ///vector(modScope, sourcePath)
 	JsonNode validationSchema;
 	std::vector<std::string> stringRegistrations;
 };
