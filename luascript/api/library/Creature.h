@@ -26,7 +26,7 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static std::string getNameTextID(const Creature * creature, int amount);
+	static std::string getNameTextID(const Creature & creature, int amount);
 };
 
 }

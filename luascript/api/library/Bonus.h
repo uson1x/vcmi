@@ -30,9 +30,9 @@ public:
 	static si32 getVal(const Bonus & b);
 	static std::string getSubtype(const Bonus & b);
 	static std::string getSourceID(const Bonus & b);
-	static si32 getSource(const Bonus & b);
+	static BonusSource getSource(const Bonus & b);
 	static std::vector<BonusDuration::BonusDuration> getDuration(const Bonus & b);
-	static si32 getValType(const Bonus & b);
+	static BonusValueType getValType(const Bonus & b);
 	static std::string getStacking(const Bonus & b);
 	static si16 getTurnsRemain(const Bonus & b);
 	static bool isHidden(const Bonus & b);

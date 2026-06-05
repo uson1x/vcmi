@@ -59,12 +59,12 @@ const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGIS
 	{ "rngInt",            LuaCallWrapper<&ServerCallbackProxy::rngInt>::invoke,                false },
 };
 
-bool ServerCallbackProxy::describeChanges(ServerCallback * object)
+bool ServerCallbackProxy::describeChanges(ServerCallback & object)
 {
-	return object->describeChanges();
+	return object.describeChanges();
 }
 
-void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, const BonusList & bonusList)
+void ServerCallbackProxy::removeUnitBonuses(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, const BonusList & bonusList)
 {
 	std::vector<Bonus> buffer;
 	for(const auto & b : bonusList)
@@ -75,32 +75,32 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, const IBatt
 
 	SetStackEffect sse;
 	sse.battleID = battle.getBattle()->getBattleID();
-	sse.toRemove.emplace_back(unit->unitId(), buffer);
-	object->apply(sse);
+	sse.toRemove.emplace_back(unit.unitId(), buffer);
+	object.apply(sse);
 }
 
-void ServerCallbackProxy::addUnitBonus(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BonusDescriptor data, bool cumulative)
+void ServerCallbackProxy::addUnitBonus(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, const BonusDescriptor & data, bool cumulative)
 {
 	Bonus b = data.toBonus();
 
 	SetStackEffect sse;
 	sse.battleID = battle.getBattle()->getBattleID();
 	if(cumulative)
-		sse.toAdd.emplace_back(unit->unitId(), std::vector<Bonus>{b});
+		sse.toAdd.emplace_back(unit.unitId(), std::vector<Bonus>{b});
 	else
-		sse.toUpdate.emplace_back(unit->unitId(), std::vector<Bonus>{b});
-	object->apply(sse);
+		sse.toUpdate.emplace_back(unit.unitId(), std::vector<Bonus>{b});
+	object.apply(sse);
 }
 
-void ServerCallbackProxy::addBattleBonus(ServerCallback * object, const IBattleInfoCallback & battle, BonusDescriptor data)
+void ServerCallbackProxy::addBattleBonus(ServerCallback & object, const IBattleInfoCallback & battle, const BonusDescriptor & data)
 {
 	GiveBonus gb(GiveBonus::ETarget::BATTLE);
 	gb.id = battle.getBattle()->getBattleID();
 	gb.bonus = data.toBonus();
-	object->apply(gb);
+	object.apply(gb);
 }
 
-void ServerCallbackProxy::addObstacle(ServerCallback * object, const IBattleInfoCallback & battle, SpellObstacleDescriptor descriptor)
+void ServerCallbackProxy::addObstacle(ServerCallback & object, const IBattleInfoCallback & battle, const SpellObstacleDescriptor & descriptor)
 {
 	SpellCreatedObstacle obstacle = descriptor.toObstacle();
 	obstacle.uniqueID = battle.nextObstacleId();
@@ -109,37 +109,38 @@ void ServerCallbackProxy::addObstacle(ServerCallback * object, const IBattleInfo
 	pack.battleID = battle.getBattle()->getBattleID();
 	pack.changes.emplace_back();
 	obstacle.toInfo(pack.changes.back());
-	object->apply(pack);
+	object.apply(pack);
 }
 
-const battle::Unit * ServerCallbackProxy::addUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info)
+const battle::Unit * ServerCallbackProxy::addUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::UnitInfo & info)
 {
-	info.id = battle.battleNextUnitId();
+	battle::UnitInfo unitInfo = info;
+	unitInfo.id = battle.battleNextUnitId();
 
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
 	buc.battleID = battle.getBattle()->getBattleID();
-	uc.id = info.id;
-	info.save(uc.data);
+	uc.id = unitInfo.id;
+	unitInfo.save(uc.data);
 	buc.changedStacks.push_back(uc);
-	object->apply(buc);
+	object.apply(buc);
 
-	return battle.battleGetUnitByID(info.id);
+	return battle.battleGetUnitByID(unitInfo.id);
 }
 
-void ServerCallbackProxy::removeUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit)
+void ServerCallbackProxy::removeUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit)
 {
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	buc.battleID = battle.getBattle()->getBattleID();
 	uc.operation = UnitChanges::EOperation::REMOVE;
-	uc.id = unit->unitId();
+	uc.id = unit.unitId();
 	buc.changedStacks.push_back(uc);
-	object->apply(buc);
+	object.apply(buc);
 }
 
-void ServerCallbackProxy::removeObstacle(ServerCallback * object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle)
+void ServerCallbackProxy::removeObstacle(ServerCallback & object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle)
 {
 	if(!obstacle)
 		return;
@@ -149,19 +150,19 @@ void ServerCallbackProxy::removeObstacle(ServerCallback * object, const IBattleI
 	pack.changes.emplace_back(obstacle->uniqueID, BattleChanges::EOperation::REMOVE);
 	auto * serializable = const_cast<CObstacleInstance*>(obstacle.get());
 	serializable->toInfo(pack.changes.back(), BattleChanges::EOperation::REMOVE);
-	object->apply(pack);
+	object.apply(pack);
 }
 
-void ServerCallbackProxy::catapultAttack(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter)
+void ServerCallbackProxy::catapultAttack(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter)
 {
 	CatapultAttack ca;
 	ca.battleID = battle.getBattle()->getBattleID();
-	ca.attacker = attacker ? attacker->unitId() : -1;
+	ca.attacker = attacker.unitId();
 	ca.attackedPart = attackedPart;
 	ca.destinationTile = destinationTile.toInt();
 	ca.damageDealt = static_cast<ui8>(std::clamp(damageDealt, 0, 255));
 	ca.killedTowerShooter = killedTowerShooter ? killedTowerShooter->unitId() : -1;
-	object->apply(ca);
+	object.apply(ca);
 }
 
 int ServerCallbackProxy::rngInt(lua_State * L)
@@ -183,25 +184,25 @@ int ServerCallbackProxy::rngInt(lua_State * L)
 	return 1;
 }
 
-void ServerCallbackProxy::moveUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BattleHex destination, bool isTeleport)
+void ServerCallbackProxy::moveUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, BattleHex destination, bool isTeleport)
 {
 	BattleStackMoved pack;
 	pack.battleID = battle.getBattle()->getBattleID();
-	pack.stack = unit->unitId();
+	pack.stack = unit.unitId();
 	pack.distance = 0;
 	pack.teleporting = isTeleport;
 	BattleHexArray tiles;
 	tiles.insert(destination);
 	pack.tilesToMove = tiles;
-	object->apply(pack);
+	object.apply(pack);
 }
 
-void ServerCallbackProxy::appendLog(ServerCallback * object, const IBattleInfoCallback & battle, LuaMetaString config)
+void ServerCallbackProxy::appendLog(ServerCallback & object, const IBattleInfoCallback & battle, const LuaMetaString & config)
 {
 	BattleLogMessage msg;
 	msg.battleID = battle.getBattle()->getBattleID();
 	msg.lines.push_back(config.toMetaString());
-	object->apply(msg);
+	object.apply(msg);
 }
 
 int ServerCallbackProxy::changeUnit(lua_State * L)

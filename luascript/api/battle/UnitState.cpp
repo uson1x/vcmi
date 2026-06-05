@@ -128,17 +128,17 @@ int64_t LuaUnitState::damage(int64_t amount)
 
 // --- LuaUnitStateProxy static methods ---
 
-bool LuaUnitStateProxy::hasAbsoluteImmunity(LuaUnitState state, const spells::Spell * spell)
+bool LuaUnitStateProxy::hasAbsoluteImmunity(const LuaUnitState & state, const spells::Spell & spell)
 {
-	return state.getState()->hasAbsoluteImmunity(spell->getId());
+	return state.getState()->hasAbsoluteImmunity(spell.getId());
 }
 
-const Creature * LuaUnitStateProxy::getCreature(LuaUnitState state)
+const Creature * LuaUnitStateProxy::getCreature(const LuaUnitState & state)
 {
 	return state.getState()->creatureId().toEntity(LIBRARY);
 }
 
-BattleHexArray LuaUnitStateProxy::getHexes(LuaUnitState state)
+BattleHexArray LuaUnitStateProxy::getHexes(const LuaUnitState & state)
 {
 	return state.getState()->getHexes();
 }

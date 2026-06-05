@@ -115,27 +115,41 @@ Enums::EnumMap<BattleSide> Enums::exportBattleSide() const
 	};
 }
 
-Enums::EnumMap<si32> Enums::exportBonusSource() const
+Enums::EnumMap<BonusSource> Enums::exportBonusSource() const
 {
 	return {
-		{ "artifact",          static_cast<si32>(BonusSource::ARTIFACT) },
-		{ "artifactInstance",  static_cast<si32>(BonusSource::ARTIFACT_INSTANCE) },
-		{ "objectType",        static_cast<si32>(BonusSource::OBJECT_TYPE) },
-		{ "objectInstance",    static_cast<si32>(BonusSource::OBJECT_INSTANCE) },
-		{ "creatureAbility",   static_cast<si32>(BonusSource::CREATURE_ABILITY) },
-		{ "terrainNative",     static_cast<si32>(BonusSource::TERRAIN_NATIVE) },
-		{ "terrainOverlay",    static_cast<si32>(BonusSource::TERRAIN_OVERLAY) },
-		{ "spellEffect",       static_cast<si32>(BonusSource::SPELL_EFFECT) },
-		{ "townStructure",     static_cast<si32>(BonusSource::TOWN_STRUCTURE) },
-		{ "heroBaseSkill",     static_cast<si32>(BonusSource::HERO_BASE_SKILL) },
-		{ "secondarySkill",    static_cast<si32>(BonusSource::SECONDARY_SKILL) },
-		{ "heroSpecial",       static_cast<si32>(BonusSource::HERO_SPECIAL) },
-		{ "army",              static_cast<si32>(BonusSource::ARMY) },
-		{ "campaignBonus",     static_cast<si32>(BonusSource::CAMPAIGN_BONUS) },
-		{ "stackExperience",   static_cast<si32>(BonusSource::STACK_EXPERIENCE) },
-		{ "commander",         static_cast<si32>(BonusSource::COMMANDER) },
-		{ "global",            static_cast<si32>(BonusSource::GLOBAL) },
-		{ "other",             static_cast<si32>(BonusSource::OTHER) },
+		{ "artifact",         BonusSource::ARTIFACT },
+		{ "artifactInstance", BonusSource::ARTIFACT_INSTANCE },
+		{ "objectType",       BonusSource::OBJECT_TYPE },
+		{ "objectInstance",   BonusSource::OBJECT_INSTANCE },
+		{ "creatureAbility",  BonusSource::CREATURE_ABILITY },
+		{ "terrainNative",    BonusSource::TERRAIN_NATIVE },
+		{ "terrainOverlay",   BonusSource::TERRAIN_OVERLAY },
+		{ "spellEffect",      BonusSource::SPELL_EFFECT },
+		{ "townStructure",    BonusSource::TOWN_STRUCTURE },
+		{ "heroBaseSkill",    BonusSource::HERO_BASE_SKILL },
+		{ "secondarySkill",   BonusSource::SECONDARY_SKILL },
+		{ "heroSpecial",      BonusSource::HERO_SPECIAL },
+		{ "army",             BonusSource::ARMY },
+		{ "campaignBonus",    BonusSource::CAMPAIGN_BONUS },
+		{ "stackExperience",  BonusSource::STACK_EXPERIENCE },
+		{ "commander",        BonusSource::COMMANDER },
+		{ "global",           BonusSource::GLOBAL },
+		{ "other",            BonusSource::OTHER },
+	};
+}
+
+Enums::EnumMap<BonusValueType> Enums::exportBonusValueType() const
+{
+	return {
+		{ "additiveValue",        BonusValueType::ADDITIVE_VALUE },
+		{ "baseNumber",           BonusValueType::BASE_NUMBER },
+		{ "percentToAll",         BonusValueType::PERCENT_TO_ALL },
+		{ "percentToBase",        BonusValueType::PERCENT_TO_BASE },
+		{ "percentToSource",      BonusValueType::PERCENT_TO_SOURCE },
+		{ "percentToTargetType",  BonusValueType::PERCENT_TO_TARGET_TYPE },
+		{ "independentMax",       BonusValueType::INDEPENDENT_MAX },
+		{ "independentMin",       BonusValueType::INDEPENDENT_MIN },
 	};
 }
 

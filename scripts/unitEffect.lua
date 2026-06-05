@@ -234,7 +234,7 @@ function Script:transformByChain(mechanics, aimPoint, spellTarget, chainLength)
 			table.insert(effectTarget, {})
 		end
 
-		processedIds[unit:unitID()] = true
+		processedIds[unit] = true
 
 		local hexes = buildPossibleHexes()
 		if not hexes then break end

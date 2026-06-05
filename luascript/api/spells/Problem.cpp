@@ -22,19 +22,19 @@ namespace scripting::api
 using ::spells::Problem;
 using ::spells::Mechanics;
 
-void ProblemProxy::addCustom(Problem * problem, LuaMetaString config)
+void ProblemProxy::addCustom(Problem & problem, const LuaMetaString & config)
 {
-	problem->add(config.toMetaString());
+	problem.add(config.toMetaString());
 }
 
-void ProblemProxy::addGeneric(Problem * problem, const Mechanics * mechanics)
+void ProblemProxy::addGeneric(Problem & problem, const Mechanics & mechanics)
 {
-	mechanics->adaptGenericProblem(*problem);
+	mechanics.adaptGenericProblem(problem);
 }
 
-void ProblemProxy::addStandard(Problem * problem, const Mechanics * mechanics, ESpellCastProblem spellProblem)
+void ProblemProxy::addStandard(Problem & problem, const Mechanics & mechanics, ESpellCastProblem spellProblem)
 {
-	mechanics->adaptProblem(spellProblem, *problem);
+	mechanics.adaptProblem(spellProblem, problem);
 }
 
 const std::vector<ProblemProxy::CustomRegType> ProblemProxy::REGISTER_CUSTOM =

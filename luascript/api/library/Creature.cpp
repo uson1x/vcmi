@@ -57,9 +57,9 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"isDoubleWide",          LuaMethodWrapper<&Creature::isDoubleWide>::invoke,                   false},
 };
 
-std::string CreatureProxy::getNameTextID(const Creature * creature, int amount)
+std::string CreatureProxy::getNameTextID(const Creature & creature, int amount)
 {
-	return amount == 1 ? creature->getNameSingularTextID() : creature->getNamePluralTextID();
+	return amount == 1 ? creature.getNameSingularTextID() : creature.getNamePluralTextID();
 }
 
 }

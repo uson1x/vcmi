@@ -29,10 +29,10 @@ public:
 	using Wrapper = RawPointerWrapper<const ::battle::Unit, UnitProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static const Creature * getCreature(const ::battle::Unit *);
-	static BattleHexArray getHexes(const ::battle::Unit *);
-	static bool hasAbsoluteImmunity(const ::battle::Unit * unit, const spells::Spell * spell);
-	static LuaUnitState copy(const ::battle::Unit * unit);
+	static const Creature * getCreature(const ::battle::Unit & unit);
+	static BattleHexArray getHexes(const ::battle::Unit & unit);
+	static bool hasAbsoluteImmunity(const ::battle::Unit & unit, const spells::Spell & spell);
+	static LuaUnitState copy(const ::battle::Unit & unit);
 	static int getBonuses(lua_State * L);
 };
 

@@ -29,9 +29,9 @@ namespace scripting::api
 
 			static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-			static void addCustom(::spells::Problem * problem, LuaMetaString config);
-			static void addGeneric(::spells::Problem * problem, const ::spells::Mechanics * mechanics);
-			static void addStandard(::spells::Problem * problem, const ::spells::Mechanics * mechanics, ESpellCastProblem spellProblem);
+			static void addCustom(::spells::Problem & problem, const LuaMetaString & config);
+			static void addGeneric(::spells::Problem & problem, const ::spells::Mechanics & mechanics);
+			static void addStandard(::spells::Problem & problem, const ::spells::Mechanics & mechanics, ESpellCastProblem spellProblem);
 		};
 }
 

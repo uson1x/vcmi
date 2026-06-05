@@ -51,17 +51,17 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "getTowerShooterHex",   LuaFunctionWrapper<&IBattleInfoCallbackProxy::getTowerShooterHex>::invoke,  false },
 };
 
-bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex)
+bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback & object, const battle::Unit & unit, BattleHex hex)
 {
-	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
-	if(!cb || !unit)
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(&object);
+	if(!cb)
 		return false;
-	return cb->getAccessibility(unit).accessible(hex, unit);
+	return cb->getAccessibility(&unit).accessible(hex, &unit);
 }
 
-bool IBattleInfoCallbackProxy::hasPenaltyOnLine(const IBattleInfoCallback * object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat)
+bool IBattleInfoCallbackProxy::hasPenaltyOnLine(const IBattleInfoCallback & object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat)
 {
-	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(&object);
 	if(!cb)
 		return false;
 	return cb->battleHasPenaltyOnLine(from, dest, checkWall, checkMoat);
@@ -90,37 +90,37 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 	return 1;
 }
 
-const battle::Unit * IBattleInfoCallbackProxy::getUnitByPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyAlive)
+const battle::Unit * IBattleInfoCallbackProxy::getUnitByPos(const IBattleInfoCallback & object, BattleHex hex, bool onlyAlive)
 {
-	return object->battleGetUnitByPos(hex, onlyAlive);
+	return object.battleGetUnitByPos(hex, onlyAlive);
 }
 
-std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getAllObstacles(const IBattleInfoCallback * object)
+std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getAllObstacles(const IBattleInfoCallback & object)
 {
-	return object->battleGetAllObstacles(BattleSide::ALL_KNOWING);
+	return object.battleGetAllObstacles(BattleSide::ALL_KNOWING);
 }
 
-std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getObstaclesOnPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyBlocking)
+std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getObstaclesOnPos(const IBattleInfoCallback & object, BattleHex hex, bool onlyBlocking)
 {
-	return object->battleGetAllObstaclesOnPos(hex, onlyBlocking);
+	return object.battleGetAllObstaclesOnPos(hex, onlyBlocking);
 }
 
-bool IBattleInfoCallbackProxy::hasFortifications(const IBattleInfoCallback * object)
+bool IBattleInfoCallbackProxy::hasFortifications(const IBattleInfoCallback & object)
 {
-	return object->hasFortifications();
+	return object.hasFortifications();
 }
 
-bool IBattleInfoCallbackProxy::hasMoat(const IBattleInfoCallback * object)
+bool IBattleInfoCallbackProxy::hasMoat(const IBattleInfoCallback & object)
 {
-	return object->hasMoat();
+	return object.hasMoat();
 }
 
-bool IBattleInfoCallbackProxy::hasNativeStack(const IBattleInfoCallback * object, BattleSide side)
+bool IBattleInfoCallbackProxy::hasNativeStack(const IBattleInfoCallback & object, BattleSide side)
 {
-	return object->battleHasNativeStack(side);
+	return object.battleHasNativeStack(side);
 }
 
-BattleHexArray IBattleInfoCallbackProxy::getAllPossibleHexes(const IBattleInfoCallback *)
+BattleHexArray IBattleInfoCallbackProxy::getAllPossibleHexes(const IBattleInfoCallback &)
 {
 	BattleHexArray result;
 	for(int i = 0; i < GameConstants::BFIELD_SIZE; i++)
@@ -128,32 +128,32 @@ BattleHexArray IBattleInfoCallbackProxy::getAllPossibleHexes(const IBattleInfoCa
 	return result;
 }
 
-std::optional<EWallState> IBattleInfoCallbackProxy::getWallState(const IBattleInfoCallback * object, EWallPart part)
+std::optional<EWallState> IBattleInfoCallbackProxy::getWallState(const IBattleInfoCallback & object, EWallPart part)
 {
-	EWallState state = object->battleGetWallState(part);
+	EWallState state = object.battleGetWallState(part);
 	if(state == EWallState::NONE)
 		return std::nullopt;
 	return state;
 }
 
-bool IBattleInfoCallbackProxy::isWallPartAttackable(const IBattleInfoCallback * object, EWallPart part)
+bool IBattleInfoCallbackProxy::isWallPartAttackable(const IBattleInfoCallback & object, EWallPart part)
 {
-	return object->isWallPartAttackable(part);
+	return object.isWallPartAttackable(part);
 }
 
-BattleHex IBattleInfoCallbackProxy::wallPartToBattleHex(const IBattleInfoCallback * object, EWallPart part)
+BattleHex IBattleInfoCallbackProxy::wallPartToBattleHex(const IBattleInfoCallback & object, EWallPart part)
 {
-	return object->wallPartToBattleHex(part);
+	return object.wallPartToBattleHex(part);
 }
 
-EWallPart IBattleInfoCallbackProxy::hexToWallPart(const IBattleInfoCallback * object, BattleHex hex)
+EWallPart IBattleInfoCallbackProxy::hexToWallPart(const IBattleInfoCallback & object, BattleHex hex)
 {
-	return object->battleHexToWallPart(hex);
+	return object.battleHexToWallPart(hex);
 }
 
-BattleHex IBattleInfoCallbackProxy::getTowerShooterHex(const IBattleInfoCallback * object, EWallPart part)
+BattleHex IBattleInfoCallbackProxy::getTowerShooterHex(const IBattleInfoCallback & object, EWallPart part)
 {
-	return object->getTowerShooterHex(part);
+	return object.getTowerShooterHex(part);
 }
 
 int IBattleInfoCallbackProxy::getUnitsIf(lua_State * L)

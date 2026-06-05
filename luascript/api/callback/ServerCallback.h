@@ -39,17 +39,17 @@ public:
 
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static const battle::Unit * addUnit(ServerCallback * object, const IBattleInfoCallback & battle, battle::UnitInfo info);
-	static void removeUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit);
-	static void removeObstacle(ServerCallback * object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle);
-	static void moveUnit(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BattleHex destination, bool isTeleport);
-	static void appendLog(ServerCallback * object, const IBattleInfoCallback & battle, LuaMetaString config);
-	static bool describeChanges(ServerCallback * object);
-	static void removeUnitBonuses(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, const BonusList & bonusList);
-	static void addUnitBonus(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * unit, BonusDescriptor data, bool cumulative);
-	static void addBattleBonus(ServerCallback * object, const IBattleInfoCallback & battle, BonusDescriptor data);
-	static void addObstacle(ServerCallback * object, const IBattleInfoCallback & battle, SpellObstacleDescriptor descriptor);
-	static void catapultAttack(ServerCallback * object, const IBattleInfoCallback & battle, const battle::Unit * attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
+	static const battle::Unit * addUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::UnitInfo & info);
+	static void removeUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit);
+	static void removeObstacle(ServerCallback & object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle);
+	static void moveUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, BattleHex destination, bool isTeleport);
+	static void appendLog(ServerCallback & object, const IBattleInfoCallback & battle, const LuaMetaString & config);
+	static bool describeChanges(ServerCallback & object);
+	static void removeUnitBonuses(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, const BonusList & bonusList);
+	static void addUnitBonus(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, const BonusDescriptor & data, bool cumulative);
+	static void addBattleBonus(ServerCallback & object, const IBattleInfoCallback & battle, const BonusDescriptor & data);
+	static void addObstacle(ServerCallback & object, const IBattleInfoCallback & battle, const SpellObstacleDescriptor & descriptor);
+	static void catapultAttack(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & attacker, EWallPart attackedPart, BattleHex destinationTile, int32_t damageDealt, const battle::Unit * killedTowerShooter);
 	static int rngInt(lua_State * L); // args: low, high; returns: int in [low, high]
 	static int healUnit(lua_State * L);
 	static int changeUnit(lua_State * L); // args: battle, unitState, [healthDelta=0]

@@ -84,9 +84,9 @@ public:
 	using Wrapper = CopyableWrapper<LuaUnitState, LuaUnitStateProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static bool hasAbsoluteImmunity(LuaUnitState state, const spells::Spell * spell);
-	static const Creature * getCreature(LuaUnitState state);
-	static BattleHexArray getHexes(LuaUnitState state);
+	static bool hasAbsoluteImmunity(const LuaUnitState & state, const spells::Spell & spell);
+	static const Creature * getCreature(const LuaUnitState & state);
+	static BattleHexArray getHexes(const LuaUnitState & state);
 	static int heal(lua_State * L); // args: amount, level, power — returns healedHP, resurrected
 };
 

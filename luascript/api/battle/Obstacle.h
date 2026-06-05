@@ -26,8 +26,7 @@ public:
 	using Wrapper = SharedPointerWrapper<const CObstacleInstance, ObstacleProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static int32_t getUniqueID(std::shared_ptr<const CObstacleInstance> obstacle);
-	static int32_t getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle);
+	static CObstacleInstance::EObstacleType getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle);
 	static BattleHex getPosition(std::shared_ptr<const CObstacleInstance> obstacle);
 	static std::string getSpellKey(std::shared_ptr<const CObstacleInstance> obstacle);
 };

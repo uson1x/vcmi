@@ -32,12 +32,12 @@ namespace scripting::api
 {
 		using ::spells::Mechanics;
 
-		bool MechanicsProxy::ownerMatchesUnit(const Mechanics * m, const battle::Unit * unit)
+		bool MechanicsProxy::ownerMatchesUnit(const Mechanics & m, const battle::Unit & unit)
 		{
-			return m->ownerMatches(unit);
+			return m.ownerMatches(&unit);
 		}
 
-		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics * m, const std::string & baseTextID, int32_t count)
+		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics & m, const std::string & baseTextID, int32_t count)
 		{
 			std::string lang = LIBRARY->generaltexth->getPreferredLanguage();
 			return Languages::getPluralFormTextID(lang, count, baseTextID);

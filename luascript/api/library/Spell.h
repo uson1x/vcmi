@@ -25,7 +25,7 @@ public:
 	using Wrapper = RawPointerWrapper<const ::spells::Spell, SpellProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static std::vector<std::string> getSchools(const ::spells::Spell * spell);
+	static std::vector<std::string> getSchools(const ::spells::Spell & spell);
 };
 
 }

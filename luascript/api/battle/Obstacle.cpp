@@ -25,20 +25,14 @@ namespace scripting::api
 
 const std::vector<ObstacleProxy::CustomRegType> ObstacleProxy::REGISTER_CUSTOM =
 {
-	{"getUniqueID",     LuaFunctionWrapper<&ObstacleProxy::getUniqueID>::invoke,     false},
 	{"getObstacleType", LuaFunctionWrapper<&ObstacleProxy::getObstacleType>::invoke, false},
 	{"getPosition",     LuaFunctionWrapper<&ObstacleProxy::getPosition>::invoke,     false},
 	{"getSpellKey",     LuaFunctionWrapper<&ObstacleProxy::getSpellKey>::invoke,     false},
 };
 
-int32_t ObstacleProxy::getUniqueID(std::shared_ptr<const CObstacleInstance> obstacle)
+CObstacleInstance::EObstacleType ObstacleProxy::getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle)
 {
-	return obstacle->uniqueID;
-}
-
-int32_t ObstacleProxy::getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle)
-{
-	return static_cast<int32_t>(obstacle->obstacleType);
+	return obstacle->obstacleType;
 }
 
 BattleHex ObstacleProxy::getPosition(std::shared_ptr<const CObstacleInstance> obstacle)

@@ -18,13 +18,12 @@ end
 
 function Script:getTargets(mechanics, target, alwaysMassive)
 	local battle = mechanics:getBattle()
-	local seen, list = {}, {}
+	local list = {}
 	local function add(o)
-		local id = o:getUniqueID()
-		if not seen[id] then
-			seen[id] = true
-			table.insert(list, o)
+		for _, existing in ipairs(list) do
+			if existing == o then return end
 		end
+		table.insert(list, o)
 	end
 	if mechanics:isMassive() or alwaysMassive then
 		for _, o in ipairs(battle:getAllObstacles()) do

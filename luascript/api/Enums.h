@@ -33,7 +33,8 @@ class Enums : public scripting::ApiSerializable<Enums>
 	EnumMap<ESpellCastProblem> exportSpellCastProblem() const;
 	EnumMap<spells::AimType> exportAimType() const;
 	EnumMap<BonusDuration::BonusDuration> exportBonusDuration() const;
-	EnumMap<si32> exportBonusSource() const;
+	EnumMap<BonusSource> exportBonusSource() const;
+	EnumMap<BonusValueType> exportBonusValueType() const;
 	EnumMap<CObstacleInstance::EObstacleType> exportObstacleType() const;
 	EnumMap<EWallPart> exportWallPart() const;
 	EnumMap<BattleSide> exportBattleSide() const;
@@ -48,6 +49,7 @@ public:
 		s("AimType", exportAimType());
 		s("BonusDuration", exportBonusDuration());
 		s("BonusSource", exportBonusSource());
+		s("BonusValueType", exportBonusValueType());
 		s("ObstacleType", exportObstacleType());
 		s("WallPart", exportWallPart());
 		s("BattleSide", exportBattleSide());
