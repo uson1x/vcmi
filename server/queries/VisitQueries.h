@@ -31,6 +31,8 @@ public:
 
 class MapObjectVisitQuery final : public VisitQuery
 {
+	std::vector<ObjectInstanceID> deferredBattleLevelUps;
+
 public:
 	bool removeObjectAfterVisit;
 

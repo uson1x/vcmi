@@ -25,6 +25,12 @@ public:
 
 	BattleID battleID;
 	std::optional<BattleResult> result;
+	std::vector<ObjectInstanceID> heroesWithDeferredLevelUp;
+	mutable bool deferredLevelUpsApplied = false;
+
+	bool hasPendingBattleOrVisitQueries() const;
+	std::vector<ObjectInstanceID> takeDeferredLevelUps();
+	void completeDeferredLevelUps() const;
 
 	CBattleQuery(CGameHandler * owner);
 	CBattleQuery(CGameHandler * owner, const IBattleInfo * Bi);

@@ -10,6 +10,8 @@
 #include "StdInc.h"
 #include "VisitQueries.h"
 
+#include "BattleQueries.h"
+
 #include "../../lib/gameState/CGameState.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
@@ -40,6 +42,20 @@ void MapObjectVisitQuery::onExposure(QueryPtr topQuery)
 	//Object may have been removed and deleted.
 	if (object)
 		topQuery->notifyObjectAboutRemoval(object, hero);
+
+	if(auto battleQuery = std::dynamic_pointer_cast<CBattleQuery>(topQuery))
+	{
+		auto levelUps = battleQuery->takeDeferredLevelUps();
+		deferredBattleLevelUps.insert(deferredBattleLevelUps.end(), levelUps.begin(), levelUps.end());
+	}
+
+	if(owner->topQuery(players.front()).get() == this)
+	{
+		for(const auto & heroID : deferredBattleLevelUps)
+			if(const auto * deferredHero = gh->gameState().getHero(heroID))
+				gh->expGiven(deferredHero);
+		deferredBattleLevelUps.clear();
+	}
 
 	owner->popIfTop(*this);
 }
