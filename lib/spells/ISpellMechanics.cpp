@@ -542,19 +542,15 @@ const battle::Unit * BaseMechanics::getUnitCaster() const
 std::vector<AimType> BaseMechanics::getTargetTypes() const
 {
 	std::vector<AimType> ret;
-	detail::ProblemImpl ignored;
 
-	if(canBeCast(ignored))
-	{
-		auto spellTargetType = owner->getTargetType();
+	auto spellTargetType = owner->getTargetType();
 
-		if(isMassive())
-			spellTargetType = AimType::NOTHING;
-		else if(spellTargetType == AimType::OBSTACLE)
-			spellTargetType = AimType::LOCATION;
+	if(isMassive())
+		spellTargetType = AimType::NOTHING;
+	else if(spellTargetType == AimType::OBSTACLE)
+		spellTargetType = AimType::LOCATION;
 
-		ret.push_back(spellTargetType);
-	}
+	ret.push_back(spellTargetType);
 
 	return ret;
 }
