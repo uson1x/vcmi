@@ -22,19 +22,19 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM =
+void BattleHexProxy::registerMethods(MethodRegistrar & R)
 {
-	{"isValid",         LuaMethodWrapper<&BattleHex::isValid>::invoke,               false},
-	{"isAvailable",     LuaMethodWrapper<&BattleHex::isAvailable>::invoke,           false},
-	{"toInteger",       LuaMethodWrapper<&BattleHex::toInt>::invoke,                 false},
-	{"getClosestTile",  LuaFunctionWrapper<&BattleHexProxy::getClosestTile>::invoke, false},
-	{"copyToNorthWest", LuaMethodWrapper<&BattleHex::copyToNorthWest>::invoke,       false},
-	{"copyToNorthEast", LuaMethodWrapper<&BattleHex::copyToNorthEast>::invoke,       false},
-	{"copyToEast",      LuaMethodWrapper<&BattleHex::copyToEast>::invoke,            false},
-	{"copyToSouthEast", LuaMethodWrapper<&BattleHex::copyToSouthEast>::invoke,       false},
-	{"copyToSouthWest", LuaMethodWrapper<&BattleHex::copyToSouthWest>::invoke,       false},
-	{"copyToWest",      LuaMethodWrapper<&BattleHex::copyToWest>::invoke,            false},
-};
+	R.method<&BattleHex::isValid>            ("isValid",         "True if this hex value identifies a valid battlefield position.");
+	R.method<&BattleHex::isAvailable>        ("isAvailable",     "True if the hex is on the battlefield and not in the first or last column.");
+	R.method<&BattleHex::toInt>              ("toInteger",       "Returns the underlying integer representation of the hex.");
+	R.function<&BattleHexProxy::getClosestTile>("getClosestTile","Returns the hex from the array closest to this one, picked from the given battle side.");
+	R.method<&BattleHex::copyToNorthWest>    ("copyToNorthWest", "Returns the neighbouring hex one step north-west.");
+	R.method<&BattleHex::copyToNorthEast>    ("copyToNorthEast", "Returns the neighbouring hex one step north-east.");
+	R.method<&BattleHex::copyToEast>         ("copyToEast",      "Returns the neighbouring hex one step east.");
+	R.method<&BattleHex::copyToSouthEast>    ("copyToSouthEast", "Returns the neighbouring hex one step south-east.");
+	R.method<&BattleHex::copyToSouthWest>    ("copyToSouthWest", "Returns the neighbouring hex one step south-west.");
+	R.method<&BattleHex::copyToWest>         ("copyToWest",      "Returns the neighbouring hex one step west.");
+}
 
 BattleHex BattleHexProxy::getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes)
 {

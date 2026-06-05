@@ -27,15 +27,17 @@ This page describes the internal working of the Lua scripting module. For usage 
   - consider wrapping Lua userdata into std::any for better type safety, or at least pass classes other than LuaCopyable as ApiShared / ApiPointer
   - check if there is a way to wrap Lua function into C++ wrapper and pass it into LuaFunctionWrapper, or even LuaMethodWrapper
   - add guards against loading values from .json with same name as methods in Lua spell effect script
-- Review spell effect-related API and ensure that it follows rules described here:
-  - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
-  - Review UnitState class and check its mutable methods - do we need all of those? Should we name them differently?
-  - try to remove remaining hardcoded bits of SpellID's CLONE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
-  - decide on how to handle RNG support for Lua scripts
 
 ## Future improvements
 
+- Review UnitState class and check its mutable methods - do we need all of those? Should we name them differently?
+- Expand API of classes related to spell effects
 - Spell Effect: Add "preprocess" or "initialize" function to initialize parameters (e.g. load string ID and resolve it to Creature type). Would require some way to store references to Lua table in different LuaContext's in LuaSpellEffect class, for example - shared_ptr<LuaReference> in LuaContext, and weak_ptr<LuaReference> in LuaSpellEffect.
+- Review usage of numeric identifiers from script such as `PlayerColor` - replace them with enum or with copyable API class.
+- Remove final usage of unitID access by script - to set addinfo of bind bonus to unit that initiated binding. Perhaps unify this logic with Clone and treat it as some sort of "unit link" where two units are linked together unless *something* happens (unit dies / moves / unit bonus removed)
+- Decide on how to expose random generator to scripting. Currently only generation of integer in range is exposed, but we have way more options, including ability roll system. Expose as separate api class?
+- try to remove remaining hardcoded bits of SpellID's: CLONE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
+
 
 ## General rules
 

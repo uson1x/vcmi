@@ -92,7 +92,10 @@ set(lualib_HDRS
 		api/Enums.h
 		api/LuaMetaString.h
 		api/callback/IGameInfoCallback.h
+		api/LuaRegistrar.h
+		api/MethodRegistrar.h
 		api/Registry.h
+		api/SignatureOf.h
 		api/callback/ServerCallback.h
 )
 

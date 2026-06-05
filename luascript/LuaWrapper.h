@@ -11,6 +11,7 @@
 #pragma once
 
 #include "LuaCallWrapper.h"
+#include "api/LuaRegistrar.h"
 
 /*
  * Original code is LunaWrapper by nornagon.
@@ -46,13 +47,21 @@ namespace detail
 
 			lua_newtable(L);
 
-			for(auto & reg : ProxyType::REGISTER_CUSTOM)
+			if constexpr (requires(api::MethodRegistrar & R) { ProxyType::registerMethods(R); })
 			{
-				if(!reg.isStatic)
+				api::LuaRegistrar reg(L, lua_gettop(L));
+				ProxyType::registerMethods(reg);
+			}
+			else
+			{
+				for(auto & r : ProxyType::REGISTER_CUSTOM)
 				{
-					lua_pushstring(L, reg.name);
-					lua_pushcclosure(L, reg.functor, 0);
-					lua_rawset(L, -3);
+					if(!r.isStatic)
+					{
+						lua_pushstring(L, r.name);
+						lua_pushcclosure(L, r.functor, 0);
+						lua_rawset(L, -3);
+					}
 				}
 			}
 			lua_rawset(L, -3);
