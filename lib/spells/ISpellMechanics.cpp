@@ -65,8 +65,7 @@ protected:
 
 	void loadEffects(const JsonNode & config, const int level)
 	{
-		JsonDeserializer deser(nullptr, config);
-		effects->serializeJson(deser, level, spell->modScope, spell->identifier);
+		effects->data.at(level) = effects::Effects::loadJson(config, spell->modScope, spell->identifier);
 	}
 private:
 	std::shared_ptr<IReceptiveCheck> targetCondition;

@@ -14,13 +14,13 @@
 #include <vcmi/spells/Magic.h>
 
 #include "../../constants/EntityIdentifiers.h"
+#include "../../json/JsonNode.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
 class BattleHex;
 class BattleHexArray;
 class CBattleInfoCallback;
-class JsonSerializeFormat;
 class ServerCallback;
 
 namespace vstd
@@ -100,11 +100,12 @@ public:
 	// Returns total damage or heal amount that this spell will result in when cast on unit
 	virtual SpellEffectValue getHealthChange(const Mechanics * m, const Target & spellTarget) const { return {};}
 
-	/// Serializes (or deserializes) parameters of Effect
-	void serializeJson(JsonSerializeFormat & handler);
+	/// Initializes Effect from its (already preprocessed) JSON definition.
+	/// Reads common flags from the node and delegates the rest to initImpl.
+	void init(JsonNode data);
 
 protected:
-	virtual void serializeJsonEffect(JsonSerializeFormat & handler) = 0;
+	virtual void initImpl(JsonNode data) = 0;
 };
 
 }

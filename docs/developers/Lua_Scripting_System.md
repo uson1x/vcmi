@@ -30,10 +30,8 @@ This page describes the internal working of the Lua scripting module. For usage 
 - Review spell effect-related API and ensure that it follows rules described here:
   - Remove usage of numeric identifiers from script. In cases where entity does not exists such as `PlayerColor`, replace them with copyable API class
   - Review UnitState class and check its mutable methods - do we need all of those? Should we name them differently?
-  - try to remove remaining hardcoded bits of SpellID's CLONE, TELEPORT, SACRIFICE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
+  - try to remove remaining hardcoded bits of SpellID's CLONE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
   - decide on how to handle RNG support for Lua scripts
-  - `battleLogMessage` entries in timed spell effects without a leading `@` are currently ignored in Lua scripts; C++ resolved them as hierarchical text IDs (`spell.{scope}.{id}.{effectName}.battleLogMessage.{field}`). Support for this needs to be added to the Lua Timed effect and the scripting infrastructure.
-    - add suport for list of strings that effect wants to register?
 
 ## Future improvements
 

@@ -20,14 +20,12 @@
 #include "../lib/spells/ISpellMechanics.h"
 #include "../lib/battle/Unit.h"
 #include "../lib/battle/CBattleInfoCallback.h"
-#include "../lib/serializer/JsonSerializeFormat.h"
 
 static const std::string APPLICABLE_GENERAL = "applicableGeneral";
 static const std::string APPLICABLE_TARGET = "applicableTarget";
 static const std::string FILTER_TARGET = "filterTarget";
 static const std::string TRANSFORM_TARGET = "transformTarget";
 static const std::string APPLY = "apply";
-//static const std::string INITIALIZE = "initialize";
 static const std::string GET_HEALTH_CHANGE = "getHealthChange";
 static const std::string ADJUST_AFFECTED_HEXES = "adjustAffectedHexes";
 static const std::string ADJUST_TARGET_TYPES = "adjustTargetTypes";
@@ -124,9 +122,9 @@ Target LuaSpellEffect::transformTarget(const Mechanics * m, const Target & aimPo
 	return response;
 }
 
-void LuaSpellEffect::serializeJsonEffect(JsonSerializeFormat & handler)
+void LuaSpellEffect::initImpl(JsonNode data)
 {
-	parameters = handler.getCurrent();
+	parameters = std::move(data);
 }
 
 std::shared_ptr<scripting::LuaContext> LuaSpellEffect::resolveScript(const Mechanics * m) const

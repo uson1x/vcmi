@@ -16,8 +16,11 @@
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../../lib/networkPacks/SetStackEffect.h"
 
-#include "../../../lib/serializer/JsonDeserializer.h"
 #include "../../../lib/spells/effects/SpellEffectService.h"
+
+#include "../../../lib/GameLibrary.h"
+#include "../../../lib/modding/IdentifierStorage.h"
+#include "../../../lib/modding/ModScope.h"
 
 bool battle::operator==(const Destination& left, const Destination& right)
 {
@@ -61,8 +64,7 @@ void EffectFixture::setupEffect(const JsonNode & effectConfig)
 
 	JsonNode effectConfigActual = effectConfig;
 	effectConfigActual.setModScope("game");
-	JsonDeserializer deser(nullptr, effectConfigActual);
-	subject->serializeJson(deser);
+	subject->init(std::move(effectConfigActual));
 }
 
 

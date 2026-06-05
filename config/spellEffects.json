@@ -212,6 +212,7 @@
 	"timed" : {
 		"type" : "lua",
 		"script" : "timed",
+		"stringRegistrations" : ["battleLogSingular", "battleLogPlural"],
 		"schema" : {
 			"properties" : {
 				"type" : {},
@@ -220,14 +221,8 @@
 				"ignoreImmunity" : { "type" : "boolean" },
 				"chainLength" : { "type" : "number" },
 				"cumulative" : { "type" : "boolean" },
-				"battleLogMessage" : {
-					"type" : "object",
-					"additionalProperties" : false,
-					"properties" : {
-						"singular" : { "type" : "string" },
-						"plural" : { "type" : "string" }
-					}
-				},
+				"battleLogSingular" : { "type" : "string" },
+				"battleLogPlural" : { "type" : "string" },
 				"bonus" : { "additionalProperties" : { "$ref" : "bonusInstance.json" } }
 			},
 			"additionalProperties" : false

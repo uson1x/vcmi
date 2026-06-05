@@ -37,7 +37,6 @@ function Script:applicableGeneral(mechanics, problem)
 	local creature = LIBRARY:getCreatureByName(self.id)
 
 	if self:summonedCreatureAmount(mechanics) == 0 then
-		print("SpellEffectSummon: zero summoned creatures!")
 		problem:addGeneric(mechanics)
 		return false
 	end
@@ -52,7 +51,6 @@ function Script:applicableGeneral(mechanics, problem)
 		end)
 		local elemental = elementals[1]
 
-		print("SpellEffectSummon - summoning:", creature:getJsonKey(), " elemental is ", elemental)
 		if elemental ~= nil then
 			local hero = mechanics:getHeroCaster()
 			local himHer = "core.genrltxt.539"
@@ -74,7 +72,6 @@ function Script:applicableGeneral(mechanics, problem)
 					append = { "core.genrltxt.538" }
 				})
 			end
-			print("SpellEffectSummon - summoning:", creature:getJsonKey(), " already summoned: ", elemental:getCreature():getJsonKey())
 			return false
 		end
 	end

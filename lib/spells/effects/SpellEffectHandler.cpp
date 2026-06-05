@@ -11,7 +11,10 @@
 
 #include "SpellEffectHandler.h"
 
+#include "../../GameLibrary.h"
 #include "../../json/JsonUtils.h"
+#include "../../texts/CGeneralTextHandler.h"
+#include "../../texts/TextIdentifier.h"
 
 #include "Effect.h"
 
@@ -53,6 +56,9 @@ void SpellEffectHandler::loadObject(std::string scope, std::string name, const J
 	newEffect.scriptName = data["script"].String();
 	newEffect.validationSchema = data["schema"];
 
+	for(const auto & item : data["stringRegistrations"].Vector())
+		newEffect.stringRegistrations.push_back(item.String());
+
 	registerObject(scope, "spellEffect", name, data, effectTypes.size());
 	effectTypes.push_back(newEffect);
 
@@ -70,11 +76,34 @@ void SpellEffectHandler::afterLoadFinalization()
 
 }
 
-void SpellEffectHandler::validateEffect(SpellEffectID effectID, const JsonNode & data, const std::string & name) const
+void SpellEffectHandler::prepareEffect(SpellEffectID effectID, JsonNode & data, const std::string & spellScope, const std::string & spellIdentifier, const std::string & effectName) const
 {
-	const auto & schema = effectTypes.at(effectID.getNum()).validationSchema;
-	if (!schema.isNull())
-		JsonUtils::validate(data, schema, name);
+	const auto & effectType = effectTypes.at(effectID.getNum());
+	const std::string validationName = spellScope + ":" + spellIdentifier + " effect " + effectName;
+
+	if(!effectType.validationSchema.isNull())
+		JsonUtils::validate(data, effectType.validationSchema, validationName);
+
+	for(const auto & field : effectType.stringRegistrations)
+	{
+		const JsonNode & fieldNode = static_cast<const JsonNode &>(data)[field];
+		if(fieldNode.isNull())
+			continue;
+		const std::string & value = fieldNode.String();
+		if(value.empty())
+			continue;
+
+		if(value.at(0) == '@')
+		{
+			data[field].String() = value.substr(1);
+		}
+		else
+		{
+			TextIdentifier textID("spell", spellScope, spellIdentifier, effectName, field);
+			LIBRARY->generaltexth->registerString(spellScope, textID, fieldNode);
+			data[field].String() = textID.get();
+		}
+	}
 }
 
 }
