@@ -11,45 +11,21 @@
 
 #include "SpellEffectHandler.h"
 
+#include "../../GameLibrary.h"
 #include "../../json/JsonUtils.h"
+#include "../../texts/CGeneralTextHandler.h"
+#include "../../texts/TextIdentifier.h"
 
-#include "Catapult.h"
 #include "Effect.h"
-#include "Moat.h"
-#include "Obstacle.h"
-#include "RemoveObstacle.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace spells::effects
 {
 
-void BuiltinEffectFactory::initialize(const std::string & scope, const std::string & name)
-{}
-
-template <typename T>
-std::shared_ptr<Effect> makeEffect()
-{
-	return std::make_shared<T>();
-}
-
-std::shared_ptr<Effect> BuiltinEffectFactory::create(const std::string & scope, const std::string & name) const
-{
-	using EffectFactoryFunctor = std::shared_ptr<Effect>(*)();
-
-	static const std::unordered_map<std::string, EffectFactoryFunctor> effectFactory = {
-		{ "Catapult",       &makeEffect<Catapult> },
-		{ "Moat",           &makeEffect<Moat> },
-		{ "Obstacle",       &makeEffect<Obstacle> },
-		{ "RemoveObstacle", &makeEffect<RemoveObstacle> },
-	};
-
-	return effectFactory.at(name)();
-}
-
 SpellEffectHandler::SpellEffectHandler()
 {
-	registerFactory("builtin", std::make_unique<BuiltinEffectFactory>());
+
 }
 
 std::shared_ptr<Effect> SpellEffectHandler::create(SpellEffectID effectID) const
@@ -80,6 +56,9 @@ void SpellEffectHandler::loadObject(std::string scope, std::string name, const J
 	newEffect.scriptName = data["script"].String();
 	newEffect.validationSchema = data["schema"];
 
+	for(const auto & item : data["stringRegistrations"].Vector())
+		newEffect.stringRegistrations.push_back(item.String());
+
 	registerObject(scope, "spellEffect", name, data, effectTypes.size());
 	effectTypes.push_back(newEffect);
 
@@ -97,11 +76,34 @@ void SpellEffectHandler::afterLoadFinalization()
 
 }
 
-void SpellEffectHandler::validateEffect(SpellEffectID effectID, const JsonNode & data, const std::string & name) const
+void SpellEffectHandler::prepareEffect(SpellEffectID effectID, JsonNode & data, const std::string & spellScope, const std::string & spellIdentifier, const std::string & effectName) const
 {
-	const auto & schema = effectTypes.at(effectID.getNum()).validationSchema;
-	if (!schema.isNull())
-		JsonUtils::validate(data, schema, name);
+	const auto & effectType = effectTypes.at(effectID.getNum());
+	const std::string validationName = spellScope + ":" + spellIdentifier + " effect " + effectName;
+
+	if(!effectType.validationSchema.isNull())
+		JsonUtils::validate(data, effectType.validationSchema, validationName);
+
+	for(const auto & field : effectType.stringRegistrations)
+	{
+		const JsonNode & fieldNode = static_cast<const JsonNode &>(data)[field];
+		if(fieldNode.isNull())
+			continue;
+		const std::string & value = fieldNode.String();
+		if(value.empty())
+			continue;
+
+		if(value.at(0) == '@')
+		{
+			data[field].String() = value.substr(1);
+		}
+		else
+		{
+			TextIdentifier textID("spell", spellScope, spellIdentifier, effectName, field);
+			LIBRARY->generaltexth->registerString(spellScope, textID, fieldNode);
+			data[field].String() = textID.get();
+		}
+	}
 }
 
 }

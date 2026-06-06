@@ -20,13 +20,11 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex",          LuaMethodWrapper<&Entity::getIconIndex, Creature>::invoke,           false},
-	{"getIndex",              LuaMethodWrapper<&Entity::getIndex, Creature>::invoke,               false},
 	{"getJsonKey",            LuaMethodWrapper<&Entity::getJsonKey, Creature>::invoke,             false},
 	{"getName",               LuaMethodWrapper<&Entity::getNameTranslated, Creature>::invoke,      false},
 	{"getBonusBearer",        LuaMethodWrapper<&IConstBonusProvider::getBonusBearer, Creature>::invoke, false},
@@ -38,14 +36,13 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"getNameSingularTextID", LuaMethodWrapper<&Creature::getNameSingularTextID>::invoke,          false},
 	{"getNameTextID",         LuaFunctionWrapper<&CreatureProxy::getNameTextID>::invoke,           false},
 
-	{"getAdvMapAmountMin",    LuaMethodWrapper<&Creature::getAdvMapAmountMin>::invoke,             false},
-	{"getAdvMapAmountMax",    LuaMethodWrapper<&Creature::getAdvMapAmountMax>::invoke,             false},
+	{"getMapAmountMin",       LuaMethodWrapper<&Creature::getAdvMapAmountMin>::invoke,             false},
+	{"getMapAmountMax",       LuaMethodWrapper<&Creature::getAdvMapAmountMax>::invoke,             false},
 	{"getAIValue",            LuaMethodWrapper<&Creature::getAIValue>::invoke,                     false},
 	{"getFightValue",         LuaMethodWrapper<&Creature::getFightValue>::invoke,                  false},
 	{"getLevel",              LuaMethodWrapper<&Creature::getLevel>::invoke,                       false},
 	{"getGrowth",             LuaMethodWrapper<&Creature::getGrowth>::invoke,                      false},
 	{"getHorde",              LuaMethodWrapper<&Creature::getHorde>::invoke,                       false},
-	{"getFactionID",          LuaMethodWrapper<&Creature::getFactionID, Creature>::invoke,          false},
 
 	{"getBaseAttack",         LuaMethodWrapper<&Creature::getBaseAttack>::invoke,                  false},
 	{"getBaseDefense",        LuaMethodWrapper<&Creature::getBaseDefense>::invoke,                 false},
@@ -60,9 +57,9 @@ const std::vector<CreatureProxy::CustomRegType> CreatureProxy::REGISTER_CUSTOM =
 	{"isDoubleWide",          LuaMethodWrapper<&Creature::isDoubleWide>::invoke,                   false},
 };
 
-std::string CreatureProxy::getNameTextID(const Creature * creature, int amount)
+std::string CreatureProxy::getNameTextID(const Creature & creature, int amount)
 {
-	return amount == 1 ? creature->getNameSingularTextID() : creature->getNamePluralTextID();
+	return amount == 1 ? creature.getNameSingularTextID() : creature.getNamePluralTextID();
 }
 
 }

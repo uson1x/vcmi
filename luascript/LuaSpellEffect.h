@@ -72,7 +72,7 @@ public:
 	SpellEffectValue getHealthChange(const Mechanics * m, const Target & spellTarget) const override;
 
 protected:
-	void serializeJsonEffect(JsonSerializeFormat & handler) override;
+	void initImpl(JsonNode data) override;
 
 private:
 	const LuaScriptInstance * script;

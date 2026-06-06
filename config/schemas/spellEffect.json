@@ -21,6 +21,13 @@
 			"type" : "string",
 			"description" : "path to the script that represents this effect"
 		},
+		"stringRegistrations" : {
+			"type" : "array",
+			"items" : {
+				"type" : "string",
+				"description" : "path to the script that represents this effect"
+			}
+		},
 		"schema" : {
 			"type" : "object",
 			"description" : "Json schema for validating spell effect",

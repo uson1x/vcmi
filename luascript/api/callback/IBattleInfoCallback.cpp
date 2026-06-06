@@ -19,6 +19,8 @@
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/battle/AccessibilityInfo.h"
 #include "../../../lib/battle/CBattleInfoCallback.h"
+#include "../../../lib/battle/CBattleInfoEssentials.h"
+#include "../../../lib/battle/CObstacleInstance.h"
 #include "../../../lib/BattleFieldHandler.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -28,9 +30,7 @@ namespace scripting::api
 
 const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "getNextUnitId",    LuaMethodWrapper<&BattleCb::battleNextUnitId>::invoke,   false },
 	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
-	{ "getUnitById",      LuaMethodWrapper<&BattleCb::battleGetUnitByID>::invoke, false },
 	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
 
 	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke,         false },
@@ -38,19 +38,30 @@ const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackPr
 	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
 	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
 	{ "getUnitByPos",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getUnitByPos>::invoke,        false },
+	{ "getAllObstacles",      LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllObstacles>::invoke,     false },
+	{ "getObstaclesOnPos",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::getObstaclesOnPos>::invoke,   false },
+	{ "hasFortifications",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasFortifications>::invoke,   false },
+	{ "hasMoat",              LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasMoat>::invoke,             false },
+	{ "hasNativeStack",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasNativeStack>::invoke,      false },
+	{ "getAllPossibleHexes",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllPossibleHexes>::invoke, false },
+	{ "getWallState",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getWallState>::invoke,        false },
+	{ "isWallPartAttackable", LuaFunctionWrapper<&IBattleInfoCallbackProxy::isWallPartAttackable>::invoke,false },
+	{ "wallPartToBattleHex",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::wallPartToBattleHex>::invoke, false },
+	{ "hexToWallPart",        LuaFunctionWrapper<&IBattleInfoCallbackProxy::hexToWallPart>::invoke,       false },
+	{ "getTowerShooterHex",   LuaFunctionWrapper<&IBattleInfoCallbackProxy::getTowerShooterHex>::invoke,  false },
 };
 
-bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback * object, const battle::Unit * unit, BattleHex hex)
+bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback & object, const battle::Unit & unit, BattleHex hex)
 {
-	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
-	if(!cb || !unit)
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(&object);
+	if(!cb)
 		return false;
-	return cb->getAccessibility(unit).accessible(hex, unit);
+	return cb->getAccessibility(&unit).accessible(hex, &unit);
 }
 
-bool IBattleInfoCallbackProxy::hasPenaltyOnLine(const IBattleInfoCallback * object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat)
+bool IBattleInfoCallbackProxy::hasPenaltyOnLine(const IBattleInfoCallback & object, BattleHex from, BattleHex dest, bool checkWall, bool checkMoat)
 {
-	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(object);
+	const auto * cb = dynamic_cast<const CBattleInfoCallback *>(&object);
 	if(!cb)
 		return false;
 	return cb->battleHasPenaltyOnLine(from, dest, checkWall, checkMoat);
@@ -79,9 +90,70 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 	return 1;
 }
 
-const battle::Unit * IBattleInfoCallbackProxy::getUnitByPos(const IBattleInfoCallback * object, BattleHex hex, bool onlyAlive)
+const battle::Unit * IBattleInfoCallbackProxy::getUnitByPos(const IBattleInfoCallback & object, BattleHex hex, bool onlyAlive)
 {
-	return object->battleGetUnitByPos(hex, onlyAlive);
+	return object.battleGetUnitByPos(hex, onlyAlive);
+}
+
+std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getAllObstacles(const IBattleInfoCallback & object)
+{
+	return object.battleGetAllObstacles(BattleSide::ALL_KNOWING);
+}
+
+std::vector<std::shared_ptr<const CObstacleInstance>> IBattleInfoCallbackProxy::getObstaclesOnPos(const IBattleInfoCallback & object, BattleHex hex, bool onlyBlocking)
+{
+	return object.battleGetAllObstaclesOnPos(hex, onlyBlocking);
+}
+
+bool IBattleInfoCallbackProxy::hasFortifications(const IBattleInfoCallback & object)
+{
+	return object.hasFortifications();
+}
+
+bool IBattleInfoCallbackProxy::hasMoat(const IBattleInfoCallback & object)
+{
+	return object.hasMoat();
+}
+
+bool IBattleInfoCallbackProxy::hasNativeStack(const IBattleInfoCallback & object, BattleSide side)
+{
+	return object.battleHasNativeStack(side);
+}
+
+BattleHexArray IBattleInfoCallbackProxy::getAllPossibleHexes(const IBattleInfoCallback &)
+{
+	BattleHexArray result;
+	for(int i = 0; i < GameConstants::BFIELD_SIZE; i++)
+		result.insert(BattleHex(static_cast<si16>(i)));
+	return result;
+}
+
+std::optional<EWallState> IBattleInfoCallbackProxy::getWallState(const IBattleInfoCallback & object, EWallPart part)
+{
+	EWallState state = object.battleGetWallState(part);
+	if(state == EWallState::NONE)
+		return std::nullopt;
+	return state;
+}
+
+bool IBattleInfoCallbackProxy::isWallPartAttackable(const IBattleInfoCallback & object, EWallPart part)
+{
+	return object.isWallPartAttackable(part);
+}
+
+BattleHex IBattleInfoCallbackProxy::wallPartToBattleHex(const IBattleInfoCallback & object, EWallPart part)
+{
+	return object.wallPartToBattleHex(part);
+}
+
+EWallPart IBattleInfoCallbackProxy::hexToWallPart(const IBattleInfoCallback & object, BattleHex hex)
+{
+	return object.battleHexToWallPart(hex);
+}
+
+BattleHex IBattleInfoCallbackProxy::getTowerShooterHex(const IBattleInfoCallback & object, EWallPart part)
+{
+	return object.getTowerShooterHex(part);
 }
 
 int IBattleInfoCallbackProxy::getUnitsIf(lua_State * L)

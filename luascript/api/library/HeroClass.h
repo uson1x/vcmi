@@ -16,7 +16,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 class HeroClassProxy : public RawPointerWrapper<const HeroClass, HeroClassProxy>

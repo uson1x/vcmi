@@ -19,14 +19,21 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
 
 const std::vector<BattleHexProxy::CustomRegType> BattleHexProxy::REGISTER_CUSTOM =
 {
-	{"isValid",       LuaMethodWrapper<&BattleHex::isValid>::invoke,                    false},
-	{"toInteger",     LuaMethodWrapper<&BattleHex::toInt>::invoke,                      false},
-	{"getClosestTile", LuaFunctionWrapper<&BattleHexProxy::getClosestTile>::invoke,     false},
+	{"isValid",         LuaMethodWrapper<&BattleHex::isValid>::invoke,               false},
+	{"isAvailable",     LuaMethodWrapper<&BattleHex::isAvailable>::invoke,           false},
+	{"toInteger",       LuaMethodWrapper<&BattleHex::toInt>::invoke,                 false},
+	{"getClosestTile",  LuaFunctionWrapper<&BattleHexProxy::getClosestTile>::invoke, false},
+	{"copyToNorthWest", LuaMethodWrapper<&BattleHex::copyToNorthWest>::invoke,       false},
+	{"copyToNorthEast", LuaMethodWrapper<&BattleHex::copyToNorthEast>::invoke,       false},
+	{"copyToEast",      LuaMethodWrapper<&BattleHex::copyToEast>::invoke,            false},
+	{"copyToSouthEast", LuaMethodWrapper<&BattleHex::copyToSouthEast>::invoke,       false},
+	{"copyToSouthWest", LuaMethodWrapper<&BattleHex::copyToSouthWest>::invoke,       false},
+	{"copyToWest",      LuaMethodWrapper<&BattleHex::copyToWest>::invoke,            false},
 };
 
 BattleHex BattleHexProxy::getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes)

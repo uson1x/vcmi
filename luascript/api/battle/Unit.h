@@ -20,21 +20,19 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
-using ::battle::IUnitInfo;
-using ::battle::Unit;
 
-class UnitProxy : public RawPointerWrapper<const Unit, UnitProxy>
+class UnitProxy : public RawPointerWrapper<const ::battle::Unit, UnitProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const Unit, UnitProxy>;
+	using Wrapper = RawPointerWrapper<const ::battle::Unit, UnitProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static const Creature * getCreature(const Unit *);
-	static BattleHexArray getHexes(const Unit *);
-	static bool hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell);
-	static LuaUnitState copy(const Unit * unit);
+	static const Creature * getCreature(const ::battle::Unit & unit);
+	static BattleHexArray getHexes(const ::battle::Unit & unit);
+	static bool hasAbsoluteImmunity(const ::battle::Unit & unit, const spells::Spell & spell);
+	static LuaUnitState copy(const ::battle::Unit & unit);
 	static int getBonuses(lua_State * L);
 };
 

@@ -17,6 +17,8 @@ set(lualib_SRCS
 		api/battle/UnitState.cpp
 		api/battle/BattleHexArray.cpp
 		api/battle/BattleHex.cpp
+		api/battle/Obstacle.cpp
+		api/battle/SpellObstacleDescriptor.cpp
 
 		api/events/BattleEvents.cpp
 		api/events/EventBus.cpp
@@ -28,6 +30,7 @@ set(lualib_SRCS
 
 		api/library/Artifact.cpp
 		api/library/Bonus.cpp
+		api/library/BonusDescriptor.cpp
 		api/library/Creature.cpp
 		api/library/Faction.cpp
 		api/library/HeroClass.cpp
@@ -38,6 +41,7 @@ set(lualib_SRCS
 
 		api/callback/IBattleInfoCallback.cpp
 		api/Enums.cpp
+		api/LuaMetaString.cpp
 		api/callback/IGameInfoCallback.cpp
 		api/Registry.cpp
 		api/callback/ServerCallback.cpp
@@ -62,6 +66,8 @@ set(lualib_HDRS
 		api/battle/UnitState.h
 		api/battle/BattleHexArray.h
 		api/battle/BattleHex.h
+		api/battle/Obstacle.h
+		api/battle/SpellObstacleDescriptor.h
 
 		api/events/BattleEvents.h
 		api/events/EventBus.h
@@ -70,6 +76,7 @@ set(lualib_HDRS
 
 		api/library/Artifact.h
 		api/library/Bonus.h
+		api/library/BonusDescriptor.h
 		api/library/Creature.h
 		api/library/Faction.h
 		api/library/HeroClass.h
@@ -83,6 +90,7 @@ set(lualib_HDRS
 
 		api/callback/IBattleInfoCallback.h
 		api/Enums.h
+		api/LuaMetaString.h
 		api/callback/IGameInfoCallback.h
 		api/Registry.h
 		api/callback/ServerCallback.h

@@ -33,14 +33,14 @@ const std::vector<HeroInstanceProxy::CustomRegType> HeroInstanceProxy::REGISTER_
 	{"getBonuses",    LuaCallWrapper<&HeroInstanceProxy::getBonuses>::invoke,    false},
 };
 
-bool HeroInstanceProxy::isMale(const CGHeroInstance * hero)
+bool HeroInstanceProxy::isMale(const CGHeroInstance & hero)
 {
-	return hero->gender == EHeroGender::MALE;
+	return hero.gender == EHeroGender::MALE;
 }
 
-bool HeroInstanceProxy::isFemale(const CGHeroInstance * hero)
+bool HeroInstanceProxy::isFemale(const CGHeroInstance & hero)
 {
-	return hero->gender == EHeroGender::FEMALE;
+	return hero.gender == EHeroGender::FEMALE;
 }
 
 int HeroInstanceProxy::getBonuses(lua_State * L)

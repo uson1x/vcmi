@@ -16,7 +16,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 class SpellProxy : public RawPointerWrapper<const ::spells::Spell, SpellProxy>
@@ -25,7 +25,7 @@ public:
 	using Wrapper = RawPointerWrapper<const ::spells::Spell, SpellProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static std::vector<std::string> getSchools(const ::spells::Spell * spell);
+	static std::vector<std::string> getSchools(const ::spells::Spell & spell);
 };
 
 }

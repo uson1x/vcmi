@@ -18,13 +18,11 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 const std::vector<HeroClassProxy::CustomRegType> HeroClassProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex", LuaMethodWrapper<&Entity::getIconIndex, HeroClass>::invoke,      false},
-	{"getIndex",     LuaMethodWrapper<&Entity::getIndex, HeroClass>::invoke,          false},
 	{"getJsonKey",   LuaMethodWrapper<&Entity::getJsonKey, HeroClass>::invoke,        false},
 	{"getName",      LuaMethodWrapper<&Entity::getNameTranslated, HeroClass>::invoke, false},
 };

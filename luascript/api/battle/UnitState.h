@@ -21,11 +21,8 @@ VCMI_LIB_NAMESPACE_BEGIN
 
 class Creature;
 
-namespace scripting::api::battle
+namespace scripting::api
 {
-
-using ::battle::Unit;
-using ::battle::HealInfo;
 
 class LuaUnitState : public scripting::ApiCopyable<LuaUnitState>
 {
@@ -75,7 +72,7 @@ public:
 
 	// Mutable — other public fields
 	void setPosition(BattleHex hex);
-	void setCloneID(int32_t id);
+	void setClone(const ::battle::Unit & unit);
 
 	// Mutable — health via public CUnitState API
 	int64_t damage(int64_t amount); // clamps to available health, returns actual damage dealt
@@ -87,9 +84,9 @@ public:
 	using Wrapper = CopyableWrapper<LuaUnitState, LuaUnitStateProxy>;
 	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
 
-	static bool hasAbsoluteImmunity(LuaUnitState state, const spells::Spell * spell);
-	static const Creature * getCreature(LuaUnitState state);
-	static BattleHexArray getHexes(LuaUnitState state);
+	static bool hasAbsoluteImmunity(const LuaUnitState & state, const spells::Spell & spell);
+	static const Creature * getCreature(const LuaUnitState & state);
+	static BattleHexArray getHexes(const LuaUnitState & state);
 	static int heal(lua_State * L); // args: amount, level, power — returns healedHP, resurrected
 };
 

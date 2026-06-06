@@ -291,14 +291,10 @@ set(lib_MAIN_SRCS
 	spells/adventure/TownPortalEffect.cpp
 	spells/adventure/ViewWorldEffect.cpp
 
-	spells/effects/Catapult.cpp
 	spells/effects/Effect.cpp
 	spells/effects/Effects.cpp
 	spells/effects/LocationEffect.cpp
-	spells/effects/Moat.cpp
-	spells/effects/Obstacle.cpp
 	spells/effects/SpellEffectHandler.cpp
-	spells/effects/RemoveObstacle.cpp
 
 	texts/CGeneralTextHandler.cpp
 	texts/CLegacyConfigParser.cpp
@@ -763,15 +759,12 @@ set(lib_MAIN_HEADERS
 	spells/adventure/TownPortalEffect.h
 	spells/adventure/ViewWorldEffect.h
 
-	spells/effects/Catapult.h
 	spells/effects/Effect.h
 	spells/effects/Effects.h
 	spells/effects/EffectsFwd.h
 	spells/effects/LocationEffect.h
-	spells/effects/Obstacle.h
 	spells/effects/SpellEffectHandler.h
 	spells/effects/SpellEffectService.h
-	spells/effects/RemoveObstacle.h
 
 	texts/CGeneralTextHandler.h
 	texts/Languages.h

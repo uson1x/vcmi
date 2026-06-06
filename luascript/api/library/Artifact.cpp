@@ -20,17 +20,14 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 const std::vector<ArtifactProxy::CustomRegType> ArtifactProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex",   LuaMethodWrapper<&Entity::getIconIndex, Artifact>::invoke,           false},
-	{"getIndex",       LuaMethodWrapper<&Entity::getIndex, Artifact>::invoke,               false},
 	{"getJsonKey",     LuaMethodWrapper<&Entity::getJsonKey, Artifact>::invoke,             false},
 	{"getName",        LuaMethodWrapper<&Entity::getNameTranslated, Artifact>::invoke,      false},
 
-	{"getId",          LuaMethodWrapper<&EntityT<ArtifactID>::getId, Artifact>::invoke,     false},
 	{"getBonusBearer", LuaMethodWrapper<&IConstBonusProvider::getBonusBearer, Artifact>::invoke, false},
 
 	{"getDescription", LuaMethodWrapper<&Artifact::getDescriptionTranslated>::invoke,      false},

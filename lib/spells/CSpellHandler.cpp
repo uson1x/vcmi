@@ -473,25 +473,6 @@ std::shared_ptr<CSpell> CSpellHandler::loadFromJson(const std::string & scope, c
 		{
 			levelObject.battleEffects = levelNode["battleEffects"];
 
-			for(const auto & effectEntry : levelNode["battleEffects"].Struct())
-			{
-				const JsonNode & msgNode = effectEntry.second["battleLogMessage"];
-				if(msgNode.isStruct())
-				{
-					auto registerField = [&](const std::string & field)
-					{
-						const std::string & value = msgNode[field].String();
-						if(!value.empty() && value.at(0) != '@')
-						{
-							TextIdentifier textID("spell", scope, identifier, effectEntry.first, "battleLogMessage", field);
-							LIBRARY->generaltexth->registerString(scope, textID, msgNode[field]);
-						}
-					};
-					registerField("singular");
-					registerField("plural");
-				}
-			}
-
 			if(!levelObject.cumulativeEffects.Struct().empty() || !levelObject.effects.Struct().empty() || spell->isOffensive())
 				logGlobal->error("Mixing %s special effects with old format effects gives unpredictable result", spell->getNameTranslated());
 		}

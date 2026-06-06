@@ -11,7 +11,7 @@
 
 #include "Problem.h"
 
-#include "../../../lib/json/JsonNode.h"
+#include "../LuaMetaString.h"
 #include "../../../lib/spells/ISpellMechanics.h"
 #include "../../../lib/texts/MetaString.h"
 
@@ -22,19 +22,19 @@ namespace scripting::api
 using ::spells::Problem;
 using ::spells::Mechanics;
 
-void ProblemProxy::addCustom(Problem * problem, const JsonNode & config)
+void ProblemProxy::addCustom(Problem & problem, const LuaMetaString & config)
 {
-	problem->add(MetaString::createFromLua(config));
+	problem.add(config.toMetaString());
 }
 
-void ProblemProxy::addGeneric(Problem * problem, const Mechanics * mechanics)
+void ProblemProxy::addGeneric(Problem & problem, const Mechanics & mechanics)
 {
-	mechanics->adaptGenericProblem(*problem);
+	mechanics.adaptGenericProblem(problem);
 }
 
-void ProblemProxy::addStandard(Problem * problem, const Mechanics * mechanics, ESpellCastProblem spellProblem)
+void ProblemProxy::addStandard(Problem & problem, const Mechanics & mechanics, ESpellCastProblem spellProblem)
 {
-	mechanics->adaptProblem(spellProblem, *problem);
+	mechanics.adaptProblem(spellProblem, problem);
 }
 
 const std::vector<ProblemProxy::CustomRegType> ProblemProxy::REGISTER_CUSTOM =

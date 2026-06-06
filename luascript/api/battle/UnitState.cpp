@@ -19,7 +19,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
 
 const std::vector<LuaUnitStateProxy::CustomRegType> LuaUnitStateProxy::REGISTER_CUSTOM =
@@ -66,7 +66,7 @@ const std::vector<LuaUnitStateProxy::CustomRegType> LuaUnitStateProxy::REGISTER_
 
 	// Mutable — other fields
 	{"setPosition",         LuaMethodWrapper<&LuaUnitState::setPosition>::invoke,         false},
-	{"setCloneID",          LuaMethodWrapper<&LuaUnitState::setCloneID>::invoke,          false},
+	{"setClone",            LuaMethodWrapper<&LuaUnitState::setClone>::invoke,            false},
 
 	// Mutable — health
 	{"damage",              LuaMethodWrapper<&LuaUnitState::damage>::invoke,              false},
@@ -118,7 +118,7 @@ void LuaUnitState::setWaiting(bool v)           { state->waiting = v; }
 void LuaUnitState::setWaitedThisTurn(bool v)    { state->waitedThisTurn = v; }
 
 void LuaUnitState::setPosition(BattleHex hex)   { state->setPosition(hex); }
-void LuaUnitState::setCloneID(int32_t id)        { state->cloneID = id; }
+void LuaUnitState::setClone(const ::battle::Unit & unit) { state->cloneID = unit.unitId(); }
 
 int64_t LuaUnitState::damage(int64_t amount)
 {
@@ -128,17 +128,17 @@ int64_t LuaUnitState::damage(int64_t amount)
 
 // --- LuaUnitStateProxy static methods ---
 
-bool LuaUnitStateProxy::hasAbsoluteImmunity(LuaUnitState state, const spells::Spell * spell)
+bool LuaUnitStateProxy::hasAbsoluteImmunity(const LuaUnitState & state, const spells::Spell & spell)
 {
-	return state.getState()->hasAbsoluteImmunity(spell->getId());
+	return state.getState()->hasAbsoluteImmunity(spell.getId());
 }
 
-const Creature * LuaUnitStateProxy::getCreature(LuaUnitState state)
+const Creature * LuaUnitStateProxy::getCreature(const LuaUnitState & state)
 {
 	return state.getState()->creatureId().toEntity(LIBRARY);
 }
 
-BattleHexArray LuaUnitStateProxy::getHexes(LuaUnitState state)
+BattleHexArray LuaUnitStateProxy::getHexes(const LuaUnitState & state)
 {
 	return state.getState()->getHexes();
 }

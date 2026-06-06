@@ -20,7 +20,6 @@
 #include "../../../lib/battle/Unit.h"
 #include "../../../lib/spells/Problem.h"
 #include "../../../lib/mapObjects/CGHeroInstance.h"
-#include "../../../lib/constants/EntityIdentifiers.h"
 #include "../../../lib/GameLibrary.h"
 #include "../../../lib/texts/CGeneralTextHandler.h"
 #include "../../../lib/texts/Languages.h"
@@ -33,17 +32,12 @@ namespace scripting::api
 {
 		using ::spells::Mechanics;
 
-		bool MechanicsProxy::ownerMatchesUnit(const Mechanics * m, const battle::Unit * unit)
+		bool MechanicsProxy::ownerMatchesUnit(const Mechanics & m, const battle::Unit & unit)
 		{
-			return m->ownerMatches(unit);
+			return m.ownerMatches(&unit);
 		}
 
-		const spells::Spell * MechanicsProxy::getSpellByKey(const spells::Mechanics * m, const std::string & key)
-		{
-			return m->spells()->getByIndex(SpellID::decode(key));
-		}
-
-		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics * m, const std::string & baseTextID, int32_t count)
+		std::string MechanicsProxy::getPluralFormTextID(const spells::Mechanics & m, const std::string & baseTextID, int32_t count)
 		{
 			std::string lang = LIBRARY->generaltexth->getPreferredLanguage();
 			return Languages::getPluralFormTextID(lang, count, baseTextID);
@@ -69,14 +63,12 @@ namespace scripting::api
 			{"getUnitCaster",          LuaMethodWrapper<&Mechanics::getUnitCaster>::invoke,            false},
 			{"getCasterNameTextID",    LuaMethodWrapper<&Mechanics::getCasterNameTextID>::invoke,      false},
 			{"getBattle",              LuaMethodWrapper<&Mechanics::battle>::invoke,                   false},
-			{"getBattleID",            LuaMethodWrapper<&Mechanics::getBattleID>::invoke,              false},
 			{"calculateRawEffectValue", LuaMethodWrapper<&Mechanics::calculateRawEffectValue>::invoke, false},
 			{"applySpecificSpellBonus", LuaMethodWrapper<&Mechanics::applySpecificSpellBonus>::invoke, false},
 			{"applySpellBonus",        LuaMethodWrapper<&Mechanics::applySpellBonus>::invoke,          false},
 			{"isReceptive",            LuaMethodWrapper<&Mechanics::isReceptive>::invoke,              false},
 			{"ownerMatches",           LuaFunctionWrapper<&ownerMatchesUnit>::invoke,                  false},
 			{"getSpell",               LuaMethodWrapper<&Mechanics::getSpell>::invoke,                 false},
-			{"getSpellByKey",          LuaFunctionWrapper<&MechanicsProxy::getSpellByKey>::invoke,     false},
 			{"adjustEffectValue",      LuaMethodWrapper<&Mechanics::adjustEffectValue>::invoke,        false},
 			{"getPluralFormTextID",    LuaFunctionWrapper<&MechanicsProxy::getPluralFormTextID>::invoke, false},
 		};

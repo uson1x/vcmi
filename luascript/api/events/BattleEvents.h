@@ -18,7 +18,7 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::events
+namespace scripting::api
 {
 
 class ApplyDamageProxy : public RawPointerWrapper<::events::ApplyDamage, ApplyDamageProxy>

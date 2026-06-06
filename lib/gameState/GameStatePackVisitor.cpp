@@ -1619,11 +1619,11 @@ void BattleStatePackVisitor::visitCatapultAttack(CatapultAttack & pack)
 	if(town->fortificationsLevel().wallsHealth == 0)
 		throw std::runtime_error("CatapultAttack without walls!");
 
-	for(const auto & part : pack.attackedParts)
-	{
-		auto newWallState = SiegeInfo::applyDamage(battleState.getWallState(part.attackedPart), part.damageDealt);
-		battleState.setWallState(part.attackedPart, newWallState);
-	}
+	auto newWallState = SiegeInfo::applyDamage(battleState.getWallState(pack.attackedPart), pack.damageDealt);
+	battleState.setWallState(pack.attackedPart, newWallState);
+
+	if(pack.killedTowerShooter != -1)
+		battleState.removeUnit(pack.killedTowerShooter);
 }
 
 void BattleStatePackVisitor::visitBattleObstaclesChanged(BattleObstaclesChanged & pack)

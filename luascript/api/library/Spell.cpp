@@ -19,15 +19,13 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::library
+namespace scripting::api
 {
 
 using ::spells::Spell;
 
 const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 {
-	{"getIconIndex",        LuaMethodWrapper<&Entity::getIconIndex, Spell>::invoke,      false},
-	{"getIndex",            LuaMethodWrapper<&Entity::getIndex, Spell>::invoke,          false},
 	{"getJsonKey",          LuaMethodWrapper<&Entity::getJsonKey, Spell>::invoke,        false},
 	{"getName",             LuaMethodWrapper<&Entity::getNameTranslated, Spell>::invoke, false},
 	{"getNameTextID",       LuaMethodWrapper<&Entity::getNameTextID, Spell>::invoke,     false},
@@ -52,10 +50,10 @@ const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
 	{"getSchools",          LuaFunctionWrapper<&SpellProxy::getSchools>::invoke,          false},
 };
 
-std::vector<std::string> SpellProxy::getSchools(const Spell * spell)
+std::vector<std::string> SpellProxy::getSchools(const Spell & spell)
 {
 	std::vector<std::string> result;
-	spell->forEachSchool([&result](const SpellSchool & school, bool & stop)
+	spell.forEachSchool([&result](const SpellSchool & school, bool & stop)
 	{
 		result.push_back(BonusSubtypeID(school).toString());
 	});

@@ -210,6 +210,16 @@ public:
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<IdentifierBase, T>, int> = 0>
 	void get(int position, T & value)
 	{
+		if constexpr (requires { T::decode(std::string{}); })
+		{
+			if(lua_isstring(L, position) && !lua_isnumber(L, position))
+			{
+				std::string temp;
+				get(position, temp);
+				value = T(T::decode(temp));
+				return;
+			}
+		}
 		lua_Integer temp;
 		getInteger(position, temp);
 		value = T(temp);
@@ -257,6 +267,12 @@ public:
 				throw LuaApiException("value at index is not a table");
 
 			lua_getfield(L, position, keyName.c_str());
+
+			if (lua_isnil(L, -1))
+			{
+				lua_pop(L, 1);
+				return;
+			}
 
 			try {
 				get(absindex(-1), data);

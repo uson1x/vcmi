@@ -178,7 +178,7 @@ public:
 	virtual HealInfo heal(int64_t & amount, EHealLevel level, EHealPower power) = 0;
 };
 
-class DLL_LINKAGE UnitInfo
+class DLL_LINKAGE UnitInfo final : public scripting::ApiSerializable<UnitInfo>
 {
 public:
     uint32_t id = 0;
@@ -192,6 +192,16 @@ public:
 
 	void save(JsonNode & data);
 	void load(uint32_t id_, const JsonNode & data);
+
+	template<typename Serializer>
+	void serializeScript(Serializer & s)
+	{
+		s("count", count);
+		s("type", type);
+		s("side", side);
+		s("position", position);
+		s("summoned", summoned);
+	}
 };
 
 }

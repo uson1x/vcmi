@@ -20,13 +20,6 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace spells::effects
 {
 
-class BuiltinEffectFactory final : public ISpellEffectFactory
-{
-public:
-	void initialize(const std::string & scope, const std::string & name) override;
-	std::shared_ptr<Effect> create(const std::string & scope, const std::string & name) const override;
-};
-
 struct SpellEffectType
 {
 	std::string identifier;
@@ -34,6 +27,7 @@ struct SpellEffectType
 	std::string type;
 	std::string scriptName;
 	JsonNode validationSchema;
+	std::vector<std::string> stringRegistrations;
 };
 
 class SpellEffectHandler final : public IHandlerBase, public SpellEffectService
@@ -45,7 +39,7 @@ public:
 
 	void registerFactory(const std::string & typeName, std::shared_ptr<ISpellEffectFactory> factory) override;
 
-	void validateEffect(SpellEffectID effectID, const JsonNode & data, const std::string & name) const override;
+	void prepareEffect(SpellEffectID effectID, JsonNode & data, const std::string & spellScope, const std::string & spellIdentifier, const std::string & effectName) const override;
 
 	std::vector<JsonNode> loadLegacyData() override;
 

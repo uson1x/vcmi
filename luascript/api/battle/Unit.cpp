@@ -21,8 +21,10 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
-namespace scripting::api::battle
+namespace scripting::api
 {
+using ::battle::IUnitInfo;
+using ::battle::Unit;
 
 const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 {
@@ -55,27 +57,27 @@ const std::vector<UnitProxy::CustomRegType> UnitProxy::REGISTER_CUSTOM =
 	{"copy",           LuaFunctionWrapper<&UnitProxy::copy>::invoke,         false},
 	{"getBonuses",     LuaCallWrapper<&UnitProxy::getBonuses>::invoke,       false},
 	{"creatureLevel",  LuaMethodWrapper<&Unit::creatureLevel>::invoke,       false},
-	{"unitId",         LuaMethodWrapper<&IUnitInfo::unitId, Unit>::invoke,   false},
+	{"unitID",         LuaMethodWrapper<&IUnitInfo::unitId, Unit>::invoke,   false},
 };
 
-const Creature * UnitProxy::getCreature(const Unit * unit)
+const Creature * UnitProxy::getCreature(const Unit & unit)
 {
-	return unit->creatureId().toEntity(LIBRARY);
+	return unit.creatureId().toEntity(LIBRARY);
 }
 
-BattleHexArray UnitProxy::getHexes(const Unit * unit)
+BattleHexArray UnitProxy::getHexes(const Unit & unit)
 {
-	return unit->getHexes();
+	return unit.getHexes();
 }
 
-bool UnitProxy::hasAbsoluteImmunity(const Unit * unit, const spells::Spell * spell)
+bool UnitProxy::hasAbsoluteImmunity(const Unit & unit, const spells::Spell & spell)
 {
-	return unit->hasAbsoluteImmunity(spell->getId());
+	return unit.hasAbsoluteImmunity(spell.getId());
 }
 
-LuaUnitState UnitProxy::copy(const Unit * unit)
+LuaUnitState UnitProxy::copy(const Unit & unit)
 {
-	return LuaUnitState(unit->acquireState());
+	return LuaUnitState(unit.acquireState());
 }
 
 int UnitProxy::getBonuses(lua_State * L)

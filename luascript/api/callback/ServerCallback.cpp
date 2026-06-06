@@ -12,23 +12,29 @@
 #include "GameLibrary.h"
 #include "ServerCallback.h"
 
+#include "../LuaMetaString.h"
 #include "../Registry.h"
 #include "../battle/UnitState.h"
+#include "../battle/SpellObstacleDescriptor.h"
+#include "../library/BonusDescriptor.h"
 
 #include "../../LuaStack.h"
+#include "../../../lib/battle/SiegeInfo.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"
 #include "../../../lib/networkPacks/SetStackEffect.h"
 #include "../../../lib/battle/Unit.h"
+#include "../../../lib/battle/CObstacleInstance.h"
+#include "../../../lib/battle/IBattleState.h"
 #include "../../../lib/CStack.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/Bonus.h"
 #include "../../../lib/battle/CUnitState.h"
-#include "../../../lib/json/JsonNode.h"
 #include "../../../lib/texts/MetaString.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 #include "modding/IdentifierStorage.h"
 #include "modding/ModScope.h"
-#include "json/JsonBonus.h"
+
+#include <vstd/RNG.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -37,26 +43,29 @@ namespace scripting::api
 
 const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
 {
-	{ "createUnit",        LuaFunctionWrapper<&ServerCallbackProxy::createUnit>::invoke,        false },
-	{ "updateUnit",        LuaFunctionWrapper<&ServerCallbackProxy::updateUnit>::invoke,        false },
+	{ "addUnit",           LuaFunctionWrapper<&ServerCallbackProxy::addUnit>::invoke,           false },
 	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,              false },
 	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,            false },
 	{ "damageUnit",        LuaCallWrapper<&ServerCallbackProxy::damageUnit>::invoke,            false },
 	{ "removeUnit",        LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,        false },
+	{ "removeObstacle",    LuaFunctionWrapper<&ServerCallbackProxy::removeObstacle>::invoke,    false },
 	{ "moveUnit",          LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,          false },
 	{ "appendLog",         LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,         false },
 	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
 	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
 	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
-	{ "applyUnitBonuses",  LuaFunctionWrapper<&ServerCallbackProxy::applyUnitBonuses>::invoke,  false },
+	{ "addBattleBonus",    LuaFunctionWrapper<&ServerCallbackProxy::addBattleBonus>::invoke,    false },
+	{ "addObstacle",       LuaFunctionWrapper<&ServerCallbackProxy::addObstacle>::invoke,       false },
+	{ "catapultAttack",    LuaFunctionWrapper<&ServerCallbackProxy::catapultAttack>::invoke,    false },
+	{ "rngInt",            LuaCallWrapper<&ServerCallbackProxy::rngInt>::invoke,                false },
 };
 
-bool ServerCallbackProxy::describeChanges(ServerCallback * object)
+bool ServerCallbackProxy::describeChanges(ServerCallback & object)
 {
-	return object->describeChanges();
+	return object.describeChanges();
 }
 
-void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const BonusList & bonusList)
+void ServerCallbackProxy::removeUnitBonuses(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, const BonusList & bonusList)
 {
 	std::vector<Bonus> buffer;
 	for(const auto & b : bonusList)
@@ -66,98 +75,148 @@ void ServerCallbackProxy::removeUnitBonuses(ServerCallback * object, BattleID ba
 		return;
 
 	SetStackEffect sse;
-	sse.battleID = battleID;
-	sse.toRemove.emplace_back(unit->unitId(), buffer);
-	object->apply(sse);
+	sse.battleID = battle.getBattle()->getBattleID();
+	sse.toRemove.emplace_back(unit.unitId(), buffer);
+	object.apply(sse);
 }
 
-void ServerCallbackProxy::addUnitBonus(ServerCallback * object, BattleID battleID, uint32_t unitId, const JsonNode & data)
+void ServerCallbackProxy::addUnitBonus(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, const BonusDescriptor & data, bool cumulative)
 {
-	Bonus b;
-	JsonUtils::parseBonus(data, &b);
+	Bonus b = data.toBonus();
 
 	SetStackEffect sse;
-	sse.battleID = battleID;
-	sse.toAdd.emplace_back(unitId, std::vector<Bonus>{b});
-	object->apply(sse);
-}
-
-void ServerCallbackProxy::applyUnitBonuses(ServerCallback * object, BattleID battleID, const battle::Unit * unit, const JsonNode & bonuses, bool cumulative)
-{
-	std::vector<Bonus> buffer;
-	for(const auto & [name, bonusJson] : bonuses.Struct())
-	{
-		auto b = JsonUtils::parseBonus(bonusJson);
-		if(b)
-			buffer.push_back(*b);
-	}
-	if(buffer.empty())
-		return;
-
-	SetStackEffect sse;
-	sse.battleID = battleID;
+	sse.battleID = battle.getBattle()->getBattleID();
 	if(cumulative)
-		sse.toAdd.emplace_back(unit->unitId(), buffer);
+		sse.toAdd.emplace_back(unit.unitId(), std::vector<Bonus>{b});
 	else
-		sse.toUpdate.emplace_back(unit->unitId(), buffer);
-	object->apply(sse);
+		sse.toUpdate.emplace_back(unit.unitId(), std::vector<Bonus>{b});
+	object.apply(sse);
 }
 
-void ServerCallbackProxy::createUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data)
+void ServerCallbackProxy::addBattleBonus(ServerCallback & object, const IBattleInfoCallback & battle, const BonusDescriptor & data)
 {
+	GiveBonus gb(GiveBonus::ETarget::BATTLE);
+	gb.id = battle.getBattle()->getBattleID();
+	gb.bonus = data.toBonus();
+	object.apply(gb);
+}
+
+void ServerCallbackProxy::addObstacle(ServerCallback & object, const IBattleInfoCallback & battle, const SpellObstacleDescriptor & descriptor)
+{
+	SpellCreatedObstacle obstacle = descriptor.toObstacle();
+	obstacle.uniqueID = battle.nextObstacleId();
+
+	BattleObstaclesChanged pack;
+	pack.battleID = battle.getBattle()->getBattleID();
+	pack.changes.emplace_back();
+	obstacle.toInfo(pack.changes.back());
+	object.apply(pack);
+}
+
+const battle::Unit * ServerCallbackProxy::addUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::UnitInfo & info)
+{
+	battle::UnitInfo unitInfo = info;
+	unitInfo.id = battle.battleNextUnitId();
+
 	BattleUnitsChanged buc;
 	UnitChanges uc;
 	uc.operation = UnitChanges::EOperation::ADD;
-	buc.battleID = battleID;
-	uc.id = id;
-	uc.data = std::move(data);
+	buc.battleID = battle.getBattle()->getBattleID();
+	uc.id = unitInfo.id;
+	unitInfo.save(uc.data);
 	buc.changedStacks.push_back(uc);
-	object->apply(buc);
+	object.apply(buc);
+
+	return battle.battleGetUnitByID(unitInfo.id);
 }
 
-void ServerCallbackProxy::updateUnit(ServerCallback * object, BattleID battleID, uint32_t id, JsonNode data, int64_t healthDelta)
+void ServerCallbackProxy::removeUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit)
 {
 	BattleUnitsChanged buc;
 	UnitChanges uc;
-	uc.operation = UnitChanges::EOperation::UPDATE;
-	buc.battleID = battleID;
-	uc.id = id;
-	uc.data = std::move(data);
-	uc.healthDelta = healthDelta;
-	buc.changedStacks.push_back(uc);
-	object->apply(buc);
-}
-
-void ServerCallbackProxy::removeUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit)
-{
-	BattleUnitsChanged buc;
-	UnitChanges uc;
-	buc.battleID = battleID;
+	buc.battleID = battle.getBattle()->getBattleID();
 	uc.operation = UnitChanges::EOperation::REMOVE;
-	uc.id = unit->unitId();
+	uc.id = unit.unitId();
 	buc.changedStacks.push_back(uc);
-	object->apply(buc);
+	object.apply(buc);
 }
 
-void ServerCallbackProxy::moveUnit(ServerCallback * object, BattleID battleID, const battle::Unit * unit, BattleHex destination, bool isTeleport)
+void ServerCallbackProxy::removeObstacle(ServerCallback & object, const IBattleInfoCallback & battle, std::shared_ptr<const CObstacleInstance> obstacle)
+{
+	if(!obstacle)
+		return;
+
+	BattleObstaclesChanged pack;
+	pack.battleID = battle.getBattle()->getBattleID();
+	pack.changes.emplace_back(obstacle->uniqueID, BattleChanges::EOperation::REMOVE);
+	auto * serializable = const_cast<CObstacleInstance*>(obstacle.get());
+	serializable->toInfo(pack.changes.back(), BattleChanges::EOperation::REMOVE);
+	object.apply(pack);
+}
+
+void ServerCallbackProxy::catapultAttack(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & attacker, EWallPart attackedPart, int32_t damageDealt)
+{
+	CatapultAttack ca;
+	ca.battleID = battle.getBattle()->getBattleID();
+	ca.attacker = attacker.unitId();
+	ca.attackedPart = attackedPart;
+	ca.destinationTile = battle.wallPartToBattleHex(attackedPart).toInt();
+	ca.damageDealt = static_cast<ui8>(std::clamp(damageDealt, 0, 255));
+
+	ca.killedTowerShooter = -1;
+	if(attackedPart == EWallPart::KEEP || attackedPart == EWallPart::BOTTOM_TOWER || attackedPart == EWallPart::UPPER_TOWER)
+	{
+		EWallState stateAfter = SiegeInfo::applyDamage(battle.battleGetWallState(attackedPart), ca.damageDealt);
+		if(stateAfter == EWallState::DESTROYED)
+		{
+			BattleHex towerHex = battle.getTowerShooterHex(attackedPart);
+			const battle::Unit * shooter = battle.battleGetUnitByPos(towerHex, false);
+			if(shooter && !shooter->isGhost())
+				ca.killedTowerShooter = shooter->unitId();
+		}
+	}
+
+	object.apply(ca);
+}
+
+int ServerCallbackProxy::rngInt(lua_State * L)
+{
+	LuaStack S(L);
+
+	ServerCallback * object = nullptr;
+	int low = 0;
+	int high = 0;
+
+	S.getNonNull(1, object);
+	S.get(2, low);
+	S.get(3, high);
+
+	int result = object->getRNG()->nextInt(low, high);
+
+	S.clear();
+	S.push(result);
+	return 1;
+}
+
+void ServerCallbackProxy::moveUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit, BattleHex destination, bool isTeleport)
 {
 	BattleStackMoved pack;
-	pack.battleID = battleID;
-	pack.stack = unit->unitId();
+	pack.battleID = battle.getBattle()->getBattleID();
+	pack.stack = unit.unitId();
 	pack.distance = 0;
 	pack.teleporting = isTeleport;
 	BattleHexArray tiles;
 	tiles.insert(destination);
 	pack.tilesToMove = tiles;
-	object->apply(pack);
+	object.apply(pack);
 }
 
-void ServerCallbackProxy::appendLog(ServerCallback * object, BattleID battleID, JsonNode config)
+void ServerCallbackProxy::appendLog(ServerCallback & object, const IBattleInfoCallback & battle, const LuaMetaString & config)
 {
 	BattleLogMessage msg;
-	msg.battleID = battleID;
-	msg.lines.push_back(MetaString::createFromLua(config));
-	object->apply(msg);
+	msg.battleID = battle.getBattle()->getBattleID();
+	msg.lines.push_back(config.toMetaString());
+	object.apply(msg);
 }
 
 int ServerCallbackProxy::changeUnit(lua_State * L)
@@ -165,12 +224,12 @@ int ServerCallbackProxy::changeUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleID battleID;
-	battle::LuaUnitState unitState;
+	const IBattleInfoCallback * battle = nullptr;
+	LuaUnitState unitState;
 	int64_t healthDelta = 0;
 
 	S.get(1, object);
-	S.get(2, battleID);
+	S.getNonNull(2, battle);
 	S.get(3, unitState);
 	if(S.stackSize() >= 4)
 		S.get(4, healthDelta);
@@ -179,7 +238,7 @@ int ServerCallbackProxy::changeUnit(lua_State * L)
 
 	BattleUnitsChanged buc;
 	UnitChanges uc(cstate->unitId(), UnitChanges::EOperation::UPDATE);
-	buc.battleID = battleID;
+	buc.battleID = battle->getBattle()->getBattleID();
 	uc.data = cstate->save();
 	uc.healthDelta = healthDelta;
 	buc.changedStacks.push_back(uc);
@@ -193,12 +252,12 @@ int ServerCallbackProxy::damageUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleID battleID;
+	const IBattleInfoCallback * battle = nullptr;
 	const battle::Unit * unit = nullptr;
 	int64_t damageAmount = 0;
 
 	S.get(1, object);
-	S.get(2, battleID);
+	S.getNonNull(2, battle);
 	S.getNonNull(3, unit);
 	S.get(4, damageAmount);
 
@@ -210,7 +269,7 @@ int ServerCallbackProxy::damageUnit(lua_State * L)
 	CStack::prepareAttacked(bsa, *object->getRNG(), newState);
 
 	StacksInjured si;
-	si.battleID = battleID;
+	si.battleID = battle->getBattle()->getBattleID();
 	si.stacks.push_back(bsa);
 	object->apply(si);
 
@@ -225,14 +284,14 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 	LuaStack S(L);
 
 	ServerCallback * object = nullptr;
-	BattleID battleID;
+	const IBattleInfoCallback * battle = nullptr;
 	const battle::Unit * unit = nullptr;
 	int64_t healthDelta;
 	EHealLevel healLevel;
 	EHealPower healPower;
 
 	S.get(1, object);
-	S.get(2, battleID);
+	S.getNonNull(2, battle);
 	S.getNonNull(3, unit);
 	S.get(4, healthDelta);
 	S.get(5, healLevel);
@@ -243,7 +302,7 @@ int ServerCallbackProxy::healUnit(lua_State * L)
 
 	BattleUnitsChanged buc;
 	UnitChanges uc;
-	buc.battleID = battleID;
+	buc.battleID = battle->getBattle()->getBattleID();
 	uc.operation = UnitChanges::EOperation::UPDATE;
 	uc.id = unit->unitId();
 	uc.data = changedUnit->save();
