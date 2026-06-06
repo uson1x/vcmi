@@ -13,6 +13,7 @@
 #include <vcmi/HeroClass.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 #include "../../../lib/mapObjects/army/CStackInstance.h"
 
@@ -24,10 +25,16 @@ namespace scripting::api
 class StackInstanceProxy : public RawPointerWrapper<const CStackInstance, StackInstanceProxy>
 {
 public:
+	static constexpr std::string_view luaName = "StackInstance";
+
 	using Wrapper = RawPointerWrapper<const CStackInstance, StackInstanceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 };
 
+inline std::string luaTypeNameOf(LuaTypeNameTag<CStackInstance>)
+{
+	return std::string(StackInstanceProxy::luaName);
+}
 
 }
 

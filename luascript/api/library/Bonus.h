@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 #include "../../../lib/bonuses/Bonus.h"
 #include "../../../lib/bonuses/BonusList.h"
 #include "../../../lib/bonuses/BonusEnum.h"
@@ -23,8 +24,10 @@ namespace scripting::api
 class BonusProxy : public CopyableWrapper<Bonus, BonusProxy>
 {
 public:
+	static constexpr std::string_view luaName = "Bonus";
+
 	using Wrapper = CopyableWrapper<Bonus, BonusProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 
 	static std::string getType(const Bonus & b);
 	static si32 getVal(const Bonus & b);
@@ -42,12 +45,24 @@ public:
 class BonusListProxy : public CopyableWrapper<BonusList, BonusListProxy>
 {
 public:
+	static constexpr std::string_view luaName = "BonusList";
+
 	using Wrapper = CopyableWrapper<BonusList, BonusListProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 
 	static int32_t size(const BonusList & list);
 	static Bonus getBonus(const BonusList & list, int32_t index);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<Bonus>)
+{
+	return std::string(BonusProxy::luaName);
+}
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<BonusList>)
+{
+	return std::string(BonusListProxy::luaName);
+}
 
 }
 

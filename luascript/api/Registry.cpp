@@ -41,31 +41,31 @@ namespace scripting::api
 
 Registry::Registry()
 {
-	registerPrivate<ServicesProxy>("library.Services");
-	registerPrivate<ArtifactProxy>("library.Artifact");
-	registerPrivate<BonusProxy>("library.Bonus");
-	registerPrivate<BonusListProxy>("library.BonusList");
-	registerPrivate<CreatureProxy>("library.Creature");
-	registerPrivate<FactionProxy>("library.Faction");
-	registerPrivate<HeroClassProxy>("library.HeroClass");
-	registerPrivate<HeroTypeProxy>("library.HeroType");
-	registerPrivate<SkillProxy>("library.Skill");
-	registerPrivate<SpellProxy>("library.Spell");
+	registerPrivate<ServicesProxy>();
+	registerPrivate<ArtifactProxy>();
+	registerPrivate<BonusProxy>();
+	registerPrivate<BonusListProxy>();
+	registerPrivate<CreatureProxy>();
+	registerPrivate<FactionProxy>();
+	registerPrivate<HeroClassProxy>();
+	registerPrivate<HeroTypeProxy>();
+	registerPrivate<SkillProxy>();
+	registerPrivate<SpellProxy>();
 
-	registerPrivate<HeroInstanceProxy>("adventure.HeroInstance");
-	registerPrivate<StackInstanceProxy>("adventure.StackInstance");
+	registerPrivate<HeroInstanceProxy>();
+	registerPrivate<StackInstanceProxy>();
 
-	registerPrivate<BattleHexProxy>("battle.BattleHex");
-	registerPrivate<BattleHexArrayProxy>("battle.BattleHexArray");
-	registerPrivate<UnitProxy>("battle.Unit");
-	registerPrivate<LuaUnitStateProxy>("battle.UnitState");
-	registerPrivate<ObstacleProxy>("battle.Obstacle");
-	registerPrivate<ProblemProxy>("battle.SpellProblem");
-	registerPrivate<MechanicsProxy>("battle.SpellMechanics");
+	registerPrivate<BattleHexProxy>();
+	registerPrivate<BattleHexArrayProxy>();
+	registerPrivate<UnitProxy>();
+	registerPrivate<LuaUnitStateProxy>();
+	registerPrivate<ObstacleProxy>();
+	registerPrivate<ProblemProxy>();
+	registerPrivate<MechanicsProxy>();
 
-	registerPrivate<IBattleInfoCallbackProxy>("game.Battle");
-	registerPrivate<IGameInfoCallbackProxy>("game.Game");
-	registerPrivate<ServerCallbackProxy>("game.Server");
+	registerPrivate<IBattleInfoCallbackProxy>();
+	registerPrivate<IGameInfoCallbackProxy>();
+	registerPrivate<ServerCallbackProxy>();
 }
 
 const Registry * Registry::get()

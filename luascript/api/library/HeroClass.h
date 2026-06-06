@@ -13,6 +13,7 @@
 #include <vcmi/HeroClass.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,9 +23,16 @@ namespace scripting::api
 class HeroClassProxy : public RawPointerWrapper<const HeroClass, HeroClassProxy>
 {
 public:
+	static constexpr std::string_view luaName = "HeroClass";
+
 	using Wrapper = RawPointerWrapper<const HeroClass, HeroClassProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<HeroClass>)
+{
+	return std::string(HeroClassProxy::luaName);
+}
 
 }
 

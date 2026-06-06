@@ -23,11 +23,13 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<IGameInfoCallbackProxy::CustomRegType> IGameInfoCallbackProxy::REGISTER_CUSTOM =
+void IGameInfoCallbackProxy::registerMethods(MethodRegistrar & R)
 {
-	{"getHero", LuaMethodWrapper<&GameCb::getHero>::invoke, false},
-	{"getObj",  LuaMethodWrapper<&GameCb::getObj>::invoke,  false},
-};
+	R.method<&GameCb::getHero>("getHero",
+		"Returns the hero by its object identifier, or nil if not found.");
+	R.method<&GameCb::getObj>("getObj",
+		"Returns the map object by its identifier, or nil if not found.");
+}
 
 }
 

@@ -13,6 +13,7 @@
 #include <vcmi/Artifact.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,10 +23,16 @@ namespace scripting::api
 class ArtifactProxy : public RawPointerWrapper<const Artifact, ArtifactProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const Artifact, ArtifactProxy>;
+	static constexpr std::string_view luaName = "Artifact";
 
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	using Wrapper = RawPointerWrapper<const Artifact, ArtifactProxy>;
+	static void registerMethods(MethodRegistrar & R);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<Artifact>)
+{
+	return std::string(ArtifactProxy::luaName);
+}
 
 }
 

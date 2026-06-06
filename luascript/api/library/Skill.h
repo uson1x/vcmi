@@ -13,6 +13,7 @@
 #include <vcmi/Skill.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,9 +23,16 @@ namespace scripting::api
 class SkillProxy : public RawPointerWrapper<const Skill, SkillProxy>
 {
 public:
+	static constexpr std::string_view luaName = "Skill";
+
 	using Wrapper = RawPointerWrapper<const Skill, SkillProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<Skill>)
+{
+	return std::string(SkillProxy::luaName);
+}
 
 }
 

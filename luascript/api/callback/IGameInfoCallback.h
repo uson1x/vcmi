@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 #include "../../../lib/callback/IGameInfoCallback.h"
 
@@ -24,11 +25,16 @@ namespace scripting::api
 class IGameInfoCallbackProxy : public RawPointerWrapper<const GameCb, IGameInfoCallbackProxy>
 {
 public:
+	static constexpr std::string_view luaName = "Game";
+
 	using Wrapper = RawPointerWrapper<const GameCb, IGameInfoCallbackProxy>;
-
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
-
+	static void registerMethods(MethodRegistrar & R);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<GameCb>)
+{
+	return std::string(IGameInfoCallbackProxy::luaName);
+}
 
 }
 

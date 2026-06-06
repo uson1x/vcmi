@@ -10,9 +10,10 @@
 
 #pragma once
 
-#include "../../LuaWrapper.h"
-
 #include <vcmi/Creature.h>
+
+#include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,12 +23,18 @@ namespace scripting::api
 class CreatureProxy : public RawPointerWrapper<const Creature, CreatureProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const Creature, CreatureProxy>;
+	static constexpr std::string_view luaName = "Creature";
 
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	using Wrapper = RawPointerWrapper<const Creature, CreatureProxy>;
+	static void registerMethods(MethodRegistrar & R);
 
 	static std::string getNameTextID(const Creature & creature, int amount);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<Creature>)
+{
+	return std::string(CreatureProxy::luaName);
+}
 
 }
 

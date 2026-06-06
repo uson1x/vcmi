@@ -11,11 +11,9 @@
 
 #include "Artifact.h"
 
+#include "BonusProviderBindings.h"
+#include "EntityBindings.h"
 #include "../Registry.h"
-
-#include "../../LuaStack.h"
-#include "../../LuaCallWrapper.h"
-#include "../../../lib/bonuses/Bonus.h"
 #include "../../../lib/bonuses/IBonusBearer.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -23,19 +21,22 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<ArtifactProxy::CustomRegType> ArtifactProxy::REGISTER_CUSTOM =
+void ArtifactProxy::registerMethods(MethodRegistrar & R)
 {
-	{"getJsonKey",     LuaMethodWrapper<&Entity::getJsonKey, Artifact>::invoke,             false},
-	{"getName",        LuaMethodWrapper<&Entity::getNameTranslated, Artifact>::invoke,      false},
+	EntityBindings<Artifact>::registerMethods(R);
+	BonusProviderBindings<Artifact>::registerMethods(R);
 
-	{"getBonusBearer", LuaMethodWrapper<&IConstBonusProvider::getBonusBearer, Artifact>::invoke, false},
-
-	{"getDescription", LuaMethodWrapper<&Artifact::getDescriptionTranslated>::invoke,      false},
-	{"getEventText",   LuaMethodWrapper<&Artifact::getEventTranslated>::invoke,            false},
-	{"isBig",          LuaMethodWrapper<&Artifact::isBig>::invoke,                         false},
-	{"isTradable",     LuaMethodWrapper<&Artifact::isTradable>::invoke,                    false},
-	{"getPrice",       LuaMethodWrapper<&Artifact::getPrice>::invoke,                      false},
-};
+	R.method<&Artifact::getDescriptionTranslated>("getDescription",
+		"Returns the artifact's flavor / description text in the active language.");
+	R.method<&Artifact::getEventTranslated>("getEventText",
+		"Returns the event log text shown when the artifact is picked up.");
+	R.method<&Artifact::isBig>("isBig",
+		"True if the artifact occupies the 'big' artifact slot (cannot be carried in regular slots).");
+	R.method<&Artifact::isTradable>("isTradable",
+		"True if the artifact can be traded between heroes or sold at the marketplace.");
+	R.method<&Artifact::getPrice>("getPrice",
+		"Returns the artifact's gold value.");
+}
 
 }
 

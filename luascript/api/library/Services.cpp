@@ -31,16 +31,23 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<ServicesProxy::CustomRegType> ServicesProxy::REGISTER_CUSTOM =
+void ServicesProxy::registerMethods(MethodRegistrar & R)
 {
-	{"getArtifactByName", LuaFunctionWrapper<&ServicesProxy::getArtifactByName>::invoke, false},
-	{"getCreatureByName", LuaFunctionWrapper<&ServicesProxy::getCreatureByName>::invoke, false},
-	{"getFactionByName", LuaFunctionWrapper<&ServicesProxy::getFactionByName>::invoke, false},
-	{"getHeroClassByName", LuaFunctionWrapper<&ServicesProxy::getHeroClassByName>::invoke, false},
-	{"getHeroTypeByName", LuaFunctionWrapper<&ServicesProxy::getHeroTypeByName>::invoke, false},
-	{"getSpellByName", LuaFunctionWrapper<&ServicesProxy::getSpellByName>::invoke, false},
-	{"getSecondarySkillByName", LuaFunctionWrapper<&ServicesProxy::getSecondarySkillByName>::invoke, false},
-};
+	R.function<&ServicesProxy::getArtifactByName>("getArtifactByName",
+		"Looks up an artifact by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getCreatureByName>("getCreatureByName",
+		"Looks up a creature by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getFactionByName>("getFactionByName",
+		"Looks up a faction by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getHeroClassByName>("getHeroClassByName",
+		"Looks up a hero class by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getHeroTypeByName>("getHeroTypeByName",
+		"Looks up a hero type by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getSpellByName>("getSpellByName",
+		"Looks up a spell by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getSecondarySkillByName>("getSecondarySkillByName",
+		"Looks up a secondary skill by its JSON key. Returns nil if not found.");
+}
 
 const Artifact * ServicesProxy::getArtifactByName(const Services * services, const std::string & name)
 {

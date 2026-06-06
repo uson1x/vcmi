@@ -13,6 +13,7 @@
 #include <vcmi/HeroClass.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 #include "../../../lib/mapObjects/CGHeroInstance.h"
 
@@ -27,12 +28,16 @@ class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroIns
 	static bool isFemale(const CGHeroInstance & hero);
 
 public:
-	using Wrapper = RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static constexpr std::string_view luaName = "HeroInstance";
 
-	static int getBonuses(lua_State * L);
+	using Wrapper = RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>;
+	static void registerMethods(MethodRegistrar & R);
 };
 
+inline std::string luaTypeNameOf(LuaTypeNameTag<CGHeroInstance>)
+{
+	return std::string(HeroInstanceProxy::luaName);
+}
 
 }
 

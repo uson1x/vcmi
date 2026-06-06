@@ -28,28 +28,48 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<IBattleInfoCallbackProxy::CustomRegType> IBattleInfoCallbackProxy::REGISTER_CUSTOM =
+void IBattleInfoCallbackProxy::registerMethods(MethodRegistrar & R)
 {
-	{ "getTacticDistance", LuaMethodWrapper<&BattleCb::battleTacticDist>::invoke, false },
-	{ "isFinished",       LuaMethodWrapper<&BattleCb::battleIsFinished>::invoke,  false },
+	R.method<&BattleCb::battleTacticDist>("getTacticDistance",
+		"Returns the remaining tactic phase distance, or 0 if the tactic phase has ended.");
+	R.method<&BattleCb::battleIsFinished>("isFinished",
+		"Returns the winning side, or no value if the battle is still ongoing.");
 
-	{ "getAvailableHex",      LuaCallWrapper<&IBattleInfoCallbackProxy::getAvailableHex>::invoke,         false },
-	{ "getUnitsIf",           LuaCallWrapper<&IBattleInfoCallbackProxy::getUnitsIf>::invoke,              false },
-	{ "isAccessibleForUnit",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::isAccessibleForUnit>::invoke, false },
-	{ "hasPenaltyOnLine",     LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasPenaltyOnLine>::invoke,    false },
-	{ "getUnitByPos",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getUnitByPos>::invoke,        false },
-	{ "getAllObstacles",      LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllObstacles>::invoke,     false },
-	{ "getObstaclesOnPos",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::getObstaclesOnPos>::invoke,   false },
-	{ "hasFortifications",    LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasFortifications>::invoke,   false },
-	{ "hasMoat",              LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasMoat>::invoke,             false },
-	{ "hasNativeStack",       LuaFunctionWrapper<&IBattleInfoCallbackProxy::hasNativeStack>::invoke,      false },
-	{ "getAllPossibleHexes",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::getAllPossibleHexes>::invoke, false },
-	{ "getWallState",         LuaFunctionWrapper<&IBattleInfoCallbackProxy::getWallState>::invoke,        false },
-	{ "isWallPartAttackable", LuaFunctionWrapper<&IBattleInfoCallbackProxy::isWallPartAttackable>::invoke,false },
-	{ "wallPartToBattleHex",  LuaFunctionWrapper<&IBattleInfoCallbackProxy::wallPartToBattleHex>::invoke, false },
-	{ "hexToWallPart",        LuaFunctionWrapper<&IBattleInfoCallbackProxy::hexToWallPart>::invoke,       false },
-	{ "getTowerShooterHex",   LuaFunctionWrapper<&IBattleInfoCallbackProxy::getTowerShooterHex>::invoke,  false },
-};
+	R.cfunction<&IBattleInfoCallbackProxy::getAvailableHex>("getAvailableHex",
+		"(creature: Creature, side: BattleSide, hex: BattleHex?): BattleHex",
+		"Returns an empty hex on the given side that the creature can be placed on.");
+	R.cfunction<&IBattleInfoCallbackProxy::getUnitsIf>("getUnitsIf",
+		"(predicate: fun(u: Unit): boolean): Unit[]",
+		"Returns the units for which the predicate returns true.");
+	R.function<&IBattleInfoCallbackProxy::isAccessibleForUnit>("isAccessibleForUnit",
+		"True if the given hex is reachable by the given unit considering accessibility.");
+	R.function<&IBattleInfoCallbackProxy::hasPenaltyOnLine>("hasPenaltyOnLine",
+		"True if a ranged attack along this line crosses a wall or moat (per the flags).");
+	R.function<&IBattleInfoCallbackProxy::getUnitByPos>("getUnitByPos",
+		"Returns the unit covering the given hex, or nil. Pass true to ignore dead units.");
+	R.function<&IBattleInfoCallbackProxy::getAllObstacles>("getAllObstacles",
+		"Returns all obstacles on the battlefield.");
+	R.function<&IBattleInfoCallbackProxy::getObstaclesOnPos>("getObstaclesOnPos",
+		"Returns the obstacles on the given hex. Pass true to limit to blocking obstacles.");
+	R.function<&IBattleInfoCallbackProxy::hasFortifications>("hasFortifications",
+		"True if the battle is a siege with fortifications present.");
+	R.function<&IBattleInfoCallbackProxy::hasMoat>("hasMoat",
+		"True if the battlefield has a moat.");
+	R.function<&IBattleInfoCallbackProxy::hasNativeStack>("hasNativeStack",
+		"True if the given side has at least one native-terrain stack.");
+	R.function<&IBattleInfoCallbackProxy::getAllPossibleHexes>("getAllPossibleHexes",
+		"Returns every valid battlefield hex.");
+	R.function<&IBattleInfoCallbackProxy::getWallState>("getWallState",
+		"Returns the current state of the given wall section, or nil if absent.");
+	R.function<&IBattleInfoCallbackProxy::isWallPartAttackable>("isWallPartAttackable",
+		"True if the given wall section can be targeted by an attack.");
+	R.function<&IBattleInfoCallbackProxy::wallPartToBattleHex>("wallPartToBattleHex",
+		"Returns the battle hex corresponding to the given wall section.");
+	R.function<&IBattleInfoCallbackProxy::hexToWallPart>("hexToWallPart",
+		"Returns the wall section corresponding to the given battle hex.");
+	R.function<&IBattleInfoCallbackProxy::getTowerShooterHex>("getTowerShooterHex",
+		"Returns the hex used by the tower shooter for the given wall section.");
+}
 
 bool IBattleInfoCallbackProxy::isAccessibleForUnit(const IBattleInfoCallback & object, const battle::Unit & unit, BattleHex hex)
 {

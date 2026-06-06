@@ -13,6 +13,7 @@
 #include <vcmi/Faction.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -22,9 +23,16 @@ namespace scripting::api
 class FactionProxy : public RawPointerWrapper<const Faction, FactionProxy>
 {
 public:
+	static constexpr std::string_view luaName = "Faction";
+
 	using Wrapper = RawPointerWrapper<const Faction, FactionProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<Faction>)
+{
+	return std::string(FactionProxy::luaName);
+}
 
 }
 

@@ -11,9 +11,8 @@
 
 #include "Spell.h"
 
+#include "EntityBindings.h"
 #include "../Registry.h"
-#include "../../LuaStack.h"
-#include "../../LuaCallWrapper.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 #include "../../../lib/bonuses/BonusCustomTypes.h"
 
@@ -24,31 +23,47 @@ namespace scripting::api
 
 using ::spells::Spell;
 
-const std::vector<SpellProxy::CustomRegType> SpellProxy::REGISTER_CUSTOM =
+void SpellProxy::registerMethods(MethodRegistrar & R)
 {
-	{"getJsonKey",          LuaMethodWrapper<&Entity::getJsonKey, Spell>::invoke,        false},
-	{"getName",             LuaMethodWrapper<&Entity::getNameTranslated, Spell>::invoke, false},
-	{"getNameTextID",       LuaMethodWrapper<&Entity::getNameTextID, Spell>::invoke,     false},
+	EntityBindings<Spell>::registerMethods(R);
+	R.method<&Entity::getNameTextID, Spell>("getNameTextID",
+		"Returns the JSON text ID of the spell name.");
 
-	{"isAdventure",         LuaMethodWrapper<&Spell::isAdventure>::invoke,               false},
-	{"isCombat",            LuaMethodWrapper<&Spell::isCombat>::invoke,                  false},
-	{"isCreatureAbility",   LuaMethodWrapper<&Spell::isCreatureAbility>::invoke,         false},
-	{"isPositive",          LuaMethodWrapper<&Spell::isPositive>::invoke,                false},
-	{"isNegative",          LuaMethodWrapper<&Spell::isNegative>::invoke,                false},
-	{"isNeutral",           LuaMethodWrapper<&Spell::isNeutral>::invoke,                 false},
-	{"isDamage",            LuaMethodWrapper<&Spell::isDamage>::invoke,                  false},
-	{"isOffensive",         LuaMethodWrapper<&Spell::isOffensive>::invoke,               false},
-	{"isSpecial",           LuaMethodWrapper<&Spell::isSpecial>::invoke,                 false},
-	{"isPersistent",        LuaMethodWrapper<&Spell::isPersistent>::invoke,              false},
-	{"isMagical",           LuaMethodWrapper<&Spell::isMagical>::invoke,                 false},
+	R.method<&Spell::isAdventure>("isAdventure",
+		"True if the spell can be cast on the adventure map.");
+	R.method<&Spell::isCombat>("isCombat",
+		"True if the spell can be cast during combat.");
+	R.method<&Spell::isCreatureAbility>("isCreatureAbility",
+		"True if the spell is a creature's innate ability rather than a learnable spell.");
+	R.method<&Spell::isPositive>("isPositive",
+		"True if the spell is classified as beneficial to its target.");
+	R.method<&Spell::isNegative>("isNegative",
+		"True if the spell is classified as harmful to its target.");
+	R.method<&Spell::isNeutral>("isNeutral",
+		"True if the spell is classified as neutral (neither positive nor negative).");
+	R.method<&Spell::isDamage>("isDamage",
+		"True if the spell deals direct damage.");
+	R.method<&Spell::isOffensive>("isOffensive",
+		"True if the spell is offensive (damage / curse-type effects).");
+	R.method<&Spell::isSpecial>("isSpecial",
+		"True if the spell is marked as special (e.g. cannot be obtained from common sources).");
+	R.method<&Spell::isPersistent>("isPersistent",
+		"True if the spell's effect persists between turns (e.g. timed buffs).");
+	R.method<&Spell::isMagical>("isMagical",
+		"True if the spell is magical in nature (as opposed to a non-magical ability).");
 
-	{"getCost",             LuaMethodWrapper<&Spell::getCost>::invoke,                   false},
-	{"getBasePower",        LuaMethodWrapper<&Spell::getBasePower>::invoke,              false},
-	{"getLevelPower",       LuaMethodWrapper<&Spell::getLevelPower>::invoke,             false},
-	{"getLevelDescription", LuaMethodWrapper<&Spell::getDescriptionTranslated>::invoke,  false},
+	R.method<&Spell::getCost>("getCost",
+		"Returns the mana cost of the spell at the requested skill level.");
+	R.method<&Spell::getBasePower>("getBasePower",
+		"Returns the spell's base power before caster bonuses.");
+	R.method<&Spell::getLevelPower>("getLevelPower",
+		"Returns the spell's per-level power bonus.");
+	R.method<&Spell::getDescriptionTranslated>("getLevelDescription",
+		"Returns the translated description text for the spell at the requested skill level.");
 
-	{"getSchools",          LuaFunctionWrapper<&SpellProxy::getSchools>::invoke,          false},
-};
+	R.function<&SpellProxy::getSchools>("getSchools",
+		"Returns the list of magic schools the spell belongs to as JSON keys.");
+}
 
 std::vector<std::string> SpellProxy::getSchools(const Spell & spell)
 {

@@ -16,6 +16,7 @@
 #include "../../../lib/battle/CUnitState.h"
 #include "../../../lib/battle/BattleHexArray.h"
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -81,14 +82,21 @@ public:
 class LuaUnitStateProxy : public CopyableWrapper<LuaUnitState, LuaUnitStateProxy>
 {
 public:
+	static constexpr std::string_view luaName = "UnitState";
+
 	using Wrapper = CopyableWrapper<LuaUnitState, LuaUnitStateProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 
 	static bool hasAbsoluteImmunity(const LuaUnitState & state, const spells::Spell & spell);
 	static const Creature * getCreature(const LuaUnitState & state);
 	static BattleHexArray getHexes(const LuaUnitState & state);
 	static int heal(lua_State * L); // args: amount, level, power — returns healedHP, resurrected
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<LuaUnitState>)
+{
+	return std::string(LuaUnitStateProxy::luaName);
+}
 
 }
 

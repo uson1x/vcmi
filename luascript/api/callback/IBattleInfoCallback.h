@@ -14,6 +14,7 @@
 #include "../../../lib/battle/IBattleInfoCallback.h"
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -25,9 +26,10 @@ namespace scripting::api
 class IBattleInfoCallbackProxy : public RawPointerWrapper<const IBattleInfoCallback, IBattleInfoCallbackProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<const IBattleInfoCallback, IBattleInfoCallbackProxy>;
+	static constexpr std::string_view luaName = "Battle";
 
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	using Wrapper = RawPointerWrapper<const IBattleInfoCallback, IBattleInfoCallbackProxy>;
+	static void registerMethods(MethodRegistrar & R);
 
 	static int getAvailableHex(lua_State * L);
 	static int getUnitsIf(lua_State * L);
@@ -46,6 +48,11 @@ public:
 	static EWallPart hexToWallPart(const IBattleInfoCallback & object, BattleHex hex);
 	static BattleHex getTowerShooterHex(const IBattleInfoCallback & object, EWallPart part);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<IBattleInfoCallback>)
+{
+	return std::string(IBattleInfoCallbackProxy::luaName);
+}
 
 }
 

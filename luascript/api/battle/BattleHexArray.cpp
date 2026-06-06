@@ -17,14 +17,21 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<BattleHexArrayProxy::CustomRegType> BattleHexArrayProxy::REGISTER_CUSTOM =
+void BattleHexArrayProxy::registerMethods(MethodRegistrar & R)
 {
-	{"insert",   LuaCallWrapper<&BattleHexArrayProxy::insert>::invoke,                false},
-	{"erase",    LuaCallWrapper<&BattleHexArrayProxy::erase>::invoke,                 false},
-	{"contains", LuaMethodWrapper<&BattleHexArray::contains>::invoke,                 false},
-	{"size",     LuaMethodWrapper<&BattleHexArray::size>::invoke,                     false},
-	{"at",       LuaFunctionWrapper<&BattleHexArrayProxy::at>::invoke,                false},
-};
+	R.cfunction<&BattleHexArrayProxy::insert>("insert",
+		"(hex: BattleHex)",
+		"Adds the given hex to the array (no-op if already present).");
+	R.cfunction<&BattleHexArrayProxy::erase>("erase",
+		"(hex: BattleHex)",
+		"Removes the given hex from the array (no-op if absent).");
+	R.method<&BattleHexArray::contains>("contains",
+		"True if the array contains the given hex.");
+	R.method<&BattleHexArray::size>("size",
+		"Returns the number of hexes stored in the array.");
+	R.function<&BattleHexArrayProxy::at>("at",
+		"Returns the hex at the given 1-based index.");
+}
 
 int BattleHexArrayProxy::insert(lua_State * L)
 {

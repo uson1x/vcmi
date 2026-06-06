@@ -71,7 +71,7 @@ template<class Tuple, std::size_t Offset, std::size_t... I>
 inline std::string formatArgsImpl(std::index_sequence<I...>)
 {
 	std::string out;
-	const char * sep = "";
+	[[maybe_unused]] const char * sep = "";
 	((out += std::exchange(sep, ", "), out += luaTypeName<std::tuple_element_t<I + Offset, Tuple>>()), ...);
 	return out;
 }

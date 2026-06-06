@@ -66,8 +66,11 @@ set(lualib_HDRS
 
 		api/library/Artifact.h
 		api/library/Bonus.h
+		api/library/BonusBearerBindings.h
 		api/library/BonusDescriptor.h
+		api/library/BonusProviderBindings.h
 		api/library/Creature.h
+		api/library/EntityBindings.h
 		api/library/Faction.h
 		api/library/HeroClass.h
 		api/library/HeroType.h

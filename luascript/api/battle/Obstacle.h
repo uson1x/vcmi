@@ -13,6 +13,7 @@
 #include <vcmi/scripting/Service.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 #include "../../../lib/battle/CObstacleInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -23,13 +24,20 @@ namespace scripting::api
 class ObstacleProxy : public SharedPointerWrapper<const CObstacleInstance, ObstacleProxy>
 {
 public:
+	static constexpr std::string_view luaName = "Obstacle";
+
 	using Wrapper = SharedPointerWrapper<const CObstacleInstance, ObstacleProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 
 	static CObstacleInstance::EObstacleType getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle);
 	static BattleHex getPosition(std::shared_ptr<const CObstacleInstance> obstacle);
 	static std::string getSpellKey(std::shared_ptr<const CObstacleInstance> obstacle);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<CObstacleInstance>)
+{
+	return std::string(ObstacleProxy::luaName);
+}
 
 }
 

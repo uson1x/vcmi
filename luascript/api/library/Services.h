@@ -20,6 +20,7 @@
 #include <vcmi/spells/Service.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -39,9 +40,16 @@ class ServicesProxy : public RawPointerWrapper<const Services, ServicesProxy>
 	// TODO: resources, battlefields, obstacles, engineSettings
 
 public:
+	static constexpr std::string_view luaName = "Services";
+
 	using Wrapper = RawPointerWrapper<const Services, ServicesProxy>;
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	static void registerMethods(MethodRegistrar & R);
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<Services>)
+{
+	return std::string(ServicesProxy::luaName);
+}
 
 }
 

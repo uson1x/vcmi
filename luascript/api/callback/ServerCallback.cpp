@@ -41,24 +41,43 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<ServerCallbackProxy::CustomRegType> ServerCallbackProxy::REGISTER_CUSTOM =
+void ServerCallbackProxy::registerMethods(MethodRegistrar & R)
 {
-	{ "addUnit",           LuaFunctionWrapper<&ServerCallbackProxy::addUnit>::invoke,           false },
-	{ "healUnit",          LuaCallWrapper<&ServerCallbackProxy::healUnit>::invoke,              false },
-	{ "changeUnit",        LuaCallWrapper<&ServerCallbackProxy::changeUnit>::invoke,            false },
-	{ "damageUnit",        LuaCallWrapper<&ServerCallbackProxy::damageUnit>::invoke,            false },
-	{ "removeUnit",        LuaFunctionWrapper<&ServerCallbackProxy::removeUnit>::invoke,        false },
-	{ "removeObstacle",    LuaFunctionWrapper<&ServerCallbackProxy::removeObstacle>::invoke,    false },
-	{ "moveUnit",          LuaFunctionWrapper<&ServerCallbackProxy::moveUnit>::invoke,          false },
-	{ "appendLog",         LuaFunctionWrapper<&ServerCallbackProxy::appendLog>::invoke,         false },
-	{ "describeChanges",   LuaFunctionWrapper<&ServerCallbackProxy::describeChanges>::invoke,   false },
-	{ "removeUnitBonuses", LuaFunctionWrapper<&ServerCallbackProxy::removeUnitBonuses>::invoke, false },
-	{ "addUnitBonus",      LuaFunctionWrapper<&ServerCallbackProxy::addUnitBonus>::invoke,      false },
-	{ "addBattleBonus",    LuaFunctionWrapper<&ServerCallbackProxy::addBattleBonus>::invoke,    false },
-	{ "addObstacle",       LuaFunctionWrapper<&ServerCallbackProxy::addObstacle>::invoke,       false },
-	{ "catapultAttack",    LuaFunctionWrapper<&ServerCallbackProxy::catapultAttack>::invoke,    false },
-	{ "rngInt",            LuaCallWrapper<&ServerCallbackProxy::rngInt>::invoke,                false },
-};
+	R.function<&ServerCallbackProxy::addUnit>("addUnit",
+		"Spawns a new battle unit described by the given UnitInfo. Returns the created unit.");
+	R.cfunction<&ServerCallbackProxy::healUnit>("healUnit",
+		"(battle: Battle, unit: Unit, amount: integer, level: EHealLevel, power: EHealPower)",
+		"Heals the given unit on the server side.");
+	R.cfunction<&ServerCallbackProxy::changeUnit>("changeUnit",
+		"(battle: Battle, unitState: UnitState, healthDelta: integer?)",
+		"Applies a UnitState mutation to the canonical unit, optionally adjusting current health.");
+	R.cfunction<&ServerCallbackProxy::damageUnit>("damageUnit",
+		"(battle: Battle, unit: Unit, damage: integer): integer, integer",
+		"Damages the unit, returning the actual damage dealt and the number of killed creatures.");
+	R.function<&ServerCallbackProxy::removeUnit>("removeUnit",
+		"Removes the unit from the battlefield.");
+	R.function<&ServerCallbackProxy::removeObstacle>("removeObstacle",
+		"Removes the given obstacle from the battlefield.");
+	R.function<&ServerCallbackProxy::moveUnit>("moveUnit",
+		"Moves the unit to the destination hex; pass true to use teleport semantics.");
+	R.function<&ServerCallbackProxy::appendLog>("appendLog",
+		"Appends a formatted log entry to the battle log.");
+	R.function<&ServerCallbackProxy::describeChanges>("describeChanges",
+		"Returns whether netpack changes should be described in the battle log.");
+	R.function<&ServerCallbackProxy::removeUnitBonuses>("removeUnitBonuses",
+		"Removes the listed bonuses from the unit.");
+	R.function<&ServerCallbackProxy::addUnitBonus>("addUnitBonus",
+		"Adds a bonus described by the descriptor to the unit. Pass true to make it cumulative.");
+	R.function<&ServerCallbackProxy::addBattleBonus>("addBattleBonus",
+		"Adds a bonus to the battle-wide bonus set.");
+	R.function<&ServerCallbackProxy::addObstacle>("addObstacle",
+		"Creates a new obstacle described by the descriptor on the battlefield.");
+	R.function<&ServerCallbackProxy::catapultAttack>("catapultAttack",
+		"Performs a catapult attack against the given wall section, dealing the supplied damage.");
+	R.cfunction<&ServerCallbackProxy::rngInt>("rngInt",
+		"(low: integer, high: integer): integer",
+		"Returns a server-side random integer in the inclusive range [low, high].");
+}
 
 bool ServerCallbackProxy::describeChanges(ServerCallback & object)
 {

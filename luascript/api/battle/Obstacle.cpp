@@ -23,12 +23,15 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<ObstacleProxy::CustomRegType> ObstacleProxy::REGISTER_CUSTOM =
+void ObstacleProxy::registerMethods(MethodRegistrar & R)
 {
-	{"getObstacleType", LuaFunctionWrapper<&ObstacleProxy::getObstacleType>::invoke, false},
-	{"getPosition",     LuaFunctionWrapper<&ObstacleProxy::getPosition>::invoke,     false},
-	{"getSpellKey",     LuaFunctionWrapper<&ObstacleProxy::getSpellKey>::invoke,     false},
-};
+	R.function<&ObstacleProxy::getObstacleType>("getObstacleType",
+		"Returns the obstacle category (usual, absolute, moat, spell-created, ...).");
+	R.function<&ObstacleProxy::getPosition>("getPosition",
+		"Returns the primary battle hex occupied by the obstacle.");
+	R.function<&ObstacleProxy::getSpellKey>("getSpellKey",
+		"For spell-created obstacles, returns the JSON key of the originating spell. Throws otherwise.");
+}
 
 CObstacleInstance::EObstacleType ObstacleProxy::getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle)
 {

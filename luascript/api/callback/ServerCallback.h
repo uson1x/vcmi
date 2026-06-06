@@ -13,6 +13,7 @@
 #include <vcmi/ServerCallback.h>
 
 #include "../../LuaWrapper.h"
+#include "../MethodRegistrar.h"
 #include "../../../lib/battle/BattleHex.h"
 #include "../../../lib/battle/IBattleInfoCallback.h"
 #include "../../../lib/bonuses/BonusList.h"
@@ -35,9 +36,10 @@ struct SpellObstacleDescriptor;
 class ServerCallbackProxy : public RawPointerWrapper<ServerCallback, ServerCallbackProxy>
 {
 public:
-	using Wrapper = RawPointerWrapper<ServerCallback, ServerCallbackProxy>;
+	static constexpr std::string_view luaName = "Server";
 
-	static const std::vector<typename Wrapper::CustomRegType> REGISTER_CUSTOM;
+	using Wrapper = RawPointerWrapper<ServerCallback, ServerCallbackProxy>;
+	static void registerMethods(MethodRegistrar & R);
 
 	static const battle::Unit * addUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::UnitInfo & info);
 	static void removeUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::Unit & unit);
@@ -55,6 +57,11 @@ public:
 	static int changeUnit(lua_State * L); // args: battle, unitState, [healthDelta=0]
 	static int damageUnit(lua_State * L); // args: battle, unit, damageAmount; returns: actualDamage, killedAmount
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<ServerCallback>)
+{
+	return std::string(ServerCallbackProxy::luaName);
+}
 
 }
 

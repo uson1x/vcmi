@@ -22,56 +22,97 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
-const std::vector<LuaUnitStateProxy::CustomRegType> LuaUnitStateProxy::REGISTER_CUSTOM =
+void LuaUnitStateProxy::registerMethods(MethodRegistrar & R)
 {
 	// Read-only API
-	{"getMinDamage",        LuaMethodWrapper<&LuaUnitState::getMinDamage>::invoke,     false},
-	{"getMaxDamage",        LuaMethodWrapper<&LuaUnitState::getMaxDamage>::invoke,     false},
-	{"getAttack",           LuaMethodWrapper<&LuaUnitState::getAttack>::invoke,        false},
-	{"getDefense",          LuaMethodWrapper<&LuaUnitState::getDefense>::invoke,       false},
-	{"isAlive",             LuaMethodWrapper<&LuaUnitState::isAlive>::invoke,          false},
-	{"isClone",             LuaMethodWrapper<&LuaUnitState::isClone>::invoke,          false},
-	{"isDead",              LuaMethodWrapper<&LuaUnitState::isDead>::invoke,           false},
-	{"isGhost",             LuaMethodWrapper<&LuaUnitState::isGhost>::invoke,          false},
-	{"isValidTarget",       LuaMethodWrapper<&LuaUnitState::isValidTarget>::invoke,    false},
-	{"isInvincible",        LuaMethodWrapper<&LuaUnitState::isInvincible>::invoke,     false},
-	{"isSummoned",          LuaMethodWrapper<&LuaUnitState::isSummoned>::invoke,       false},
-	{"getOwner",            LuaMethodWrapper<&LuaUnitState::getOwner>::invoke,         false},
-	{"getSlot",             LuaMethodWrapper<&LuaUnitState::getSlot>::invoke,          false},
-	{"getPosition",         LuaMethodWrapper<&LuaUnitState::getPosition>::invoke,      false},
-	{"getTotalHealth",      LuaMethodWrapper<&LuaUnitState::getTotalHealth>::invoke,   false},
-	{"getAvailableHealth",  LuaMethodWrapper<&LuaUnitState::getAvailableHealth>::invoke, false},
-	{"getCount",            LuaMethodWrapper<&LuaUnitState::getCount>::invoke,         false},
-	{"getMaxHealth",        LuaMethodWrapper<&LuaUnitState::getMaxHealth>::invoke,     false},
-	{"coversPos",           LuaMethodWrapper<&LuaUnitState::coversPos>::invoke,        false},
-	{"getBaseAmount",       LuaMethodWrapper<&LuaUnitState::getBaseAmount>::invoke,    false},
-	{"hasAbsoluteImmunity", LuaFunctionWrapper<&LuaUnitStateProxy::hasAbsoluteImmunity>::invoke, false},
-	{"getCreature",         LuaFunctionWrapper<&LuaUnitStateProxy::getCreature>::invoke,         false},
-	{"getHexes",            LuaFunctionWrapper<&LuaUnitStateProxy::getHexes>::invoke,            false},
+	R.method<&LuaUnitState::getMinDamage>("getMinDamage",
+		"Returns the minimum damage one creature will deal (melee or ranged, per argument).");
+	R.method<&LuaUnitState::getMaxDamage>("getMaxDamage",
+		"Returns the maximum damage one creature will deal (melee or ranged, per argument).");
+	R.method<&LuaUnitState::getAttack>("getAttack",
+		"Returns the creature's attack stat (melee or ranged, per argument).");
+	R.method<&LuaUnitState::getDefense>("getDefense",
+		"Returns the creature's defense stat (melee or ranged, per argument).");
+	R.method<&LuaUnitState::isAlive>("isAlive",
+		"True if the stack has at least one alive creature.");
+	R.method<&LuaUnitState::isClone>("isClone",
+		"True if this stack is a clone produced by the Clone spell.");
+	R.method<&LuaUnitState::isDead>("isDead",
+		"True if the stack has no remaining alive creatures.");
+	R.method<&LuaUnitState::isGhost>("isGhost",
+		"True if the stack is in the ghost state.");
+	R.method<&LuaUnitState::isValidTarget>("isValidTarget",
+		"True if the stack can be targeted; pass true to include dead targets.");
+	R.method<&LuaUnitState::isInvincible>("isInvincible",
+		"True if the stack has invincibility.");
+	R.method<&LuaUnitState::isSummoned>("isSummoned",
+		"True if the stack was summoned during battle.");
+	R.method<&LuaUnitState::getOwner>("getOwner",
+		"Returns the player color controlling this unit.");
+	R.method<&LuaUnitState::getSlot>("getSlot",
+		"Returns the army slot ID this unit occupies.");
+	R.method<&LuaUnitState::getPosition>("getPosition",
+		"Returns the primary battlefield hex occupied by the unit.");
+	R.method<&LuaUnitState::getTotalHealth>("getTotalHealth",
+		"Returns the total remaining hit points across all creatures.");
+	R.method<&LuaUnitState::getAvailableHealth>("getAvailableHealth",
+		"Returns the hit points available for healing without resurrecting.");
+	R.method<&LuaUnitState::getCount>("getCount",
+		"Returns the number of creatures currently alive in the stack.");
+	R.method<&LuaUnitState::getMaxHealth>("getMaxHealth",
+		"Returns the maximum hit points of a single creature.");
+	R.method<&LuaUnitState::coversPos>("coversPos",
+		"True if the unit currently covers the given hex.");
+	R.method<&LuaUnitState::getBaseAmount>("getBaseAmount",
+		"Returns the initial number of creatures this stack had at battle start.");
+	R.function<&LuaUnitStateProxy::hasAbsoluteImmunity>("hasAbsoluteImmunity",
+		"True if the unit is absolutely immune to the given spell.");
+	R.function<&LuaUnitStateProxy::getCreature>("getCreature",
+		"Returns the Creature type of the units in this stack.");
+	R.function<&LuaUnitStateProxy::getHexes>("getHexes",
+		"Returns the list of hexes currently occupied by the unit.");
 
 	// Mutable — flags
-	{"setDefending",        LuaMethodWrapper<&LuaUnitState::setDefending>::invoke,        false},
-	{"setDefendingAnim",    LuaMethodWrapper<&LuaUnitState::setDefendingAnim>::invoke,    false},
-	{"setCloned",           LuaMethodWrapper<&LuaUnitState::setCloned>::invoke,           false},
-	{"setDrainedMana",      LuaMethodWrapper<&LuaUnitState::setDrainedMana>::invoke,      false},
-	{"setFear",             LuaMethodWrapper<&LuaUnitState::setFear>::invoke,             false},
-	{"setHadMorale",        LuaMethodWrapper<&LuaUnitState::setHadMorale>::invoke,        false},
-	{"setCastSpellThisTurn",LuaMethodWrapper<&LuaUnitState::setCastSpellThisTurn>::invoke,false},
-	{"setGhost",            LuaMethodWrapper<&LuaUnitState::setGhost>::invoke,            false},
-	{"setGhostPending",     LuaMethodWrapper<&LuaUnitState::setGhostPending>::invoke,     false},
-	{"setMoved",            LuaMethodWrapper<&LuaUnitState::setMoved>::invoke,            false},
-	{"setSummoned",         LuaMethodWrapper<&LuaUnitState::setSummoned>::invoke,         false},
-	{"setWaiting",          LuaMethodWrapper<&LuaUnitState::setWaiting>::invoke,          false},
-	{"setWaitedThisTurn",   LuaMethodWrapper<&LuaUnitState::setWaitedThisTurn>::invoke,   false},
+	R.method<&LuaUnitState::setDefending>("setDefending",
+		"Sets the defending state for this round.");
+	R.method<&LuaUnitState::setDefendingAnim>("setDefendingAnim",
+		"Sets the defending-animation flag.");
+	R.method<&LuaUnitState::setCloned>("setCloned",
+		"Marks the stack as a clone.");
+	R.method<&LuaUnitState::setDrainedMana>("setDrainedMana",
+		"Marks that the unit has had its mana drained this turn.");
+	R.method<&LuaUnitState::setFear>("setFear",
+		"Sets the feared status (skips the unit's next turn).");
+	R.method<&LuaUnitState::setHadMorale>("setHadMorale",
+		"Marks that the unit has already triggered a morale bonus this turn.");
+	R.method<&LuaUnitState::setCastSpellThisTurn>("setCastSpellThisTurn",
+		"Marks that the unit has cast a spell this turn.");
+	R.method<&LuaUnitState::setGhost>("setGhost",
+		"Sets the ghost state.");
+	R.method<&LuaUnitState::setGhostPending>("setGhostPending",
+		"Marks the unit as transitioning to the ghost state.");
+	R.method<&LuaUnitState::setMoved>("setMoved",
+		"Marks that the unit has moved this round.");
+	R.method<&LuaUnitState::setSummoned>("setSummoned",
+		"Marks the unit as battle-summoned.");
+	R.method<&LuaUnitState::setWaiting>("setWaiting",
+		"Marks that the unit is currently waiting.");
+	R.method<&LuaUnitState::setWaitedThisTurn>("setWaitedThisTurn",
+		"Marks that the unit has already used its wait this turn.");
 
 	// Mutable — other fields
-	{"setPosition",         LuaMethodWrapper<&LuaUnitState::setPosition>::invoke,         false},
-	{"setClone",            LuaMethodWrapper<&LuaUnitState::setClone>::invoke,            false},
+	R.method<&LuaUnitState::setPosition>("setPosition",
+		"Teleports the unit to the given hex.");
+	R.method<&LuaUnitState::setClone>("setClone",
+		"Links this stack to a clone unit produced by a Clone spell.");
 
 	// Mutable — health
-	{"damage",              LuaMethodWrapper<&LuaUnitState::damage>::invoke,              false},
-	{"heal",                LuaCallWrapper<&LuaUnitStateProxy::heal>::invoke,             false},
-};
+	R.method<&LuaUnitState::damage>("damage",
+		"Deals damage to the stack, clamped to available health. Returns the actual damage dealt.");
+	R.cfunction<&LuaUnitStateProxy::heal>("heal",
+		"(amount: integer, level: EHealLevel, power: EHealPower): integer, integer",
+		"Heals the stack. Returns the healed hit points and the resurrected creature count.");
+}
 
 // --- LuaUnitState implementation ---
 

@@ -61,10 +61,10 @@ private:
 	void addPrivate(const std::string & name, const std::shared_ptr<Registar> & item);
 
 	template<typename T>
-	void registerPrivate(const std::string & name)
+	void registerPrivate()
 	{
 		auto r = std::make_shared<T>();
-		addPrivate(name, r);
+		addPrivate(std::string(T::luaName), r);
 	}
 };
 
