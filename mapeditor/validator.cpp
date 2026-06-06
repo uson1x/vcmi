@@ -85,6 +85,12 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 		{
 			if(!o)
 				continue;
+
+			if(o->isVisitable() && !map->isInTheMap(o->visitablePos()))
+				issues.insert({ tr("Object's %1 visitable position %2 is outside of the map bounds")
+					.arg(o->instanceName.c_str())
+					.arg(QString::fromStdString(o->visitablePos().toString())), false });
+
 			//owners for objects
 			if(o->getOwner() == PlayerColor::UNFLAGGABLE)
 			{
