@@ -27,7 +27,6 @@ class StackInstanceProxy : public RawPointerWrapper<const CStackInstance, StackI
 public:
 	static constexpr std::string_view luaName = "StackInstance";
 
-	using Wrapper = RawPointerWrapper<const CStackInstance, StackInstanceProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

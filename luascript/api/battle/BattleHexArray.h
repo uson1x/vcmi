@@ -24,7 +24,6 @@ class BattleHexArrayProxy : public CopyableWrapper<const BattleHexArray, BattleH
 public:
 	static constexpr std::string_view luaName = "BattleHexArray";
 
-	using Wrapper = CopyableWrapper<const BattleHexArray, BattleHexArrayProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static int insert(lua_State * L);

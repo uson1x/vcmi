@@ -25,7 +25,6 @@ class ArtifactProxy : public RawPointerWrapper<const Artifact, ArtifactProxy>
 public:
 	static constexpr std::string_view luaName = "Artifact";
 
-	using Wrapper = RawPointerWrapper<const Artifact, ArtifactProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

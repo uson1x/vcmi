@@ -27,7 +27,6 @@ class IGameInfoCallbackProxy : public RawPointerWrapper<const GameCb, IGameInfoC
 public:
 	static constexpr std::string_view luaName = "Game";
 
-	using Wrapper = RawPointerWrapper<const GameCb, IGameInfoCallbackProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

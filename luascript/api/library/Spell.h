@@ -25,7 +25,6 @@ class SpellProxy : public RawPointerWrapper<const ::spells::Spell, SpellProxy>
 public:
 	static constexpr std::string_view luaName = "Spell";
 
-	using Wrapper = RawPointerWrapper<const ::spells::Spell, SpellProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static std::vector<std::string> getSchools(const ::spells::Spell & spell);

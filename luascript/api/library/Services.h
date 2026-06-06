@@ -42,7 +42,6 @@ class ServicesProxy : public RawPointerWrapper<const Services, ServicesProxy>
 public:
 	static constexpr std::string_view luaName = "Services";
 
-	using Wrapper = RawPointerWrapper<const Services, ServicesProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

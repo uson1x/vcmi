@@ -23,7 +23,6 @@ namespace scripting::api
 	public:
 		static constexpr std::string_view luaName = "SpellMechanics";
 
-		using Wrapper = RawPointerWrapper<::spells::Mechanics, MechanicsProxy>;
 		static void registerMethods(MethodRegistrar & R);
 
 		static bool ownerMatchesUnit(const ::spells::Mechanics & m, const battle::Unit & unit);

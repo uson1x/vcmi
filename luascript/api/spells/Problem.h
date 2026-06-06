@@ -28,7 +28,6 @@ namespace scripting::api
 		public:
 			static constexpr std::string_view luaName = "SpellProblem";
 
-			using Wrapper = RawPointerWrapper<::spells::Problem, ProblemProxy>;
 			static void registerMethods(MethodRegistrar & R);
 
 			static void addCustom(::spells::Problem & problem, const LuaMetaString & config);

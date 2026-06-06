@@ -24,7 +24,6 @@ class HeroTypeProxy : public RawPointerWrapper<const HeroType, HeroTypeProxy>
 public:
 	static constexpr std::string_view luaName = "HeroType";
 
-	using Wrapper = RawPointerWrapper<const HeroType, HeroTypeProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

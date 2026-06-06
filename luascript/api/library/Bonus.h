@@ -26,7 +26,6 @@ class BonusProxy : public CopyableWrapper<Bonus, BonusProxy>
 public:
 	static constexpr std::string_view luaName = "Bonus";
 
-	using Wrapper = CopyableWrapper<Bonus, BonusProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static std::string getType(const Bonus & b);
@@ -47,7 +46,6 @@ class BonusListProxy : public CopyableWrapper<BonusList, BonusListProxy>
 public:
 	static constexpr std::string_view luaName = "BonusList";
 
-	using Wrapper = CopyableWrapper<BonusList, BonusListProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static int32_t size(const BonusList & list);

@@ -25,7 +25,6 @@ class FactionProxy : public RawPointerWrapper<const Faction, FactionProxy>
 public:
 	static constexpr std::string_view luaName = "Faction";
 
-	using Wrapper = RawPointerWrapper<const Faction, FactionProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

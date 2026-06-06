@@ -30,7 +30,6 @@ class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroIns
 public:
 	static constexpr std::string_view luaName = "HeroInstance";
 
-	using Wrapper = RawPointerWrapper<const CGHeroInstance, HeroInstanceProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

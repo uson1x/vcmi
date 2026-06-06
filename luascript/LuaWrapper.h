@@ -28,13 +28,6 @@ namespace scripting
 
 namespace detail
 {
-	struct CustomRegType
-	{
-		const char * name;
-		lua_CFunction functor;
-		bool isStatic;
-	};
-
 	template <typename P, typename U>
 	struct Dispatcher
 	{
@@ -47,23 +40,9 @@ namespace detail
 
 			lua_newtable(L);
 
-			if constexpr (requires(api::MethodRegistrar & R) { ProxyType::registerMethods(R); })
-			{
-				api::LuaRegistrar reg(L, lua_gettop(L));
-				ProxyType::registerMethods(reg);
-			}
-			else
-			{
-				for(auto & r : ProxyType::REGISTER_CUSTOM)
-				{
-					if(!r.isStatic)
-					{
-						lua_pushstring(L, r.name);
-						lua_pushcclosure(L, r.functor, 0);
-						lua_rawset(L, -3);
-					}
-				}
-			}
+			api::LuaRegistrar reg(L, lua_gettop(L));
+			ProxyType::registerMethods(reg);
+
 			lua_rawset(L, -3);
 		}
 
@@ -124,11 +103,14 @@ public:
 	using UDataType = ObjectType *;
 	using CUDataType = const ObjectType *;
 
-	using CustomRegType = detail::CustomRegType;
-
 	static_assert(std::is_base_of_v<TagRawPointer, ObjectType>, "Class must inherit from ApiRawPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagCopyable, ObjectType>, "Class must not inherit from ApiCopyable to be used with this class!");
+
+	void collectDocs(api::MethodRegistrar & sink) const override final
+	{
+		Proxy::registerMethods(sink);
+	}
 
 	void pushMetatable(lua_State * L) const override final
 	{
@@ -190,11 +172,14 @@ class SharedPointerWrapper : public RegistarBase
 public:
 	using ObjectType = typename std::remove_cv_t<T>;
 	using UDataType = std::shared_ptr<T>;
-	using CustomRegType = detail::CustomRegType;
-
 	static_assert(std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must inherit from ApiSharedPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagCopyable, ObjectType>, "Class must not inherit from ApiCopyable to be used with this class!");
+
+	void collectDocs(api::MethodRegistrar & sink) const override final
+	{
+		Proxy::registerMethods(sink);
+	}
 
 	static int constructor(lua_State * L)
 	{
@@ -263,11 +248,14 @@ class CopyableWrapper : public RegistarBase
 public:
 	using ObjectType = typename std::remove_cv_t<T>;
 	using UDataType = T;
-	using CustomRegType = detail::CustomRegType;
-
 	static_assert(std::is_base_of_v<TagCopyable, ObjectType>, "Class must inherit from ApiCopyable to be used with this class!");
 	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
+
+	void collectDocs(api::MethodRegistrar & sink) const override final
+	{
+		Proxy::registerMethods(sink);
+	}
 
 	static int constructor(lua_State * L)
 	{

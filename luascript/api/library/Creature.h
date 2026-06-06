@@ -25,7 +25,6 @@ class CreatureProxy : public RawPointerWrapper<const Creature, CreatureProxy>
 public:
 	static constexpr std::string_view luaName = "Creature";
 
-	using Wrapper = RawPointerWrapper<const Creature, CreatureProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static std::string getNameTextID(const Creature & creature, int amount);

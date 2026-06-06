@@ -26,7 +26,6 @@ class BattleHexProxy : public CopyableWrapper<const BattleHex, BattleHexProxy>
 public:
 	static constexpr std::string_view luaName = "BattleHex";
 
-	using Wrapper = CopyableWrapper<const BattleHex, BattleHexProxy>;
 
 	static void registerMethods(MethodRegistrar & R);
 

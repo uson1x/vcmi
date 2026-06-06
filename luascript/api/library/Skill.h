@@ -25,7 +25,6 @@ class SkillProxy : public RawPointerWrapper<const Skill, SkillProxy>
 public:
 	static constexpr std::string_view luaName = "Skill";
 
-	using Wrapper = RawPointerWrapper<const Skill, SkillProxy>;
 	static void registerMethods(MethodRegistrar & R);
 };
 

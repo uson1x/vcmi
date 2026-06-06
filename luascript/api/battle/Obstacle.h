@@ -26,7 +26,6 @@ class ObstacleProxy : public SharedPointerWrapper<const CObstacleInstance, Obsta
 public:
 	static constexpr std::string_view luaName = "Obstacle";
 
-	using Wrapper = SharedPointerWrapper<const CObstacleInstance, ObstacleProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static CObstacleInstance::EObstacleType getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle);

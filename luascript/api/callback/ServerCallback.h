@@ -38,7 +38,6 @@ class ServerCallbackProxy : public RawPointerWrapper<ServerCallback, ServerCallb
 public:
 	static constexpr std::string_view luaName = "Server";
 
-	using Wrapper = RawPointerWrapper<ServerCallback, ServerCallbackProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static const battle::Unit * addUnit(ServerCallback & object, const IBattleInfoCallback & battle, const battle::UnitInfo & info);

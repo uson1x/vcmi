@@ -29,7 +29,6 @@ class UnitProxy : public RawPointerWrapper<const ::battle::Unit, UnitProxy>
 public:
 	static constexpr std::string_view luaName = "Unit";
 
-	using Wrapper = RawPointerWrapper<const ::battle::Unit, UnitProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static const Creature * getCreature(const ::battle::Unit & unit);

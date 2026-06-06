@@ -84,7 +84,6 @@ class LuaUnitStateProxy : public CopyableWrapper<LuaUnitState, LuaUnitStateProxy
 public:
 	static constexpr std::string_view luaName = "UnitState";
 
-	using Wrapper = CopyableWrapper<LuaUnitState, LuaUnitStateProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static bool hasAbsoluteImmunity(const LuaUnitState & state, const spells::Spell & spell);

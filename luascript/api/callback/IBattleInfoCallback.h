@@ -28,7 +28,6 @@ class IBattleInfoCallbackProxy : public RawPointerWrapper<const IBattleInfoCallb
 public:
 	static constexpr std::string_view luaName = "Battle";
 
-	using Wrapper = RawPointerWrapper<const IBattleInfoCallback, IBattleInfoCallbackProxy>;
 	static void registerMethods(MethodRegistrar & R);
 
 	static int getAvailableHex(lua_State * L);
