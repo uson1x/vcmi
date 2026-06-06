@@ -10,6 +10,7 @@
 
 #include "StdInc.h"
 #include "validator.h"
+#include "helper.h"
 #include "mapcontroller.h"
 #include "ui_validator.h"
 #include "../lib/entities/hero/CHero.h"
@@ -30,7 +31,7 @@ Validator::Validator(const CMap * map, QWidget *parent) :
 
 	screenGeometry = QApplication::primaryScreen()->availableGeometry();
 	
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+	Helper::decorateDialog(this);
 	
 	showValidationResults(map);
 }

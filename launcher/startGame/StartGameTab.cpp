@@ -15,6 +15,9 @@
 #include "../mainwindow_moc.h"
 #include "../main.h"
 #include "../updatedialog_moc.h"
+#ifdef VCMI_IOS
+#include "../../ios/iOS_utils.h"
+#endif
 
 #include "../modManager/cmodlistview_moc.h"
 #include "../modManager/hdextractor.h"
@@ -51,6 +54,9 @@ StartGameTab::StartGameTab(QWidget * parent)
 
 #ifndef ENABLE_EDITOR
 	ui->buttonGameEditor->hide();
+#elif defined(VCMI_IOS)
+	if(!iOS_utils::isIPad())
+		ui->buttonGameEditor->hide();
 #endif
 
 	if (settings["launcher"]["trackClipboardState"].Bool())

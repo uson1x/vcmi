@@ -319,8 +319,7 @@
             "generator": "Xcode",
             "binaryDir": "../build-${presetName}",
             "cacheVariables": {
-                "CMAKE_SYSTEM_NAME": "iOS",
-                "ENABLE_EDITOR" : "OFF"
+                "CMAKE_SYSTEM_NAME": "iOS"
             }
         },
         {
