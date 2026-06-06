@@ -143,6 +143,10 @@ public:
 	/// Throws in invalid object instance ID
 	void moveObject(ObjectInstanceID target, const int3 & dst);
 
+	/// Clamps visitable x/y into the map and shifts anchor by the same delta.
+	/// Returns true if object position was changed.
+	bool adjustToMapBounds(CGObjectInstance * obj);
+
 	/// Hides object from map without actually removing it from object list
 	void hideObject(CGObjectInstance * obj);
 

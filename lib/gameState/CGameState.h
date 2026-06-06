@@ -240,6 +240,7 @@ private:
 	void placeStartingHero(const PlayerColor & playerColor, const HeroTypeID & heroTypeId, int3 townPos);
 	void removeHeroPlaceholders();
 	void initDifficulty();
+	void adjustObjectsToMapBounds();
 	void initHeroes(IGameRandomizer & gameRandomizer);
 	void placeHeroesInTowns();
 	void initFogOfWar();

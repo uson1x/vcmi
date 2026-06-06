@@ -648,6 +648,32 @@ void CMap::moveObject(ObjectInstanceID target, const int3 & dst)
 	showObject(obj);
 }
 
+bool CMap::adjustToMapBounds(CGObjectInstance * obj)
+{
+	if(!obj || !obj->isVisitable())
+		return false;
+
+	const auto oldVisitablePos = obj->visitablePos();
+	if(isInTheMap(oldVisitablePos))
+		return false;
+
+	int3 newVisitablePos = oldVisitablePos;
+	newVisitablePos.x = std::clamp(newVisitablePos.x, 0, width - 1);
+	newVisitablePos.y = std::clamp(newVisitablePos.y, 0, height - 1);
+
+	if(!isInTheMap(newVisitablePos))
+		return false;
+
+	// Keep object shape unchanged by translating anchor with the clamped visitable tile delta.
+	const int3 newAnchorPos = obj->anchorPos() + (newVisitablePos - oldVisitablePos);
+	if(obj->id.hasValue() && obj->id.getNum() < objects.size() && objects.at(obj->id.getNum()).get() == obj)
+		moveObject(obj->id, newAnchorPos);
+	else
+		obj->setAnchorPos(newAnchorPos);
+
+	return true;
+}
+
 std::shared_ptr<CGObjectInstance> CMap::removeObject(ObjectInstanceID oldObject)
 {
 	auto obj = objects.at(oldObject);

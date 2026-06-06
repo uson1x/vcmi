@@ -216,6 +216,7 @@ void CGameState::init(const IMapService * mapService, StartInfo * si, IGameRando
 	placeStartingHeroes(randomGenerator);
 	initOwnedObjects();
 	initDifficulty();
+	adjustObjectsToMapBounds();
 	initHeroes(gameRandomizer);
 	initStartingBonus(gameRandomizer);
 	initTowns(randomGenerator);
@@ -621,6 +622,24 @@ void CGameState::removeHeroPlaceholders()
 	for(auto obj : map->getObjects<CGHeroPlaceholder>())
 	{
 		map->eraseObject(obj->id);
+	}
+}
+
+void CGameState::adjustObjectsToMapBounds()
+{
+	for(auto & obj : map->getObjects())
+	{
+		if(!obj->isVisitable())
+			continue;
+
+		const auto oldVisitablePos = obj->visitablePos();
+		if(!map->adjustToMapBounds(obj))
+			continue;
+
+		const auto newVisitablePos = obj->visitablePos();
+		logGlobal->warn(
+			"Object %s has out of map bounds visitable position %s. Shifted to %s.",
+			obj->getObjectName(), oldVisitablePos.toString(), newVisitablePos.toString());
 	}
 }
 
