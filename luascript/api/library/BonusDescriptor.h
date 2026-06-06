@@ -26,6 +26,12 @@ namespace scripting::api
 /// POD descriptor for a Bonus configuration passed from Lua scripts.
 struct BonusDescriptor final : ApiSerializable<BonusDescriptor>
 {
+	static constexpr std::string_view luaName = "BonusDescriptor";
+	static constexpr std::string_view luaDescription =
+		"Configuration for a Bonus that scripts hand to ServerCallback `addUnitBonus` or "
+		"`addBattleBonus`. Fields mirror the JSON bonus schema (see config/schemas/bonus.json) "
+		"— the host materialises a Bonus through JsonUtils::parseBonus.";
+
 	si32 val = 0;
 	si32 turns = 0;
 	bool hidden = false;
@@ -56,32 +62,39 @@ struct BonusDescriptor final : ApiSerializable<BonusDescriptor>
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("val",                val);
-		s("turns",              turns);
-		s("hidden",             hidden);
-		s("stacking",           stacking);
-		s("description",        description);
-		s("icon",               icon);
+		s("val",                val,                "Numeric magnitude of the bonus (interpreted per `valueType`).");
+		s("turns",              turns,              "Remaining duration in turns; relevant for the N_TURNS / N_DAYS durations.");
+		s("hidden",             hidden,             "If true, the bonus is not shown in the unit's bonus list UI.");
+		s("stacking",           stacking,           "Stacking key — bonuses sharing it overwrite rather than accumulate.");
+		s("description",        description,        "Optional human-readable description (used by tooltips when shown).");
+		s("icon",               icon,               "Optional icon name shown next to the bonus in the UI.");
 
-		s("type",               type);
-		s("subtype",            subtype);
-		s("valueType",          valueType);
-		s("effectRange",        effectRange);
-		s("duration",           duration);
-		s("sourceType",         sourceType);
-		s("sourceID",           sourceID);
-		s("targetSourceType",   targetSourceType);
-		s("addInfo",            addInfo);
-		s("limiters",           limiters);
-		s("propagator",         propagator);
-		s("updater",            updater);
-		s("propagationUpdater", propagationUpdater);
+		s("type",               type,               "Bonus type name (e.g. \"PRIMARY_SKILL\", \"FIRE_IMMUNITY\"). See BonusType enum.");
+		s("subtype",            subtype,            "Sub-selector that narrows the type (e.g. specific creature, school, primary stat).");
+		s("valueType",          valueType,          "How `val` is combined with other bonuses: additive, base, percent-of-..., independent min/max.");
+		s("effectRange",        effectRange,        "Spatial scope the bonus applies in (e.g. only on native terrain).");
+		s("duration",           duration,           "When the bonus expires — permanent, one-battle, n-turns, until-attacked, etc.");
+		s("sourceType",         sourceType,         "Origin class (artifact, spell effect, secondary skill, …) — drives source-based dispels.");
+		s("sourceID",           sourceID,           "Identifier of the specific source within its sourceType.");
+		s("targetSourceType",   targetSourceType,   "Source type the bonus is restricted to act upon (used by anti-magic / specialty bonuses).");
+		s("addInfo",            addInfo,            "Optional auxiliary payload — meaning depends on the bonus type.");
+		s("limiters",           limiters,           "JSON-defined limiter chain that gates whether the bonus applies to a given bearer.");
+		s("propagator",         propagator,         "Rule for sharing the bonus with neighbouring entities (army-wide, hex-wide, …).");
+		s("updater",            updater,            "Per-turn or per-event recalculation of `val` (e.g. growing with stack count).");
+		s("propagationUpdater", propagationUpdater, "Updater applied to bonuses produced by this one's propagator.");
 	}
 };
 
 inline std::string luaTypeNameOf(LuaTypeNameTag<BonusDescriptor>)
 {
-	return "BonusDescriptor";
+	return std::string(BonusDescriptor::luaName);
+}
+
+/// JsonNode fields on BonusDescriptor accept any Lua value (string, number, table, …) and
+/// are funneled through JsonUtils::parseBonus. Surface that openness rather than "userdata".
+inline std::string luaTypeNameOf(LuaTypeNameTag<JsonNode>)
+{
+	return "any";
 }
 
 }

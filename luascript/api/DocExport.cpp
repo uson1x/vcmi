@@ -13,6 +13,7 @@
 #include "DocExport.h"
 
 #include "DocRegistrar.h"
+#include "FieldDocRegistrar.h"
 #include "Registry.h"
 
 #include <boost/filesystem/operations.hpp>
@@ -27,44 +28,68 @@ namespace scripting::api
 namespace
 {
 
+/// Escape pipe characters and newlines so a value safely fits in a Markdown table cell.
+std::string escapeMarkdownCell(const std::string & s)
+{
+	std::string out;
+	out.reserve(s.size());
+	for(char c : s)
+	{
+		if(c == '|')
+			out += "\\|";
+		else if(c == '\n')
+			out += ' ';
+		else
+			out += c;
+	}
+	return out;
+}
+
 /// Renders the host-side metadata for a single type as a Markdown section.
-void emitMarkdownType(std::ofstream & out, const std::string & typeName, std::string_view description, const std::vector<DocRegistrar::Entry> & entries)
+void emitMarkdownType(std::ofstream & out,
+                      const std::string & typeName,
+                      std::string_view description,
+                      const std::vector<DocRegistrar::Entry> & methods,
+                      const std::vector<FieldDocRegistrar::Entry> & fields)
 {
 	out << "## " << typeName << "\n\n";
 
 	if(!description.empty())
 		out << description << "\n\n";
 
-	if(entries.empty())
+	if(!fields.empty())
+	{
+		out << "**Fields**\n\n";
+		out << "| Field | Type | Description |\n";
+		out << "|---|---|---|\n";
+		for(const auto & entry : fields)
+		{
+			out << "| `" << escapeMarkdownCell(entry.name)
+				<< "` | `" << escapeMarkdownCell(entry.type)
+				<< "` | " << escapeMarkdownCell(entry.description)
+				<< " |\n";
+		}
+		out << "\n";
+	}
+
+	if(methods.empty() && fields.empty())
 	{
 		out << "_No bindings exposed._\n\n";
 		return;
 	}
 
+	if(methods.empty())
+		return;
+
+	out << "**Methods**\n\n";
 	out << "| Method | Signature | Description |\n";
 	out << "|---|---|---|\n";
 
-	for(const auto & entry : entries)
+	for(const auto & entry : methods)
 	{
-		// Escape pipe characters in any field so they don't break the Markdown table.
-		const auto escape = [](const std::string & s) {
-			std::string out;
-			out.reserve(s.size());
-			for(char c : s)
-			{
-				if(c == '|')
-					out += "\\|";
-				else if(c == '\n')
-					out += ' ';
-				else
-					out += c;
-			}
-			return out;
-		};
-
-		out << "| `" << escape(entry.name)
-			<< "` | `" << escape(entry.signature)
-			<< "` | " << escape(entry.description)
+		out << "| `" << escapeMarkdownCell(entry.name)
+			<< "` | `" << escapeMarkdownCell(entry.signature)
+			<< "` | " << escapeMarkdownCell(entry.description)
 			<< " |\n";
 	}
 	out << "\n";
@@ -245,13 +270,26 @@ void emitLualsDescription(std::ofstream & out, std::string_view description)
 	}
 }
 
-void emitLualsType(std::ofstream & out, const std::string & typeName, std::string_view description, const std::vector<DocRegistrar::Entry> & entries)
+void emitLualsType(std::ofstream & out,
+                   const std::string & typeName,
+                   std::string_view description,
+                   const std::vector<DocRegistrar::Entry> & methods,
+                   const std::vector<FieldDocRegistrar::Entry> & fields)
 {
 	emitLualsDescription(out, description);
 	out << "---@class " << typeName << "\n";
+
+	for(const auto & entry : fields)
+	{
+		out << "---@field " << entry.name << ' ' << entry.type;
+		if(!entry.description.empty())
+			out << " # " << entry.description;
+		out << "\n";
+	}
+
 	out << "local " << typeName << " = {}\n\n";
 
-	for(const auto & entry : entries)
+	for(const auto & entry : methods)
 		emitLualsMethod(out, typeName, entry);
 }
 
@@ -276,13 +314,16 @@ void exportLuaApiDocs(const boost::filesystem::path & outDir)
 
 	for(const auto & [typeName, registar] : Registry::get()->getAllTypes())
 	{
-		DocRegistrar sink;
-		registar->collectDocs(sink);
+		DocRegistrar methodSink;
+		registar->collectDocs(methodSink);
+
+		FieldDocRegistrar fieldSink;
+		registar->collectFields(fieldSink);
 
 		const auto description = registar->getDescription();
 
-		emitMarkdownType(md, typeName, description, sink.get());
-		emitLualsType(lua, typeName, description, sink.get());
+		emitMarkdownType(md, typeName, description, methodSink.get(), fieldSink.get());
+		emitLualsType(lua, typeName, description, methodSink.get(), fieldSink.get());
 	}
 }
 

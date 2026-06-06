@@ -188,7 +188,7 @@ public:
 		// get non-const value - ugly, but required since same template method is used for deserialization
 		T & nonConstValue = const_cast<T&>(value);
 
-		const auto & luaSerializer = [this, tableIndex]<typename Field>(const std::string &keyName, const Field & data)
+		const auto & luaSerializer = [this, tableIndex]<typename Field>(const std::string &keyName, const Field & data, std::string_view /*description*/)
 		{
 			push(data);
 			lua_setfield(L, tableIndex, keyName.c_str());
@@ -261,7 +261,7 @@ public:
 	template<typename T, typename std::enable_if_t<std::is_base_of_v<scripting::TagSerializable, T>, int> = 0>
 	inline void get(int position, T & value)
 	{
-		const auto & deserializer = [this, position]<typename Data>(const std::string &keyName, Data & data)
+		const auto & deserializer = [this, position]<typename Data>(const std::string &keyName, Data & data, std::string_view /*description*/)
 		{
 			if (!lua_istable(L, position))
 				throw LuaApiException("value at index is not a table");

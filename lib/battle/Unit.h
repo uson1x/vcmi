@@ -196,11 +196,11 @@ public:
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("count", count);
-		s("type", type);
-		s("side", side);
-		s("position", position);
-		s("summoned", summoned);
+		s("count",    count,    "Number of creatures in the stack.");
+		s("type",     type,     "Creature identifier (CreatureID — string or integer).");
+		s("side",     side,     "Battle side the stack belongs to (attacker / defender / none).");
+		s("position", position, "Anchor hex of the stack on the battlefield.");
+		s("summoned", summoned, "True if the stack was summoned mid-battle rather than fielded.");
 	}
 };
 

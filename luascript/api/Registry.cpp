@@ -10,7 +10,11 @@
 #include "StdInc.h"
 
 #include "Registry.h"
+#include "SerializableRegistar.h"
 
+#include "Enums.h"
+#include "LuaMetaString.h"
+#include "battle/SpellObstacleDescriptor.h"
 #include "battle/Unit.h"
 #include "battle/UnitState.h"
 #include "battle/BattleHex.h"
@@ -20,6 +24,7 @@
 #include "spells/Problem.h"
 #include "library/Artifact.h"
 #include "library/Bonus.h"
+#include "library/BonusDescriptor.h"
 #include "callback/IBattleInfoCallback.h"
 #include "library/Creature.h"
 #include "library/Faction.h"
@@ -27,7 +32,6 @@
 #include "library/HeroClass.h"
 #include "adventure/HeroInstance.h"
 #include "library/HeroType.h"
-#include "Registry.h"
 #include "callback/ServerCallback.h"
 #include "library/Services.h"
 #include "library/Skill.h"
@@ -66,6 +70,11 @@ Registry::Registry()
 	registerPrivate<IBattleInfoCallbackProxy>();
 	registerPrivate<IGameInfoCallbackProxy>();
 	registerPrivate<ServerCallbackProxy>();
+
+	registerSerializable<Enums>();
+	registerSerializable<LuaMetaString>();
+	registerSerializable<BonusDescriptor>();
+	registerSerializable<SpellObstacleDescriptor>();
 }
 
 const Registry * Registry::get()

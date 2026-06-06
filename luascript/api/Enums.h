@@ -40,19 +40,25 @@ class Enums : public scripting::ApiSerializable<Enums>
 	EnumMap<BattleSide> exportBattleSide() const;
 
 public:
+	static constexpr std::string_view luaName = "Enums";
+	static constexpr std::string_view luaDescription =
+		"The global `ENUM` table — string→integer constants scripts use in lieu of magic "
+		"numbers. Each field below is a named group; the runtime value is a Lua table whose "
+		"keys are the constant names.";
+
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("HealLevel", exportHealLevel());
-		s("HealPower", exportHealPower());
-		s("SpellCastProblem", exportSpellCastProblem());
-		s("AimType", exportAimType());
-		s("BonusDuration", exportBonusDuration());
-		s("BonusSource", exportBonusSource());
-		s("BonusValueType", exportBonusValueType());
-		s("ObstacleType", exportObstacleType());
-		s("WallPart", exportWallPart());
-		s("BattleSide", exportBattleSide());
+		s("HealLevel",        exportHealLevel(),        "Outcome categories for the heal action: plain heal / resurrect / overheal.");
+		s("HealPower",        exportHealPower(),        "Persistence of healing effects: one-battle vs permanent.");
+		s("SpellCastProblem", exportSpellCastProblem(), "Reason codes returned from spell-cast validation.");
+		s("AimType",          exportAimType(),          "Targeting modes a spell can require: none, creature, obstacle, location.");
+		s("BonusDuration",    exportBonusDuration(),    "Lifetime selectors used by Bonus / BonusDescriptor `duration`.");
+		s("BonusSource",      exportBonusSource(),      "Origin classes used by Bonus / BonusDescriptor `sourceType`.");
+		s("BonusValueType",   exportBonusValueType(),   "Combination rules used by Bonus / BonusDescriptor `valueType`.");
+		s("ObstacleType",     exportObstacleType(),     "Obstacle categories used by SpellObstacleDescriptor `obstacleType`.");
+		s("WallPart",         exportWallPart(),         "Town-wall sections referenced by siege APIs and `catapultAttack`.");
+		s("BattleSide",       exportBattleSide(),       "Battlefield side identifiers: none / attacker / defender.");
 	}
 };
 

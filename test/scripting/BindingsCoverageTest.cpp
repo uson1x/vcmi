@@ -20,6 +20,7 @@
 
 #include "../../luascript/api/Registry.h"
 #include "../../luascript/api/DocRegistrar.h"
+#include "../../luascript/api/FieldDocRegistrar.h"
 
 #include <set>
 
@@ -27,6 +28,7 @@ namespace test
 {
 using ::scripting::api::Registry;
 using ::scripting::api::DocRegistrar;
+using ::scripting::api::FieldDocRegistrar;
 
 TEST(BindingsCoverageTest, EveryRegisteredTypeHasBindings)
 {
@@ -37,11 +39,35 @@ TEST(BindingsCoverageTest, EveryRegisteredTypeHasBindings)
 
 	for(const auto & [typeName, registar] : types)
 	{
-		DocRegistrar sink;
-		registar->collectDocs(sink);
+		DocRegistrar methodSink;
+		registar->collectDocs(methodSink);
 
-		EXPECT_FALSE(sink.get().empty())
-			<< "Type '" << typeName << "' registers no bindings";
+		FieldDocRegistrar fieldSink;
+		registar->collectFields(fieldSink);
+
+		EXPECT_FALSE(methodSink.get().empty() && fieldSink.get().empty())
+			<< "Type '" << typeName << "' exposes neither methods nor fields";
+	}
+}
+
+TEST(BindingsCoverageTest, EveryFieldHasNameTypeAndDescription)
+{
+	const auto * registry = Registry::get();
+
+	for(const auto & [typeName, registar] : registry->getAllTypes())
+	{
+		FieldDocRegistrar sink;
+		registar->collectFields(sink);
+
+		for(const auto & entry : sink.get())
+		{
+			EXPECT_FALSE(entry.name.empty())
+				<< "Empty field name in type '" << typeName << "'";
+			EXPECT_FALSE(entry.type.empty())
+				<< "Empty field type for '" << typeName << "." << entry.name << "'";
+			EXPECT_FALSE(entry.description.empty())
+				<< "Empty description for '" << typeName << "." << entry.name << "'";
+		}
 	}
 }
 

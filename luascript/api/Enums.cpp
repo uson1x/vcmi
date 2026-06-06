@@ -114,6 +114,8 @@ Enums::EnumMap<BattleSide> Enums::exportBattleSide() const
 		{ "none",       BattleSide::NONE },
 		{ "attacker",   BattleSide::ATTACKER },
 		{ "defender",   BattleSide::DEFENDER },
+		{ "left",       BattleSide::ATTACKER },
+		{ "right",      BattleSide::DEFENDER },
 	};
 }
 

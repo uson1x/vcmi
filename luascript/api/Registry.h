@@ -18,6 +18,7 @@ namespace scripting::api
 {
 
 class MethodRegistrar;
+class FieldDocRegistrar;
 
 /// Interface implemented by each proxy wrapper type; pushes the Lua metatable (and static table) for that type.
 class Registar
@@ -30,6 +31,10 @@ public:
 	/// Drives the proxy's `registerMethods` against the given visitor. Used by the docs
 	/// exporter and the coverage test to introspect bindings without touching a lua_State.
 	virtual void collectDocs(MethodRegistrar & sink) const = 0;
+
+	/// Drives `serializeScript` against the given field visitor for ApiSerializable types.
+	/// Default is no-op — proxy wrappers (which expose methods, not fields) keep it empty.
+	virtual void collectFields(FieldDocRegistrar &) const { }
 
 	/// Returns the proxy's class-level description (the `luaDescription` constant).
 	/// Used by the docs exporter and coverage test. Required to be non-empty for every
@@ -77,6 +82,9 @@ private:
 		auto r = std::make_shared<T>();
 		addPrivate(std::string(T::luaName), r);
 	}
+
+	template<typename T>
+	void registerSerializable();
 };
 
 }
