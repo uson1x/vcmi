@@ -37,6 +37,7 @@ set(lualib_SRCS
 		api/callback/IBattleInfoCallback.cpp
 		api/Enums.cpp
 		api/LuaMetaString.cpp
+		api/DocExport.cpp
 		api/callback/IGameInfoCallback.cpp
 		api/Registry.cpp
 		api/callback/ServerCallback.cpp
@@ -82,6 +83,8 @@ set(lualib_HDRS
 		api/spells/Problem.h
 
 		api/callback/IBattleInfoCallback.h
+		api/DocExport.h
+		api/DocRegistrar.h
 		api/Enums.h
 		api/LuaMetaString.h
 		api/callback/IGameInfoCallback.h
