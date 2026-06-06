@@ -17,6 +17,13 @@
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
 
+// Proxy headers brought in for their luaTypeNameOf ADL overloads.
+#include "../library/Creature.h"
+#include "../library/Spell.h"
+#include "BattleHex.h"
+#include "BattleHexArray.h"
+#include "Unit.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api

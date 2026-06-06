@@ -17,6 +17,8 @@
 #include "../../../lib/battle/CObstacleInstance.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
 
+#include "../SignatureOf.h"
+
 #include <vcmi/spells/Spell.h>
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -77,6 +79,11 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 		s("customSize",       customSize);
 	}
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<SpellObstacleDescriptor>)
+{
+	return "SpellObstacleDescriptor";
+}
 
 }
 

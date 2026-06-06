@@ -12,6 +12,8 @@
 
 #include <vcmi/scripting/ApiTags.h>
 
+#include "SignatureOf.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 class MetaString;
@@ -36,6 +38,11 @@ struct LuaMetaString final : ApiSerializable<LuaMetaString>
 		s("replaceNumbers", replaceNumbers);
 	}
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<LuaMetaString>)
+{
+	return "MetaString";
+}
 
 }
 

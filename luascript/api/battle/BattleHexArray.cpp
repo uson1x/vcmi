@@ -12,6 +12,9 @@
 
 #include "BattleHexArray.h"
 
+// Proxy header brought in for its luaTypeNameOf ADL overload.
+#include "BattleHex.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api

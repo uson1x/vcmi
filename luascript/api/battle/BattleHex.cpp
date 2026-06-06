@@ -17,6 +17,9 @@
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
 
+// Proxy header brought in for its luaTypeNameOf ADL overload.
+#include "BattleHexArray.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api

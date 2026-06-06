@@ -13,6 +13,7 @@
 #include <vcmi/Entity.h>
 
 #include "../MethodRegistrar.h"
+#include "../SignatureOf.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -31,6 +32,14 @@ public:
 			"Returns the IBonusBearer view that lists every bonus active on this entity.");
 	}
 };
+
+/// IBonusBearer has no dedicated proxy class — it is the abstract view that
+/// `IConstBonusProvider::getBonusBearer()` returns. Expose a stable Lua name so docs
+/// don't surface it as `userdata`. Scripts use it via `getBonuses(...)` on the leaf type.
+inline std::string luaTypeNameOf(LuaTypeNameTag<IBonusBearer>)
+{
+	return "BonusBearer";
+}
 
 }
 

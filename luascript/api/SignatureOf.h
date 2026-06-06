@@ -58,6 +58,20 @@ inline std::string luaTypeNameOf(LuaTypeNameTag<std::optional<T>>)
 	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{}) + "?";
 }
 
+/// Shared / raw pointers to API classes carry the same Lua-facing name as the pointee:
+/// the wrapper layer hands the script a userdata regardless of how the C++ side held it.
+template<class T>
+inline std::string luaTypeNameOf(LuaTypeNameTag<std::shared_ptr<T>>)
+{
+	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{});
+}
+
+template<class T>
+inline std::string luaTypeNameOf(LuaTypeNameTag<T *>)
+{
+	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{});
+}
+
 /// Public entry point — strips cv/reference qualifiers, then dispatches via ADL.
 template<class T>
 inline std::string luaTypeName()

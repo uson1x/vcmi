@@ -19,6 +19,8 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+class CGObjectInstance;
+
 namespace scripting::api
 {
 
@@ -33,6 +35,13 @@ public:
 inline std::string luaTypeNameOf(LuaTypeNameTag<GameCb>)
 {
 	return std::string(IGameInfoCallbackProxy::luaName);
+}
+
+/// CGObjectInstance has no dedicated proxy — scripts receive it as a generic map-object
+/// userdata via `Game:getObj(id)`. Naming it here keeps docs from showing `userdata`.
+inline std::string luaTypeNameOf(LuaTypeNameTag<CGObjectInstance>)
+{
+	return "MapObject";
 }
 
 }

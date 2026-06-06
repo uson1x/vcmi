@@ -15,6 +15,12 @@
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 
+// Proxy headers brought in for their luaTypeNameOf ADL overloads.
+#include "../adventure/HeroInstance.h"
+#include "../battle/Unit.h"
+#include "../callback/IBattleInfoCallback.h"
+#include "../library/Spell.h"
+
 #include "../../../lib/battle/CBattleInfoCallback.h"
 #include "../../../lib/spells/CSpell.h"
 #include "../../../lib/battle/Unit.h"

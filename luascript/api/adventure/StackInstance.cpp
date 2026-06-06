@@ -17,6 +17,9 @@
 #include "../../LuaCallWrapper.h"
 #include <vcmi/Creature.h>
 
+// Proxy header brought in for its luaTypeNameOf ADL overload.
+#include "../library/Creature.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api

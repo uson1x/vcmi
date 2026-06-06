@@ -19,6 +19,7 @@
 VCMI_LIB_NAMESPACE_BEGIN
 
 struct CObstacleInstance;
+class CBattleInfoCallback;
 
 namespace scripting::api
 {
@@ -49,6 +50,13 @@ public:
 };
 
 inline std::string luaTypeNameOf(LuaTypeNameTag<IBattleInfoCallback>)
+{
+	return std::string(IBattleInfoCallbackProxy::luaName);
+}
+
+/// CBattleInfoCallback is exposed to scripts as the same userdata that IBattleInfoCallback is.
+/// Map it to the same Lua-facing name so derived-class return types do not surface as `userdata`.
+inline std::string luaTypeNameOf(LuaTypeNameTag<CBattleInfoCallback>)
 {
 	return std::string(IBattleInfoCallbackProxy::luaName);
 }

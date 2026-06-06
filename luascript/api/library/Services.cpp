@@ -25,6 +25,15 @@
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 
+// Proxy headers brought in for their luaTypeNameOf ADL overloads.
+#include "Artifact.h"
+#include "Creature.h"
+#include "Faction.h"
+#include "HeroClass.h"
+#include "HeroType.h"
+#include "Skill.h"
+#include "Spell.h"
+
 
 VCMI_LIB_NAMESPACE_BEGIN
 

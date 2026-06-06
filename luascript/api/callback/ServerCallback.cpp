@@ -18,6 +18,13 @@
 #include "../battle/SpellObstacleDescriptor.h"
 #include "../library/BonusDescriptor.h"
 
+// Proxy headers brought in for their luaTypeNameOf ADL overloads.
+#include "../battle/BattleHex.h"
+#include "../battle/Obstacle.h"
+#include "../battle/Unit.h"
+#include "../callback/IBattleInfoCallback.h"
+#include "../library/Bonus.h"
+
 #include "../../LuaStack.h"
 #include "../../../lib/battle/SiegeInfo.h"
 #include "../../../lib/networkPacks/PacksForClientBattle.h"

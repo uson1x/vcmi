@@ -14,6 +14,8 @@
 
 #include "../../../lib/json/JsonNode.h"
 
+#include "../SignatureOf.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 struct Bonus;
@@ -76,6 +78,11 @@ struct BonusDescriptor final : ApiSerializable<BonusDescriptor>
 		s("propagationUpdater", propagationUpdater);
 	}
 };
+
+inline std::string luaTypeNameOf(LuaTypeNameTag<BonusDescriptor>)
+{
+	return "BonusDescriptor";
+}
 
 }
 
