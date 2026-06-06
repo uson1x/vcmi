@@ -112,6 +112,11 @@ public:
 		Proxy::registerMethods(sink);
 	}
 
+	std::string_view getDescription() const override final
+	{
+		return Proxy::luaDescription;
+	}
+
 	void pushMetatable(lua_State * L) const override final
 	{
 		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
@@ -179,6 +184,11 @@ public:
 	void collectDocs(api::MethodRegistrar & sink) const override final
 	{
 		Proxy::registerMethods(sink);
+	}
+
+	std::string_view getDescription() const override final
+	{
+		return Proxy::luaDescription;
 	}
 
 	static int constructor(lua_State * L)
@@ -255,6 +265,11 @@ public:
 	void collectDocs(api::MethodRegistrar & sink) const override final
 	{
 		Proxy::registerMethods(sink);
+	}
+
+	std::string_view getDescription() const override final
+	{
+		return Proxy::luaDescription;
 	}
 
 	static int constructor(lua_State * L)

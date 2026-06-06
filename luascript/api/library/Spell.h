@@ -24,6 +24,9 @@ class SpellProxy : public RawPointerWrapper<const ::spells::Spell, SpellProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Spell";
+	static constexpr std::string_view luaDescription =
+		"A spell definition (Fire Bolt, Slow, Town Portal, …). Identifies kind and metadata "
+		"(schools, level). Cast resolution and per-cast state live on SpellMechanics.";
 
 	static void registerMethods(MethodRegistrar & R);
 

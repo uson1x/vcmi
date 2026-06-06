@@ -66,6 +66,17 @@ TEST(BindingsCoverageTest, EveryBindingHasNameSignatureAndDescription)
 	}
 }
 
+TEST(BindingsCoverageTest, EveryRegisteredTypeHasDescription)
+{
+	const auto * registry = Registry::get();
+
+	for(const auto & [typeName, registar] : registry->getAllTypes())
+	{
+		EXPECT_FALSE(registar->getDescription().empty())
+			<< "Type '" << typeName << "' is missing a luaDescription";
+	}
+}
+
 TEST(BindingsCoverageTest, BindingNamesAreUniquePerType)
 {
 	const auto * registry = Registry::get();

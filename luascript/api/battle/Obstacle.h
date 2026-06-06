@@ -25,6 +25,10 @@ class ObstacleProxy : public SharedPointerWrapper<const CObstacleInstance, Obsta
 {
 public:
 	static constexpr std::string_view luaName = "Obstacle";
+	static constexpr std::string_view luaDescription =
+		"A battlefield obstacle (static map decoration, moat tile, or spell-created hazard). "
+		"Exposed read-only — to add or remove obstacles use the ServerCallback `addObstacle` / "
+		"`removeObstacle` methods with a SpellObstacleDescriptor.";
 
 	static void registerMethods(MethodRegistrar & R);
 

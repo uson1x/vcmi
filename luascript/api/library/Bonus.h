@@ -25,6 +25,11 @@ class BonusProxy : public CopyableWrapper<Bonus, BonusProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Bonus";
+	static constexpr std::string_view luaDescription =
+		"A single effect contributing to a unit's combat profile (e.g. +5 attack from morale, "
+		"immunity to fire spells). Carries type, value, source, duration, stacking key. "
+		"Scripts read bonuses through `getBonuses(...)` and construct new ones via "
+		"BonusDescriptor passed to ServerCallback.";
 
 	static void registerMethods(MethodRegistrar & R);
 
@@ -45,6 +50,10 @@ class BonusListProxy : public CopyableWrapper<BonusList, BonusListProxy>
 {
 public:
 	static constexpr std::string_view luaName = "BonusList";
+	static constexpr std::string_view luaDescription =
+		"An ordered collection of Bonus values returned by `getBonuses(...)`. Use `size()` and "
+		"`getBonus(index)` to iterate. A copy of the engine's internal list at the moment of "
+		"the call — mutating the unit afterwards will not affect this snapshot.";
 
 	static void registerMethods(MethodRegistrar & R);
 

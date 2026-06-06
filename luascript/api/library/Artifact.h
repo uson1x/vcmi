@@ -24,6 +24,10 @@ class ArtifactProxy : public RawPointerWrapper<const Artifact, ArtifactProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Artifact";
+	static constexpr std::string_view luaDescription =
+		"A static artifact definition from the game database (the entry loaded from config). "
+		"Identifies an artifact kind; concrete instances worn by heroes are a separate concept "
+		"not currently exposed to scripts.";
 
 	static void registerMethods(MethodRegistrar & R);
 };

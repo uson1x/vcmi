@@ -22,6 +22,10 @@ namespace scripting::api
 	{
 	public:
 		static constexpr std::string_view luaName = "SpellMechanics";
+		static constexpr std::string_view luaDescription =
+			"Per-cast spell context: which Spell is being cast, who is casting it, at what "
+			"power and level. Lua spell scripts receive this as the entry point to their cast "
+			"logic and consult it for caster identity, target validation, and damage formulas.";
 
 		static void registerMethods(MethodRegistrar & R);
 

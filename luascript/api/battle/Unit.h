@@ -28,6 +28,10 @@ class UnitProxy : public RawPointerWrapper<const ::battle::Unit, UnitProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Unit";
+	static constexpr std::string_view luaDescription =
+		"Read-only view of a creature stack participating in the current battle. Queries the "
+		"live combat state — position, owner, current health, applied bonuses, ability checks. "
+		"To stage modifications, copy into a UnitState, edit it, then commit via ServerCallback.";
 
 	static void registerMethods(MethodRegistrar & R);
 

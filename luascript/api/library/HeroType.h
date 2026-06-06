@@ -23,6 +23,9 @@ class HeroTypeProxy : public RawPointerWrapper<const HeroType, HeroTypeProxy>
 {
 public:
 	static constexpr std::string_view luaName = "HeroType";
+	static constexpr std::string_view luaDescription =
+		"A specific named hero from the database (Sir Mullich, Crag Hack, …). Identifies the "
+		"hero kind and their starting profile; the in-game placed hero is HeroInstance.";
 
 	static void registerMethods(MethodRegistrar & R);
 };

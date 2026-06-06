@@ -27,6 +27,11 @@ namespace scripting::api
 		{
 		public:
 			static constexpr std::string_view luaName = "SpellProblem";
+			static constexpr std::string_view luaDescription =
+				"Output accumulator passed to a spell's `canBeCast` / `canBeCastAt` check. "
+				"Scripts append reasons the cast cannot proceed — generic, standard "
+				"(picked from the ESpellCastProblem enum), or fully custom via MetaString. "
+				"An empty SpellProblem means the cast is allowed.";
 
 			static void registerMethods(MethodRegistrar & R);
 

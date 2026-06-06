@@ -28,6 +28,10 @@ class IBattleInfoCallbackProxy : public RawPointerWrapper<const IBattleInfoCallb
 {
 public:
 	static constexpr std::string_view luaName = "Battle";
+	static constexpr std::string_view luaDescription =
+		"Battlefield query interface. The handle scripts receive whenever they are passed a "
+		"battle context — enumerate units and obstacles, test hex accessibility and shooting "
+		"penalties, inspect wall state on siege maps. Read-only; mutations go through Server.";
 
 	static void registerMethods(MethodRegistrar & R);
 

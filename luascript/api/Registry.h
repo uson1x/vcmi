@@ -30,6 +30,11 @@ public:
 	/// Drives the proxy's `registerMethods` against the given visitor. Used by the docs
 	/// exporter and the coverage test to introspect bindings without touching a lua_State.
 	virtual void collectDocs(MethodRegistrar & sink) const = 0;
+
+	/// Returns the proxy's class-level description (the `luaDescription` constant).
+	/// Used by the docs exporter and coverage test. Required to be non-empty for every
+	/// type exposed to scripts — empty is allowed only as an explicit "no docs" marker.
+	virtual std::string_view getDescription() const = 0;
 };
 
 /// Singleton that maps C++ type names to their Registar; used by LuaStack to attach metatables and by LuaContext to expose all types.

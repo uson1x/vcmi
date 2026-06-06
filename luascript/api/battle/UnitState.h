@@ -83,6 +83,10 @@ class LuaUnitStateProxy : public CopyableWrapper<LuaUnitState, LuaUnitStateProxy
 {
 public:
 	static constexpr std::string_view luaName = "UnitState";
+	static constexpr std::string_view luaDescription =
+		"Mutable working copy of a battle Unit. Obtained via `Unit:copy()`; scripts edit fields "
+		"(position, defending, clone, summoned, …) and inflict damage locally, then hand the "
+		"result to ServerCallback `changeUnit` to broadcast the update through a battle pack.";
 
 	static void registerMethods(MethodRegistrar & R);
 

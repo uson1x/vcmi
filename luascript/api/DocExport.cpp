@@ -28,9 +28,12 @@ namespace
 {
 
 /// Renders the host-side metadata for a single type as a Markdown section.
-void emitMarkdownType(std::ofstream & out, const std::string & typeName, const std::vector<DocRegistrar::Entry> & entries)
+void emitMarkdownType(std::ofstream & out, const std::string & typeName, std::string_view description, const std::vector<DocRegistrar::Entry> & entries)
 {
 	out << "## " << typeName << "\n\n";
+
+	if(!description.empty())
+		out << description << "\n\n";
 
 	if(entries.empty())
 	{
@@ -223,8 +226,28 @@ void emitLualsMethod(std::ofstream & out, const std::string & className, const D
 	out << ") end\n\n";
 }
 
-void emitLualsType(std::ofstream & out, const std::string & typeName, const std::vector<DocRegistrar::Entry> & entries)
+/// Wraps a description across multiple `---` lines so luals' hover popup renders
+/// each line as a separate paragraph instead of one long row.
+void emitLualsDescription(std::ofstream & out, std::string_view description)
 {
+	if(description.empty())
+		return;
+
+	std::size_t start = 0;
+	while(start < description.size())
+	{
+		const auto end = description.find('\n', start);
+		const auto len = (end == std::string_view::npos) ? description.size() - start : end - start;
+		out << "---" << description.substr(start, len) << "\n";
+		if(end == std::string_view::npos)
+			break;
+		start = end + 1;
+	}
+}
+
+void emitLualsType(std::ofstream & out, const std::string & typeName, std::string_view description, const std::vector<DocRegistrar::Entry> & entries)
+{
+	emitLualsDescription(out, description);
 	out << "---@class " << typeName << "\n";
 	out << "local " << typeName << " = {}\n\n";
 
@@ -256,8 +279,10 @@ void exportLuaApiDocs(const boost::filesystem::path & outDir)
 		DocRegistrar sink;
 		registar->collectDocs(sink);
 
-		emitMarkdownType(md, typeName, sink.get());
-		emitLualsType(lua, typeName, sink.get());
+		const auto description = registar->getDescription();
+
+		emitMarkdownType(md, typeName, description, sink.get());
+		emitLualsType(lua, typeName, description, sink.get());
 	}
 }
 

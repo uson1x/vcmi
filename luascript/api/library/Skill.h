@@ -24,6 +24,9 @@ class SkillProxy : public RawPointerWrapper<const Skill, SkillProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Skill";
+	static constexpr std::string_view luaDescription =
+		"A secondary-skill definition (Wisdom, Tactics, Logistics, …). Database metadata; "
+		"per-hero skill levels are read off HeroInstance.";
 
 	static void registerMethods(MethodRegistrar & R);
 };

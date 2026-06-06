@@ -24,6 +24,10 @@ class CreatureProxy : public RawPointerWrapper<const Creature, CreatureProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Creature";
+	static constexpr std::string_view luaDescription =
+		"A creature type from the database (e.g. \"pikeman\"). Carries base stats, faction, "
+		"recruitment cost, and the bonuses every instance starts with. Concrete battlefield "
+		"or army-slot instances are Unit and StackInstance respectively.";
 
 	static void registerMethods(MethodRegistrar & R);
 

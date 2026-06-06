@@ -24,6 +24,9 @@ class FactionProxy : public RawPointerWrapper<const Faction, FactionProxy>
 {
 public:
 	static constexpr std::string_view luaName = "Faction";
+	static constexpr std::string_view luaDescription =
+		"A town/army faction definition (Castle, Rampart, Inferno, …). Identifies the kind, "
+		"not a placed town; use Game lookups for the latter.";
 
 	static void registerMethods(MethodRegistrar & R);
 };

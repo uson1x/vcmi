@@ -41,6 +41,10 @@ class ServicesProxy : public RawPointerWrapper<const Services, ServicesProxy>
 
 public:
 	static constexpr std::string_view luaName = "Services";
+	static constexpr std::string_view luaDescription =
+		"The static game-content catalogue, bound to the global `LIBRARY`. Looks up artifacts, "
+		"creatures, factions, hero classes/types, secondary skills and spells by their config "
+		"name (the same string used in JSON definitions).";
 
 	static void registerMethods(MethodRegistrar & R);
 };
