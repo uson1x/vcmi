@@ -50,7 +50,8 @@ void emitMarkdownType(std::ofstream & out,
                       const std::string & typeName,
                       std::string_view description,
                       const std::vector<DocRegistrar::Entry> & methods,
-                      const std::vector<FieldDocRegistrar::Entry> & fields)
+                      const std::vector<FieldDocRegistrar::Entry> & fields,
+                      const std::vector<FieldDocRegistrar::EnumGroupEntry> & enumGroups)
 {
 	out << "## " << typeName << "\n\n";
 
@@ -72,27 +73,42 @@ void emitMarkdownType(std::ofstream & out,
 		out << "\n";
 	}
 
-	if(methods.empty() && fields.empty())
+	if(!methods.empty())
 	{
+		out << "**Methods**\n\n";
+		out << "| Method | Signature | Description |\n";
+		out << "|---|---|---|\n";
+
+		for(const auto & entry : methods)
+		{
+			out << "| `" << escapeMarkdownCell(entry.name)
+				<< "` | `" << escapeMarkdownCell(entry.signature)
+				<< "` | " << escapeMarkdownCell(entry.description)
+				<< " |\n";
+		}
+		out << "\n";
+	}
+
+	for(const auto & group : enumGroups)
+	{
+		out << "### " << group.name << "\n\n";
+		if(!group.description.empty())
+			out << group.description << "\n\n";
+
+		out << "| Key | Value | Description |\n";
+		out << "|---|---|---|\n";
+		for(const auto & key : group.keys)
+		{
+			out << "| `" << escapeMarkdownCell(key.key)
+				<< "` | " << key.value
+				<< " | " << escapeMarkdownCell(key.description)
+				<< " |\n";
+		}
+		out << "\n";
+	}
+
+	if(methods.empty() && fields.empty() && enumGroups.empty())
 		out << "_No bindings exposed._\n\n";
-		return;
-	}
-
-	if(methods.empty())
-		return;
-
-	out << "**Methods**\n\n";
-	out << "| Method | Signature | Description |\n";
-	out << "|---|---|---|\n";
-
-	for(const auto & entry : methods)
-	{
-		out << "| `" << escapeMarkdownCell(entry.name)
-			<< "` | `" << escapeMarkdownCell(entry.signature)
-			<< "` | " << escapeMarkdownCell(entry.description)
-			<< " |\n";
-	}
-	out << "\n";
 }
 
 /// Splits a signature string like "(arg1: T, arg2: U): R" into args text, return text.
@@ -274,7 +290,8 @@ void emitLualsType(std::ofstream & out,
                    const std::string & typeName,
                    std::string_view description,
                    const std::vector<DocRegistrar::Entry> & methods,
-                   const std::vector<FieldDocRegistrar::Entry> & fields)
+                   const std::vector<FieldDocRegistrar::Entry> & fields,
+                   const std::vector<FieldDocRegistrar::EnumGroupEntry> & enumGroups)
 {
 	emitLualsDescription(out, description);
 	out << "---@class " << typeName << "\n";
@@ -287,10 +304,37 @@ void emitLualsType(std::ofstream & out,
 		out << "\n";
 	}
 
+	// Enum groups appear on the parent class (e.g. `ENUM`) as fields whose value type is
+	// the per-group `---@enum` declared below. LuaLS auto-completes `ENUM.HealLevel.heal`
+	// and gives hover docs from this field's description.
+	for(const auto & group : enumGroups)
+	{
+		out << "---@field " << group.name << ' ' << group.name;
+		if(!group.description.empty())
+			out << " # " << group.description;
+		out << "\n";
+	}
+
 	out << "local " << typeName << " = {}\n\n";
 
 	for(const auto & entry : methods)
 		emitLualsMethod(out, typeName, entry);
+
+	// Each enum group becomes a standalone `---@enum` declaration with the captured key→
+	// integer pairs, one `---<description>` line per key.
+	for(const auto & group : enumGroups)
+	{
+		emitLualsDescription(out, group.description);
+		out << "---@enum " << group.name << "\n";
+		out << "local " << group.name << " = {\n";
+		for(const auto & key : group.keys)
+		{
+			if(!key.description.empty())
+				out << "    ---" << key.description << "\n";
+			out << "    " << key.key << " = " << key.value << ",\n";
+		}
+		out << "}\n\n";
+	}
 }
 
 }
@@ -322,8 +366,8 @@ void exportLuaApiDocs(const boost::filesystem::path & outDir)
 
 		const auto description = registar->getDescription();
 
-		emitMarkdownType(md, typeName, description, methodSink.get(), fieldSink.get());
-		emitLualsType(lua, typeName, description, methodSink.get(), fieldSink.get());
+		emitMarkdownType(md, typeName, description, methodSink.get(), fieldSink.get(), fieldSink.getEnumGroups());
+		emitLualsType(lua, typeName, description, methodSink.get(), fieldSink.get(), fieldSink.getEnumGroups());
 	}
 }
 

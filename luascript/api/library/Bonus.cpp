@@ -12,6 +12,7 @@
 
 #include "Bonus.h"
 
+#include "../Enums.h"
 #include "../Registry.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"

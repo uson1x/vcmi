@@ -13,6 +13,12 @@
 #include "../LuaCallWrapper.h"
 #include "SignatureOf.h"
 
+// Pulls in the ADL overloads of `luaTypeNameOf` for engine enums (BattleSide, EWallPart, …).
+// Without this, a proxy .cpp that registers a method whose signature uses one of those enums
+// instantiates the generic `luaTypeName<T>` template before the overload is visible — the
+// linker then prefers that fallback symbol and the signature appears as bare `integer`.
+#include "Enums.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api

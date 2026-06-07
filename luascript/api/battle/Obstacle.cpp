@@ -12,6 +12,7 @@
 
 #include "Obstacle.h"
 
+#include "../Enums.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"

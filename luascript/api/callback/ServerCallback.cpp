@@ -12,6 +12,7 @@
 #include "GameLibrary.h"
 #include "ServerCallback.h"
 
+#include "../Enums.h"
 #include "../LuaMetaString.h"
 #include "../Registry.h"
 #include "../battle/UnitState.h"

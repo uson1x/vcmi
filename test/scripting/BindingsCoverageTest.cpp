@@ -45,8 +45,37 @@ TEST(BindingsCoverageTest, EveryRegisteredTypeHasBindings)
 		FieldDocRegistrar fieldSink;
 		registar->collectFields(fieldSink);
 
-		EXPECT_FALSE(methodSink.get().empty() && fieldSink.get().empty())
-			<< "Type '" << typeName << "' exposes neither methods nor fields";
+		EXPECT_FALSE(methodSink.get().empty() && fieldSink.get().empty() && fieldSink.getEnumGroups().empty())
+			<< "Type '" << typeName << "' exposes neither methods, fields, nor enum groups";
+	}
+}
+
+TEST(BindingsCoverageTest, EveryEnumKeyHasNameAndDescription)
+{
+	const auto * registry = Registry::get();
+
+	for(const auto & [typeName, registar] : registry->getAllTypes())
+	{
+		FieldDocRegistrar sink;
+		registar->collectFields(sink);
+
+		for(const auto & group : sink.getEnumGroups())
+		{
+			EXPECT_FALSE(group.name.empty())
+				<< "Empty enum group name in type '" << typeName << "'";
+			EXPECT_FALSE(group.description.empty())
+				<< "Empty description for enum group '" << typeName << "." << group.name << "'";
+			EXPECT_FALSE(group.keys.empty())
+				<< "Enum group '" << typeName << "." << group.name << "' has no keys";
+
+			for(const auto & key : group.keys)
+			{
+				EXPECT_FALSE(key.key.empty())
+					<< "Empty key name in enum group '" << typeName << "." << group.name << "'";
+				EXPECT_FALSE(key.description.empty())
+					<< "Empty description for '" << typeName << "." << group.name << "." << key.key << "'";
+			}
+		}
 	}
 }
 

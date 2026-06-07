@@ -12,6 +12,7 @@
 
 #include "BattleHex.h"
 
+#include "../Enums.h"
 #include "../../../lib/GameLibrary.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"

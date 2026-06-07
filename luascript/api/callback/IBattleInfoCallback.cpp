@@ -12,6 +12,7 @@
 #include "IBattleInfoCallback.h"
 #include <vcmi/Entity.h>
 
+#include "../Enums.h"
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 

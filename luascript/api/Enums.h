@@ -13,6 +13,8 @@
 #include <vcmi/scripting/ApiTags.h>
 #include <vcmi/spells/Magic.h>
 
+#include "SignatureOf.h"
+
 #include "../../lib/constants/Enumerations.h"
 #include "../../lib/bonuses/BonusEnum.h"
 #include "../../lib/battle/BattleSide.h"
@@ -23,21 +25,36 @@ VCMI_LIB_NAMESPACE_BEGIN
 namespace scripting::api
 {
 
+/// One named integer-valued constant in an EnumGroup, with the description shown by LuaLS
+/// on hover. The C++ value is what scripts get when they read `ENUM.<Group>.<key>`.
+template<typename E>
+struct EnumItem
+{
+	std::string key;
+	E           value;
+	std::string description;
+};
+
+/// Carrier for one enum group exported through `Enums::serializeScript`. Replaces the
+/// plain `std::map<std::string, E>` so per-key descriptions can be attached.
+template<typename E>
+struct EnumGroup
+{
+	std::vector<EnumItem<E>> items;
+};
+
 class Enums : public scripting::ApiSerializable<Enums>
 {
-	template<typename EnumType>
-	using EnumMap = std::map<std::string, EnumType>;
-
-	EnumMap<EHealLevel> exportHealLevel() const;
-	EnumMap<EHealPower> exportHealPower() const;
-	EnumMap<ESpellCastProblem> exportSpellCastProblem() const;
-	EnumMap<spells::AimType> exportAimType() const;
-	EnumMap<BonusDuration::BonusDuration> exportBonusDuration() const;
-	EnumMap<BonusSource> exportBonusSource() const;
-	EnumMap<BonusValueType> exportBonusValueType() const;
-	EnumMap<CObstacleInstance::EObstacleType> exportObstacleType() const;
-	EnumMap<EWallPart> exportWallPart() const;
-	EnumMap<BattleSide> exportBattleSide() const;
+	EnumGroup<EHealLevel> exportHealLevel() const;
+	EnumGroup<EHealPower> exportHealPower() const;
+	EnumGroup<ESpellCastProblem> exportSpellCastProblem() const;
+	EnumGroup<spells::AimType> exportAimType() const;
+	EnumGroup<BonusDuration::BonusDuration> exportBonusDuration() const;
+	EnumGroup<BonusSource> exportBonusSource() const;
+	EnumGroup<BonusValueType> exportBonusValueType() const;
+	EnumGroup<CObstacleInstance::EObstacleType> exportObstacleType() const;
+	EnumGroup<EWallPart> exportWallPart() const;
+	EnumGroup<BattleSide> exportBattleSide() const;
 
 public:
 	static constexpr std::string_view luaName = "Enums";
@@ -61,6 +78,20 @@ public:
 		s("BattleSide",       exportBattleSide(),       "Battlefield side identifiers: none / attacker / defender.");
 	}
 };
+
+/// ADL overloads so proxy methods that take or return these C++ enums advertise the named
+/// enum type instead of the bare "integer" fallback. The names match the keys emitted in
+/// `Enums::serializeScript`, so LuaLS can cross-reference signatures with `---@enum` blocks.
+inline std::string luaTypeNameOf(LuaTypeNameTag<EHealLevel>)                       { return "HealLevel"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<EHealPower>)                       { return "HealPower"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<ESpellCastProblem>)                { return "SpellCastProblem"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<::spells::AimType>)                { return "AimType"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<BonusDuration::BonusDuration>)     { return "BonusDuration"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<BonusSource>)                      { return "BonusSource"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<BonusValueType>)                   { return "BonusValueType"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<CObstacleInstance::EObstacleType>) { return "ObstacleType"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<EWallPart>)                        { return "WallPart"; }
+inline std::string luaTypeNameOf(LuaTypeNameTag<BattleSide>)                       { return "BattleSide"; }
 
 }
 

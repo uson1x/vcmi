@@ -11,6 +11,7 @@
 
 #include "Problem.h"
 
+#include "../Enums.h"
 #include "../LuaMetaString.h"
 #include "../../../lib/spells/ISpellMechanics.h"
 #include "../../../lib/texts/MetaString.h"

@@ -15,6 +15,10 @@
 #include "vcmi/scripting/ApiTags.h"
 #include <boost/core/demangle.hpp>
 
+VCMI_LIB_NAMESPACE_BEGIN
+namespace scripting::api { template<typename E> struct EnumGroup; }
+VCMI_LIB_NAMESPACE_END
+
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -176,6 +180,19 @@ public:
 		{
 			push(entry.second);
 			lua_setfield(L, tableIndex, entry.first.c_str());
+		}
+	}
+
+	template<typename E>
+	void push(const api::EnumGroup<E> & group)
+	{
+		lua_newtable(L);
+		int tableIndex = lua_gettop(L);
+
+		for(const auto & item : group.items)
+		{
+			push(item.value);
+			lua_setfield(L, tableIndex, item.key.c_str());
 		}
 	}
 
