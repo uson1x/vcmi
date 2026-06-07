@@ -240,6 +240,7 @@ class CCastleInterface final : public CStatusbarWindow, public IGarrisonHolder, 
 	std::shared_ptr<CButton> fastArmyPurchase;
 	std::shared_ptr<LRClickableArea> fastMarket;
 	std::shared_ptr<LRClickableArea> fastWiki;
+	std::shared_ptr<CIntObject> wikiRadialArea;
 
 	std::vector<std::shared_ptr<CCreaInfo>> creainfo;//small icons of creatures (bottom-left corner);
 

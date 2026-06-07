@@ -1637,6 +1637,65 @@ void CCastleInterface::removeBuilding(BuildingID bid)
 	redraw();
 }
 
+class WikiRadialArea : public CIntObject
+{
+	const CGTownInstance * town;
+	CCastleBuildings * builds;
+public:
+	WikiRadialArea(const Rect & Pos, const CGTownInstance * Town, CCastleBuildings * Builds)
+		: CIntObject(GESTURE), town(Town), builds(Builds)
+	{
+		pos = Pos + pos.topLeft();
+	}
+
+	void gesture(bool on, const Point & initialPosition, const Point & finalPosition) override
+	{
+		if(!on)
+			return;
+
+		if (!settings["input"]["radialWheelGarrisonSwipe"].Bool())
+			return;
+
+		std::vector<RadialMenuConfig> menuElements = {
+			{ RadialMenuConfig::ITEM_NW, true, "openTavern", "vcmi.radialWheel.openTavern", [this](){
+				if(town->hasBuilt(BuildingID::TAVERN))
+					GAME->interface()->showTavernWindow(town, nullptr, QueryID::NONE);
+				else
+					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.tavernNotBuilt"));
+			}},
+			{ RadialMenuConfig::ITEM_NE, true, "openMageGuild", "vcmi.radialWheel.openMageGuild", [this](){
+				if(town->hasBuilt(BuildingID::MAGES_GUILD_1))
+					builds->enterMagesGuild();
+				else
+					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.mageGuildNotBuilt"));
+			}},
+			{ RadialMenuConfig::ITEM_SW, true, "openBlacksmith", "vcmi.radialWheel.openBlacksmith", [this](){
+				auto warMachine = town->getWarMachineInBuilding(BuildingID::BLACKSMITH);
+				if(warMachine.hasValue())
+					builds->buildingTryActivateCustomUI(BuildingID::BLACKSMITH, BuildingID::BLACKSMITH);
+				else
+					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.blacksmithNotBuilt"));
+			}},
+			{ RadialMenuConfig::ITEM_SE, true, "openMarketplace", "vcmi.radialWheel.openMarketplace", [this](){
+				builds->enterAnyMarket();
+			}},
+			{ RadialMenuConfig::ITEM_EE, true, "openShipyard", "vcmi.radialWheel.openShipyard", [this](){
+				if(town->hasBuilt(BuildingID::SHIPYARD))
+					GAME->interface()->showShipyardDialog(town);
+				else
+					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.shipyardNotBuilt"));
+			}},
+			{ RadialMenuConfig::ITEM_WW, true, "openCastle", "vcmi.radialWheel.openCastle", [this](){
+				if(town->fortLevel() > CGTownInstance::NONE)
+					ENGINE->windows().createAndPushWindow<CFortScreen>(town);
+				else
+					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.castleNotBuilt"));
+			}},
+		};
+		ENGINE->windows().createAndPushWindow<RadialMenu>(finalPosition, menuElements);
+	}
+};
+
 void CCastleInterface::recreateIcons()
 {
 	OBJECT_CONSTRUCTION;
@@ -1669,6 +1728,8 @@ void CCastleInterface::recreateIcons()
 				CRClickPopup::createAndPush(town->getFaction()->getDescriptionTranslated());
 		});
 	}
+
+	wikiRadialArea = std::make_shared<WikiRadialArea>(Rect(15, 387, 213, 66), town, builds.get());
 
 	creainfo.clear();
 
