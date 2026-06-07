@@ -39,8 +39,10 @@ void MapObjectVisitQuery::onExposure(QueryPtr topQuery)
 	auto object = gh->gameState().getObjInstance(visitedObject);
 	auto hero = gh->gameState().getHero(visitingHero);
 
-	//Object may have been removed and deleted.
-	if (object)
+	// Object may have been removed and deleted.
+	// Deferred battle XP level-ups are not part of the object reward pipeline,
+	// so they must not trigger heroLevelUpDone on the visited object.
+	if (object && !processingDeferredBattleLevelUps)
 		topQuery->notifyObjectAboutRemoval(object, hero);
 
 	if(auto battleQuery = std::dynamic_pointer_cast<CBattleQuery>(topQuery))
@@ -51,10 +53,17 @@ void MapObjectVisitQuery::onExposure(QueryPtr topQuery)
 
 	if(owner->topQuery(players.front()).get() == this)
 	{
-		for(const auto & heroID : deferredBattleLevelUps)
-			if(const auto * deferredHero = gh->gameState().getHero(heroID))
-				gh->expGiven(deferredHero);
-		deferredBattleLevelUps.clear();
+		if(!deferredBattleLevelUps.empty())
+		{
+			processingDeferredBattleLevelUps = true;
+			for(const auto & heroID : deferredBattleLevelUps)
+				if(const auto * deferredHero = gh->gameState().getHero(heroID))
+					gh->expGiven(deferredHero);
+			deferredBattleLevelUps.clear();
+		}
+
+		if(owner->topQuery(players.front()).get() == this)
+			processingDeferredBattleLevelUps = false;
 	}
 
 	owner->popIfTop(*this);
