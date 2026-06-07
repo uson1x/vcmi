@@ -40,7 +40,7 @@ CMarketWindow::CMarketWindow(const IMarket * market, const CGHeroInstance * hero
 	: CWindowObject(PLAYER_COLORED)
 	, windowClosedCallback(onWindowClosed)
 	, allowResourceTradeWhenNotMakingTurn(allowResourceTradeWhenNotMakingTurn)
-	, resourceTradeInterface(resourceTradeInterface)
+	, resourceTradeInterface(resourceTradeInterface ? resourceTradeInterface : GAME->interface())
 {
 	assert(mode == EMarketMode::RESOURCE_RESOURCE || mode == EMarketMode::RESOURCE_PLAYER || mode == EMarketMode::CREATURE_RESOURCE ||
 		mode == EMarketMode::RESOURCE_ARTIFACT || mode == EMarketMode::ARTIFACT_RESOURCE || mode == EMarketMode::ARTIFACT_EXP ||
@@ -104,7 +104,6 @@ void CMarketWindow::close()
 	if(callback)
 		callback();
 }
-
 
 bool CMarketWindow::holdsGarrison(const CArmedInstance * army)
 {
@@ -254,8 +253,7 @@ void CMarketWindow::createMarketResources(const IMarket * market, const CGHeroIn
 	auto image = getImagePathBasedOnResources("TPMRKRES");
 
 	background = createBg(image, PLAYER_COLORED);
-	if(resourceTradeInterface)
-		background->setPlayerColor(resourceTradeInterface->playerID);
+	background->setPlayerColor(resourceTradeInterface->playerID);
 	marketWidget = std::make_shared<CMarketResources>(market, hero, allowResourceTradeWhenNotMakingTurn, resourceTradeInterface);
 	initWidgetInternals(EMarketMode::RESOURCE_RESOURCE, LIBRARY->generaltexth->zelp[600]);
 }

@@ -17,7 +17,7 @@ class CMarketResources :
 	public CResourcesSelling, public CResourcesBuying, public CMarketSlider, public CMarketTraderText
 {
 public:
-	CMarketResources(const IMarket * market, const CGHeroInstance * hero, bool allowTradeWhenNotMakingTurn = false, CPlayerInterface * tradeInterface = nullptr);
+	CMarketResources(const IMarket * market, const CGHeroInstance * hero, bool allowTradeWhenNotMakingTurn, CPlayerInterface * tradeInterface);
 	void deselect() override;
 	void makeDeal() override;
 

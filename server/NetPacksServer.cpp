@@ -25,6 +25,7 @@
 #include "../lib/gameState/CGameState.h"
 #include "../lib/battle/IBattleState.h"
 #include "../lib/battle/Unit.h"
+#include "../lib/bonuses/BonusEnum.h"
 #include "../lib/spells/ISpellMechanics.h"
 #include "../lib/spells/CSpell.h"
 
@@ -252,11 +253,23 @@ void ApplyGhNetPackVisitor::visitTradeOnMarketplace(TradeOnMarketplace & pack)
 	const CGHeroInstance * hero = gh.gameInfo().getHero(pack.heroId);
 	const auto * market = gh.gameState().getMarket(pack.marketId);
 
-	const bool resourceTradeDuringBattle = pack.mode == EMarketMode::RESOURCE_RESOURCE && std::dynamic_pointer_cast<CBattleQuery>(gh.queries->topQuery(pack.player));
+	const bool resourceTradeDuringBattle = pack.mode == EMarketMode::RESOURCE_RESOURCE
+		&& std::dynamic_pointer_cast<CBattleQuery>(gh.queries->topQuery(pack.player));
 
 	gh.throwIfWrongPlayer(connection, &pack);
-	if(!resourceTradeDuringBattle)
+	if(resourceTradeDuringBattle)
+	{
+		const PlayerState * playerState = gh.gameState().getPlayerState(pack.player);
+		const bool playerHasAccess = playerState && playerState->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS);
+		const bool heroHasAccess = hero && hero->getOwner() == pack.player && hero->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS);
+
+		if(!playerHasAccess && !heroHasAccess)
+			gh.throwAndComplain(connection, "Can not trade - no surrender marketplace access!");
+	}
+	else
+	{
 		gh.throwIfPlayerNotActive(connection, &pack);
+	}
 
 	if(!object)
 		gh.throwAndComplain(connection, "Invalid market object");

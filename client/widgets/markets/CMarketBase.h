@@ -20,6 +20,8 @@ class IMarket;
 
 VCMI_LIB_NAMESPACE_END
 
+class CPlayerInterface;
+
 class CMarketBase : public CIntObject
 {
 public:
@@ -95,13 +97,11 @@ public:
 class CResourcesSelling : virtual public CMarketBase
 {
 public:
-	using ResourceAmountGetter = std::function<int64_t(EGameResID)>;
-
-	explicit CResourcesSelling(const CTradeableItem::ClickPressedFunctor & clickPressedCallback, ResourceAmountGetter resourceAmountGetter = {});
+	explicit CResourcesSelling(const CTradeableItem::ClickPressedFunctor & clickPressedCallback, CPlayerInterface * tradeInterface);
 	void updateSubtitles() const;
 
 private:
-	ResourceAmountGetter resourceAmountGetter;
+	CPlayerInterface * tradeInterface;
 };
 
 class CMarketSlider : virtual public CMarketBase

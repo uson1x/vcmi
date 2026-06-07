@@ -632,6 +632,8 @@ const CGTownInstance * BattleWindow::findTownWithMarketplace() const
 
 bool BattleWindow::canOfferMarketplaceForSurrender() const
 {
+	// The feature can be granted either to the hero (e.g. artifact) or to the player
+	// (e.g. global/player-wide config bonus). Accept either source.
 	const CGHeroInstance * hero = owner.getBattle()->battleGetMyHero();
 	if(hero && hero->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS))
 		return true;
@@ -649,15 +651,16 @@ void BattleWindow::offerMarketplaceForSurrender()
 		return;
 	}
 
+	const CGHeroInstance * hero = owner.getBattle()->battleGetMyHero();
 	const int goldBeforeMarketplace = owner.curInt->cb->getResourceAmount(EGameResID::GOLD);
 
 	owner.curInt->showYesNoDialog(
 		LIBRARY->generaltexth->translate("vcmi.battle.surrender.tryMarketplace"),
-		[this, townWithMarket, goldBeforeMarketplace]()
+		[this, townWithMarket, hero, goldBeforeMarketplace]()
 		{
 			ENGINE->windows().createAndPushWindow<CMarketWindow>(
 				townWithMarket,
-				nullptr,
+				hero,
 				[this, goldBeforeMarketplace]()
 				{
 					const bool soldResourcesForGold = owner.curInt->cb->getResourceAmount(EGameResID::GOLD) > goldBeforeMarketplace;
