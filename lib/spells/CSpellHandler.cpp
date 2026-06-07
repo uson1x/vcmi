@@ -448,7 +448,7 @@ std::shared_ptr<CSpell> CSpellHandler::loadFromJson(const std::string & scope, c
 		levelObject.smartTarget   = levelNode["targetModifier"]["smart"].Bool();
 		levelObject.clearAffected = levelNode["targetModifier"]["clearAffected"].Bool();
 		levelObject.range         = spellRangeInHexes(levelNode["range"].String());
-
+		levelObject.power         = levelNode["power"].Integer();
 		levelObject.effects = levelNode["effects"];
 		levelObject.cumulativeEffects = levelNode["cumulativeEffects"];
 
