@@ -258,6 +258,8 @@ EShortcut ShortcutHandler::findShortcut(const std::string & identifier ) const
 		{"spectateSkipBattleResult", EShortcut::SPECTATE_SKIP_BATTLE_RESULT },
 		{"townOpenTavern",           EShortcut::TOWN_OPEN_TAVERN          },
 		{"townSwapArmies",           EShortcut::TOWN_SWAP_ARMIES          },
+		{"townUpgradeGarrison",      EShortcut::TOWN_UPGRADE_GARRISON     },
+		{"townUpgradeVisiting",      EShortcut::TOWN_UPGRADE_VISITING     },
 		{"recruitmentMax",           EShortcut::RECRUITMENT_MAX           },
 		{"recruitmentMin",           EShortcut::RECRUITMENT_MIN           },
 		{"recruitmentUpgrade",       EShortcut::RECRUITMENT_UPGRADE       },

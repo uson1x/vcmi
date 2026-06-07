@@ -75,6 +75,74 @@ static bool useAvailableAmountAsCreatureLabel()
 	return settings["gameTweaks"]["availableCreaturesAsDwellingLabel"].Bool();
 }
 
+struct UpgradableSlotsResult
+{
+	bool isCreatureUpgradePossible;
+	bool canAffordAny;
+	bool canAffordAll;
+	TResources totalCosts;
+	std::vector<std::pair<SlotID, UpgradeInfo>> upgradeInfos;
+};
+
+static UpgradableSlotsResult getUpgradableSlots(const CArmedInstance *obj)
+{
+	std::vector<std::pair<SlotID, UpgradeInfo>> upgradeInfos;
+	for(const auto & slot : obj->Slots())
+	{
+		auto upgradeInfo = std::make_pair(slot.first, UpgradeInfo(slot.second->getCreatureID()));
+		GAME->interface()->cb->fillUpgradeInfo(slot.second->getArmy(), slot.first, upgradeInfo.second);
+		bool canUpgrade = obj->tempOwner == GAME->interface()->playerID && upgradeInfo.second.canUpgrade();
+		if(canUpgrade)
+			upgradeInfos.push_back(upgradeInfo);
+	}
+
+	std::sort(upgradeInfos.begin(), upgradeInfos.end(), [&](const std::pair<SlotID, UpgradeInfo> & lhs, const std::pair<SlotID, UpgradeInfo> & rhs) {
+		return lhs.second.oldID.toCreature()->getLevel() > rhs.second.oldID.toCreature()->getLevel();
+	});
+	bool hasCreaturesToUpgrade = !upgradeInfos.empty();
+
+	TResources costs;
+	std::vector<SlotID> slotInfosToDelete;
+	for(const auto & upgradeInfo : upgradeInfos)
+	{
+		TResources upgradeCosts = upgradeInfo.second.getUpgradeCosts() * obj->Slots().at(upgradeInfo.first)->getCount();
+		if(GAME->interface()->cb->getResourceAmount().canAfford(costs + upgradeCosts))
+			costs += upgradeCosts;
+		else
+			slotInfosToDelete.push_back(upgradeInfo.first);
+	}
+	upgradeInfos.erase(std::remove_if(upgradeInfos.begin(), upgradeInfos.end(), [&slotInfosToDelete](const auto& item) {
+		return std::count(slotInfosToDelete.begin(), slotInfosToDelete.end(), item.first);
+	}), upgradeInfos.end());
+
+	return UpgradableSlotsResult { hasCreaturesToUpgrade, !upgradeInfos.empty(), slotInfosToDelete.empty(), costs, upgradeInfos };
+}
+
+static void upgradeAllCreatures(const CArmedInstance *obj, const UpgradableSlotsResult & upgradableSlots)
+{
+	if(!upgradableSlots.canAffordAny)
+	{
+		GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.upgradeAll.notUpgradable"));
+		return;
+	}
+
+	std::vector<std::shared_ptr<CComponent>> resComps;
+	for(TResources::nziterator i(upgradableSlots.totalCosts); i.valid(); i++)
+		resComps.push_back(std::make_shared<CComponent>(ComponentType::RESOURCE, i->resType, i->resVal));
+	if(resComps.empty())
+		resComps.push_back(std::make_shared<CComponent>(ComponentType::RESOURCE, static_cast<GameResID>(GameResID::GOLD), 0)); // add at least gold, when there are no costs
+	resComps.back()->newLine = true;
+	for(auto & upgradeInfo : upgradableSlots.upgradeInfos)
+		resComps.push_back(std::make_shared<CComponent>(ComponentType::CREATURE, upgradeInfo.second.getUpgrade(), obj->Slots().at(upgradeInfo.first)->getCount()));
+
+	std::string textID = upgradableSlots.canAffordAll ? "core.genrltxt.207" : "vcmi.townWindow.upgradeAll.notAllUpgradable";
+
+	GAME->interface()->showYesNoDialog(LIBRARY->generaltexth->translate(textID), [upgradableSlots, obj](){
+		for(auto & upgradeInfo : upgradableSlots.upgradeInfos)
+			GAME->interface()->cb->upgradeCreature(obj, upgradeInfo.first, upgradeInfo.second.getUpgrade());
+	}, nullptr, resComps);
+}
+
 CSpellResearchDialog::CSpellResearchDialog(const std::string & textToShow, const std::vector<std::shared_ptr<CComponent>> & comps, const CGTownInstance * town, SpellID oldSpell, bool canAfford)
 	: CWindowObject(PLAYER_COLORED_BORDERED_STATUSBAR, ImagePath::builtin("spellResearchDialog"))
 {
@@ -403,42 +471,6 @@ CHeroGSlot::CHeroGSlot(int x, int y, int updown, const CGHeroInstance * h, HeroS
 
 CHeroGSlot::~CHeroGSlot() = default;
 
-auto CHeroGSlot::getUpgradableSlots(const CArmedInstance *obj) const
-{
-	struct result { bool isCreatureUpgradePossible; bool canAffordAny; bool canAffordAll; TResources totalCosts; std::vector<std::pair<SlotID, UpgradeInfo>> upgradeInfos; };
-
-	std::vector<std::pair<SlotID, UpgradeInfo>> upgradeInfos;
-	for(const auto & slot : obj->Slots())
-	{
-		auto upgradeInfo = std::make_pair(slot.first, UpgradeInfo(slot.second->getCreatureID()));
-		GAME->interface()->cb->fillUpgradeInfo(slot.second->getArmy(), slot.first, upgradeInfo.second);
-		bool canUpgrade = obj->tempOwner == GAME->interface()->playerID && upgradeInfo.second.canUpgrade();
-		if(canUpgrade)
-			upgradeInfos.push_back(upgradeInfo);
-	}
-
-	std::sort(upgradeInfos.begin(), upgradeInfos.end(), [&](const std::pair<SlotID, UpgradeInfo> & lhs, const std::pair<SlotID, UpgradeInfo> & rhs) {
-		return lhs.second.oldID.toCreature()->getLevel() > rhs.second.oldID.toCreature()->getLevel();
-	});
-	bool hasCreaturesToUpgrade = !upgradeInfos.empty();
-
-	TResources costs;
-	std::vector<SlotID> slotInfosToDelete;
-	for(const auto & upgradeInfo : upgradeInfos)
-	{
-		TResources upgradeCosts = upgradeInfo.second.getUpgradeCosts() * obj->Slots().at(upgradeInfo.first)->getCount();
-		if(GAME->interface()->cb->getResourceAmount().canAfford(costs + upgradeCosts))
-			costs += upgradeCosts;
-		else
-			slotInfosToDelete.push_back(upgradeInfo.first);
-	}
-	upgradeInfos.erase(std::remove_if(upgradeInfos.begin(), upgradeInfos.end(), [&slotInfosToDelete](const auto& item) {
-		return std::count(slotInfosToDelete.begin(), slotInfosToDelete.end(), item.first);
-	}), upgradeInfos.end());
-
-	return result { hasCreaturesToUpgrade, !upgradeInfos.empty(), slotInfosToDelete.empty(), costs, upgradeInfos };
-}
-
 void CHeroGSlot::gesture(bool on, const Point & initialPosition, const Point & finalPosition)
 {
 	if(!on)
@@ -451,29 +483,7 @@ void CHeroGSlot::gesture(bool on, const Point & initialPosition, const Point & f
 		return;
 
 	auto upgradableSlots = getUpgradableSlots(obj);
-	auto upgradeAll = [upgradableSlots, obj](){
-		if(!upgradableSlots.canAffordAny)
-		{
-			GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.upgradeAll.notUpgradable"));
-			return;
-		}
-
-		std::vector<std::shared_ptr<CComponent>> resComps;
-		for(TResources::nziterator i(upgradableSlots.totalCosts); i.valid(); i++)
-			resComps.push_back(std::make_shared<CComponent>(ComponentType::RESOURCE, i->resType, i->resVal));
-		if(resComps.empty())
-			resComps.push_back(std::make_shared<CComponent>(ComponentType::RESOURCE, static_cast<GameResID>(GameResID::GOLD), 0)); // add at least gold, when there are no costs
-		resComps.back()->newLine = true;
-		for(auto & upgradeInfo : upgradableSlots.upgradeInfos)
-			resComps.push_back(std::make_shared<CComponent>(ComponentType::CREATURE, upgradeInfo.second.getUpgrade(), obj->Slots().at(upgradeInfo.first)->getCount()));
-			
-		std::string textID = upgradableSlots.canAffordAll ? "core.genrltxt.207" : "vcmi.townWindow.upgradeAll.notAllUpgradable";
-
-		GAME->interface()->showYesNoDialog(LIBRARY->generaltexth->translate(textID), [upgradableSlots, obj](){
-			for(auto & upgradeInfo : upgradableSlots.upgradeInfos)
-				GAME->interface()->cb->upgradeCreature(obj, upgradeInfo.first, upgradeInfo.second.getUpgrade());
-		}, nullptr, resComps);
-	};
+	auto upgradeAll = [obj, upgradableSlots](){ upgradeAllCreatures(obj, upgradableSlots); };
 
 	if (!settings["input"]["radialWheelGarrisonSwipe"].Bool())
 		return;
@@ -1717,6 +1727,24 @@ void CCastleInterface::keyPressed(EShortcut key)
 	case EShortcut::TOWN_SWAP_ARMIES:
 		heroes->swapArmies();
 		break;
+	case EShortcut::TOWN_UPGRADE_GARRISON:
+	{
+		auto upgradableSlots = getUpgradableSlots(town->getUpperArmy());
+		if(upgradableSlots.isCreatureUpgradePossible)
+			upgradeAllCreatures(town->getUpperArmy(), upgradableSlots);
+		break;
+	}
+	case EShortcut::TOWN_UPGRADE_VISITING:
+	{
+		const auto *visitingHero = town->getVisitingHero();
+		if(visitingHero)
+		{
+			auto upgradableSlots = getUpgradableSlots(visitingHero);
+			if(upgradableSlots.isCreatureUpgradePossible)
+				upgradeAllCreatures(visitingHero, upgradableSlots);
+		}
+		break;
+	}
 	case EShortcut::TOWN_OPEN_TAVERN:
 		if(town->hasBuilt(BuildingID::TAVERN))
 			GAME->interface()->showTavernWindow(town, nullptr, QueryID::NONE);

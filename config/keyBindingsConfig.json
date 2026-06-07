@@ -256,6 +256,8 @@
 		"townOpenThievesGuild":     "G",
 		"townOpenVisitingHero":     "Ctrl+H",
 		"townSwapArmies":           "Space",
+		"townUpgradeGarrison":      "Shift+U",
+		"townUpgradeVisiting":      "Ctrl+U",
 		"listHeroUp":               "Ctrl+PageUp",
 		"listHeroDown":             "Ctrl+PageDown",
 		"listHeroTop":              "Ctrl+Home",

@@ -734,6 +734,8 @@
 	"vcmi.keyBindings.keyBinding.townOpenThievesGuild": "Town open thieves guild",
 	"vcmi.keyBindings.keyBinding.townOpenVisitingHero": "Town open visiting hero",
 	"vcmi.keyBindings.keyBinding.townSwapArmies": "Town swap armies",
+	"vcmi.keyBindings.keyBinding.townUpgradeGarrison": "Town upgrade garrison",
+	"vcmi.keyBindings.keyBinding.townUpgradeVisiting": "Town upgrade visiting",
 	"vcmi.keyBindings.popup": "For {%s} the following keys are configured:\n\n",
 	"vcmi.keyBindings.reset": "Reset",
 	"vcmi.keyBindings.reset.help": "{Reset}\n\nResets key bindings to default",

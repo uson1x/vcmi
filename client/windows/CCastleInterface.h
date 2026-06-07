@@ -105,8 +105,6 @@ class CHeroGSlot : public CIntObject
 	const CGHeroInstance * hero;
 	int upg; //0 - up garrison, 1 - down garrison
 
-	auto getUpgradableSlots(const CArmedInstance *obj) const;
-
 public:
 	CHeroGSlot(int x, int y, int updown, const CGHeroInstance *h, HeroSlots * Owner);
 	~CHeroGSlot();
