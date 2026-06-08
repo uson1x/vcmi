@@ -822,7 +822,7 @@ assign_source_group(${lib_SRCS} ${lib_HEADERS})
 
 add_library(vcmiMain OBJECT ${lib_SRCS} ${lib_HEADERS})
 
-set_target_properties(vcmiMain PROPERTIES COMPILE_DEFINITIONS "VCMI_DLL=1")
+target_compile_definitions(vcmiMain PRIVATE "VCMI_DLL=1")
 target_link_libraries(vcmiMain PUBLIC
 	minizip::minizip ZLIB::ZLIB Iconv::Iconv
 	${SYSTEM_LIBS} Boost::boost Boost::filesystem Boost::program_options Boost::date_time

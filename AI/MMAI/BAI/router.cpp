@@ -15,8 +15,8 @@
 #include "lib/CRandomGenerator.h"
 #include "json/JsonUtils.h"
 
-#include "../BattleAI/BattleAI.h"
-#include "../StupidAI/StupidAI.h"
+#include "../../BattleAI/BattleAI.h"
+#include "../../StupidAI/StupidAI.h"
 
 #include "BAI/factory.h"
 #include "BAI/fallback/scripted_model.h"

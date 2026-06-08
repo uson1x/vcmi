@@ -485,8 +485,6 @@ endif()
 assign_source_group(${vcmiclientcommon_SRCS} ${vcmiclientcommon_HEADERS})
 add_library(vcmiclientcommon STATIC ${vcmiclientcommon_SRCS} ${vcmiclientcommon_HEADERS})
 
-	add_dependencies(vcmiclientcommon vcmiLua)
-
 if(WIN32)
 	set_target_properties(vcmiclientcommon
 		PROPERTIES

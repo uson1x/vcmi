@@ -32,14 +32,16 @@ std::shared_ptr<CGlobalAI> AIFactory::createAdventureAI(const std::string & name
 {
 	logGlobal->info("Creating adventure AI %s", name);
 
-#ifdef ENABLE_NULLKILLER2_AI
 	if(name == "Nullkiller2")
 	{
+#ifdef ENABLE_NULLKILLER2_AI
 		auto ret = std::make_shared<NK2AI::AIGateway>();
 		ret->dllName = name;
 		return ret;
-	}
+#else
+		throw std::runtime_error("Nullkiller2 is not available in this build!");
 #endif
+	}
 
 	auto ret = std::make_shared<CEmptyAI>();
 	ret->dllName = name;
@@ -50,19 +52,25 @@ std::shared_ptr<CBattleGameInterface> AIFactory::createBattleAI(const std::strin
 {
 	logGlobal->info("Creating battle AI %s", name);
 
-#ifdef ENABLE_BATTLE_AI
 	if(name == "BattleAI")
+#ifdef ENABLE_BATTLE_AI
 		return std::make_shared<CBattleAI>();
+#else
+		throw std::runtime_error("BattleAI is not available in this build!");
 #endif
 
-#ifdef ENABLE_STUPID_AI
 	if(name == "StupidAI")
+#ifdef ENABLE_STUPID_AI
 		return std::make_shared<CStupidAI>();
+#else
+		throw std::runtime_error("StupidAI is not available in this build!");
 #endif
 
-#ifdef ENABLE_MMAI
 	if(name == "MMAI")
+#ifdef ENABLE_MMAI
 		return std::make_shared<MMAI::BAI::Router>();
+#else
+		throw std::runtime_error("MMAI is not available in this build!");
 #endif
 
 	return std::make_shared<CEmptyAI>();
