@@ -86,6 +86,15 @@ public:
 //to be used for spells configured with old format
 class FallbackMechanicsFactory : public CustomMechanicsFactory
 {
+	JsonNode usePowerAsVal(const JsonNode & effects, si32 power) const
+	{
+		JsonNode result = effects;
+		for(auto & [name, bonusNode] : result.Struct())
+			if(bonusNode["val"].isNull())
+				bonusNode["val"].Integer() = power;
+		return result;
+	}
+
 public:
 	FallbackMechanicsFactory(const CSpell * s)
 		: CustomMechanicsFactory(s)
@@ -99,7 +108,7 @@ public:
 			{
 				JsonNode config;
 				config["timed"]["type"].String() = "core:timed";
-				config["timed"]["bonus"] = levelInfo.effects;
+				config["timed"]["bonus"] = usePowerAsVal(levelInfo.effects, levelInfo.power);
 				config.setModScope(s->modScope);
 				loadEffects(config, level);
 			}
@@ -108,7 +117,7 @@ public:
 				JsonNode config;
 				config["timed"]["type"].String() = "core:timed";
 				config["timed"]["cumulative"].Bool() = true;
-				config["timed"]["bonus"] = levelInfo.cumulativeEffects;
+				config["timed"]["bonus"] = usePowerAsVal(levelInfo.cumulativeEffects, levelInfo.power);
 				config.setModScope(s->modScope);
 				loadEffects(config, level);
 			}
