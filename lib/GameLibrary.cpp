@@ -20,7 +20,7 @@
 #include "MapLayerHandler.h"
 #include "spells/SpellSchoolHandler.h"
 #include "CSkillHandler.h"
-#include "callback/CDynLibHandler.h"
+#include "../luascript/LuaModule.h"
 #include "entities/artifact/CArtHandler.h"
 #include "entities/faction/CTownHandler.h"
 #include "entities/hero/CHeroClassHandler.h"
@@ -226,8 +226,7 @@ void GameLibrary::initializeLibrary()
 	createHandler(obstacleHandler);
 	createHandler(mapLayerHandler);
 
-	boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
-	scriptHandler = CDynLibHandler::getNewScriptingModule(filePath);
+	scriptHandler = std::make_unique<scripting::LuaModule>();
 	scriptHandler->installScripting(spellEffectHandler.get());
 	modh->load();
 	modh->afterLoad();

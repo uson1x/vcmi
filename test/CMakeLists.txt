@@ -160,10 +160,6 @@ add_subdirectory_with_folder("3rdparty" googletest EXCLUDE_FROM_ALL)
 
 add_executable(vcmitest ${test_SRCS} ${test_HEADERS} ${mock_HEADERS})
 target_link_libraries(vcmitest PRIVATE gtest gmock vcmi vcmiservercommon ${SYSTEM_LIBS})
-target_link_libraries(vcmitest PRIVATE vcmiLua)
-if(ENABLE_NULLKILLER2_AI)
-	target_link_libraries(vcmitest PUBLIC Nullkiller2)
-endif()
 
 target_include_directories(vcmitest
 		PUBLIC	${CMAKE_CURRENT_SOURCE_DIR}
