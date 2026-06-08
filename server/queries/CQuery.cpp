@@ -42,9 +42,9 @@ CQuery::~CQuery()
 
 void CQuery::addPlayer(PlayerColor color)
 {
-	if(!color.isValidPlayer())
-		return;
+	assert(color.isValidPlayer());
 
+	// prevent duplicates
 	if(vstd::contains(players, color))
 		return;
 

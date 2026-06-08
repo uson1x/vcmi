@@ -37,8 +37,13 @@ CBattleQuery::CBattleQuery(CGameHandler * owner, const IBattleInfo * bi):
 	belligerents[BattleSide::ATTACKER] = bi->getSideArmy(BattleSide::ATTACKER);
 	belligerents[BattleSide::DEFENDER] = bi->getSideArmy(BattleSide::DEFENDER);
 
-	addPlayer(bi->getSidePlayer(BattleSide::ATTACKER));
-	addPlayer(bi->getSidePlayer(BattleSide::DEFENDER));
+	auto attacker = bi->getSidePlayer(BattleSide::ATTACKER);
+	if(attacker.isValidPlayer())
+		addPlayer(attacker);
+
+	auto defender = bi->getSidePlayer(BattleSide::DEFENDER);
+	if(defender.isValidPlayer())
+		addPlayer(defender);
 }
 
 CBattleQuery::CBattleQuery(CGameHandler * owner):
@@ -81,8 +86,13 @@ CBattleDialogQuery::CBattleDialogQuery(CGameHandler * owner, const IBattleInfo *
 	bi(bi),
 	result(Br)
 {
-	addPlayer(bi->getSidePlayer(BattleSide::ATTACKER));
-	addPlayer(bi->getSidePlayer(BattleSide::DEFENDER));
+	auto attacker = bi->getSidePlayer(BattleSide::ATTACKER);
+	if(attacker.isValidPlayer())
+		addPlayer(attacker);
+
+	auto defender = bi->getSidePlayer(BattleSide::DEFENDER);
+	if(defender.isValidPlayer())
+		addPlayer(defender);
 }
 
 void CBattleDialogQuery::onRemoval(PlayerColor color)
