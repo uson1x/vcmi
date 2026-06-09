@@ -27,8 +27,8 @@ public:
 	static constexpr std::string_view luaName = "Obstacle";
 	static constexpr std::string_view luaDescription =
 		"A battlefield obstacle (static map decoration, moat tile, or spell-created hazard). "
-		"Exposed read-only — to add or remove obstacles use the ServerCallback `addObstacle` / "
-		"`removeObstacle` methods with a SpellObstacleDescriptor.";
+		"Exposed read-only — to add or remove obstacles use the `server:addObstacle` or "
+		"`server:removeObstacle` methods.";
 
 	static void registerMethods(MethodRegistrar & R);
 

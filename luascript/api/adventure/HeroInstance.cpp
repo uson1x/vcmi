@@ -31,7 +31,7 @@ void HeroInstanceProxy::registerMethods(MethodRegistrar & R)
 	R.method<&CGObjectInstance::getOwner, CGHeroInstance>("getOwner",
 		"Returns the player color that owns this hero.");
 	R.method<&CGHeroInstance::getNameTextID>("getNameTextID",
-		"Returns the JSON text ID of the hero's name.");
+		"Returns the text ID of the hero's name.");
 	R.function<&HeroInstanceProxy::isMale>("isMale",
 		"True if the hero's gender is male.");
 	R.function<&HeroInstanceProxy::isFemale>("isFemale",

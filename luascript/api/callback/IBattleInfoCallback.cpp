@@ -39,18 +39,17 @@ namespace scripting::api
 void IBattleInfoCallbackProxy::registerMethods(MethodRegistrar & R)
 {
 	R.method<&BattleCb::battleTacticDist>("getTacticDistance",
-		"Returns the remaining tactic phase distance, or 0 if the tactic phase has ended.");
+		"Returns the available tactic phase distance, or 0 if the tactic phase has ended.");
 	R.method<&BattleCb::battleIsFinished>("isFinished",
-		"Returns the winning side, or no value if the battle is still ongoing.");
-
+		"DEPRECATED API Returns the winning side, or no value if the battle is still ongoing.");
 	R.cfunction<&IBattleInfoCallbackProxy::getAvailableHex>("getAvailableHex",
 		"(creature: Creature, side: BattleSide, hex: BattleHex?): BattleHex",
-		"Returns an empty hex on the given side that the creature can be placed on.");
+		"Returns an empty hex next to desired location that the creature can be placed on.");
 	R.cfunction<&IBattleInfoCallbackProxy::getUnitsIf>("getUnitsIf",
 		"(predicate: fun(u: Unit): boolean): Unit[]",
-		"Returns the units for which the predicate returns true.");
+		"Returns all units for which the predicate returns true.");
 	R.function<&IBattleInfoCallbackProxy::isAccessibleForUnit>("isAccessibleForUnit",
-		"True if the given hex is reachable by the given unit considering accessibility.");
+		"True if the given hex is reachable by the given unit either on current turn or on any future turns.");
 	R.function<&IBattleInfoCallbackProxy::hasPenaltyOnLine>("hasPenaltyOnLine",
 		"True if a ranged attack along this line crosses a wall or moat (per the flags).");
 	R.function<&IBattleInfoCallbackProxy::getUnitByPos>("getUnitByPos",

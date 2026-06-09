@@ -24,14 +24,14 @@ void BattleHexArrayProxy::registerMethods(MethodRegistrar & R)
 {
 	R.cfunction<&BattleHexArrayProxy::insert>("insert",
 		"(hex: BattleHex)",
-		"Adds the given hex to the array (no-op if already present).");
+		"Adds the given hex to the list (no-op if already present).");
 	R.cfunction<&BattleHexArrayProxy::erase>("erase",
 		"(hex: BattleHex)",
-		"Removes the given hex from the array (no-op if absent).");
+		"Removes the given hex from the list (no-op if absent).");
 	R.method<&BattleHexArray::contains>("contains",
-		"True if the array contains the given hex.");
+		"True if the list contains the given hex.");
 	R.method<&BattleHexArray::size>("size",
-		"Returns the number of hexes stored in the array.");
+		"Returns the number of unique hexes stored in the list.");
 	R.function<&BattleHexArrayProxy::at>("at",
 		"Returns the hex at the given 1-based index.");
 }

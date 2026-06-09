@@ -58,7 +58,6 @@ public:
 
 	// Mutable API
 	void setDefending(bool v);
-	void setDefendingAnim(bool v);
 	void setCloned(bool v);
 	void setDrainedMana(bool v);
 	void setFear(bool v);
@@ -84,9 +83,9 @@ class LuaUnitStateProxy : public CopyableWrapper<LuaUnitState, LuaUnitStateProxy
 public:
 	static constexpr std::string_view luaName = "UnitState";
 	static constexpr std::string_view luaDescription =
-		"Mutable working copy of a battle Unit. Obtained via `Unit:copy()`; scripts edit fields "
+		"Editable copy of a battle Unit. Obtained via `Unit:copy()`; scripts edit fields "
 		"(position, defending, clone, summoned, …) and inflict damage locally, then hand the "
-		"result to ServerCallback `changeUnit` to broadcast the update through a battle pack.";
+		"result to ServerCallback `changeUnit` or `addUnit` to broadcast the update through a battle pack.";
 
 	static void registerMethods(MethodRegistrar & R);
 

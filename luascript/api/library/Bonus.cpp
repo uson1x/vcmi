@@ -46,7 +46,7 @@ void BonusProxy::registerMethods(MethodRegistrar & R)
 	R.function<&BonusProxy::getStacking>("getStacking",
 		"Returns the stacking key — bonuses with the same key from the same source do not stack.");
 	R.function<&BonusProxy::getTurnsRemain>("getTurnsRemain",
-		"Returns the remaining turns until the bonus expires (0 if not turn-limited).");
+		"Returns the remaining turns until the bonus expires (0 if not turn-limited, only active if duration is set accordingly).");
 	R.function<&BonusProxy::isHidden>("isHidden",
 		"True if the bonus is hidden from the player's interface display.");
 	R.function<&BonusProxy::getParametersAsNumber>("getParametersAsNumber",

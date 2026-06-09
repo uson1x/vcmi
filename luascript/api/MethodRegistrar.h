@@ -62,7 +62,7 @@ public:
 	/// signature, so the caller must spell out the Lua-facing signature explicitly.
 	template<auto Fn>
 	void cfunction(std::string_view name,
-	               std::string      signature,
+				   const std::string & signature,
 	               std::string_view description)
 	{
 		addRaw(name, &LuaCallWrapper<Fn>::invoke, std::move(signature), description);

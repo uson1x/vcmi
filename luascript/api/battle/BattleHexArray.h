@@ -24,9 +24,9 @@ class BattleHexArrayProxy : public CopyableWrapper<const BattleHexArray, BattleH
 public:
 	static constexpr std::string_view luaName = "BattleHexArray";
 	static constexpr std::string_view luaDescription =
-		"A bag of BattleHex values. Used wherever the engine returns or accepts a set of tiles "
+		"A list of BattleHex values. Used wherever the engine returns or accepts a set of tiles "
 		"(reachable hexes, area-of-effect, obstacle footprint, …). Supports indexed access, "
-		"insertion, and erasure; iteration order is not guaranteed.";
+		"insertion, and erasure; iteration order matches insertion order";
 
 	static void registerMethods(MethodRegistrar & R);
 

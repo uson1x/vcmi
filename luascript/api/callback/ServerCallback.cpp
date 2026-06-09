@@ -55,15 +55,15 @@ void ServerCallbackProxy::registerMethods(MethodRegistrar & R)
 		"Spawns a new battle unit described by the given UnitInfo. Returns the created unit.");
 	R.cfunction<&ServerCallbackProxy::healUnit>("healUnit",
 		"(battle: Battle, unit: Unit, amount: integer, level: EHealLevel, power: EHealPower)",
-		"Heals the given unit on the server side.");
+		"Heals the given unit by the provided amount of health points.");
 	R.cfunction<&ServerCallbackProxy::changeUnit>("changeUnit",
 		"(battle: Battle, unitState: UnitState, healthDelta: integer?)",
-		"Applies a UnitState mutation to the canonical unit, optionally adjusting current health.");
+		"Applies a UnitState mutation to the unit, optionally adjusting current health.");
 	R.cfunction<&ServerCallbackProxy::damageUnit>("damageUnit",
 		"(battle: Battle, unit: Unit, damage: integer): integer, integer",
 		"Damages the unit, returning the actual damage dealt and the number of killed creatures.");
 	R.function<&ServerCallbackProxy::removeUnit>("removeUnit",
-		"Removes the unit from the battlefield.");
+		"Removes the unit or its corpse from the battlefield.");
 	R.function<&ServerCallbackProxy::removeObstacle>("removeObstacle",
 		"Removes the given obstacle from the battlefield.");
 	R.function<&ServerCallbackProxy::moveUnit>("moveUnit",

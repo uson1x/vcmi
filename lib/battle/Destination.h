@@ -39,8 +39,8 @@ public:
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("unit", unitValue, "Targeted unit, or null for hex-only targets.");
-		s("hex",  hexValue,  "Targeted battlefield hex (also set for unit targets — equal to the unit's primary position).");
+		s("unit", unitValue, "Targeted unit, or null for location targets.");
+		s("hex",  hexValue,  "Targeted battlefield hex (also set for unit targets — equal to the unit's position).");
 	}
 };
 

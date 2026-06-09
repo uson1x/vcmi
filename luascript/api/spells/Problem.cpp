@@ -48,7 +48,7 @@ void ProblemProxy::registerMethods(MethodRegistrar & R)
 	R.function<&ProblemProxy::addGeneric>("addGeneric",
 		"Adds the generic 'cannot cast' problem entry derived from the given mechanics.");
 	R.function<&ProblemProxy::addStandard>("addStandard",
-		"Adds a standard problem entry with the requested ESpellCastProblem value.");
+		"Adds a standard problem entry with the requested SpellCastProblem value.");
 }
 
 }

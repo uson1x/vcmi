@@ -30,9 +30,9 @@ class HeroInstanceProxy : public RawPointerWrapper<const CGHeroInstance, HeroIns
 public:
 	static constexpr std::string_view luaName = "HeroInstance";
 	static constexpr std::string_view luaDescription =
-		"A hero placed on the adventure map. Wraps the live CGHeroInstance — owner, position, "
-		"army composition, primary skills, and the bonus stack accumulated from class, type, "
-		"artifacts, and secondary skills are all read through this proxy.";
+		"A hero placed on the adventure map. Provides access to such information as owner, "
+		"type (Orrin, Kyrre, Astral...), position on map, artifacts, and secondary skills, "
+		"army composition, primary skills, and all bonuses affecting hero.";
 
 	static void registerMethods(MethodRegistrar & R);
 };

@@ -24,7 +24,7 @@ void FactionProxy::registerMethods(MethodRegistrar & R)
 	EntityBindings<Faction>::registerMethods(R);
 
 	R.method<&Faction::hasTown>("hasTown",
-		"True if at least one town belonging to this faction exists in the game.");
+		"True if this faction has town belonging to it in the game. Usually true for all factions other than neutral");
 }
 
 }

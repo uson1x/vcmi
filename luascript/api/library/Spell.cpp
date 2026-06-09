@@ -27,12 +27,11 @@ void SpellProxy::registerMethods(MethodRegistrar & R)
 {
 	EntityBindings<Spell>::registerMethods(R);
 	R.method<&Entity::getNameTextID, Spell>("getNameTextID",
-		"Returns the JSON text ID of the spell name.");
-
+		"Returns the text ID of the spell name.");
 	R.method<&Spell::isAdventure>("isAdventure",
-		"True if the spell can be cast on the adventure map.");
+		"True if the spell can only be cast on the adventure map.");
 	R.method<&Spell::isCombat>("isCombat",
-		"True if the spell can be cast during combat.");
+		"True if the spell can only be cast during combat.");
 	R.method<&Spell::isCreatureAbility>("isCreatureAbility",
 		"True if the spell is a creature's innate ability rather than a learnable spell.");
 	R.method<&Spell::isPositive>("isPositive",
@@ -48,7 +47,7 @@ void SpellProxy::registerMethods(MethodRegistrar & R)
 	R.method<&Spell::isSpecial>("isSpecial",
 		"True if the spell is marked as special (e.g. cannot be obtained from common sources).");
 	R.method<&Spell::isPersistent>("isPersistent",
-		"True if the spell's effect persists between turns (e.g. timed buffs).");
+		"True if the spell's effect persists and can't be dispelled normally.");
 	R.method<&Spell::isMagical>("isMagical",
 		"True if the spell is magical in nature (as opposed to a non-magical ability).");
 
@@ -59,10 +58,10 @@ void SpellProxy::registerMethods(MethodRegistrar & R)
 	R.method<&Spell::getLevelPower>("getLevelPower",
 		"Returns the spell's per-level power bonus.");
 	R.method<&Spell::getDescriptionTranslated>("getLevelDescription",
-		"Returns the translated description text for the spell at the requested skill level.");
+		"DEPRECATED API Returns the translated description text for the spell at the requested skill level.");
 
 	R.function<&SpellProxy::getSchools>("getSchools",
-		"Returns the list of magic schools the spell belongs to as JSON keys.");
+		"DEPRECATED API Returns the list of magic schools the spell belongs to as JSON keys.");
 }
 
 std::vector<std::string> SpellProxy::getSchools(const Spell & spell)

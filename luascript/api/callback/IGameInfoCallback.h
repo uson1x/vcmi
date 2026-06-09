@@ -29,7 +29,7 @@ class IGameInfoCallbackProxy : public RawPointerWrapper<const GameCb, IGameInfoC
 public:
 	static constexpr std::string_view luaName = "Game";
 	static constexpr std::string_view luaDescription =
-		"Adventure-map query interface, bound to the global `GAME`. Provides world-level "
+		"Adventure-map query interface. Provides world-level "
 		"lookups: current date, players, towns, heroes, and map objects accessible to the "
 		"calling script's owner.";
 

@@ -30,11 +30,11 @@ namespace scripting::api
 void ObstacleProxy::registerMethods(MethodRegistrar & R)
 {
 	R.function<&ObstacleProxy::getObstacleType>("getObstacleType",
-		"Returns the obstacle category (usual, absolute, moat, spell-created, ...).");
+		"Returns the obstacle category: usual, absolute, moat, or spell-created.");
 	R.function<&ObstacleProxy::getPosition>("getPosition",
-		"Returns the primary battle hex occupied by the obstacle.");
+		"Returns the hex that serves as anchor of the obstacle, usually - located in bottom-left corner of the obstacle");
 	R.function<&ObstacleProxy::getSpellKey>("getSpellKey",
-		"For spell-created obstacles, returns the JSON key of the originating spell. Throws otherwise.");
+		"DEPRECATED API Returns the JSON key of the originating spell. Can only be used with spell-created obstacles.");
 }
 
 CObstacleInstance::EObstacleType ObstacleProxy::getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle)

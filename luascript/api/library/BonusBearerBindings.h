@@ -32,7 +32,7 @@ public:
 	{
 		R.template cfunction<&getBonuses>("getBonuses",
 			"(predicate: fun(b: Bonus): boolean): BonusList",
-			"Returns the bonuses on this bearer for which the predicate returns true.");
+			"Returns all bonuses affecting the bearer for which the predicate returns true.");
 	}
 
 private:

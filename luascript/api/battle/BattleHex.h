@@ -26,9 +26,8 @@ class BattleHexProxy : public CopyableWrapper<const BattleHex, BattleHexProxy>
 public:
 	static constexpr std::string_view luaName = "BattleHex";
 	static constexpr std::string_view luaDescription =
-		"A single tile on the battlefield grid. Identified by a packed coordinate; methods on "
-		"this type compute geometric relationships (distance, neighbours, line-of-sight target "
-		"on a given side) without going through the battle callback.";
+		"Represents a single tile on the battlefield grid"
+		"allows computing geometric relationships (distance, neighbours, line-of-sight) that don't rely on current state of a battlefield";
 
 	static void registerMethods(MethodRegistrar & R);
 

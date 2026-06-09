@@ -11,7 +11,6 @@
 
 #include "Artifact.h"
 
-#include "BonusProviderBindings.h"
 #include "EntityBindings.h"
 #include "../Registry.h"
 #include "../../../lib/bonuses/IBonusBearer.h"
@@ -24,14 +23,9 @@ namespace scripting::api
 void ArtifactProxy::registerMethods(MethodRegistrar & R)
 {
 	EntityBindings<Artifact>::registerMethods(R);
-	BonusProviderBindings<Artifact>::registerMethods(R);
 
-	R.method<&Artifact::getDescriptionTranslated>("getDescription",
-		"Returns the artifact's flavor / description text in the active language.");
-	R.method<&Artifact::getEventTranslated>("getEventText",
-		"Returns the event log text shown when the artifact is picked up.");
 	R.method<&Artifact::isBig>("isBig",
-		"True if the artifact occupies the 'big' artifact slot (cannot be carried in regular slots).");
+		"True if the artifact occupies the 'big' artifact slot (cannot be carried in the backpack).");
 	R.method<&Artifact::isTradable>("isTradable",
 		"True if the artifact can be traded between heroes or sold at the marketplace.");
 	R.method<&Artifact::getPrice>("getPrice",

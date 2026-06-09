@@ -20,27 +20,13 @@ This page describes the internal working of the Lua scripting module. For usage 
   - consider wrapping Lua userdata into std::any for better type safety, or at least pass classes other than LuaCopyable as ApiShared / ApiPointer
   - check if there is a way to wrap Lua function into C++ wrapper and pass it into LuaFunctionWrapper, or even LuaMethodWrapper
   - add guards against loading values from .json with same name as methods in Lua spell effect script
-
-## Documenting the public scripting API
-
-Every binding registered by a proxy carries a description string at the registration site (see the `R.method<...>("name", "description")` pattern in any of the `api/<category>/Xxx.cpp` files). Running
-
-```sh
-./vcmiserver --export-lua-docs <output-dir>
-```
-
-regenerates two reference files from those descriptions:
-
-- `API.md` — Markdown reference, one section per Lua type with a table of method / signature / description.
-- `api.lua` — [Lua Language Server](https://luals.github.io/wiki/definition-files/) stub: `---@meta` header, `---@class` per type, per-method `---@param`/`---@return` annotations. Drop into a luals `Lua.workspace.library` path to get autocomplete in modders' editors.
-
-Both files are emitted from the same `DocRegistrar` pass that the runtime metatable build also goes through, so they stay in lockstep with the host bindings — there is no separate source of truth to keep in sync.
-
-A `BindingsCoverageTest` in `test/scripting/` asserts at build time that every binding has a non-empty name, signature and description, and that names are unique per type. Adding a binding without filling in the description is a test failure.
-
-## Binding architecture (host-side)
-
-The binding host has been moved off the old `REGISTER_CUSTOM` static-vector pattern. Each proxy implements `static void registerMethods(MethodRegistrar &)` and calls templated helpers (`R.method<>`, `R.function<>`, `R.cfunction<>`) that handle both the runtime registration and the docs metadata in one place. Shared methods across multiple leaf proxies are extracted into leaf-templated *binding-group classes* (e.g. `EntityBindings<Leaf>`, `BonusBearerBindings<Leaf>`).
+- Docs:
+  - Try to replace/improve `luaTypeNameOf` function. Right now not including correct header would silently result in `userdata` in docs. Either place everything in one header or find a way to force compiler error on missing overload
+  - fix arg1 arguments in api.lua
+  - remove deprecated API
+  - add API categories for .md
+  - merge name and signature for .md?
+  - add anchors/local URL's for method arguments to redirect to class docs
 
 ## Future improvements
 
@@ -67,6 +53,21 @@ Global state of a Lua script must never change - script should not make assumpti
 - Method names must be verbs: `getFoo`, `isFoo`, `setFoo`, `run`, `update`
 - Library classes, such as Creature must be passed as pointer like `const Creature *`, not as identifier like `CreatureID`
 - If you need to expose identifier, prefer exposing its string form, like one provided via `getJsonKey`
+
+## Documenting the public scripting API
+
+Every binding registered by a proxy carries a description string at the registration site (see the `R.method<...>("name", "description")` pattern in any of the `api/<category>/Xxx.cpp` files). Running
+
+```sh
+./vcmiserver --export-lua-docs <output-dir>
+```
+
+regenerates two reference files from those descriptions:
+
+- `API.md` — Markdown reference, one section per Lua type with a table of method / signature / description.
+- `api.lua` — [Lua Language Server](https://luals.github.io/wiki/definition-files/) stub: `---@meta` header, `---@class` per type, per-method `---@param`/`---@return` annotations. Drop into a luals `Lua.workspace.library` path to get autocomplete in modders' editors.
+
+Both files are emitted from the same `DocRegistrar` pass that the runtime metatable build also goes through, so they stay in lockstep with the host bindings — there is no separate source of truth to keep in sync.
 
 ## Script conventions
 

@@ -59,7 +59,7 @@ class Enums : public scripting::ApiSerializable<Enums>
 public:
 	static constexpr std::string_view luaName = "Enums";
 	static constexpr std::string_view luaDescription =
-		"The global `ENUM` table — string→integer constants scripts use in lieu of magic "
+		"The global `ENUM` table — string->integer constants scripts use to avoid magic "
 		"numbers. Each field below is a named group; the runtime value is a Lua table whose "
 		"keys are the constant names.";
 
@@ -68,7 +68,7 @@ public:
 	{
 		s("HealLevel",        exportHealLevel(),        "Outcome categories for the heal action: plain heal / resurrect / overheal.");
 		s("HealPower",        exportHealPower(),        "Persistence of healing effects: one-battle vs permanent.");
-		s("SpellCastProblem", exportSpellCastProblem(), "Reason codes returned from spell-cast validation.");
+		s("SpellCastProblem", exportSpellCastProblem(), "Error codes returned from spell-cast validation.");
 		s("AimType",          exportAimType(),          "Targeting modes a spell can require: none, creature, obstacle, location.");
 		s("BonusDuration",    exportBonusDuration(),    "Lifetime selectors used by Bonus / BonusDescriptor `duration`.");
 		s("BonusSource",      exportBonusSource(),      "Origin classes used by Bonus / BonusDescriptor `sourceType`.");

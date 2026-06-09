@@ -19,9 +19,7 @@ namespace scripting::api
 
 /// MethodRegistrar implementation that pushes each binding directly onto a Lua table.
 /// Construct with the lua_State and the absolute stack index of the table that should
-/// receive the methods; `addRaw` then writes name → C-function pairs into that table.
-/// Signature and description metadata are ignored at runtime; the same proxy code path
-/// produces docs through DocRegistrar (added later).
+/// receive the methods; `addRaw` then writes name -> C-function pairs into that table.
 class LuaRegistrar final : public MethodRegistrar
 {
 public:
