@@ -94,8 +94,10 @@ Enums::EnumMap<CObstacleInstance::EObstacleType> Enums::exportObstacleType() con
 Enums::EnumMap<EWallPart> Enums::exportWallPart() const
 {
 	return {
-		{ "invalid",     EWallPart::INVALID },
-		{ "keep",        EWallPart::KEEP },
+		{ "invalid",              EWallPart::INVALID },
+		{ "indestructiblePart",   EWallPart::INDESTRUCTIBLE_PART },
+		{ "indestructibleGate",   EWallPart::INDESTRUCTIBLE_PART_OF_GATE },
+		{ "keep",                 EWallPart::KEEP },
 		{ "bottomTower", EWallPart::BOTTOM_TOWER },
 		{ "bottomWall",  EWallPart::BOTTOM_WALL },
 		{ "belowGate",   EWallPart::BELOW_GATE },

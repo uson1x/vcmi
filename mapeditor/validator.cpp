@@ -44,7 +44,6 @@ Validator::~Validator()
 std::set<Validator::Issue> Validator::validate(const CMap * map)
 {
 	std::set<Validator::Issue> issues;
-	JsonKeyExtractor keyExtractor(map->cb);
 	
 	if(!map)
 	{
@@ -154,16 +153,20 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 			}
 			if(o->ID == MapObjectID::WITCH_HUT)
 			{
-				CRewardableObject * hut = static_cast<CRewardableObject *>(o.get());
-				JsonNode preset = hut->configuration.getPresetVariable("secondarySkill", "gainedSkill");
-				if(!preset.isNull())
+				if(!presetIsValid(map, o, "secondarySkill", "gainedSkill", map->allowedAbilities))
 				{
-					auto presetAbilities = keyExtractor.filterKeys(preset, map->allowedAbilities);
-					if(presetAbilities.empty())
-					{
-						issues.insert({tr("A customized witch hut at x: %1 y: %2 on %3 layer does not hold a valid secondary skill")
-                            .arg(hut->pos.x).arg(hut->pos.y).arg(hut->pos.z), true});
-					}
+					issues.insert({tr("A witch hut at x: %1 y: %2 on %3 layer holds an invalid reward")
+						.arg(o->pos.x).arg(o->pos.y).arg(o->pos.z), true}
+					);
+				}
+			}
+			if(o->ID == MapObjectID::SCHOLAR)
+			{
+				if(!presetIsValid(map, o, "secondarySkill", "gainedSkill", map->allowedAbilities)
+				   || !presetIsValid(map, o, "spell", "gainedSpell", map->allowedSpells))
+				{
+					issues.insert({tr("A scholar at x: %1 y: %2 on %3 layer holds an invalid reward")
+						.arg(o->pos.x).arg(o->pos.y).arg(o->pos.z), true});
 				}
 			}
 		}
@@ -205,6 +208,24 @@ std::set<Validator::Issue> Validator::validate(const CMap * map)
 	}
 	
 	return issues;
+}
+
+template<typename IdentifierType>
+bool Validator::presetIsValid(
+    const CMap * map,
+	std::shared_ptr<CGObjectInstance> object,
+	const std::string & category,
+	const std::string & name,
+	const std::set<IdentifierType> & allowedEntities
+)
+{
+	JsonKeyExtractor keyExtractor(map->cb);
+	CRewardableObject * rewardable = static_cast<CRewardableObject *>(object.get());
+	JsonNode preset = rewardable->configuration.getPresetVariable(category, name);
+	if(preset.isNull())
+		return true;
+	auto presetAbilities = keyExtractor.filterKeys(preset, allowedEntities);
+	return !presetAbilities.empty();
 }
 
 void Validator::showValidationResults(const CMap * map)

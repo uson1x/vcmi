@@ -858,12 +858,6 @@ if(ENABLE_STATIC_LIBS AND ENABLE_CLIENT)
 	endif()
 endif()
 
-# no longer necessary, but might be useful to keep in future
-# unfortunately at the moment tests do not support namespaced build, so enable only on some systems
-if(IOS OR ANDROID)
-	target_compile_definitions(vcmi PUBLIC VCMI_LIB_NAMESPACE=VCMI)
-endif()
-
 if(IOS)
 	target_link_libraries(vcmi PUBLIC iOS_utils)
 endif()

@@ -63,6 +63,7 @@ local function isHexAvailable(battle, hex, mustBeClear)
 	if battle:hasFortifications() then
 		local part = battle:hexToWallPart(hex)
 		if part == ENUM.WallPart.invalid then return true end
+		if part == ENUM.WallPart.indestructiblePart or part == ENUM.WallPart.indestructibleGate then return false end
 		if part == ENUM.WallPart.bottomTower or part == ENUM.WallPart.upperTower then return false end
 		if battle:getWallState(part) ~= nil and battle:getWallState(part) > 0 then return false end
 	end

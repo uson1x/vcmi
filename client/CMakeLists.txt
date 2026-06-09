@@ -487,6 +487,7 @@ add_library(vcmiclientcommon STATIC ${vcmiclientcommon_SRCS} ${vcmiclientcommon_
 
 if(NOT ENABLE_STATIC_LIBS)
 	add_dependencies(vcmiclientcommon EmptyAI)
+	add_dependencies(vcmiclientcommon vcmiLua)
 
 	if(ENABLE_NULLKILLER2_AI)
 		add_dependencies(vcmiclientcommon Nullkiller2)
@@ -503,9 +504,6 @@ if(NOT ENABLE_STATIC_LIBS)
 	if(ENABLE_MMAI)
 		add_dependencies(vcmiclientcommon MMAI)
 	endif()
-endif()
-if(IOS)
-	add_dependencies(vcmiclientcommon vcmiLua)
 endif()
 
 if(WIN32)
