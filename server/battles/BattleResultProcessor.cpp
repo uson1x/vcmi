@@ -332,7 +332,10 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 
 		gameHandler->giveStackExperience(battle.battleGetArmyObject(finishingBattle->winnerSide), battleResult->exp[finishingBattle->winnerSide]);
 		if (winnerHero)
-			gameHandler->giveExperience(winnerHero, battleResult->exp[finishingBattle->winnerSide]);
+		{
+			gameHandler->giveExperienceWithoutLevelUp(winnerHero, battleResult->exp[finishingBattle->winnerSide]);
+			battleQuery->heroesWithDeferredLevelUp.push_back(winnerHero->id);
+		}
 	}
 
 	// Add statistics
@@ -393,7 +396,7 @@ void BattleResultProcessor::endBattleConfirm(const CBattleInfoCallback & battle)
 	gameHandler->sendAndApply(raccepted);
 
 	gameHandler->queries->popIfTop(battleQuery); // Workaround to remove battle query for AI case. TODO Think of a cleaner solution.
-	//--> continuation (battleFinalize) occurs after level-up gameHandler->queries are handled or on removing query
+	//--> continuation (battleFinalize) occurs on removing query
 }
 
 void BattleResultProcessor::battleFinalize(const BattleID & battleID, const BattleResult & result)

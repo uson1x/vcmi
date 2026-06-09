@@ -155,17 +155,15 @@ void CGameHandler::levelUpHero(const CGHeroInstance * hero)
 	hlu.primskill = primarySkill;
 	hlu.skills = randomizer->rollSecondarySkills(hero);
 
-	if (hlu.skills.size() == 0)
+	if (!hero->getOwner().isValidPlayer())
 	{
 		sendAndApply(hlu);
-		levelUpHero(hero);
+		if(hlu.skills.empty())
+			levelUpHero(hero);
+		else
+			levelUpHero(hero, hlu.skills.front());
 	}
-	else if (hlu.skills.size() == 1 || !hero->getOwner().isValidPlayer())
-	{
-		sendAndApply(hlu);
-		levelUpHero(hero, hlu.skills.front());
-	}
-	else if (hlu.skills.size() > 1)
+	else
 	{
 		auto levelUpQuery = std::make_shared<CHeroLevelUpDialogQuery>(this, hlu, hero);
 		queries->addQuery(levelUpQuery);
@@ -295,19 +293,15 @@ void CGameHandler::levelUpCommander(const CCommanderInstance * c)
 			clu.skills.push_back (i);
 		++i;
 	}
-	int skillAmount = clu.skills.size();
-
-	if (!skillAmount)
+	if (!hero->getOwner().isValidPlayer()) //choose skill automatically
 	{
 		sendAndApply(clu);
-		levelUpCommander(c);
+		if(clu.skills.empty())
+			levelUpCommander(c);
+		else
+			levelUpCommander(c, *RandomGeneratorUtil::nextItem(clu.skills, getRandomGenerator()));
 	}
-	else if (skillAmount == 1  ||  hero->tempOwner == PlayerColor::NEUTRAL) //choose skill automatically
-	{
-		sendAndApply(clu);
-		levelUpCommander(c, *RandomGeneratorUtil::nextItem(clu.skills, getRandomGenerator()));
-	}
-	else if (skillAmount > 1) //apply and ask for secondary skill
+	else
 	{
 		auto commanderLevelUp = std::make_shared<CCommanderLevelUpDialogQuery>(this, clu, hero);
 		queries->addQuery(commanderLevelUp);
@@ -336,6 +330,12 @@ void CGameHandler::giveStackExperience(const CArmedInstance * army, TExpType val
 }
 
 void CGameHandler::giveExperience(const CGHeroInstance * hero, TExpType amountToGain)
+{
+	giveExperienceWithoutLevelUp(hero, amountToGain);
+	expGiven(hero);
+}
+
+void CGameHandler::giveExperienceWithoutLevelUp(const CGHeroInstance * hero, TExpType amountToGain)
 {
 	TExpType maxExp = LIBRARY->heroh->reqExp(LIBRARY->heroh->maxSupportedLevel());
 	TExpType currHeroExp = hero->exp;
@@ -386,7 +386,6 @@ void CGameHandler::giveExperience(const CGHeroInstance * hero, TExpType amountTo
 		sendAndApply(scp);
 	}
 
-	expGiven(hero);
 }
 
 void CGameHandler::changePrimSkill(const CGHeroInstance * hero, PrimarySkill which, si64 val, ChangeValueMode mode)

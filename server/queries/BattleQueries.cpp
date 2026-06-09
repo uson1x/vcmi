@@ -11,6 +11,7 @@
 #include "BattleQueries.h"
 #include "MapQueries.h"
 #include "QueriesProcessor.h"
+#include "VisitQueries.h"
 
 #include "../CGameHandler.h"
 #include "../battles/BattleProcessor.h"
@@ -19,8 +20,37 @@
 #include "../../lib/battle/BattleLayout.h"
 #include "../../lib/battle/SideInBattle.h"
 #include "../../lib/CPlayerState.h"
+#include "../../lib/gameState/CGameState.h"
 #include "../../lib/mapObjects/CGObjectInstance.h"
 #include "../../lib/networkPacks/PacksForServer.h"
+
+bool CBattleQuery::hasPendingBattleOrVisitQueries() const
+{
+	return std::any_of(players.begin(), players.end(), [this](const PlayerColor & player)
+	{
+		auto top = owner->topQuery(player);
+		return top.get() == this || std::dynamic_pointer_cast<MapObjectVisitQuery>(top);
+	});
+}
+
+std::vector<ObjectInstanceID> CBattleQuery::takeDeferredLevelUps()
+{
+	deferredLevelUpsApplied = true;
+	auto deferredLevelUps = std::move(heroesWithDeferredLevelUp);
+	heroesWithDeferredLevelUp.clear();
+	return deferredLevelUps;
+}
+
+void CBattleQuery::completeDeferredLevelUps() const
+{
+	if(deferredLevelUpsApplied)
+		return;
+
+	deferredLevelUpsApplied = true;
+	for(const auto & heroID : heroesWithDeferredLevelUp)
+		if(const auto * hero = gh->gameState().getHero(heroID))
+			gh->expGiven(hero);
+}
 
 void CBattleQuery::notifyObjectAboutRemoval(const CGObjectInstance * visitedObject, const CGHeroInstance * visitingHero) const
 {
@@ -65,6 +95,12 @@ void CBattleQuery::onRemoval(PlayerColor color)
 
 	if(result)
 		gh->battles->battleFinalize(battleID, *result);
+
+	// Guarded map object visits are notified after the battle query is removed.
+	// In that case, defer level-up prompts until the object applies its battle result.
+	// In multi-player battles, also wait until this battle query is removed for all players.
+	if(!hasPendingBattleOrVisitQueries())
+		completeDeferredLevelUps();
 }
 
 void CBattleQuery::onExposure(QueryPtr topQuery)
