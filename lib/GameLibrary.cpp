@@ -128,6 +128,11 @@ const IGameSettings * GameLibrary::engineSettings() const
 	return settingsHandler.get();
 }
 
+const spells::SchoolService * GameLibrary::spellSchools() const
+{
+	return spellSchoolHandler.get();
+}
+
 void GameLibrary::loadFilesystem(bool extractArchives)
 {
 	CStopWatch loadTime;

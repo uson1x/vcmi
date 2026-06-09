@@ -22,8 +22,11 @@ VCMI_LIB_NAMESPACE_END
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+class BattleHex;
 class JsonNode;
 class int3;
+class CreatureID;
+class Creature;
 
 namespace scripting
 {
@@ -87,6 +90,7 @@ public:
 	}
 
 	void push(const int3 & value);
+	void push(const CreatureID & value);
 
 	template<typename T, typename std::enable_if_t< std::is_base_of_v<IdentifierBase, T>, int> = 0>
 	void push(const T & value)
@@ -251,6 +255,8 @@ public:
 	}
 
 	void get(int position, int3 & value);
+	void get(int position, BattleHex & value);
+	void get(int position, CreatureID & value);
 
 	void get(int position, double & value);
 	void get(int position, std::string & value);

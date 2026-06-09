@@ -26,11 +26,7 @@ void CreatureProxy::registerMethods(MethodRegistrar & R)
 	EntityBindings<Creature>::registerMethods(R);
 
 	R.method<&Creature::getMaxHealth, Creature>("getMaxHealth",
-		"DEPRECATED API Returns the base maximum hit points of a single creature of this type. Equivalent to getBaseHitPoints.");
-	R.method<&Creature::getNamePluralTextID>("getNamePluralTextID",
-		"DEPREACTED API Returns the text ID of the plural name.");
-	R.method<&Creature::getNameSingularTextID>("getNameSingularTextID",
-		"DEPREACTED API Returns the text ID of the singular name.");
+		"Returns the base maximum hit points of a single creature of this type. Equivalent to getBaseHitPoints.");
 	R.function<&CreatureProxy::getNameTextID>("getNameTextID",
 		"Select either the singular or plural text ID for the requested amount.");
 	R.method<&Creature::getAdvMapAmountMin>("getMapAmountMin",
@@ -47,23 +43,6 @@ void CreatureProxy::registerMethods(MethodRegistrar & R)
 		"Returns the base weekly growth rate for this creature in town dwellings.");
 	R.method<&Creature::getHorde>("getHorde",
 		"Returns the extra growth granted by the horde building (0 if none).");
-
-	R.method<&Creature::getBaseAttack>("getBaseAttack",
-		"Returns the base attack value before bonuses.");
-	R.method<&Creature::getBaseDefense>("getBaseDefense",
-		"Returns the base defense value before bonuses.");
-	R.method<&Creature::getBaseDamageMin>("getBaseDamageMin",
-		"Returns the minimum melee damage of one creature, before bonuses.");
-	R.method<&Creature::getBaseDamageMax>("getBaseDamageMax",
-		"Returns the maximum melee damage of one creature, before bonuses.");
-	R.method<&Creature::getBaseHitPoints>("getBaseHitPoints",
-		"DEPRECATED API Returns the base maximum hit points of a single creature of this type. Equivalent to getMaxHealth");
-	R.method<&Creature::getBaseSpellPoints>("getBaseSpellPoints",
-		"Returns the base spell points / mana of one creature (for spell-casting creatures).");
-	R.method<&Creature::getBaseSpeed>("getBaseSpeed",
-		"Returns the base battlefield movement speed in hexes per turn.");
-	R.method<&Creature::getBaseShots>("getBaseShots",
-		"Returns the base ammunition count for ranged creatures (0 if melee-only).");
 
 	R.method<&Creature::getRecruitCost>("getRecruitCost",
 		"Returns the recruitment cost as a resource bundle.");

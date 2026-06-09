@@ -11,6 +11,7 @@
 #pragma once
 
 #include <vcmi/scripting/Service.h>
+#include <vcmi/spells/Spell.h>
 
 #include "../../LuaWrapper.h"
 #include "../MethodRegistrar.h"
@@ -34,7 +35,7 @@ public:
 
 	static CObstacleInstance::EObstacleType getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle);
 	static BattleHex getPosition(std::shared_ptr<const CObstacleInstance> obstacle);
-	static std::string getSpellKey(std::shared_ptr<const CObstacleInstance> obstacle);
+	static const ::spells::Spell * getSpell(std::shared_ptr<const CObstacleInstance> obstacle);
 };
 
 inline std::string luaTypeNameOf(LuaTypeNameTag<CObstacleInstance>)

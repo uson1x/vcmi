@@ -33,6 +33,7 @@ set(lualib_SRCS
 		api/library/Services.cpp
 		api/library/Skill.cpp
 		api/library/Spell.cpp
+		api/library/SpellSchool.cpp
 
 		api/callback/IBattleInfoCallback.cpp
 		api/Enums.cpp
@@ -77,6 +78,7 @@ set(lualib_HDRS
 		api/library/Services.h
 		api/library/Skill.h
 		api/library/Spell.h
+		api/library/SpellSchool.h
 
 		api/spells/Mechanics.h
 		api/spells/Problem.h

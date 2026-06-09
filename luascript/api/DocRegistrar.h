@@ -33,10 +33,10 @@ public:
 
 	void addRaw(std::string_view name,
 	            lua_CFunction    /*functor*/,
-	            std::string      signature,
+				const std::string & signature,
 	            std::string_view description) override
 	{
-		entries.push_back({std::string(name), std::move(signature), std::string(description)});
+		entries.push_back({std::string(name), signature, std::string(description)});
 	}
 
 	const std::vector<Entry> & get() const { return entries; }

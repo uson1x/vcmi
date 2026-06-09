@@ -37,7 +37,7 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 		"`addObstacle`. Captures anchor position, owning spell, caster stats, behavior flags, "
 		"presentation assets, and an obstacle hex footprint.";
 
-	si32 pos = BattleHex::INVALID;
+	BattleHex pos;
 	CObstacleInstance::EObstacleType obstacleType = CObstacleInstance::SPELL_CREATED;
 	const ::spells::Spell * spell = nullptr;
 	int32_t turnsRemaining = -1;
@@ -57,7 +57,7 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 	std::string appearAnimation;
 	std::string animation;
 
-	std::vector<si16> customSize;
+	std::vector<BattleHex> customSize;
 
 	/// Materializes a SpellCreatedObstacle ready to be sent through the battle pack.
 	SpellCreatedObstacle toObstacle() const;
@@ -65,7 +65,7 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 	template<typename Serializer>
 	void serializeScript(Serializer & s)
 	{
-		s("pos",              pos,              "Anchor hex of the obstacle (its primary position). Usually located in bottom-left corner of the obstacle");
+		s("pos",              pos,              "Anchor BattleHex of the obstacle (its primary position). Usually located in bottom-left corner of the obstacle");
 		s("obstacleType",     obstacleType,     "Obstacle category — usual, absolute, spell-created, moat. See the ObstacleType enum.");
 		s("spell",            spell,            "Spell that created the obstacle. Used for dispel and damage-source attribution. Only for spell-created obstacles");
 		s("turnsRemaining",   turnsRemaining,   "How many turns the obstacle persists. -1 means permanent for the battle.");
@@ -82,7 +82,7 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 		s("appearSound",      appearSound,      "Sound effect played when the obstacle appears.");
 		s("appearAnimation",  appearAnimation,  "Animation played when the obstacle appears.");
 		s("animation",        animation,        "Looping animation shown while the obstacle is on the battlefield.");
-		s("customSize",       customSize,       "Optional list of additional hex offsets defining a multi-hex footprint.");
+		s("customSize",       customSize,       "Optional list of BattleHex values defining a multi-hex footprint.");
 	}
 };
 

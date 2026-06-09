@@ -17,6 +17,8 @@
 
 VCMI_LIB_NAMESPACE_BEGIN
 
+namespace spells { class SpellSchoolType; }
+
 namespace scripting::api
 {
 
@@ -30,7 +32,7 @@ public:
 
 	static void registerMethods(MethodRegistrar & R);
 
-	static std::vector<std::string> getSchools(const ::spells::Spell & spell);
+	static std::vector<const spells::SpellSchoolType *> getSchools(const ::spells::Spell & spell);
 };
 
 inline std::string luaTypeNameOf(LuaTypeNameTag<::spells::Spell>)

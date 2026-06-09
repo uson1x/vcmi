@@ -17,10 +17,12 @@
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
 
-// Proxy header brought in for its luaTypeNameOf ADL overload.
+// Proxy headers brought in for their luaTypeNameOf ADL overloads.
 #include "BattleHex.h"
+#include "../library/Spell.h"
 
 #include "../../../lib/constants/EntityIdentifiers.h"
+#include "../../../lib/GameLibrary.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -33,8 +35,8 @@ void ObstacleProxy::registerMethods(MethodRegistrar & R)
 		"Returns the obstacle category: usual, absolute, moat, or spell-created.");
 	R.function<&ObstacleProxy::getPosition>("getPosition",
 		"Returns the hex that serves as anchor of the obstacle, usually - located in bottom-left corner of the obstacle");
-	R.function<&ObstacleProxy::getSpellKey>("getSpellKey",
-		"DEPRECATED API Returns the JSON key of the originating spell. Can only be used with spell-created obstacles.");
+	R.function<&ObstacleProxy::getSpell>("getSpell",
+		"Returns the Spell that created this obstacle, or nil for non-spell obstacles.");
 }
 
 CObstacleInstance::EObstacleType ObstacleProxy::getObstacleType(std::shared_ptr<const CObstacleInstance> obstacle)
@@ -47,11 +49,11 @@ BattleHex ObstacleProxy::getPosition(std::shared_ptr<const CObstacleInstance> ob
 	return obstacle->pos;
 }
 
-std::string ObstacleProxy::getSpellKey(std::shared_ptr<const CObstacleInstance> obstacle)
+const spells::Spell * ObstacleProxy::getSpell(std::shared_ptr<const CObstacleInstance> obstacle)
 {
 	if(obstacle->obstacleType != CObstacleInstance::SPELL_CREATED)
-		throw LuaApiException("Not a spell created obstacle!");
-	return SpellID::encode(obstacle->ID);
+		return nullptr;
+	return SpellID(obstacle->ID).toEntity(LIBRARY);
 }
 
 }

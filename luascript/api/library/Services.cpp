@@ -33,6 +33,9 @@
 #include "HeroType.h"
 #include "Skill.h"
 #include "Spell.h"
+#include "SpellSchool.h"
+
+#include <vcmi/spells/SchoolService.h>
 
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -56,6 +59,8 @@ void ServicesProxy::registerMethods(MethodRegistrar & R)
 		"Looks up a spell by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getSecondarySkillByName>("getSecondarySkillByName",
 		"Looks up a secondary skill by its JSON key. Returns nil if not found.");
+	R.function<&ServicesProxy::getSpellSchoolByName>("getSpellSchoolByName",
+		"Looks up a spell school by its JSON key. Returns nil if not found.");
 }
 
 const Artifact * ServicesProxy::getArtifactByName(const Services * services, const std::string & name)
@@ -91,6 +96,11 @@ const spells::Spell * ServicesProxy::getSpellByName(const Services * services, c
 const Skill * ServicesProxy::getSecondarySkillByName(const Services * services, const std::string & name)
 {
 	return services->skills()->getByName(name);
+}
+
+const spells::SpellSchoolType * ServicesProxy::getSpellSchoolByName(const Services * services, const std::string & name)
+{
+	return services->spellSchools()->getByName(name);
 }
 
 }

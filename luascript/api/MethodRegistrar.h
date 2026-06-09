@@ -37,7 +37,7 @@ public:
 	/// Lowest-level entry; the templated helpers below all funnel through this.
 	virtual void addRaw(std::string_view name,
 	                    lua_CFunction    functor,
-	                    std::string      signature,
+						const std::string & signature,
 	                    std::string_view description) = 0;
 
 	/// Register a C++ member function. Signature is auto-derived from the method pointer type.
@@ -65,7 +65,7 @@ public:
 				   const std::string & signature,
 	               std::string_view description)
 	{
-		addRaw(name, &LuaCallWrapper<Fn>::invoke, std::move(signature), description);
+		addRaw(name, &LuaCallWrapper<Fn>::invoke, signature, description);
 	}
 };
 

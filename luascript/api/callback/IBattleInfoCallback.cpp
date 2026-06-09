@@ -40,8 +40,6 @@ void IBattleInfoCallbackProxy::registerMethods(MethodRegistrar & R)
 {
 	R.method<&BattleCb::battleTacticDist>("getTacticDistance",
 		"Returns the available tactic phase distance, or 0 if the tactic phase has ended.");
-	R.method<&BattleCb::battleIsFinished>("isFinished",
-		"DEPRECATED API Returns the winning side, or no value if the battle is still ongoing.");
 	R.cfunction<&IBattleInfoCallbackProxy::getAvailableHex>("getAvailableHex",
 		"(creature: Creature, side: BattleSide, hex: BattleHex?): BattleHex",
 		"Returns an empty hex next to desired location that the creature can be placed on.");
@@ -103,7 +101,7 @@ int IBattleInfoCallbackProxy::getAvailableHex(lua_State * L)
 
 	const Creature * creature;
 	BattleSide side;
-	si16 hexVal = BattleHex::INVALID;
+	BattleHex hexVal;
 
 	S.get(2, creature);
 	S.get(3, side);

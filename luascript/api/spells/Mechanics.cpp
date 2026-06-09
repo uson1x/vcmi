@@ -101,7 +101,7 @@ void MechanicsProxy::registerMethods(MethodRegistrar & R)
 	R.method<&Mechanics::adjustEffectValue>("adjustEffectValue",
 		"Applies all per-target adjustments to the raw effect value.");
 	R.function<&MechanicsProxy::getPluralFormTextID>("getPluralFormTextID",
-		"DEPRECATED Picks the appropriate plural-form variant of a text ID for the given count and language.");
+		"Picks the appropriate plural-form variant of a text ID for the given count and language.");
 }
 }
 

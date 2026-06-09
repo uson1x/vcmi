@@ -29,7 +29,7 @@ public:
 
 	void addRaw(std::string_view name,
 	            lua_CFunction    functor,
-	            std::string      /*signature*/,
+				const std::string & /*signature*/,
 	            std::string_view /*description*/) override
 	{
 		lua_pushlstring(L, name.data(), name.size());

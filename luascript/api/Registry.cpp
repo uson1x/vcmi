@@ -36,6 +36,7 @@
 #include "library/Services.h"
 #include "library/Skill.h"
 #include "library/Spell.h"
+#include "library/SpellSchool.h"
 #include "adventure/StackInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -55,6 +56,7 @@ Registry::Registry()
 	registerPrivate<HeroTypeProxy>();
 	registerPrivate<SkillProxy>();
 	registerPrivate<SpellProxy>();
+	registerPrivate<SpellSchoolProxy>();
 
 	registerPrivate<HeroInstanceProxy>();
 	registerPrivate<StackInstanceProxy>();

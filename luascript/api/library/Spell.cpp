@@ -12,9 +12,10 @@
 #include "Spell.h"
 
 #include "EntityBindings.h"
+#include "SpellSchool.h"
 #include "../Registry.h"
 #include "../../../lib/constants/EntityIdentifiers.h"
-#include "../../../lib/bonuses/BonusCustomTypes.h"
+#include "../../../lib/GameLibrary.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -57,19 +58,16 @@ void SpellProxy::registerMethods(MethodRegistrar & R)
 		"Returns the spell's base power before caster bonuses.");
 	R.method<&Spell::getLevelPower>("getLevelPower",
 		"Returns the spell's per-level power bonus.");
-	R.method<&Spell::getDescriptionTranslated>("getLevelDescription",
-		"DEPRECATED API Returns the translated description text for the spell at the requested skill level.");
-
 	R.function<&SpellProxy::getSchools>("getSchools",
-		"DEPRECATED API Returns the list of magic schools the spell belongs to as JSON keys.");
+		"Returns the list of magic schools the spell belongs to.");
 }
 
-std::vector<std::string> SpellProxy::getSchools(const Spell & spell)
+std::vector<const spells::SpellSchoolType *> SpellProxy::getSchools(const Spell & spell)
 {
-	std::vector<std::string> result;
-	spell.forEachSchool([&result](const SpellSchool & school, bool & stop)
+	std::vector<const spells::SpellSchoolType *> result;
+	spell.forEachSchool([&result](const SpellSchool & school, bool &)
 	{
-		result.push_back(BonusSubtypeID(school).toString());
+		result.push_back(school.toEntity(LIBRARY));
 	});
 	return result;
 }

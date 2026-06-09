@@ -29,8 +29,6 @@ public:
 	{
 		R.template method<&Entity::getJsonKey, Leaf>("getJsonKey",
 			"Returns the JSON key (mod-scoped identifier) of this entity.");
-		R.template method<&Entity::getNameTranslated, Leaf>("getName",
-			"DEPRECATED API Returns the human-readable name of this entity in the active language.");
 	}
 };
 
