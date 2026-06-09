@@ -50,11 +50,16 @@ void QueriesProcessor::popQuery(const CQuery &query)
 			popQuery(top);
 		else
 		{
-			logGlobal->trace("Cannot remove query %s", query.toString());
-			logGlobal->trace("Queries found:");
-			for(auto q : queries[player])
+			if(logGlobal->isTraceEnabled())
 			{
-				logGlobal->trace(q->toString());
+				const auto idx = static_cast<size_t>(player.getNum());
+
+				logGlobal->trace("Cannot remove query %s", query.toString());
+				logGlobal->trace("Queries found:");
+				for(const auto & q : queries.at(idx))
+				{
+					logGlobal->trace(q->toString());
+				}
 			}
 		}
 	}
