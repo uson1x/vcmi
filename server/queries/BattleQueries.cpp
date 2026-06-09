@@ -61,18 +61,23 @@ void CBattleQuery::notifyObjectAboutRemoval(const CGObjectInstance * visitedObje
 }
 
 CBattleQuery::CBattleQuery(CGameHandler * owner, const IBattleInfo * bi):
-	CQuery(owner),
+	CQuery(owner, TYPE),
 	battleID(bi->getBattleID())
 {
 	belligerents[BattleSide::ATTACKER] = bi->getSideArmy(BattleSide::ATTACKER);
 	belligerents[BattleSide::DEFENDER] = bi->getSideArmy(BattleSide::DEFENDER);
 
-	addPlayer(bi->getSidePlayer(BattleSide::ATTACKER));
-	addPlayer(bi->getSidePlayer(BattleSide::DEFENDER));
+	auto attacker = bi->getSidePlayer(BattleSide::ATTACKER);
+	if(attacker.isValidPlayer())
+		addPlayer(attacker);
+
+	auto defender = bi->getSidePlayer(BattleSide::DEFENDER);
+	if(defender.isValidPlayer())
+		addPlayer(defender);
 }
 
 CBattleQuery::CBattleQuery(CGameHandler * owner):
-	CQuery(owner)
+	CQuery(owner, TYPE)
 {
 	belligerents[BattleSide::ATTACKER] = nullptr;
 	belligerents[BattleSide::DEFENDER] = nullptr;
@@ -113,12 +118,17 @@ void CBattleQuery::onExposure(QueryPtr topQuery)
 }
 
 CBattleDialogQuery::CBattleDialogQuery(CGameHandler * owner, const IBattleInfo * bi, const std::optional<BattleResult> & Br):
-	CDialogQuery(owner),
+	CDialogQuery(owner, TYPE),
 	bi(bi),
 	result(Br)
 {
-	addPlayer(bi->getSidePlayer(BattleSide::ATTACKER));
-	addPlayer(bi->getSidePlayer(BattleSide::DEFENDER));
+	auto attacker = bi->getSidePlayer(BattleSide::ATTACKER);
+	if(attacker.isValidPlayer())
+		addPlayer(attacker);
+
+	auto defender = bi->getSidePlayer(BattleSide::DEFENDER);
+	if(defender.isValidPlayer())
+		addPlayer(defender);
 }
 
 void CBattleDialogQuery::onRemoval(PlayerColor color)

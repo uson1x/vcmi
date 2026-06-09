@@ -14,6 +14,7 @@
 #include "TurnTimerHandler.h"
 #include "ServerNetPackVisitors.h"
 #include "ServerSpellCastEnvironment.h"
+#include "TurnStartVisitScheduler.h"
 #include "battles/BattleProcessor.h"
 #include "processors/HeroPoolProcessor.h"
 #include "processors/NewTurnProcessor.h"
@@ -541,6 +542,7 @@ CGameHandler::CGameHandler(IGameServer & server)
 	, heroPool(std::make_unique<HeroPoolProcessor>(this))
 	, battles(std::make_unique<BattleProcessor>(this))
 	, queries(std::make_unique<QueriesProcessor>())
+	, turnStartVisitScheduler(std::make_unique<TurnStartVisitScheduler>(*this, *queries))
 	, turnOrder(std::make_unique<TurnOrderProcessor>(this))
 	, turnTimerHandler(std::make_unique<TurnTimerHandler>(*this))
 	, newTurnProcessor(std::make_unique<NewTurnProcessor>(this))
@@ -552,6 +554,7 @@ CGameHandler::CGameHandler(IGameServer & server)
 	, complainNotEnoughCreatures("Cannot split that stack, not enough creatures!")
 	, complainInvalidSlot("Invalid slot accessed!")
 {
+	queries->setListener(turnStartVisitScheduler.get());
 }
 
 CGameHandler::~CGameHandler() = default;
@@ -835,7 +838,7 @@ bool CGameHandler::moveHero(ObjectInstanceID hid, int3 dst, EMovementMode moveme
 	{
 		if(h && gameInfo().getStartInfo()->turnTimerInfo.isEnabled() && gameState().players.at(h->getOwner()).turnTimer.turnTimer == 0)
 			return true; //timer expired, no error
-		
+
 		logGlobal->error("Illegal call to move hero!");
 		return false;
 	}
@@ -1018,13 +1021,13 @@ bool CGameHandler::moveHero(ObjectInstanceID hid, int3 dst, EMovementMode moveme
 
 			if(h->inBoat() && !object->isBlockedVisitable() && !h->getBoat()->onboardVisitAllowed)
 				return doMove(TryMoveHero::SUCCESS, this->IGNORE_GUARDS, DONT_VISIT_DEST, REMAINING_ON_TILE);
-			
+
 			if (object != h && object->isBlockedVisitable() && !object->passableFor(h->tempOwner))
 			{
 				EVisitDest visitDest = VISIT_DEST;
 				if(h->inBoat() && !h->getBoat()->onboardVisitAllowed)
 					visitDest = DONT_VISIT_DEST;
-				
+
 				return doMove(TryMoveHero::BLOCKING_VISIT, this->IGNORE_GUARDS, visitDest, REMAINING_ON_TILE);
 			}
 		}
@@ -1092,7 +1095,7 @@ bool CGameHandler::moveHero(ObjectInstanceID hid, int3 dst, EMovementMode moveme
 		}
 		else if (blockingVisit())
 			return true;
-		
+
 		if(h->getBoat() && !h->getBoat()->onboardAssaultAllowed)
 			lookForGuards = IGNORE_GUARDS;
 
@@ -2349,12 +2352,12 @@ bool CGameHandler::spellResearch(ObjectInstanceID tid, SpellID spellAtSlot, bool
 	for(int i = 0; i < t->spells.size(); i++)
 		if(vstd::find_pos(t->spells[i], spellAtSlot) != -1)
 			level = i;
-	
+
 	if(level == -1 && complain("Spell for replacement not found!"))
 		return false;
 
 	auto spells = t->spells.at(level);
-	
+
 	bool researchLimitExceeded = t->spellResearchCounterDay >= gameInfo().getSettings().getValue(EGameSettings::TOWNS_SPELL_RESEARCH_PER_DAY).Vector()[level].Float();
 	if(researchLimitExceeded && complain("Already researched today!"))
 		return false;
@@ -2672,11 +2675,11 @@ bool CGameHandler::moveArtifact(const PlayerColor & player, const ArtifactLocati
 
 	if(src.slot == dstSlot && src.artHolder == dst.artHolder)
 		COMPLAIN_RET("Won't move artifact: Dest same as source!");
-	
+
 	BulkMoveArtifacts ma(player, src.artHolder, dst.artHolder, false);
 	ma.srcCreature = src.creature;
 	ma.dstCreature = dst.creature;
-	
+
 	// Check if dst slot is occupied
 	if(!isDstSlotBackpack && isDstSlotOccupied)
 	{
@@ -2875,19 +2878,19 @@ bool CGameHandler::manageBackpackArtifacts(const PlayerColor & player, const Obj
 		makeSortBackpackRequest([](const ArtSlotInfo & inf) -> int32_t
 			{
 				auto possibleSlots = inf.getArt()->getType()->getPossibleSlots();
-				if (possibleSlots.find(ArtBearer::CREATURE) != possibleSlots.end() && !possibleSlots.at(ArtBearer::CREATURE).empty()) 
+				if (possibleSlots.find(ArtBearer::CREATURE) != possibleSlots.end() && !possibleSlots.at(ArtBearer::CREATURE).empty())
 				{
 					return -2;
 				}
-				else if (possibleSlots.find(ArtBearer::COMMANDER) != possibleSlots.end() && !possibleSlots.at(ArtBearer::COMMANDER).empty()) 
+				else if (possibleSlots.find(ArtBearer::COMMANDER) != possibleSlots.end() && !possibleSlots.at(ArtBearer::COMMANDER).empty())
 				{
 					return -1;
 				}
-				else if (possibleSlots.find(ArtBearer::HERO) != possibleSlots.end() && !possibleSlots.at(ArtBearer::HERO).empty()) 
+				else if (possibleSlots.find(ArtBearer::HERO) != possibleSlots.end() && !possibleSlots.at(ArtBearer::HERO).empty())
 				{
 					return inf.getArt()->getType()->getPossibleSlots().at(ArtBearer::HERO).front().num;
 				}
-				else 
+				else
 				{
 					// for grail
 					return -3;
@@ -2963,7 +2966,7 @@ bool CGameHandler::switchArtifactsCostume(const PlayerColor & player, const Obje
 					artFittingSet.removeArtifact(slot);
 				}
 		}
-		
+
 		// Second, find the necessary artifacts for the costume
 		for(const auto & artPos : costumeArtMap)
 		{
@@ -2983,7 +2986,7 @@ bool CGameHandler::switchArtifactsCostume(const PlayerColor & player, const Obje
 				bma.artsPack0.emplace_back(slot, ArtifactPosition::BACKPACK_START);
 				estimateBackpackSize++;
 			}
-		
+
 		const auto backpackCap = gameInfo().getSettings().getInteger(EGameSettings::HEROES_BACKPACK_CAP);
 		if((backpackCap < 0 || estimateBackpackSize <= backpackCap) && !bma.artsPack0.empty())
 			sendAndApply(bma);
@@ -3022,7 +3025,7 @@ bool CGameHandler::assembleArtifacts(ObjectInstanceID heroID, ArtifactPosition a
 		{
 			COMPLAIN_RET("assembleArtifacts: It's impossible to give the artholder requested artifact!");
 		}
-		
+
 		if(ArtifactUtils::checkSpellbookIsNeeded(hero, assembleTo, artifactSlot))
 			giveHeroNewArtifact(hero, ArtifactID::SPELLBOOK, ArtifactPosition::SPELLBOOK);
 
@@ -3512,20 +3515,18 @@ bool CGameHandler::isAllowedExchange(ObjectInstanceID id1, ObjectInstanceID id2)
 				return true;
 		}
 
-		//Ongoing garrison exchange - usually picking from top garison (from o1 to o2), but who knows
-		auto dialog = std::dynamic_pointer_cast<CGarrisonDialogQuery>(queries->topQuery(o1->tempOwner));
-		if (!dialog)
-		{
-			dialog = std::dynamic_pointer_cast<CGarrisonDialogQuery>(queries->topQuery(o2->tempOwner));
-		}
-		if (dialog)
-		{
-			const auto * topArmy = dialog->exchangingArmies.at(0);
-			const auto * bottomArmy = dialog->exchangingArmies.at(1);
+		// Ongoing garrison exchange
+		const auto * dialog = queries->findQuery<CGarrisonDialogQuery>(
+			[o1, o2](const CGarrisonDialogQuery & query)
+			{
+				const auto * topArmy = query.exchangingArmies.at(0);
+				const auto * bottomArmy = query.exchangingArmies.at(1);
 
-			if ((topArmy == o1 && bottomArmy == o2) || (bottomArmy == o1 && topArmy == o2))
-				return true;
-		}
+				return (topArmy == o1 && bottomArmy == o2) || (topArmy == o2 && bottomArmy == o1);
+			});
+
+		if(dialog)
+			return true;
 	}
 
 	return false;
@@ -4208,10 +4209,16 @@ void CGameHandler::spawnWanderingMonsters(CreatureID creatureID)
 
 bool CGameHandler::isBlockedByQueries(const CPackForServer *pack, PlayerColor player)
 {
+	if(!player.isValidPlayer())
+		return false;
+
 	if (dynamic_cast<const PlayerMessage *>(pack) != nullptr)
 		return false;
 
 	if (dynamic_cast<const SaveLocalState *>(pack) != nullptr)
+		return false;
+
+	if(dynamic_cast<const AdvInterfaceReady *>(pack) != nullptr)
 		return false;
 
 	auto query = queries->topQuery(player);
@@ -4233,13 +4240,15 @@ void CGameHandler::removeAfterVisit(const ObjectInstanceID & id)
 	//If the object is being visited, there must be a matching query
 	for (const auto &query : queries->allQueries())
 	{
-		if (auto someVistQuery = std::dynamic_pointer_cast<MapObjectVisitQuery>(query))
+		auto * someVisitQuery = queries->queryAs<MapObjectVisitQuery>(query);
+
+		if(!someVisitQuery)
+			continue;
+
+		if(someVisitQuery->visitedObject == id)
 		{
-			if (someVistQuery->visitedObject == id)
-			{
-				someVistQuery->removeObjectAfterVisit = true;
-				return;
-			}
+			someVisitQuery->removeObjectAfterVisit = true;
+			return;
 		}
 	}
 
@@ -4294,8 +4303,11 @@ const CGHeroInstance * CGameHandler::getVisitingHero(const CGObjectInstance *obj
 
 	for(const auto & query : queries->allQueries())
 	{
-		auto visit = std::dynamic_pointer_cast<const VisitQuery>(query);
-		if (visit && visit->visitedObject == obj->id)
+		const auto * visit = dynamic_cast<VisitQuery *>(query.get());
+		if(!visit)
+			continue;
+
+		if(visit->visitedObject == obj->id)
 			return gameInfo().getHero(visit->visitingHero);
 	}
 	return nullptr;
@@ -4307,8 +4319,11 @@ const CGObjectInstance * CGameHandler::getVisitingObject(const CGHeroInstance *h
 
 	for(const auto & query : queries->allQueries())
 	{
-		auto visit = std::dynamic_pointer_cast<const VisitQuery>(query);
-		if (visit && visit->visitingHero == hero->id)
+		const auto * visit = dynamic_cast<VisitQuery *>(query.get());
+		if(!visit)
+			continue;
+
+		if(visit->visitingHero == hero->id)
 			return gameInfo().getObjInstance(visit->visitedObject);
 	}
 	return nullptr;
@@ -4323,8 +4338,8 @@ bool CGameHandler::isVisitCoveredByAnotherQuery(const CGObjectInstance *obj, con
 	// If top query is NOT visit to targeted object then we assume that
 	// visitation query is covered by other query that must be answered first
 
-	if (auto topQuery = queries->topQuery(hero->getOwner()))
-		if (auto visit = std::dynamic_pointer_cast<const VisitQuery>(topQuery))
+	if(const auto & topQuery = queries->topQuery(hero->getOwner()))
+		if(const auto * visit =  dynamic_cast<VisitQuery *>(topQuery.get()))
 			return !(visit->visitedObject == obj->id && visit->visitingHero == hero->id);
 
 	return true;

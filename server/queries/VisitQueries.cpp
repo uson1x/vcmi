@@ -19,8 +19,8 @@
 #include "../CGameHandler.h"
 #include "QueriesProcessor.h"
 
-VisitQuery::VisitQuery(CGameHandler * owner, const CGObjectInstance * Obj, const CGHeroInstance * Hero)
-	: CQuery(owner)
+VisitQuery::VisitQuery(CGameHandler * owner, const CGObjectInstance * Obj, const CGHeroInstance * Hero, QueryType type)
+	: CQuery(owner, type)
 	, visitedObject(Obj->id)
 	, visitingHero(Hero->id)
 {
@@ -70,7 +70,7 @@ void MapObjectVisitQuery::onExposure(QueryPtr topQuery)
 }
 
 MapObjectVisitQuery::MapObjectVisitQuery(CGameHandler * owner, const CGObjectInstance * Obj, const CGHeroInstance * Hero)
-	: VisitQuery(owner, Obj, Hero)
+	: VisitQuery(owner, Obj, Hero, TYPE)
 	, removeObjectAfterVisit(false)
 {
 }
@@ -87,7 +87,7 @@ void MapObjectVisitQuery::onRemoval(PlayerColor color)
 }
 
 TownBuildingVisitQuery::TownBuildingVisitQuery(CGameHandler * owner, const CGTownInstance * Obj, std::vector<const CGHeroInstance *> heroes, std::vector<BuildingID> buildingToVisit)
-	: VisitQuery(owner, Obj, heroes.front())
+	: VisitQuery(owner, Obj, heroes.front(), TYPE)
 	, visitedTown(Obj)
 {
 	// generate in reverse order - first building-hero pair to handle must be in the end of vector
