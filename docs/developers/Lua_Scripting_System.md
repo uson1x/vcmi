@@ -22,8 +22,7 @@ This page describes the internal working of the Lua scripting module. For usage 
   - add guards against loading values from .json with same name as methods in Lua spell effect script
 - Docs:
   - Try to replace/improve `luaTypeNameOf` function. Right now not including correct header would silently result in `userdata` in docs. Either place everything in one header or find a way to force compiler error on missing overload
-  - fix arg1 arguments in api.lua
-  - add API categories for .md
+  - add API categories for .md?
   - merge name and signature for .md?
   - add anchors/local URL's for method arguments to redirect to class docs
 

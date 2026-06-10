@@ -19,7 +19,9 @@ namespace scripting::api
 
 /// MethodRegistrar implementation that pushes each binding directly onto a Lua table.
 /// Construct with the lua_State and the absolute stack index of the table that should
-/// receive the methods; `addRaw` then writes name -> C-function pairs into that table.
+/// receive the methods; `addEntry` then writes name -> C-function pairs into that table.
+/// Documentation metadata (param/return descriptions) is discarded here — only the name
+/// and the Lua C function pointer matter at runtime.
 class LuaRegistrar final : public MethodRegistrar
 {
 public:
@@ -27,13 +29,10 @@ public:
 		: L(L_), targetIdx(targetTableIdx)
 	{}
 
-	void addRaw(std::string_view name,
-	            lua_CFunction    functor,
-				const std::string & /*signature*/,
-	            std::string_view /*description*/) override
+	void addEntry(DocEntry entry, lua_CFunction fn) override
 	{
-		lua_pushlstring(L, name.data(), name.size());
-		lua_pushcclosure(L, functor, 0);
+		lua_pushlstring(L, entry.name.data(), entry.name.size());
+		lua_pushcclosure(L, fn, 0);
 		lua_rawset(L, targetIdx);
 	}
 

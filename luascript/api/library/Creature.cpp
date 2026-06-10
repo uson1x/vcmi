@@ -25,28 +25,30 @@ void CreatureProxy::registerMethods(MethodRegistrar & R)
 {
 	EntityBindings<Creature>::registerMethods(R);
 
-	R.method<&Creature::getMaxHealth, Creature>("getMaxHealth",
+	R.method<&Creature::getMaxHealth, Creature>("getMaxHealth", {},
 		"Returns the base maximum hit points of a single creature of this type. Equivalent to getBaseHitPoints.");
 	R.function<&CreatureProxy::getNameTextID>("getNameTextID",
+		{{"amount", "Stack size; passes through to the singular form when equal to 1, plural otherwise."}}, {},
 		"Select either the singular or plural text ID for the requested amount.");
-	R.method<&Creature::getAdvMapAmountMin>("getMapAmountMin",
+	R.method<&Creature::getAdvMapAmountMin>("getMapAmountMin", {},
 		"Returns the minimum stack size for this creature when generated on the adventure map.");
-	R.method<&Creature::getAdvMapAmountMax>("getMapAmountMax",
+	R.method<&Creature::getAdvMapAmountMax>("getMapAmountMax", {},
 		"Returns the maximum stack size for this creature when generated on the adventure map.");
-	R.method<&Creature::getAIValue>("getAIValue",
+	R.method<&Creature::getAIValue>("getAIValue", {},
 		"Returns the AI value used for army strength calculations.");
-	R.method<&Creature::getFightValue>("getFightValue",
+	R.method<&Creature::getFightValue>("getFightValue", {},
 		"Returns the combat power value of one creature of this type.");
-	R.method<&Creature::getLevel>("getLevel",
+	R.method<&Creature::getLevel>("getLevel", {},
 		"Returns the creature level, usually in (1..7) range.");
-	R.method<&Creature::getGrowth>("getGrowth",
+	R.method<&Creature::getGrowth>("getGrowth", {},
 		"Returns the base weekly growth rate for this creature in town dwellings.");
-	R.method<&Creature::getHorde>("getHorde",
+	R.method<&Creature::getHorde>("getHorde", {},
 		"Returns the extra growth granted by the horde building (0 if none).");
 
 	R.method<&Creature::getRecruitCost>("getRecruitCost",
-		"Returns the recruitment cost as a resource bundle.");
-	R.method<&Creature::isDoubleWide>("isDoubleWide",
+		{{"resourceID", "JSON key of the resource whose cost is being queried (e.g. `gold`, `ore`)."}}, {},
+		"Returns the recruitment cost in the specified resource.");
+	R.method<&Creature::isDoubleWide>("isDoubleWide", {},
 		"True if the creature occupies two hexes on the battlefield.");
 }
 

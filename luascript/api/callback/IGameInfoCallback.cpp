@@ -29,8 +29,13 @@ namespace scripting::api
 void IGameInfoCallbackProxy::registerMethods(MethodRegistrar & R)
 {
 	R.method<&GameCb::getHero>("getHero",
+		{{"objectID", "Map object identifier of the hero to fetch."}}, {},
 		"Returns the hero by its object identifier, or nil if not found.");
 	R.method<&GameCb::getObj>("getObj",
+		{
+			{"objectID", "Map object identifier of the object to fetch."},
+			{"verbose",  "Pass true to log a warning when the object isn't found."}
+		}, {},
 		"Returns the map object by its identifier, or nil if not found.");
 }
 

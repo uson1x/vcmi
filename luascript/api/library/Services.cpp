@@ -46,20 +46,28 @@ namespace scripting::api
 void ServicesProxy::registerMethods(MethodRegistrar & R)
 {
 	R.function<&ServicesProxy::getArtifactByName>("getArtifactByName",
+		{{"name", "JSON key of the artifact (e.g. `core:goldenBow`)."}}, {},
 		"Looks up an artifact by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getCreatureByName>("getCreatureByName",
+		{{"name", "JSON key of the creature (e.g. `core:pikeman`)."}}, {},
 		"Looks up a creature by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getFactionByName>("getFactionByName",
+		{{"name", "JSON key of the faction (e.g. `core:castle`)."}}, {},
 		"Looks up a faction by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getHeroClassByName>("getHeroClassByName",
+		{{"name", "JSON key of the hero class (e.g. `core:knight`)."}}, {},
 		"Looks up a hero class by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getHeroTypeByName>("getHeroTypeByName",
+		{{"name", "JSON key of the hero type (e.g. `core:orrin`)."}}, {},
 		"Looks up a hero type by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getSpellByName>("getSpellByName",
+		{{"name", "JSON key of the spell (e.g. `core:magicArrow`)."}}, {},
 		"Looks up a spell by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getSecondarySkillByName>("getSecondarySkillByName",
+		{{"name", "JSON key of the secondary skill (e.g. `core:wisdom`)."}}, {},
 		"Looks up a secondary skill by its JSON key. Returns nil if not found.");
 	R.function<&ServicesProxy::getSpellSchoolByName>("getSpellSchoolByName",
+		{{"name", "JSON key of the spell school (e.g. `core:fire`)."}}, {},
 		"Looks up a spell school by its JSON key. Returns nil if not found.");
 }
 

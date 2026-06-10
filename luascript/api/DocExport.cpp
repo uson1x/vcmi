@@ -19,6 +19,7 @@
 #include <boost/filesystem/operations.hpp>
 
 #include <fstream>
+#include <set>
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -28,243 +29,195 @@ namespace scripting::api
 namespace
 {
 
-/// Escape pipe characters and newlines so a value safely fits in a Markdown table cell.
-std::string escapeMarkdownCell(const std::string & s)
+/// Splits a type string like "Unit[]" or "BattleHex?" into (atom, suffix). The atom is what
+/// the link target lookup uses; the suffix is appended back to the displayed link text so
+/// readers still see the decoration ("Unit[]"), but clicking jumps to "Unit.md".
+struct TypeAtom
 {
-	std::string out;
-	out.reserve(s.size());
-	for(char c : s)
+	std::string atom;
+	std::string suffix;
+};
+
+TypeAtom splitTypeDecoration(const std::string & type)
+{
+	TypeAtom out{type, {}};
+	while(!out.atom.empty() && (out.atom.back() == '?' || out.atom.back() == ']'))
 	{
-		if(c == '|')
-			out += "\\|";
-		else if(c == '\n')
-			out += ' ';
+		if(out.atom.back() == '?')
+		{
+			out.suffix.insert(out.suffix.begin(), '?');
+			out.atom.pop_back();
+		}
 		else
-			out += c;
+		{
+			// "[]" — pop both
+			if(out.atom.size() >= 2 && out.atom[out.atom.size() - 2] == '[')
+			{
+				out.suffix.insert(out.suffix.begin(), ']');
+				out.suffix.insert(out.suffix.begin(), '[');
+				out.atom.pop_back();
+				out.atom.pop_back();
+			}
+			else
+				break;
+		}
 	}
 	return out;
 }
 
-/// Renders the host-side metadata for a single type as a Markdown section.
-void emitMarkdownType(std::ofstream & out,
-                      const std::string & typeName,
-                      std::string_view description,
-                      const std::vector<DocRegistrar::Entry> & methods,
-                      const std::vector<FieldDocRegistrar::Entry> & fields,
-                      const std::vector<FieldDocRegistrar::EnumGroupEntry> & enumGroups)
+/// Renders a type for an inline Markdown context. If the atom names a registered type, the
+/// rendered form is a Markdown link to that type's file; otherwise it's plain inline code.
+std::string renderType(const std::string & type, const std::set<std::string> & knownTypes)
 {
-	out << "## " << typeName << "\n\n";
+	if(type.empty())
+		return {};
 
+	const auto split = splitTypeDecoration(type);
+	if(knownTypes.find(split.atom) != knownTypes.end())
+		return "[`" + split.atom + split.suffix + "`](" + split.atom + ".md)";
+
+	return "`" + type + "`";
+}
+
+/// Skips a leading "true if" / "returns" / "true when" so the param/return bullet description
+/// reads naturally after the "— " separator. We keep the caller's description as-is — this
+/// helper just trims leading whitespace.
+std::string trimLeading(const std::string & s)
+{
+	std::size_t i = 0;
+	while(i < s.size() && (s[i] == ' ' || s[i] == '\t' || s[i] == '\n'))
+		++i;
+	return s.substr(i);
+}
+
+/// Emits one method/cfunction/function entry as an H3 block:
+///   ### name
+///   <description>
+///    - param `name`: <type> — <description>
+///    - returns <type> — <description>
+void emitMethodEntry(std::ofstream & out,
+                     const DocRegistrar::Entry & entry,
+                     const std::set<std::string> & knownTypes)
+{
+	out << "### " << entry.name << "\n\n";
+	if(!entry.description.empty())
+		out << entry.description << "\n\n";
+
+	if(!entry.params.empty())
+	{
+		for(const auto & p : entry.params)
+		{
+			out << " - param `" << p.name << "`: " << renderType(p.type, knownTypes);
+			if(!p.description.empty())
+				out << " — " << trimLeading(p.description);
+			out << "\n";
+		}
+		out << "\n";
+	}
+
+	if(!entry.ret.type.empty())
+	{
+		out << " - returns " << renderType(entry.ret.type, knownTypes);
+		if(!entry.ret.description.empty())
+			out << " — " << trimLeading(entry.ret.description);
+		out << "\n\n";
+	}
+}
+
+/// Emits one field entry as an H3 block:
+///   ### name
+///   <description>
+///    - type: <type>
+void emitFieldEntry(std::ofstream & out,
+                    const FieldDocRegistrar::Entry & entry,
+                    const std::set<std::string> & knownTypes)
+{
+	out << "### " << entry.name << "\n\n";
+	if(!entry.description.empty())
+		out << entry.description << "\n\n";
+	out << " - type: " << renderType(entry.type, knownTypes) << "\n\n";
+}
+
+/// Emits one "field that is itself an enum group" entry: paragraph + link to its dedicated file.
+void emitEnumGroupLink(std::ofstream & out, const FieldDocRegistrar::EnumGroupEntry & group)
+{
+	out << "### " << group.name << "\n\n";
+	if(!group.description.empty())
+		out << group.description << "\n\n";
+	out << " - type: [`" << group.name << "`](" << group.name << ".md)\n\n";
+}
+
+/// Writes one Markdown file for a single class/serializable type.
+void emitClassFile(const boost::filesystem::path & outDir,
+                   const std::string & typeName,
+                   std::string_view description,
+                   const std::vector<DocRegistrar::Entry> & methods,
+                   const std::vector<FieldDocRegistrar::Entry> & fields,
+                   const std::vector<FieldDocRegistrar::EnumGroupEntry> & enumGroups,
+                   const std::set<std::string> & knownTypes)
+{
+	std::ofstream out((outDir / (typeName + ".md")).string());
+
+	out << "# " << typeName << "\n\n";
 	if(!description.empty())
 		out << description << "\n\n";
 
-	if(!fields.empty())
-	{
-		out << "**Fields**\n\n";
-		out << "| Field | Type | Description |\n";
-		out << "|---|---|---|\n";
-		for(const auto & entry : fields)
-		{
-			out << "| `" << escapeMarkdownCell(entry.name)
-				<< "` | `" << escapeMarkdownCell(entry.type)
-				<< "` | " << escapeMarkdownCell(entry.description)
-				<< " |\n";
-		}
-		out << "\n";
-	}
+	for(const auto & entry : methods)
+		emitMethodEntry(out, entry, knownTypes);
 
-	if(!methods.empty())
-	{
-		out << "**Methods**\n\n";
-		out << "| Method | Signature | Description |\n";
-		out << "|---|---|---|\n";
-
-		for(const auto & entry : methods)
-		{
-			out << "| `" << escapeMarkdownCell(entry.name)
-				<< "` | `" << escapeMarkdownCell(entry.signature)
-				<< "` | " << escapeMarkdownCell(entry.description)
-				<< " |\n";
-		}
-		out << "\n";
-	}
+	for(const auto & entry : fields)
+		emitFieldEntry(out, entry, knownTypes);
 
 	for(const auto & group : enumGroups)
-	{
-		out << "### " << group.name << "\n\n";
-		if(!group.description.empty())
-			out << group.description << "\n\n";
-
-		out << "| Key | Value | Description |\n";
-		out << "|---|---|---|\n";
-		for(const auto & key : group.keys)
-		{
-			out << "| `" << escapeMarkdownCell(key.key)
-				<< "` | " << key.value
-				<< " | " << escapeMarkdownCell(key.description)
-				<< " |\n";
-		}
-		out << "\n";
-	}
+		emitEnumGroupLink(out, group);
 
 	if(methods.empty() && fields.empty() && enumGroups.empty())
 		out << "_No bindings exposed._\n\n";
 }
 
-/// Splits a signature string like "(arg1: T, arg2: U): R" into args text, return text.
-/// Falls back to passing the raw signature into the Lua-side function body when parsing fails.
-struct SignatureParts
+/// Writes one Markdown file for a single enum group.
+void emitEnumFile(const boost::filesystem::path & outDir,
+                  const FieldDocRegistrar::EnumGroupEntry & group)
 {
-	std::string args;
-	std::string returnType;
-	bool        ok = false;
-};
+	std::ofstream out((outDir / (group.name + ".md")).string());
 
-SignatureParts parseSignature(const std::string & signature)
-{
-	SignatureParts result;
-	if(signature.empty() || signature.front() != '(')
-		return result;
+	out << "# " << group.name << "\n\n";
+	if(!group.description.empty())
+		out << group.description << "\n\n";
 
-	// Find the matching closing paren — supports nested parens (e.g. fun() callback types).
-	int depth = 0;
-	std::size_t closeIdx = std::string::npos;
-	for(std::size_t i = 0; i < signature.size(); ++i)
+	out << "| Key | Value | Description |\n";
+	out << "|---|---|---|\n";
+	for(const auto & key : group.keys)
 	{
-		if(signature[i] == '(')
-			++depth;
-		else if(signature[i] == ')')
-		{
-			--depth;
-			if(depth == 0)
-			{
-				closeIdx = i;
-				break;
-			}
-		}
+		out << "| `" << key.key << "` | " << key.value << " | " << key.description << " |\n";
 	}
-	if(closeIdx == std::string::npos)
-		return result;
-
-	result.args = signature.substr(1, closeIdx - 1);
-
-	// Anything after "): " is the return type.
-	const std::size_t after = closeIdx + 1;
-	if(after < signature.size())
-	{
-		std::size_t retStart = after;
-		while(retStart < signature.size() && (signature[retStart] == ':' || signature[retStart] == ' '))
-			++retStart;
-		if(retStart < signature.size())
-			result.returnType = signature.substr(retStart);
-	}
-
-	result.ok = true;
-	return result;
+	out << "\n";
 }
 
-/// Splits "arg1: T, arg2: U" into a list of (name, type) pairs.
-/// When entries are bare types (e.g. auto-derived signatures that did not name args), the name
-/// is left empty and the emitter falls back to "arg1, arg2, ...".
-std::vector<std::pair<std::string, std::string>> splitArgs(const std::string & argsText)
+/// Writes the API.md index that links to every class and enum page.
+void emitIndex(const boost::filesystem::path & outDir,
+               const std::vector<std::string> & classNames,
+               const std::vector<std::string> & enumNames)
 {
-	std::vector<std::pair<std::string, std::string>> result;
+	std::ofstream out((outDir / "API.md").string());
+	out << "# Lua scripting API reference\n\n"
+	    << "Auto-generated from C++ host bindings via `vcmiserver --export-lua-docs`. Do not edit by hand.\n\n";
 
-	std::string current;
-	int depth = 0;
-	const auto flush = [&]() {
-		if(current.empty())
-			return;
-		// trim
-		auto l = current.find_first_not_of(" \t");
-		auto r = current.find_last_not_of(" \t");
-		std::string token = (l == std::string::npos) ? std::string{} : current.substr(l, r - l + 1);
-		if(token.empty())
-		{
-			current.clear();
-			return;
-		}
-
-		const auto colon = token.find(':');
-		if(colon == std::string::npos)
-		{
-			result.push_back({"", token});
-		}
-		else
-		{
-			std::string name = token.substr(0, colon);
-			std::string type = token.substr(colon + 1);
-			// trim both halves
-			const auto trim = [](std::string & s) {
-				auto a = s.find_first_not_of(" \t");
-				auto b = s.find_last_not_of(" \t");
-				if(a == std::string::npos)
-					s.clear();
-				else
-					s = s.substr(a, b - a + 1);
-			};
-			trim(name);
-			trim(type);
-			result.push_back({name, type});
-		}
-		current.clear();
-	};
-
-	for(char c : argsText)
+	if(!classNames.empty())
 	{
-		if(c == '(' || c == '{' || c == '<')
-			++depth;
-		else if(c == ')' || c == '}' || c == '>')
-			--depth;
-
-		if(c == ',' && depth == 0)
-			flush();
-		else
-			current += c;
-	}
-	flush();
-
-	return result;
-}
-
-/// Picks `argN` when the signature didn't name an argument.
-std::string nameOrFallback(const std::string & rawName, std::size_t index)
-{
-	if(!rawName.empty())
-		return rawName;
-	return "arg" + std::to_string(index + 1);
-}
-
-/// Emits a single function declaration as Lua Language Server annotations.
-void emitLualsMethod(std::ofstream & out, const std::string & className, const DocRegistrar::Entry & entry)
-{
-	const auto parts = parseSignature(entry.signature);
-
-	// Description (markdown is preserved by luals in hover popups).
-	if(!entry.description.empty())
-		out << "---" << entry.description << "\n";
-
-	std::vector<std::pair<std::string, std::string>> args;
-	if(parts.ok && !parts.args.empty())
-		args = splitArgs(parts.args);
-
-	for(std::size_t i = 0; i < args.size(); ++i)
-	{
-		const auto name = nameOrFallback(args[i].first, i);
-		out << "---@param " << name << ' ' << args[i].second << "\n";
+		out << "## Classes\n\n";
+		for(const auto & name : classNames)
+			out << " - [" << name << "](" << name << ".md)\n";
+		out << "\n";
 	}
 
-	if(parts.ok && !parts.returnType.empty())
-		out << "---@return " << parts.returnType << "\n";
-
-	out << "function " << className << ":" << entry.name << "(";
-	for(std::size_t i = 0; i < args.size(); ++i)
+	if(!enumNames.empty())
 	{
-		if(i)
-			out << ", ";
-		out << nameOrFallback(args[i].first, i);
+		out << "## Enums\n\n";
+		for(const auto & name : enumNames)
+			out << " - [" << name << "](" << name << ".md)\n";
+		out << "\n";
 	}
-	out << ") end\n\n";
 }
 
 /// Wraps a description across multiple `---` lines so luals' hover popup renders
@@ -284,6 +237,38 @@ void emitLualsDescription(std::ofstream & out, std::string_view description)
 			break;
 		start = end + 1;
 	}
+}
+
+/// Emits a single function declaration as Lua Language Server annotations.
+void emitLualsMethod(std::ofstream & out, const std::string & className, const DocRegistrar::Entry & entry)
+{
+	if(!entry.description.empty())
+		emitLualsDescription(out, entry.description);
+
+	for(const auto & p : entry.params)
+	{
+		out << "---@param " << p.name << ' ' << (p.type.empty() ? std::string("any") : p.type);
+		if(!p.description.empty())
+			out << " # " << p.description;
+		out << "\n";
+	}
+
+	if(!entry.ret.type.empty())
+	{
+		out << "---@return " << entry.ret.type;
+		if(!entry.ret.description.empty())
+			out << " # " << entry.ret.description;
+		out << "\n";
+	}
+
+	out << "function " << className << ":" << entry.name << "(";
+	for(std::size_t i = 0; i < entry.params.size(); ++i)
+	{
+		if(i)
+			out << ", ";
+		out << entry.params[i].name;
+	}
+	out << ") end\n\n";
 }
 
 void emitLualsType(std::ofstream & out,
@@ -343,20 +328,37 @@ void exportLuaApiDocs(const boost::filesystem::path & outDir)
 {
 	boost::filesystem::create_directories(outDir);
 
-	const auto mdPath  = outDir / "API.md";
-	const auto luaPath = outDir / "api.lua";
+	const auto & types = Registry::get()->getAllTypes();
 
-	std::ofstream md(mdPath.string());
-	std::ofstream lua(luaPath.string());
+	// First pass: collect every name that has its own dedicated file so renderType() can
+	// turn occurrences of those names into links. Includes both top-level classes and the
+	// enum groups that get extracted to their own pages.
+	std::set<std::string> knownTypes;
+	std::vector<std::string> classNames;
+	std::vector<std::string> enumNames;
 
-	md  << "# Lua scripting API reference\n\n"
-	    << "Auto-generated from C++ host bindings via `vcmiserver --export-lua-docs`. Do not edit by hand.\n\n";
+	for(const auto & [typeName, registar] : types)
+	{
+		knownTypes.insert(typeName);
+		classNames.push_back(typeName);
 
+		FieldDocRegistrar fieldSink;
+		registar->collectFields(fieldSink);
+		for(const auto & group : fieldSink.getEnumGroups())
+		{
+			knownTypes.insert(group.name);
+			enumNames.push_back(group.name);
+		}
+	}
+
+	// Single LuaLS stub aggregating every type — kept as one file so modders can register
+	// it as a `Lua.workspace.library` path and get autocomplete across the whole API.
+	std::ofstream lua((outDir / "api.lua").string());
 	lua << "---@meta\n"
 	    << "-- Auto-generated Lua Language Server definitions for the VCMI scripting API.\n"
 	    << "-- Generated by `vcmiserver --export-lua-docs`. Do not edit by hand.\n\n";
 
-	for(const auto & [typeName, registar] : Registry::get()->getAllTypes())
+	for(const auto & [typeName, registar] : types)
 	{
 		DocRegistrar methodSink;
 		registar->collectDocs(methodSink);
@@ -365,10 +367,18 @@ void exportLuaApiDocs(const boost::filesystem::path & outDir)
 		registar->collectFields(fieldSink);
 
 		const auto description = registar->getDescription();
+		const auto & methods = methodSink.get();
+		const auto & fields = fieldSink.get();
+		const auto & enumGroups = fieldSink.getEnumGroups();
 
-		emitMarkdownType(md, typeName, description, methodSink.get(), fieldSink.get(), fieldSink.getEnumGroups());
-		emitLualsType(lua, typeName, description, methodSink.get(), fieldSink.get(), fieldSink.getEnumGroups());
+		emitClassFile(outDir, typeName, description, methods, fields, enumGroups, knownTypes);
+		emitLualsType(lua, typeName, description, methods, fields, enumGroups);
+
+		for(const auto & group : enumGroups)
+			emitEnumFile(outDir, group);
 	}
+
+	emitIndex(outDir, classNames, enumNames);
 }
 
 }

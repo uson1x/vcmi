@@ -82,49 +82,65 @@ inline std::string luaTypeName()
 namespace detail
 {
 template<class Tuple, std::size_t Offset, std::size_t... I>
-inline std::string formatArgsImpl(std::index_sequence<I...>)
+inline std::vector<std::string> paramTypesImpl(std::index_sequence<I...>)
 {
-	std::string out;
-	[[maybe_unused]] const char * sep = "";
-	((out += std::exchange(sep, ", "), out += luaTypeName<std::tuple_element_t<I + Offset, Tuple>>()), ...);
+	std::vector<std::string> out;
+	(out.push_back(luaTypeName<std::tuple_element_t<I + Offset, Tuple>>()), ...);
 	return out;
 }
 
 template<class Tuple, std::size_t Offset = 0>
-inline std::string formatArgs()
+inline std::vector<std::string> paramTypesFromTuple()
 {
 	static_assert(std::tuple_size_v<Tuple> >= Offset, "Offset exceeds tuple size");
 	constexpr std::size_t N = std::tuple_size_v<Tuple> - Offset;
-	return formatArgsImpl<Tuple, Offset>(std::make_index_sequence<N>{});
+	return paramTypesImpl<Tuple, Offset>(std::make_index_sequence<N>{});
 }
 
 template<class Ret>
-inline std::string formatReturn()
+inline std::string returnTypeOrEmpty()
 {
 	if constexpr (std::is_void_v<Ret>)
 		return {};
 	else
-		return ": " + luaTypeName<Ret>();
+		return luaTypeName<Ret>();
 }
 }
 
-/// Produces a Lua-style signature for a member function pointer, e.g. "(a: integer): boolean".
+/// Returns the per-argument Lua type names for a C++ member function pointer, one entry per arg.
+/// Pairs with `LuaParam` (host-supplied names) to build a full param documentation list.
 template<auto Method>
-inline std::string signatureOfMethod()
+inline std::vector<std::string> paramTypesOfMethod()
 {
 	using TR = LuaClassMemberTraits<decltype(Method)>;
-	return "(" + detail::formatArgs<typename TR::ArgsTuple>() + ")" + detail::formatReturn<typename TR::ReturnType>();
+	return detail::paramTypesFromTuple<typename TR::ArgsTuple>();
 }
 
-/// Produces a Lua-style signature for a static proxy method registered through LuaFunctionWrapper.
-/// The first C++ argument is the self/object value and is dropped — Lua sees it as `self`.
+/// Returns the Lua return type for a C++ member function pointer, empty string for void.
+template<auto Method>
+inline std::string returnTypeOfMethod()
+{
+	using TR = LuaClassMemberTraits<decltype(Method)>;
+	return detail::returnTypeOrEmpty<typename TR::ReturnType>();
+}
+
+/// Returns the per-argument Lua type names for a static proxy helper, dropping the first
+/// argument (treated as self).
 template<auto Fn>
-inline std::string signatureOfFunction()
+inline std::vector<std::string> paramTypesOfFunction()
 {
 	using TR = LuaFunctionTraits<std::remove_pointer_t<std::decay_t<decltype(Fn)>>>;
 	using Args = typename TR::ArgsTuple;
 	static_assert(std::tuple_size_v<Args> >= 1, "Proxy static helpers must take the object as their first argument");
-	return "(" + detail::formatArgs<Args, /*Offset=*/1>() + ")" + detail::formatReturn<typename TR::ReturnType>();
+	return detail::paramTypesFromTuple<Args, /*Offset=*/1>();
+}
+
+/// Returns the Lua return type for a static proxy helper, empty string for void.
+template<auto Fn>
+inline std::string returnTypeOfFunction()
+{
+	using TR = LuaFunctionTraits<std::remove_pointer_t<std::decay_t<decltype(Fn)>>>;
+	return detail::returnTypeOrEmpty<typename TR::ReturnType>();
 }
 
 }

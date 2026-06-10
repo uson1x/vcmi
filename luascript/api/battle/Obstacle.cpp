@@ -31,11 +31,11 @@ namespace scripting::api
 
 void ObstacleProxy::registerMethods(MethodRegistrar & R)
 {
-	R.function<&ObstacleProxy::getObstacleType>("getObstacleType",
+	R.function<&ObstacleProxy::getObstacleType>("getObstacleType", {},
 		"Returns the obstacle category: usual, absolute, moat, or spell-created.");
-	R.function<&ObstacleProxy::getPosition>("getPosition",
+	R.function<&ObstacleProxy::getPosition>("getPosition", {},
 		"Returns the hex that serves as anchor of the obstacle, usually - located in bottom-left corner of the obstacle");
-	R.function<&ObstacleProxy::getSpell>("getSpell",
+	R.function<&ObstacleProxy::getSpell>("getSpell", {},
 		"Returns the Spell that created this obstacle, or nil for non-spell obstacles.");
 }
 

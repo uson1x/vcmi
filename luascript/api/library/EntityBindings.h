@@ -27,7 +27,7 @@ class EntityBindings
 public:
 	static void registerMethods(MethodRegistrar & R)
 	{
-		R.template method<&Entity::getJsonKey, Leaf>("getJsonKey",
+		R.template method<&Entity::getJsonKey, Leaf>("getJsonKey", {},
 			"Returns the JSON key (mod-scoped identifier) of this entity.");
 	}
 };

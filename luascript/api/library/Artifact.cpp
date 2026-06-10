@@ -24,11 +24,11 @@ void ArtifactProxy::registerMethods(MethodRegistrar & R)
 {
 	EntityBindings<Artifact>::registerMethods(R);
 
-	R.method<&Artifact::isBig>("isBig",
+	R.method<&Artifact::isBig>("isBig", {},
 		"True if the artifact occupies the 'big' artifact slot (cannot be carried in the backpack).");
-	R.method<&Artifact::isTradable>("isTradable",
+	R.method<&Artifact::isTradable>("isTradable", {},
 		"True if the artifact can be traded between heroes or sold at the marketplace.");
-	R.method<&Artifact::getPrice>("getPrice",
+	R.method<&Artifact::getPrice>("getPrice", {},
 		"Returns the artifact's gold value.");
 }
 

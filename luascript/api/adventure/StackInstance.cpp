@@ -26,9 +26,9 @@ namespace scripting::api
 {
 void StackInstanceProxy::registerMethods(MethodRegistrar & R)
 {
-	R.method<&CStackBasicDescriptor::getType, CStackInstance>("getType",
+	R.method<&CStackBasicDescriptor::getType, CStackInstance>("getType", {},
 		"Returns the Creature type of the units in this stack.");
-	R.method<&CStackBasicDescriptor::getCount, CStackInstance>("getCount",
+	R.method<&CStackBasicDescriptor::getCount, CStackInstance>("getCount", {},
 		"Returns the number of creatures currently in this stack.");
 }
 

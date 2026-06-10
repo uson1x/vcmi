@@ -100,7 +100,7 @@ TEST(BindingsCoverageTest, EveryFieldHasNameTypeAndDescription)
 	}
 }
 
-TEST(BindingsCoverageTest, EveryBindingHasNameSignatureAndDescription)
+TEST(BindingsCoverageTest, EveryBindingHasNameAndDescription)
 {
 	const auto * registry = Registry::get();
 
@@ -113,10 +113,59 @@ TEST(BindingsCoverageTest, EveryBindingHasNameSignatureAndDescription)
 		{
 			EXPECT_FALSE(entry.name.empty())
 				<< "Empty binding name in type '" << typeName << "'";
-			EXPECT_FALSE(entry.signature.empty())
-				<< "Empty signature for '" << typeName << "." << entry.name << "'";
 			EXPECT_FALSE(entry.description.empty())
 				<< "Empty description for '" << typeName << "." << entry.name << "'";
+		}
+	}
+}
+
+TEST(BindingsCoverageTest, EveryParamHasName)
+{
+	const auto * registry = Registry::get();
+
+	for(const auto & [typeName, registar] : registry->getAllTypes())
+	{
+		DocRegistrar sink;
+		registar->collectDocs(sink);
+
+		for(const auto & entry : sink.get())
+		{
+			std::set<std::string> seenParams;
+			for(const auto & p : entry.params)
+			{
+				EXPECT_FALSE(p.name.empty())
+					<< "Empty parameter name in '" << typeName << "." << entry.name << "'";
+				EXPECT_FALSE(p.type.empty())
+					<< "Empty parameter type for '" << typeName << "." << entry.name << "." << p.name << "'";
+
+				const auto [_, inserted] = seenParams.insert(p.name);
+				EXPECT_TRUE(inserted)
+					<< "Duplicate parameter '" << p.name << "' in '" << typeName << "." << entry.name << "'";
+			}
+		}
+	}
+}
+
+TEST(BindingsCoverageTest, EveryNonVoidReturnHasType)
+{
+	const auto * registry = Registry::get();
+
+	for(const auto & [typeName, registar] : registry->getAllTypes())
+	{
+		DocRegistrar sink;
+		registar->collectDocs(sink);
+
+		for(const auto & entry : sink.get())
+		{
+			// We can't tell void from "missing type" at this layer — the registrar stores
+			// an empty `ret.type` for void returns. A non-empty `ret.description` paired
+			// with an empty `ret.type` is the actual smell: a void function with a description
+			// of a non-existent return value.
+			if(!entry.ret.description.empty())
+			{
+				EXPECT_FALSE(entry.ret.type.empty())
+					<< "Return description set for void return in '" << typeName << "." << entry.name << "'";
+			}
 		}
 	}
 }

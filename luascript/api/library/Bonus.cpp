@@ -29,27 +29,27 @@ namespace scripting::api
 
 void BonusProxy::registerMethods(MethodRegistrar & R)
 {
-	R.function<&BonusProxy::getType>("getType",
+	R.function<&BonusProxy::getType>("getType", {},
 		"Returns the bonus type as its JSON key.");
-	R.function<&BonusProxy::getVal>("getVal",
+	R.function<&BonusProxy::getVal>("getVal", {},
 		"Returns the integer magnitude of the bonus.");
-	R.function<&BonusProxy::getSubtype>("getSubtype",
+	R.function<&BonusProxy::getSubtype>("getSubtype", {},
 		"Returns the bonus subtype as a JSON key (the meaning depends on getType).");
-	R.function<&BonusProxy::getSourceID>("getSourceID",
+	R.function<&BonusProxy::getSourceID>("getSourceID", {},
 		"Returns the JSON key identifying the entity that granted this bonus.");
-	R.function<&BonusProxy::getSource>("getSource",
+	R.function<&BonusProxy::getSource>("getSource", {},
 		"Returns the source category (artifact, creature ability, spell, ...) of the bonus.");
-	R.function<&BonusProxy::getDuration>("getDuration",
+	R.function<&BonusProxy::getDuration>("getDuration", {},
 		"Returns the list of duration flags currently set on the bonus.");
-	R.function<&BonusProxy::getValType>("getValType",
+	R.function<&BonusProxy::getValType>("getValType", {},
 		"Returns how the value combines with other bonuses (additive, percent, base number, ...).");
-	R.function<&BonusProxy::getStacking>("getStacking",
+	R.function<&BonusProxy::getStacking>("getStacking", {},
 		"Returns the stacking key — bonuses with the same key from the same source do not stack.");
-	R.function<&BonusProxy::getTurnsRemain>("getTurnsRemain",
+	R.function<&BonusProxy::getTurnsRemain>("getTurnsRemain", {},
 		"Returns the remaining turns until the bonus expires (0 if not turn-limited, only active if duration is set accordingly).");
-	R.function<&BonusProxy::isHidden>("isHidden",
+	R.function<&BonusProxy::isHidden>("isHidden", {},
 		"True if the bonus is hidden from the player's interface display.");
-	R.function<&BonusProxy::getParametersAsNumber>("getParametersAsNumber",
+	R.function<&BonusProxy::getParametersAsNumber>("getParametersAsNumber", {},
 		"Returns the bonus's extra parameters encoded as a single integer (0 if none).");
 }
 
@@ -96,9 +96,11 @@ std::vector<BonusDuration::BonusDuration> BonusProxy::getDuration(const Bonus & 
 
 void BonusListProxy::registerMethods(MethodRegistrar & R)
 {
-	R.function<&BonusListProxy::size>("size",
+	R.function<&BonusListProxy::size>("size", {},
 		"Returns the number of bonuses in this list.");
 	R.function<&BonusListProxy::getBonus>("getBonus",
+		{{"index", "1-based position of the bonus to fetch."}},
+		{"Bonus stored at the given position."},
 		"Returns the bonus at the given 1-based index. Throws if the index is out of range.");
 }
 

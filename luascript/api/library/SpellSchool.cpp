@@ -22,7 +22,7 @@ namespace scripting::api
 void SpellSchoolProxy::registerMethods(MethodRegistrar & R)
 {
 	EntityBindings<spells::SpellSchoolType>::registerMethods(R);
-	R.method<&Entity::getNameTextID, spells::SpellSchoolType>("getNameTextID",
+	R.method<&Entity::getNameTextID, spells::SpellSchoolType>("getNameTextID", {},
 		"Returns the text ID of the spell school name.");
 }
 

@@ -27,14 +27,15 @@ void HeroInstanceProxy::registerMethods(MethodRegistrar & R)
 	BonusBearerBindings<CGHeroInstance>::registerMethods(R);
 
 	R.method<&CCreatureSet::getStackPtr, CGHeroInstance>("getStack",
+		{{"slot", "Army slot to query (1-based)."}}, {},
 		"Returns the stack instance in the given army slot, or nil if the slot is empty.");
-	R.method<&CGObjectInstance::getOwner, CGHeroInstance>("getOwner",
+	R.method<&CGObjectInstance::getOwner, CGHeroInstance>("getOwner", {},
 		"Returns the player color that owns this hero.");
-	R.method<&CGHeroInstance::getNameTextID>("getNameTextID",
+	R.method<&CGHeroInstance::getNameTextID>("getNameTextID", {},
 		"Returns the text ID of the hero's name.");
-	R.function<&HeroInstanceProxy::isMale>("isMale",
+	R.function<&HeroInstanceProxy::isMale>("isMale", {},
 		"True if the hero's gender is male.");
-	R.function<&HeroInstanceProxy::isFemale>("isFemale",
+	R.function<&HeroInstanceProxy::isFemale>("isFemale", {},
 		"True if the hero's gender is female.");
 }
 

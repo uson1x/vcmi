@@ -19,24 +19,17 @@ namespace scripting::api
 
 /// MethodRegistrar implementation that collects bindings as metadata.
 /// Drives the same `registerMethods` code path the runtime uses, but instead of pushing
-/// closures onto a Lua table it accumulates {name, signature, description} entries that
-/// downstream code (docs exporter, BindingsCoverageTest) can inspect.
+/// closures onto a Lua table it accumulates fully-structured DocEntry records that
+/// downstream code (docs exporter, BindingsCoverageTest) can inspect directly without
+/// any string parsing.
 class DocRegistrar final : public MethodRegistrar
 {
 public:
-	struct Entry
-	{
-		std::string name;
-		std::string signature;
-		std::string description;
-	};
+	using Entry = DocEntry;
 
-	void addRaw(std::string_view name,
-	            lua_CFunction    /*functor*/,
-				const std::string & signature,
-	            std::string_view description) override
+	void addEntry(DocEntry entry, lua_CFunction /*fn*/) override
 	{
-		entries.push_back({std::string(name), signature, std::string(description)});
+		entries.push_back(std::move(entry));
 	}
 
 	const std::vector<Entry> & get() const { return entries; }

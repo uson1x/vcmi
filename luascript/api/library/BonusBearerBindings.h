@@ -31,7 +31,8 @@ public:
 	static void registerMethods(MethodRegistrar & R)
 	{
 		R.template cfunction<&getBonuses>("getBonuses",
-			"(predicate: fun(b: Bonus): boolean): BonusList",
+			{{"predicate", "fun(b: Bonus): boolean", "Selector — called for each bonus on the bearer; bonus is kept when it returns true."}},
+			{"BonusList", "Bonuses for which the predicate returned true."},
 			"Returns all bonuses affecting the bearer for which the predicate returns true.");
 	}
 

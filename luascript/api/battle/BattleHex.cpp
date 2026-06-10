@@ -28,15 +28,20 @@ namespace scripting::api
 
 void BattleHexProxy::registerMethods(MethodRegistrar & R)
 {
-	R.method<&BattleHex::isValid>            ("isValid",         "Returns true if this hex value identifies existing battlefield position.");
-	R.method<&BattleHex::isAvailable>        ("isAvailable",     "Returns true if the hex is on the battlefield and is not located in the first or last column, which are reserved for back tile of war machines and are not accessible for regular movement. NOTE: does NOT checks whether hex is blocked by obstacles or units");
-	R.function<&BattleHexProxy::getClosestTile>("getClosestTile","Searches provided array for hex that is closest to current one. If multiple equidistant hexes are found, this function will prefer hex closest to specified battle side.");
-	R.method<&BattleHex::copyToNorthWest>    ("copyToNorthWest", "Returns the neighbouring hex one step north-west.");
-	R.method<&BattleHex::copyToNorthEast>    ("copyToNorthEast", "Returns the neighbouring hex one step north-east.");
-	R.method<&BattleHex::copyToEast>         ("copyToEast",      "Returns the neighbouring hex one step east.");
-	R.method<&BattleHex::copyToSouthEast>    ("copyToSouthEast", "Returns the neighbouring hex one step south-east.");
-	R.method<&BattleHex::copyToSouthWest>    ("copyToSouthWest", "Returns the neighbouring hex one step south-west.");
-	R.method<&BattleHex::copyToWest>         ("copyToWest",      "Returns the neighbouring hex one step west.");
+	R.method<&BattleHex::isValid>            ("isValid",     {}, "Returns true if this hex value identifies existing battlefield position.");
+	R.method<&BattleHex::isAvailable>        ("isAvailable", {}, "Returns true if the hex is on the battlefield and is not located in the first or last column, which are reserved for back tile of war machines and are not accessible for regular movement. NOTE: does NOT checks whether hex is blocked by obstacles or units");
+	R.function<&BattleHexProxy::getClosestTile>("getClosestTile",
+		{
+			{"side",  "Tie-breaker side — closer to this side wins when several candidates are equidistant."},
+			{"hexes", "Candidate hexes to search through."}
+		}, {},
+		"Searches provided array for hex that is closest to current one. If multiple equidistant hexes are found, this function will prefer hex closest to specified battle side.");
+	R.method<&BattleHex::copyToNorthWest>    ("copyToNorthWest", {}, "Returns the neighbouring hex one step north-west.");
+	R.method<&BattleHex::copyToNorthEast>    ("copyToNorthEast", {}, "Returns the neighbouring hex one step north-east.");
+	R.method<&BattleHex::copyToEast>         ("copyToEast",      {}, "Returns the neighbouring hex one step east.");
+	R.method<&BattleHex::copyToSouthEast>    ("copyToSouthEast", {}, "Returns the neighbouring hex one step south-east.");
+	R.method<&BattleHex::copyToSouthWest>    ("copyToSouthWest", {}, "Returns the neighbouring hex one step south-west.");
+	R.method<&BattleHex::copyToWest>         ("copyToWest",      {}, "Returns the neighbouring hex one step west.");
 }
 
 BattleHex BattleHexProxy::getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes)
