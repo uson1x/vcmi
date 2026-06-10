@@ -24,10 +24,17 @@ class Effect;
 class DLL_LINKAGE ISpellEffectFactory
 {
 public:
+	/// (modScope, sourcePath) pair identifying one patch script layer.
+	using PatchEntry = std::pair<std::string, std::string>;
+
 	virtual ~ISpellEffectFactory() = default;
 
-	virtual void initialize(const std::string & scope, const std::string & name) = 0;
-	virtual std::shared_ptr<Effect> create(const std::string & scope, const std::string & name) const = 0;
+	/// effectId is the unique identifier of the effect (e.g. "core:damage"), used as cache key.
+	/// scope/name point at the base script; patches list extra layers stacked over the base in order.
+	virtual void initialize(const std::string & effectId,
+		const std::string & scope, const std::string & name,
+		const std::vector<PatchEntry> & patches) = 0;
+	virtual std::shared_ptr<Effect> create(const std::string & effectId) const = 0;
 };
 
 class DLL_LINKAGE SpellEffectService : boost::noncopyable

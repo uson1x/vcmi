@@ -37,7 +37,6 @@ public:
 	virtual ~Script() = default;
 
 	virtual std::string getIdentifier() const = 0;
-	virtual const std::string & getSource() const = 0;
 };
 
 class DLL_LINKAGE Pool

@@ -25,19 +25,6 @@ function Script:convertBonuses(mechanics)
 		nb.sourceType = "SPELL_EFFECT"
 		nb.sourceID = spellKey
 
-		-- Shield/AirShield: val in config is the reduction percentage; stored inverted
-		if (spellKey == "core:shield" or spellKey == "core:airShield")
-			and nb.type == "GENERAL_DAMAGE_REDUCTION" then
-			nb.val = 100 - (nb.val or 0)
-		end
-
-		-- Bind: store caster unit ID when cast by a unit (not a hero)
-		if spellKey == "core:bind" and nb.type == "BIND_EFFECT" then
-			if not mechanics:getHeroCaster() then
-				nb.addInfo = mechanics:getUnitCaster():unitID()
-			end
-		end
-
 		converted[name] = nb
 	end
 
