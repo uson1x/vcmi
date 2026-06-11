@@ -37,17 +37,20 @@ static void generateTranslations(const std::string & modID)
 	LIBRARY->loadFilesystem(false);
 	settings.init("config/settings.json", "vcmi:settings");
 
-	ModManager mods;
+	auto mods = std::make_unique<ModManager>();
 
-	if (!mods.isModActive(modID))
-		mods.tryEnableMods({modID});
+	std::string oldPresetName = mods->getActivePreset();
+	mods->createNewPreset("translation-export");
+	mods->activatePreset("translation-export");
+	mods = std::make_unique<ModManager>();
+	mods->tryEnableMods({modID});
 
-	for (const auto & submod : mods.getModSettings(modID))
+	for (const auto & submod : mods->getModSettings(modID))
 	{
 		try
 		{
 			if (!submod.second)
-				mods.tryEnableMods({modID + '.' + submod.first});
+				mods->tryEnableMods({modID + '.' + submod.first});
 		}
 		catch (const std::exception &)
 		{
@@ -55,7 +58,7 @@ static void generateTranslations(const std::string & modID)
 		}
 	}
 
-	for (const auto & submod : mods.getModSettings(modID))
+	for (const auto & submod : mods->getModSettings(modID))
 		if (!submod.second)
 			logGlobal->warn("Failed to enable submod %s", submod.first);
 
@@ -147,8 +150,29 @@ static void generateTranslations(const std::string & modID)
 	const boost::filesystem::path outPath = VCMIDirs::get().userExtractedPath() / "translationFull";
 	boost::filesystem::create_directories(outPath);
 
-	for (const auto & modWithOverrides : modsWithOverrides)
-		mods.tryDisableMod(modWithOverrides);
+	mods->createNewPreset("translation-export-base");
+	mods->activatePreset("translation-export-base");
+	mods = std::make_unique<ModManager>();
+	mods->tryEnableMods({modID});
+
+	for (const auto & submod : mods->getModSettings(modID))
+	{
+		try
+		{
+			std::string fullModID = modID + '.' + submod.first;
+			bool hasOverrides = vstd::contains(modsWithOverrides, fullModID);
+			if (!submod.second && !hasOverrides)
+				mods->tryEnableMods({fullModID});
+
+			if (submod.second && hasOverrides)
+				mods->tryDisableMod(fullModID);
+		}
+		catch (const std::exception &)
+		{
+			// failed to enable mod - ignore, will be logged later
+		}
+	}
+
 
 	CResourceHandler::destroy();
 	delete LIBRARY;
@@ -179,6 +203,9 @@ static void generateTranslations(const std::string & modID)
 		}
 	}
 
+	mods->activatePreset(oldPresetName);
+	mods->deletePreset("translation-export");
+	mods->deletePreset("translation-export-base");
 	logGlobal->info("Translation export complete");
 	logGlobal->info("Extracted files can be found in " + outPath.string() + " directory\n");
 
