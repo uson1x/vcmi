@@ -35,11 +35,6 @@ public:
 	static std::vector<const spells::SpellSchoolType *> getSchools(const ::spells::Spell & spell);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<::spells::Spell>)
-{
-	return std::string(SpellProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

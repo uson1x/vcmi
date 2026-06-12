@@ -17,7 +17,6 @@
 #include "../library/BonusBearerBindings.h"
 #include "../Registry.h"
 
-// Proxy headers brought in for their luaTypeNameOf ADL overloads.
 #include "../library/Creature.h"
 #include "../library/Spell.h"
 #include "BattleHex.h"

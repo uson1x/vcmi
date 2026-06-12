@@ -31,11 +31,6 @@ public:
 	static void registerMethods(MethodRegistrar & R);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<Skill>)
-{
-	return std::string(SkillProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

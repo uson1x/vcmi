@@ -52,6 +52,7 @@ void Registry::registerSerializable()
 {
 	auto r = std::make_shared<SerializableRegistar<T>>();
 	addPrivate(std::string(T::luaName), r);
+	registerLuaName<T>(T::luaName);
 }
 
 }

@@ -53,18 +53,6 @@ public:
 	static BattleHex getTowerShooterHex(const IBattleInfoCallback & object, EWallPart part);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<IBattleInfoCallback>)
-{
-	return std::string(IBattleInfoCallbackProxy::luaName);
-}
-
-/// CBattleInfoCallback is exposed to scripts as the same userdata that IBattleInfoCallback is.
-/// Map it to the same Lua-facing name so derived-class return types do not surface as `userdata`.
-inline std::string luaTypeNameOf(LuaTypeNameTag<CBattleInfoCallback>)
-{
-	return std::string(IBattleInfoCallbackProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -14,20 +14,30 @@
 #include "../../lib/constants/IdentifierBase.h"
 #include "../../include/vcmi/scripting/ApiTags.h"
 
+#include "Registry.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
 {
 
-/// Tag struct used as an ADL hook for mapping a C++ type to its Lua-facing type name.
-/// Proxies provide an inline overload `luaTypeNameOf(LuaTypeNameTag<TheirCppType>)` in this
-/// namespace; ADL on this tag finds them. The primary template below covers primitives,
-/// integers, enums, identifiers, optionals, vectors and falls back to "userdata".
-template<class T>
-struct LuaTypeNameTag {};
+namespace detail
+{
+template<class T> struct IsVector                       : std::false_type {};
+template<class T> struct IsVector<std::vector<T>>       : std::true_type  { using value_type = T; };
+template<class T> struct IsOptional                     : std::false_type {};
+template<class T> struct IsOptional<std::optional<T>>   : std::true_type  { using value_type = T; };
+template<class T> struct IsSharedPtr                    : std::false_type {};
+template<class T> struct IsSharedPtr<std::shared_ptr<T>>: std::true_type  { using element_type = T; };
+}
 
+/// Returns the Lua-facing type name for a C++ type. Primitives, identifiers and the wrapper
+/// templates (vector, optional, shared_ptr, raw pointer) are resolved at compile time;
+/// everything else goes through `Registry::lookupLuaName`, which is populated by proxy
+/// registrations and explicit aliases in `Registry::Registry()`. Unregistered types throw
+/// `std::runtime_error` — caught in `BindingsCoverageTest` so misses surface in CI.
 template<class T>
-inline std::string luaTypeNameOf(LuaTypeNameTag<T>)
+inline std::string luaTypeName()
 {
 	using U = std::remove_cvref_t<T>;
 	if constexpr (std::is_same_v<U, bool>)
@@ -38,45 +48,18 @@ inline std::string luaTypeNameOf(LuaTypeNameTag<T>)
 		return "number";
 	else if constexpr (std::is_integral_v<U>)
 		return "integer";
-	else if constexpr (std::is_enum_v<U>)
-		return "integer";
 	else if constexpr (std::is_base_of_v<IdentifierBase, U>)
 		return "integer";
+	else if constexpr (detail::IsVector<U>::value)
+		return luaTypeName<typename detail::IsVector<U>::value_type>() + "[]";
+	else if constexpr (detail::IsOptional<U>::value)
+		return luaTypeName<typename detail::IsOptional<U>::value_type>() + "?";
+	else if constexpr (detail::IsSharedPtr<U>::value)
+		return luaTypeName<typename detail::IsSharedPtr<U>::element_type>();
+	else if constexpr (std::is_pointer_v<U>)
+		return luaTypeName<std::remove_pointer_t<U>>();
 	else
-		return "userdata";
-}
-
-template<class T>
-inline std::string luaTypeNameOf(LuaTypeNameTag<std::vector<T>>)
-{
-	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{}) + "[]";
-}
-
-template<class T>
-inline std::string luaTypeNameOf(LuaTypeNameTag<std::optional<T>>)
-{
-	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{}) + "?";
-}
-
-/// Shared / raw pointers to API classes carry the same Lua-facing name as the pointee:
-/// the wrapper layer hands the script a userdata regardless of how the C++ side held it.
-template<class T>
-inline std::string luaTypeNameOf(LuaTypeNameTag<std::shared_ptr<T>>)
-{
-	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{});
-}
-
-template<class T>
-inline std::string luaTypeNameOf(LuaTypeNameTag<T *>)
-{
-	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{});
-}
-
-/// Public entry point — strips cv/reference qualifiers, then dispatches via ADL.
-template<class T>
-inline std::string luaTypeName()
-{
-	return luaTypeNameOf(LuaTypeNameTag<std::remove_cvref_t<T>>{});
+		return Registry::get()->lookupLuaName(std::type_index(typeid(U)));
 }
 
 namespace detail

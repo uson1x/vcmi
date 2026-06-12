@@ -86,11 +86,6 @@ struct SpellObstacleDescriptor final : ApiSerializable<SpellObstacleDescriptor>
 	}
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<SpellObstacleDescriptor>)
-{
-	return std::string(SpellObstacleDescriptor::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

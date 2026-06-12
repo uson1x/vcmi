@@ -41,11 +41,6 @@ public:
 	static LuaUnitState copy(const ::battle::Unit & unit);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<::battle::Unit>)
-{
-	return std::string(UnitProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

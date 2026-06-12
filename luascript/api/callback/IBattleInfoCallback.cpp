@@ -16,8 +16,6 @@
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 
-// Proxy headers brought in for their luaTypeNameOf ADL overloads — the signature
-// derivation in MethodRegistrar::function<>() needs those visible at the call site.
 #include "../battle/BattleHex.h"
 #include "../battle/BattleHexArray.h"
 #include "../battle/Obstacle.h"

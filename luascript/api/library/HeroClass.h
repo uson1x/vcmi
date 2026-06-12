@@ -31,11 +31,6 @@ public:
 	static void registerMethods(MethodRegistrar & R);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<HeroClass>)
-{
-	return std::string(HeroClassProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

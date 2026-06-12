@@ -34,12 +34,6 @@ public:
 	static BattleHex getClosestTile(const BattleHex & self, BattleSide side, const BattleHexArray & hexes);
 };
 
-/// Maps the C++ BattleHex type to its Lua-facing name for signature derivation.
-inline std::string luaTypeNameOf(LuaTypeNameTag<BattleHex>)
-{
-	return std::string(BattleHexProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

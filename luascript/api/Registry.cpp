@@ -12,6 +12,13 @@
 #include "Registry.h"
 #include "SerializableRegistar.h"
 
+#include "../../lib/battle/CBattleInfoCallback.h"
+#include "../../lib/battle/IBattleState.h"
+#include "../../lib/json/JsonNode.h"
+#include "../../lib/mapObjects/CGObjectInstance.h"
+
+#include <boost/core/demangle.hpp>
+
 #include "Enums.h"
 #include "LuaMetaString.h"
 #include "battle/SpellObstacleDescriptor.h"
@@ -77,6 +84,37 @@ Registry::Registry()
 	registerSerializable<LuaMetaString>();
 	registerSerializable<BonusDescriptor>();
 	registerSerializable<SpellObstacleDescriptor>();
+
+	// Aliases for C++ types that have no dedicated proxy but appear in binding signatures.
+	registerLuaName<CBattleInfoCallback>("Battle");
+	registerLuaName<CGObjectInstance>("MapObject");
+	registerLuaName<battle::UnitInfo>("UnitInfo");
+	// JsonNode fields accept any Lua value (string / number / table / …) and are funneled
+	// through JsonUtils::parseBonus — surface that openness rather than `userdata`.
+	registerLuaName<JsonNode>("any");
+
+	// Named enum aliases — the proxy registrations above don't cover these because they have no proxy of their own
+	registerLuaName<EHealLevel>("HealLevel");
+	registerLuaName<EHealPower>("HealPower");
+	registerLuaName<ESpellCastProblem>("SpellCastProblem");
+	registerLuaName<::spells::AimType>("AimType");
+	registerLuaName<BonusDuration::BonusDuration>("BonusDuration");
+	registerLuaName<BonusSource>("BonusSource");
+	registerLuaName<BonusValueType>("BonusValueType");
+	registerLuaName<CObstacleInstance::EObstacleType>("ObstacleType");
+	registerLuaName<EWallPart>("WallPart");
+	registerLuaName<BattleSide>("BattleSide");
+
+	// EWallState has no enum group of its own and is exposed as integer to Lua
+	registerLuaName<EWallState>("integer");
+}
+
+std::string Registry::lookupLuaName(std::type_index t) const
+{
+	auto it = luaNameByType.find(t);
+	if(it == luaNameByType.end())
+		throw std::runtime_error("No Lua type name registered for C++ type: " + boost::core::demangle(t.name()));
+	return it->second;
 }
 
 const Registry * Registry::get()

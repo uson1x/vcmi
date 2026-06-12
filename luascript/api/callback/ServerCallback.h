@@ -62,18 +62,6 @@ public:
 	static int damageUnit(lua_State * L); // args: battle, unit, damageAmount; returns: actualDamage, killedAmount
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<ServerCallback>)
-{
-	return std::string(ServerCallbackProxy::luaName);
-}
-
-/// battle::UnitInfo has no dedicated proxy — it is the POD descriptor that `addUnit` consumes.
-/// Naming it here keeps docs from showing `userdata` for that argument.
-inline std::string luaTypeNameOf(LuaTypeNameTag<battle::UnitInfo>)
-{
-	return "UnitInfo";
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

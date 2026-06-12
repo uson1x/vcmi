@@ -79,20 +79,6 @@ public:
 	}
 };
 
-/// ADL overloads so proxy methods that take or return these C++ enums advertise the named
-/// enum type instead of the bare "integer" fallback. The names match the keys emitted in
-/// `Enums::serializeScript`, so LuaLS can cross-reference signatures with `---@enum` blocks.
-inline std::string luaTypeNameOf(LuaTypeNameTag<EHealLevel>)                       { return "HealLevel"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<EHealPower>)                       { return "HealPower"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<ESpellCastProblem>)                { return "SpellCastProblem"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<::spells::AimType>)                { return "AimType"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<BonusDuration::BonusDuration>)     { return "BonusDuration"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<BonusSource>)                      { return "BonusSource"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<BonusValueType>)                   { return "BonusValueType"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<CObstacleInstance::EObstacleType>) { return "ObstacleType"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<EWallPart>)                        { return "WallPart"; }
-inline std::string luaTypeNameOf(LuaTypeNameTag<BattleSide>)                       { return "BattleSide"; }
-
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -33,10 +33,6 @@ namespace scripting::api
 		static std::string getPluralFormTextID(const ::spells::Mechanics & m, const std::string & baseTextID, int32_t count);
 	};
 
-	inline std::string luaTypeNameOf(LuaTypeNameTag<::spells::Mechanics>)
-	{
-		return std::string(MechanicsProxy::luaName);
-	}
 }
 
 VCMI_LIB_NAMESPACE_END

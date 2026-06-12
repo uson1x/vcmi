@@ -14,7 +14,6 @@
 #include "../Registry.h"
 #include "../library/BonusBearerBindings.h"
 
-// Proxy header brought in for its luaTypeNameOf ADL overload (used by getStack's return).
 #include "StackInstance.h"
 
 VCMI_LIB_NAMESPACE_BEGIN

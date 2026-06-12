@@ -40,10 +40,6 @@ namespace scripting::api
 			static void addStandard(::spells::Problem & problem, const ::spells::Mechanics & mechanics, ESpellCastProblem spellProblem);
 		};
 
-		inline std::string luaTypeNameOf(LuaTypeNameTag<::spells::Problem>)
-		{
-			return std::string(ProblemProxy::luaName);
-		}
 }
 
 VCMI_LIB_NAMESPACE_END

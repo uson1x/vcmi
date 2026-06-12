@@ -83,18 +83,6 @@ struct BonusDescriptor final : ApiSerializable<BonusDescriptor>
 	}
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<BonusDescriptor>)
-{
-	return std::string(BonusDescriptor::luaName);
-}
-
-/// JsonNode fields on BonusDescriptor accept any Lua value (string, number, table, …) and
-/// are funneled through JsonUtils::parseBonus. Surface that openness rather than "userdata".
-inline std::string luaTypeNameOf(LuaTypeNameTag<JsonNode>)
-{
-	return "any";
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

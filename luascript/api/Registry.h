@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <typeinfo>
-
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
@@ -67,9 +65,16 @@ public:
 	{
 		return typeid(T).name();
 	}
+
+	/// Returns the Lua-facing name for a C++ type. Throws std::runtime_error if the type was
+	/// not registered — every non-primitive C++ type that appears in a binding signature must
+	/// be registered either via a proxy (registerPrivate / registerSerializable) or via an
+	/// explicit alias call in the constructor.
+	std::string lookupLuaName(std::type_index t) const;
 private:
 	RegistryData privateData;
 	RegistryData publicData;
+	std::unordered_map<std::type_index, std::string> luaNameByType;
 
 	Registry();
 
@@ -77,10 +82,18 @@ private:
 	void addPrivate(const std::string & name, const std::shared_ptr<Registar> & item);
 
 	template<typename T>
+	void registerLuaName(std::string_view name)
+	{
+		auto [_, inserted] = luaNameByType.try_emplace(std::type_index(typeid(T)), std::string(name));
+		assert(inserted);
+	}
+
+	template<typename T>
 	void registerPrivate()
 	{
 		auto r = std::make_shared<T>();
 		addPrivate(std::string(T::luaName), r);
+		registerLuaName<typename T::ObjectType>(T::luaName);
 	}
 
 	template<typename T>

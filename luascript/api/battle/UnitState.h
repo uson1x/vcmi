@@ -95,11 +95,6 @@ public:
 	static int heal(lua_State * L); // args: amount, level, power — returns healedHP, resurrected
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<LuaUnitState>)
-{
-	return std::string(LuaUnitStateProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

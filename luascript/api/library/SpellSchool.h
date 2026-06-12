@@ -31,11 +31,6 @@ public:
 	static void registerMethods(MethodRegistrar & R);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<spells::SpellSchoolType>)
-{
-	return std::string(SpellSchoolProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

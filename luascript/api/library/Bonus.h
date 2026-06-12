@@ -61,16 +61,6 @@ public:
 	static Bonus getBonus(const BonusList & list, int32_t index);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<Bonus>)
-{
-	return std::string(BonusProxy::luaName);
-}
-
-inline std::string luaTypeNameOf(LuaTypeNameTag<BonusList>)
-{
-	return std::string(BonusListProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

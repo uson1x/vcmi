@@ -45,11 +45,6 @@ struct LuaMetaString final : ApiSerializable<LuaMetaString>
 	}
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<LuaMetaString>)
-{
-	return std::string(LuaMetaString::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

@@ -34,11 +34,6 @@ public:
 	static void registerMethods(MethodRegistrar & R);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<CStackInstance>)
-{
-	return std::string(StackInstanceProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

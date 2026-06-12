@@ -34,11 +34,6 @@ public:
 	static std::string getNameTextID(const Creature & creature, int amount);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<Creature>)
-{
-	return std::string(CreatureProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

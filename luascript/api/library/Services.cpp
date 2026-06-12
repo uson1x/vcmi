@@ -25,7 +25,6 @@
 #include "../../LuaStack.h"
 #include "../../LuaCallWrapper.h"
 
-// Proxy headers brought in for their luaTypeNameOf ADL overloads.
 #include "Artifact.h"
 #include "Creature.h"
 #include "Faction.h"

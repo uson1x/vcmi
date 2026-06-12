@@ -17,7 +17,6 @@
 #include "../../LuaCallWrapper.h"
 #include "../Registry.h"
 
-// Proxy headers brought in for their luaTypeNameOf ADL overloads.
 #include "BattleHex.h"
 #include "../library/Spell.h"
 

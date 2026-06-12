@@ -32,11 +32,6 @@ public:
 	static void registerMethods(MethodRegistrar & R);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<Artifact>)
-{
-	return std::string(ArtifactProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

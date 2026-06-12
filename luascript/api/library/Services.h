@@ -52,11 +52,6 @@ public:
 	static void registerMethods(MethodRegistrar & R);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<Services>)
-{
-	return std::string(ServicesProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

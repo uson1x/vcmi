@@ -13,11 +13,9 @@
 
 #include "../Enums.h"
 #include "../LuaMetaString.h"
+#include "Mechanics.h"
 #include "../../../lib/spells/ISpellMechanics.h"
 #include "../../../lib/texts/MetaString.h"
-
-// Proxy header brought in for its luaTypeNameOf ADL overload.
-#include "Mechanics.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 

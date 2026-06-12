@@ -35,11 +35,6 @@ public:
 	static BattleHex at(const BattleHexArray & hexes, int index);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<BattleHexArray>)
-{
-	return std::string(BattleHexArrayProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

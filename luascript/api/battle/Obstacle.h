@@ -38,11 +38,6 @@ public:
 	static const ::spells::Spell * getSpell(std::shared_ptr<const CObstacleInstance> obstacle);
 };
 
-inline std::string luaTypeNameOf(LuaTypeNameTag<CObstacleInstance>)
-{
-	return std::string(ObstacleProxy::luaName);
-}
-
 }
 
 VCMI_LIB_NAMESPACE_END

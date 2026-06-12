@@ -15,7 +15,6 @@
 
 #include "../../LuaCallWrapper.h"
 
-// Proxy header brought in for its luaTypeNameOf ADL overload (used by getHero's return type).
 #include "../adventure/HeroInstance.h"
 
 #include "../../../lib/callback/IGameInfoCallback.h"

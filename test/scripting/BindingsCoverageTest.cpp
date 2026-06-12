@@ -40,7 +40,11 @@ TEST(BindingsCoverageTest, EveryRegisteredTypeHasBindings)
 	for(const auto & [typeName, registar] : types)
 	{
 		DocRegistrar methodSink;
-		registar->collectDocs(methodSink);
+		// collectDocs invokes the proxy's registerMethods, which derives signature types via
+		// Registry::lookupLuaName. An unregistered type throws std::runtime_error — surface
+		// that here as a named test failure instead of a process-killing uncaught exception.
+		ASSERT_NO_THROW(registar->collectDocs(methodSink))
+			<< "Type '" << typeName << "' triggered an exception during signature derivation";
 
 		FieldDocRegistrar fieldSink;
 		registar->collectFields(fieldSink);
@@ -48,6 +52,12 @@ TEST(BindingsCoverageTest, EveryRegisteredTypeHasBindings)
 		EXPECT_FALSE(methodSink.get().empty() && fieldSink.get().empty() && fieldSink.getEnumGroups().empty())
 			<< "Type '" << typeName << "' exposes neither methods, fields, nor enum groups";
 	}
+}
+
+TEST(BindingsCoverageTest, LookupOfUnregisteredTypeThrows)
+{
+	struct UnregisteredSentinel {};
+	EXPECT_THROW(Registry::get()->lookupLuaName(typeid(UnregisteredSentinel)), std::runtime_error);
 }
 
 TEST(BindingsCoverageTest, EveryEnumKeyHasNameAndDescription)
