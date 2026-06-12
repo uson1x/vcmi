@@ -116,6 +116,8 @@ void QuickSpellPanel::create()
 			tooltip.replaceName(id);
 			hoverText = tooltip.toString();
 		}
+		else
+			hoverText = LIBRARY->generaltexth->translate("vcmi.battleWindow.quickSpell.emptySlot");
 
 		const auto & callback = [this, id, hero]()
 		{
