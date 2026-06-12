@@ -100,30 +100,32 @@ else()
 	option(ENABLE_SINGLE_APP_BUILD "Builds client and launcher as single executable" OFF)
 	option(ENABLE_TEST "Enable compilation of unit tests" OFF)
 	option(ENABLE_LOBBY "Enable compilation of lobby server" OFF)
-
-	include(CheckCXXCompilerFlag)
-	if(MSVC)
-		check_cxx_compiler_flag("/std:c++23" COMPILER_SUPPORTS_CXX23)
-		if(NOT COMPILER_SUPPORTS_CXX23)
-			check_cxx_compiler_flag("/std:c++23preview" COMPILER_SUPPORTS_CXX23_PREVIEW)
-			set(COMPILER_SUPPORTS_CXX23 ${COMPILER_SUPPORTS_CXX23_PREVIEW})
-		endif()
-	else()
-		check_cxx_compiler_flag("-std=c++23" COMPILER_SUPPORTS_CXX23)
-	endif()
-
 	option(ENABLE_DISCORD "Enable compilation of discord integration" ON)
 
-	# Determine if Glaze can be used
-	set(DISCORD_RPC_NO_GLAZE OFF)
-	if(
-		(MACOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "10.15")
-		OR
-		(IOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.0")
-		OR
-		(NOT COMPILER_SUPPORTS_CXX23)
-	)
-		set(DISCORD_RPC_NO_GLAZE ON)
+	if (ENABLE_DISCORD)
+		include(CheckCXXCompilerFlag)
+		if(MSVC)
+			check_cxx_compiler_flag("/std:c++23" COMPILER_SUPPORTS_CXX23)
+			if(NOT COMPILER_SUPPORTS_CXX23)
+				check_cxx_compiler_flag("/std:c++23preview" COMPILER_SUPPORTS_CXX23_PREVIEW)
+				set(COMPILER_SUPPORTS_CXX23 ${COMPILER_SUPPORTS_CXX23_PREVIEW})
+			endif()
+		else()
+			check_cxx_compiler_flag("-std=c++23" COMPILER_SUPPORTS_CXX23)
+		endif()
+
+
+		# Determine if Glaze can be used
+		set(DISCORD_RPC_NO_GLAZE OFF)
+		if(
+			(MACOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "10.15")
+			OR
+			(IOS AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "13.0")
+			OR
+			(NOT COMPILER_SUPPORTS_CXX23)
+		)
+	        set(DISCORD_RPC_NO_GLAZE ON)
+		endif()
 	endif()
 endif()
 
