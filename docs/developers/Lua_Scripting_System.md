@@ -20,9 +20,6 @@ This page describes the internal working of the Lua scripting module. For usage 
   - consider wrapping Lua userdata into std::any for better type safety, or at least pass classes other than LuaCopyable as ApiShared / ApiPointer
   - check if there is a way to wrap Lua function into C++ wrapper and pass it into LuaFunctionWrapper, or even LuaMethodWrapper
   - add guards against loading values from .json with same name as methods in Lua spell effect script
-- Docs:
-  - merge name and signature for .md?
-  - add anchors/local URL's for method arguments to redirect to class docs
 
 ## Future improvements
 
@@ -33,7 +30,6 @@ This page describes the internal working of the Lua scripting module. For usage 
 - Remove final usage of unitID access by script - to set addinfo of bind bonus to unit that initiated binding. Perhaps unify this logic with Clone and treat it as some sort of "unit link" where two units are linked together unless *something* happens (unit dies / moves / unit bonus removed)
 - Decide on how to expose random generator to scripting. Currently only generation of integer in range is exposed, but we have way more options, including ability roll system. Expose as separate api class?
 - try to remove remaining hardcoded bits of SpellID's: CLONE, STONE_GAZE, SLAYER, AIR_SHIELD, POISON, RESURRECTION, FIRE_SHIELD, DEATH_STARE, as well as some entries in .lua
-
 
 ## General rules
 

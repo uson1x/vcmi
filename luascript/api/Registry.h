@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <typeindex>
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
