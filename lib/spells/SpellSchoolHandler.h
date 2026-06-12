@@ -70,7 +70,7 @@ class DLL_LINKAGE SpellSchoolHandler : public CHandlerBase<SpellSchool, spells::
 public:
 	std::vector<JsonNode> loadLegacyData() override;
 
-	virtual std::vector<SpellSchool> getAllObjects() const override;
+	std::vector<SpellSchool> getAllObjects() const override;
 
 protected:
 	std::shared_ptr<spells::SpellSchoolType> loadFromJson(const std::string & scope, const JsonNode & json, const std::string & identifier, size_t index) override;

@@ -43,7 +43,7 @@ public:
 };
 
 /// Singleton that maps C++ type names to their Registar; used by LuaStack to attach metatables and by LuaContext to expose all types.
-class DLL_LINKAGE Registry final : public boost::noncopyable
+class Registry final : public boost::noncopyable
 {
 	using RegistryData = std::map<std::string, std::shared_ptr<Registar>>;
 
@@ -86,8 +86,8 @@ private:
 	template<typename T>
 	void registerLuaName(std::string_view name)
 	{
-		auto [_, inserted] = luaNameByType.try_emplace(std::type_index(typeid(T)), std::string(name));
-		assert(inserted);
+		[[maybe_unused]] auto inserted = luaNameByType.try_emplace(std::type_index(typeid(T)), std::string(name));
+		assert(inserted.second);
 	}
 
 	template<typename T>

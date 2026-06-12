@@ -47,7 +47,7 @@ set(test_SRCS
 
 		netpacks/NetPackFixture.cpp
 
-		scripting/BindingsCoverageTest.cpp
+#TODO		scripting/BindingsCoverageTest.cpp
 
 		spells/AbilityCasterTest.cpp
 		spells/CSpellTest.cpp

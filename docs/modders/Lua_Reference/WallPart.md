@@ -3,7 +3,7 @@
 Town-wall sections referenced by siege APIs and `catapultAttack`.
 
 | Key | Value | Description |
-|---|---|---|
+| --- | ----- | ----------- |
 | `invalid` | -1 | No wall part. Returned for hexes outside the fortifications. |
 | `indestructiblePart` | -2 | Sections of walls that always exist and always block ranged attacks |
 | `indestructibleGate` | -3 | Section of gate that always exists, but does not blocks ranged attacks |
@@ -15,4 +15,3 @@ Town-wall sections referenced by siege APIs and `catapultAttack`.
 | `upperWall` | 5 | Destructible wall segment adjacent to the upper tower. |
 | `upperTower` | 6 | Upper tower of the town walls, usually built by Castle. |
 | `gate` | 7 | Destructible town gate that can only be opened by defenders. |
-

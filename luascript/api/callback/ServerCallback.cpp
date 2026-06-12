@@ -8,9 +8,10 @@
  *
  */
 #include "StdInc.h"
+#include "ServerCallback.h"
 
 #include "GameLibrary.h"
-#include "ServerCallback.h"
+#include "IBattleInfoCallback.h"
 
 #include "../Enums.h"
 #include "../LuaMetaString.h"
@@ -22,7 +23,6 @@
 #include "../battle/BattleHex.h"
 #include "../battle/Obstacle.h"
 #include "../battle/Unit.h"
-#include "../callback/IBattleInfoCallback.h"
 #include "../library/Bonus.h"
 
 #include "../../LuaStack.h"

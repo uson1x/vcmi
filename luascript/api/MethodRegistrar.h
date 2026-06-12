@@ -13,6 +13,8 @@
 #include "../LuaCallWrapper.h"
 #include "SignatureOf.h"
 
+#include <span>
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
@@ -157,7 +159,7 @@ public:
 	template<auto Fn, std::size_t N>
 	void cfunction(std::string_view name,
 	               const LuaCParam (& params)[N],
-	               LuaCReturn ret,
+				   const LuaCReturn & ret,
 	               std::string_view description)
 	{
 		addEntry(buildCFunctionEntry(name, params, ret, description), &LuaCallWrapper<Fn>::invoke);
@@ -166,7 +168,7 @@ public:
 	/// Zero-parameter overload of `cfunction<>`.
 	template<auto Fn>
 	void cfunction(std::string_view name,
-	               LuaCReturn ret,
+				   const LuaCReturn & ret,
 	               std::string_view description)
 	{
 		addEntry(buildCFunctionEntry(name, std::span<const LuaCParam>{}, ret, description), &LuaCallWrapper<Fn>::invoke);

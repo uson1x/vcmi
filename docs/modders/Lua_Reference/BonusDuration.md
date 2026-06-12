@@ -3,7 +3,7 @@
 Lifetime selectors used by Bonus / BonusDescriptor `duration`.
 
 | Key | Value | Description |
-|---|---|---|
+| --- | ----- | ----------- |
 | `permanent` | 1 | Lasts forever (until explicitly removed). |
 | `oneBattle` | 2 | Expires at the end of the current battle. |
 | `oneDay` | 4 | Expires after end of current in-game day. |
@@ -17,4 +17,3 @@ Lifetime selectors used by Bonus / BonusDescriptor `duration`.
 | `untilOwnAttack` | 1024 | Expires when the bearer initiates an attack (not counter-attack). |
 | `untilTakingIndirectDamage` | 2048 | Expires when the bearer takes spell or environmental damage. |
 | `untilAfterAttackSequence` | 4096 | Expires after the current attack-and-counter sequence resolves. |
-

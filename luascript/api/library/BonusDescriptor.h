@@ -67,7 +67,7 @@ struct BonusDescriptor final : ApiSerializable<BonusDescriptor>
 		s("stacking",           stacking,           "Stacking key — bonuses sharing it overwrite rather than accumulate.");
 		s("description",        description,        "Optional human-readable description (used by tooltips when shown). Overrides generic description for this bonus type.");
 		s("icon",               icon,               "Optional icon name shown next to the bonus in the UI. Overrides generic icon for this bonus type.");
-		s("type",               type,               "Bonus type name (e.g. \"PRIMARY_SKILL\", \"FIRE_IMMUNITY\"). See Bonus types documentation.");
+		s("type",               type,               "Bonus type name (e.g. PRIMARY_SKILL, FIRE_IMMUNITY). See Bonus types documentation.");
 		s("subtype",            subtype,            "Sub-selector that narrows the type (e.g. specific creature, school, primary stat).");
 		s("valueType",          valueType,          "How `val` is combined with other bonuses: additive, base, percent-of-..., independent min/max.");
 		s("effectRange",        effectRange,        "Spatial scope the bonus applies in (e.g. ranged-only or melee-only).");

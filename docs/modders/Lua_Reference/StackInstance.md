@@ -6,11 +6,10 @@ A creature stack as it exists in an army outside of combat (hero slot, town garr
 
 Returns the Creature type of the units in this stack.
 
- - returns [`Creature`](Creature.md)
+- returns [`Creature`](Creature.md)
 
 ### getCount
 
 Returns the number of creatures currently in this stack.
 
- - returns `integer`
-
+- returns `integer`

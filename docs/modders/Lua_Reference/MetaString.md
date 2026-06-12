@@ -6,17 +6,16 @@ Object for constructing strings with translation support. Supports appending tex
 
 Sequence of text-ID tokens to concatenate.
 
- - type: `string[]`
+- type: `string[]`
 
 ### replaceStrings
 
 Values that fill %s placeholders in the appended tokens, in order.
 
- - type: `string[]`
+- type: `string[]`
 
 ### replaceNumbers
 
 Values that fill %d placeholders in the appended tokens, in order.
 
- - type: `integer[]`
-
+- type: `integer[]`

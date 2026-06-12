@@ -107,17 +107,17 @@ public:
 	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagCopyable, ObjectType>, "Class must not inherit from ApiCopyable to be used with this class!");
 
-	void collectDocs(api::MethodRegistrar & sink) const override final
+	void collectDocs(api::MethodRegistrar & sink) const final
 	{
 		Proxy::registerMethods(sink);
 	}
 
-	std::string_view getDescription() const override final
+	std::string_view getDescription() const final
 	{
 		return Proxy::luaDescription;
 	}
 
-	void pushMetatable(lua_State * L) const override final
+	void pushMetatable(lua_State * L) const final
 	{
 		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
 		static auto S_KEY = api::Registry::get()->getTypeName<CUDataType>();
@@ -140,7 +140,7 @@ public:
 	}
 
 protected:
-	void adjustMetatable(lua_State * L) const override
+	void adjustMetatable(lua_State * L) const final
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
 
@@ -181,12 +181,12 @@ public:
 	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagCopyable, ObjectType>, "Class must not inherit from ApiCopyable to be used with this class!");
 
-	void collectDocs(api::MethodRegistrar & sink) const override final
+	void collectDocs(api::MethodRegistrar & sink) const final
 	{
 		Proxy::registerMethods(sink);
 	}
 
-	std::string_view getDescription() const override final
+	std::string_view getDescription() const final
 	{
 		return Proxy::luaDescription;
 	}
@@ -200,7 +200,7 @@ public:
 		return 1;
 	}
 
-	void pushMetatable(lua_State * L) const override final
+	void pushMetatable(lua_State * L) const final
 	{
 		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
 
@@ -222,7 +222,7 @@ public:
 		adjustStaticTable(L);
 	}
 protected:
-	void adjustMetatable(lua_State * L) const override
+	void adjustMetatable(lua_State * L) const final
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
 
@@ -262,12 +262,12 @@ public:
 	static_assert(!std::is_base_of_v<TagRawPointer, ObjectType>, "Class must not inherit from ApiRawPointer to be used with this class!");
 	static_assert(!std::is_base_of_v<TagSharedPointer, ObjectType>, "Class must not inherit from ApiSharedPointer to be used with this class!");
 
-	void collectDocs(api::MethodRegistrar & sink) const override final
+	void collectDocs(api::MethodRegistrar & sink) const final
 	{
 		Proxy::registerMethods(sink);
 	}
 
-	std::string_view getDescription() const override final
+	std::string_view getDescription() const final
 	{
 		return Proxy::luaDescription;
 	}
@@ -281,7 +281,7 @@ public:
 		return 1;
 	}
 
-	void pushMetatable(lua_State * L) const override final
+	void pushMetatable(lua_State * L) const final
 	{
 		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
 
@@ -303,7 +303,7 @@ public:
 		adjustStaticTable(L);
 	}
 protected:
-	void adjustMetatable(lua_State * L) const override
+	void adjustMetatable(lua_State * L) const final
 	{
 		detail::Dispatcher<Proxy, UDataType>::setIndexTable(L);
 

@@ -3,7 +3,7 @@
 Origin classes used by Bonus / BonusDescriptor `sourceType`.
 
 | Key | Value | Description |
-|---|---|---|
+| --- | ----- | ----------- |
 | `artifact` | 0 | Granted by an artifact definition. Does not stacks if hero has multiple of same artifacts |
 | `artifactInstance` | 1 | Granted by a specific equipped artifact instance. Stacks with multiple copies of same artifact |
 | `objectType` | 2 | Granted by a map-object type (e.g. Stables). |
@@ -22,4 +22,3 @@ Origin classes used by Bonus / BonusDescriptor `sourceType`.
 | `commander` | 15 | Commander unit ability. |
 | `global` | 16 | Map-wide global effect. Defined in game settings. |
 | `other` | 17 | Source not represented by another category. |
-

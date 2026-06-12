@@ -3,7 +3,7 @@
 Error codes returned from spell-cast validation.
 
 | Key | Value | Description |
-|---|---|---|
+| --- | ----- | ----------- |
 | `noHeroToCastSpell` | 1 | There is no hero available to cast the spell. |
 | `castsPerTurnLimit` | 2 | The caster has already used their per-turn cast allowance. |
 | `noSpellbook` | 3 | The caster does not carry a spellbook. |
@@ -17,4 +17,3 @@ Error codes returned from spell-cast validation.
 | `wrongSpellTarget` | 11 | The selected target is not valid for this spell's AimType. |
 | `ongoinTacticPhase` | 12 | Spells may not be cast during the tactic phase. |
 | `magicIsBlocked` | 13 | Magic is suppressed on this battlefield (anti-magic terrain or effect). |
-

@@ -1070,7 +1070,7 @@ public:
 	static std::string encode(const si32 index);
 	static std::string entityType();
 
-	DLL_LINKAGE const spells::SpellSchoolType * toEntity(const Services * services) const;
+	const spells::SpellSchoolType * toEntity(const Services * services) const;
 };
 
 class DLL_LINKAGE SpellEffectID : public StaticIdentifier<SpellEffectID>

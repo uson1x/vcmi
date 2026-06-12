@@ -18,9 +18,6 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include <fstream>
-#include <set>
-
 VCMI_LIB_NAMESPACE_BEGIN
 
 namespace scripting::api
@@ -95,7 +92,7 @@ std::string trimLeading(const std::string & s)
 ///   <description>
 ///    - param `name`: <type> — <description>
 ///    - returns <type> — <description>
-void emitMethodEntry(std::ofstream & out,
+void emitMethodEntry(std::ostream & out,
                      const DocRegistrar::Entry & entry,
                      const std::set<std::string> & knownTypes)
 {
@@ -107,7 +104,7 @@ void emitMethodEntry(std::ofstream & out,
 	{
 		for(const auto & p : entry.params)
 		{
-			out << " - param `" << p.name << "`: " << renderType(p.type, knownTypes);
+			out << "- param `" << p.name << "`: " << renderType(p.type, knownTypes);
 			if(!p.description.empty())
 				out << " — " << trimLeading(p.description);
 			out << "\n";
@@ -117,7 +114,7 @@ void emitMethodEntry(std::ofstream & out,
 
 	if(!entry.ret.type.empty())
 	{
-		out << " - returns " << renderType(entry.ret.type, knownTypes);
+		out << "- returns " << renderType(entry.ret.type, knownTypes);
 		if(!entry.ret.description.empty())
 			out << " — " << trimLeading(entry.ret.description);
 		out << "\n\n";
@@ -128,23 +125,23 @@ void emitMethodEntry(std::ofstream & out,
 ///   ### name
 ///   <description>
 ///    - type: <type>
-void emitFieldEntry(std::ofstream & out,
+void emitFieldEntry(std::ostream & out,
                     const FieldDocRegistrar::Entry & entry,
                     const std::set<std::string> & knownTypes)
 {
 	out << "### " << entry.name << "\n\n";
 	if(!entry.description.empty())
 		out << entry.description << "\n\n";
-	out << " - type: " << renderType(entry.type, knownTypes) << "\n\n";
+	out << "- type: " << renderType(entry.type, knownTypes) << "\n\n";
 }
 
 /// Emits one "field that is itself an enum group" entry: paragraph + link to its dedicated file.
-void emitEnumGroupLink(std::ofstream & out, const FieldDocRegistrar::EnumGroupEntry & group)
+void emitEnumGroupLink(std::ostream & out, const FieldDocRegistrar::EnumGroupEntry & group)
 {
 	out << "### " << group.name << "\n\n";
 	if(!group.description.empty())
 		out << group.description << "\n\n";
-	out << " - type: [`" << group.name << "`](" << group.name << ".md)\n\n";
+	out << "- type: [`" << group.name << "`](" << group.name << ".md)\n\n";
 }
 
 /// Writes one Markdown file for a single class/serializable type.
@@ -156,23 +153,30 @@ void emitClassFile(const boost::filesystem::path & outDir,
                    const std::vector<FieldDocRegistrar::EnumGroupEntry> & enumGroups,
                    const std::set<std::string> & knownTypes)
 {
-	std::ofstream out((outDir / (typeName + ".md")).string());
+	std::ostringstream body;
 
-	out << "# " << typeName << "\n\n";
+	body << "# " << typeName << "\n\n";
 	if(!description.empty())
-		out << description << "\n\n";
+		body << description << "\n\n";
 
 	for(const auto & entry : methods)
-		emitMethodEntry(out, entry, knownTypes);
+		emitMethodEntry(body, entry, knownTypes);
 
 	for(const auto & entry : fields)
-		emitFieldEntry(out, entry, knownTypes);
+		emitFieldEntry(body, entry, knownTypes);
 
 	for(const auto & group : enumGroups)
-		emitEnumGroupLink(out, group);
+		emitEnumGroupLink(body, group);
 
 	if(methods.empty() && fields.empty() && enumGroups.empty())
-		out << "_No bindings exposed._\n\n";
+		body << "_No bindings exposed._\n\n";
+
+	std::string content = body.str();
+	while(content.size() >= 2 && content[content.size() - 1] == '\n' && content[content.size() - 2] == '\n')
+		content.pop_back();
+
+	std::ofstream out((outDir / (typeName + ".md")).string());
+	out << content;
 }
 
 /// Writes one Markdown file for a single enum group.
@@ -186,12 +190,11 @@ void emitEnumFile(const boost::filesystem::path & outDir,
 		out << group.description << "\n\n";
 
 	out << "| Key | Value | Description |\n";
-	out << "|---|---|---|\n";
+	out << "| --- | ----- | ----------- |\n";
 	for(const auto & key : group.keys)
 	{
 		out << "| `" << key.key << "` | " << key.value << " | " << key.description << " |\n";
 	}
-	out << "\n";
 }
 
 /// Writes the API.md index that links to every class and enum page.
@@ -207,7 +210,7 @@ void emitIndex(const boost::filesystem::path & outDir,
 	{
 		out << "## Classes\n\n";
 		for(const auto & name : classNames)
-			out << " - [" << name << "](" << name << ".md)\n";
+			out << "- [" << name << "](" << name << ".md)\n";
 		out << "\n";
 	}
 
@@ -215,8 +218,7 @@ void emitIndex(const boost::filesystem::path & outDir,
 	{
 		out << "## Enums\n\n";
 		for(const auto & name : enumNames)
-			out << " - [" << name << "](" << name << ".md)\n";
-		out << "\n";
+			out << "- [" << name << "](" << name << ".md)\n";
 	}
 }
 

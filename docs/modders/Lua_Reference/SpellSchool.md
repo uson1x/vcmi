@@ -6,11 +6,10 @@ A spell school (Fire, Water, Earth, Air, …). Identifies which school a spell b
 
 Returns the JSON key (mod-scoped identifier) of this entity.
 
- - returns `string`
+- returns `string`
 
 ### getNameTextID
 
 Returns the text ID of the spell school name.
 
- - returns `string`
-
+- returns `string`

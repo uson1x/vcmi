@@ -6,5 +6,4 @@ A secondary-skill definition (Wisdom, Tactics, Logistics, …). Database metadat
 
 Returns the JSON key (mod-scoped identifier) of this entity.
 
- - returns `string`
-
+- returns `string`

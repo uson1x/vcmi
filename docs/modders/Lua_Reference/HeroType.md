@@ -6,5 +6,4 @@ A specific named hero from the database (Sir Mullich, Crag Hack, …). Identifie
 
 Returns the JSON key (mod-scoped identifier) of this entity.
 
- - returns `string`
-
+- returns `string`
