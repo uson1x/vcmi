@@ -16,7 +16,6 @@
 #include "../lib/VCMIDirs.h"
 #include "../lib/GameLibrary.h"
 #include "../lib/CConfigHandler.h"
-#include "../lib/callback/CDynLibHandler.h"
 #include "../lib/filesystem/Filesystem.h"
 #include "../lib/modding/CModHandler.h"
 #include "../lib/modding/ModManager.h"
@@ -26,6 +25,7 @@
 #include "mapping/CMapService.h"
 #include "modding/ModDescription.h"
 #include "texts/CGeneralTextHandler.h"
+#include "../luascript/LuaModule.h"
 
 #include <boost/program_options.hpp>
 
@@ -36,17 +36,7 @@ static const std::string SERVER_NAME = GameConstants::VCMI_VERSION + std::string
 
 static void exportLuaApiDocs(const boost::filesystem::path & outPath)
 {
-	// Doc export only needs the scripting plugin loaded — it does not touch any other
-	// game data — so skip the full GameLibrary init that translate-mod requires.
-	const auto luaPath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
-	auto scriptHandler = CDynLibHandler::getNewScriptingModule(luaPath);
-
-	if (!scriptHandler)
-	{
-		logGlobal->error("Lua scripting plugin could not be loaded; cannot export Lua API docs");
-		return;
-	}
-
+	auto scriptHandler = std::make_unique<scripting::LuaModule>();
 	scriptHandler->exportDocs(outPath);
 
 	logGlobal->info("Lua API documentation export complete");
