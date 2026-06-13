@@ -16,6 +16,7 @@
 #include "../lib/VCMIDirs.h"
 #include "../lib/GameLibrary.h"
 #include "../lib/CConfigHandler.h"
+#include "../lib/callback/CDynLibHandler.h"
 #include "../lib/filesystem/Filesystem.h"
 #include "../lib/modding/CModHandler.h"
 #include "../lib/modding/ModManager.h"
@@ -28,8 +29,29 @@
 
 #include <boost/program_options.hpp>
 
+#include <vcmi/scripting/Service.h>
+
 static const std::string SERVER_NAME_AFFIX = "server";
 static const std::string SERVER_NAME = GameConstants::VCMI_VERSION + std::string(" (") + SERVER_NAME_AFFIX + ')';
+
+static void exportLuaApiDocs(const boost::filesystem::path & outPath)
+{
+	// Doc export only needs the scripting plugin loaded — it does not touch any other
+	// game data — so skip the full GameLibrary init that translate-mod requires.
+	const auto luaPath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
+	auto scriptHandler = CDynLibHandler::getNewScriptingModule(luaPath);
+
+	if (!scriptHandler)
+	{
+		logGlobal->error("Lua scripting plugin could not be loaded; cannot export Lua API docs");
+		return;
+	}
+
+	scriptHandler->exportDocs(outPath);
+
+	logGlobal->info("Lua API documentation export complete");
+	logGlobal->info("Generated files can be found in " + outPath.string() + " directory");
+}
 
 static void generateTranslations(const std::string & modID)
 {
@@ -220,6 +242,7 @@ static void handleCommandOptions(int argc, const char * argv[], boost::program_o
 	("run-by-client", "indicate that server launched by client on same machine")
 	("dummy-run", "Shutdown immediately after loading was sucessful")
 	("translate-mod", boost::program_options::value<std::string>(), "Export translations for specified mod")
+	("export-lua-docs", boost::program_options::value<std::string>(), "Export Lua scripting API documentation to specified directory")
 	("port", boost::program_options::value<ui16>(), "port at which server will listen to connections from client")
 	("lobby", "start server in lobby mode in which server connects to a global lobby");
 
@@ -253,6 +276,12 @@ static void handleCommandOptions(int argc, const char * argv[], boost::program_o
 	{
 		std::string modID = options["translate-mod"].as<std::string>();
 		generateTranslations(modID);
+		exit(0);
+	}
+
+	if(options.count("export-lua-docs"))
+	{
+		exportLuaApiDocs(options["export-lua-docs"].as<std::string>());
 		exit(0);
 	}
 

@@ -1332,11 +1332,8 @@ void GameStatePackVisitor::visitStartAction(StartAction & pack)
 		{
 			case EActionType::DEFEND:
 				st->waiting = false;
-				st->defending = true;
-				st->defendingAnim = true;
 				break;
 			case EActionType::WAIT:
-				st->defendingAnim = false;
 				st->waiting = true;
 				st->waitedThisTurn = true;
 				break;
@@ -1350,7 +1347,6 @@ void GameStatePackVisitor::visitStartAction(StartAction & pack)
 				else
 				{
 					st->waiting = false;
-					st->defendingAnim = false;
 					st->movedThisRound = true;
 				}
 				st->castSpellThisTurn = true;
@@ -1360,7 +1356,6 @@ void GameStatePackVisitor::visitStartAction(StartAction & pack)
 				break;
 			default: //any active stack action - attack, catapult, heal, spell...
 				st->waiting = false;
-				st->defendingAnim = false;
 				st->movedThisRound = true;
 				break;
 		}

@@ -36,6 +36,8 @@ public:
 
 	std::unique_ptr<Pool> createPoolInstance(const Environment * ENV) const override;
 
+	void exportDocs(const boost::filesystem::path & outDir) const override;
+
 private:
 	using ScriptPtr = std::shared_ptr<LuaScriptInstance>;
 	using ScriptMap = std::map<std::string, ScriptPtr>;
