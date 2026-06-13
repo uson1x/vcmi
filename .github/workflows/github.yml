@@ -886,3 +886,89 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python3 CI/final_summary.py
+
+  draft-release:
+    name: Create draft release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [build, windows-installer, upload-source-package, test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Extract version
+        id: version
+        run: |
+          f=cmake_modules/VersionDefinition.cmake
+          major=$(grep -m1 VCMI_VERSION_MAJOR "$f" | tr -dc 0-9)
+          minor=$(grep -m1 VCMI_VERSION_MINOR "$f" | tr -dc 0-9)
+          patch=$(grep -m1 VCMI_VERSION_PATCH "$f" | tr -dc 0-9)
+          if [ "$patch" = "0" ]; then tag="${major}.${minor}"; else tag="${major}.${minor}.${patch}"; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dl
+
+      - name: Stage release assets
+        run: |
+          set -euo pipefail
+          mkdir release
+          for d in dl/*/; do
+            name=$(basename "$d")
+            case "$name" in
+              partial-json-*) continue ;;
+              *-msvc-x64-symbols)   (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-Windows-x64-symbols.zip" .) ;;
+              *-msvc-x86-symbols)   (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-Windows-x86-symbols.zip" .) ;;
+              *-msvc-arm64-symbols) (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-Windows-arm64-symbols.zip" .) ;;
+              *-ios-symbols)        (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-iOS-symbols.zip" .) ;;
+              *)
+                for f in "$d"*; do
+                  [ -f "$f" ] || continue
+                  case "$(basename "$f")" in
+                    *-intel.dmg)       cp "$f" release/VCMI-macOS-intel.dmg ;;
+                    *-arm.dmg)         cp "$f" release/VCMI-macOS-arm.dmg ;;
+                    *.ipa)             cp "$f" release/VCMI-iOS.ipa ;;
+                    *-x64.zip)         cp "$f" release/VCMI-Windows.zip ;;
+                    *-x64.exe)         cp "$f" release/VCMI-Windows-x64.exe ;;
+                    *-x86.exe)         cp "$f" release/VCMI-Windows-x86.exe ;;
+                    *-arm64.exe)       cp "$f" release/VCMI-Windows-arm64.exe ;;
+                    *-armeabi-v7a.apk) cp "$f" release/VCMI-Android-armeabi-v7a.apk ;;
+                    *-arm64-v8a.apk)   cp "$f" release/VCMI-Android-arm64-v8a.apk ;;
+                    *-x64.apk)         cp "$f" release/VCMI-Android-x86_64.apk ;;
+                    *-armeabi-v7a.aab) cp "$f" release/VCMI-Android-armeabi-v7a.aab ;;
+                    *-arm64-v8a.aab)   cp "$f" release/VCMI-Android-arm64-v8a.aab ;;
+                    *-x64.aab)         cp "$f" release/VCMI-Android-x86_64.aab ;;
+                    *-x86_64.AppImage) cp "$f" release/VCMI-Linux-x64.AppImage ;;
+                    *-arm64.AppImage)  cp "$f" release/VCMI-Linux-arm64.AppImage ;;
+                    release.tar.gz)    cp "$f" release/VCMI-Sources.tar.gz ;;
+                  esac
+                done
+                ;;
+            esac
+          done
+          ls -la release
+
+      - name: Refresh draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          state=$(gh release view "$TAG" --json isDraft -q .isDraft 2>/dev/null || echo missing)
+          if [ "$state" = "true" ]; then
+            gh release delete "$TAG" --yes
+          elif [ "$state" = "false" ]; then
+            echo "::error::Release $TAG already exists and is published; refusing to overwrite"
+            exit 1
+          fi
+          gh release create "$TAG" \
+            --draft \
+            --target "$GITHUB_SHA" \
+            --title "VCMI $TAG" \
+            --notes-file .github/release_notes.md.template \
+            release/*
