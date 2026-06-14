@@ -1637,13 +1637,14 @@ void CCastleInterface::removeBuilding(BuildingID bid)
 	redraw();
 }
 
-class WikiRadialArea : public CIntObject
+class TownRadialArea : public CIntObject
 {
 	const CGTownInstance * town;
 	CCastleBuildings * builds;
+	CCastleInterface * owner;
 public:
-	WikiRadialArea(const Rect & Pos, const CGTownInstance * Town, CCastleBuildings * Builds)
-		: CIntObject(GESTURE), town(Town), builds(Builds)
+	TownRadialArea(const Rect & Pos, const CGTownInstance * Town, CCastleBuildings * Builds, CCastleInterface * Owner)
+		: CIntObject(GESTURE), town(Town), builds(Builds), owner(Owner)
 	{
 		pos = Pos + pos.topLeft();
 	}
@@ -1656,41 +1657,34 @@ public:
 		if (!settings["input"]["radialWheelGarrisonSwipe"].Bool())
 			return;
 
+		auto isMarketAvailable = [this](){
+			if(town->hasBuilt(BuildingID::MARKETPLACE))
+				return true;
+			for(const auto & t : GAME->interface()->cb->getTownsInfo(true))
+				if(t->hasBuilt(BuildingID::MARKETPLACE))
+					return true;
+			return false;
+		};
+
 		std::vector<RadialMenuConfig> menuElements = {
 			{ RadialMenuConfig::ITEM_NW, true, "openTavern", "vcmi.radialWheel.openTavern", [this](){
-				if(town->hasBuilt(BuildingID::TAVERN))
-					GAME->interface()->showTavernWindow(town, nullptr, QueryID::NONE);
-				else
-					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.tavernNotBuilt"));
-			}},
+				owner->keyPressed(EShortcut::TOWN_OPEN_TAVERN);
+			}, !town->hasBuilt(BuildingID::TAVERN)},
 			{ RadialMenuConfig::ITEM_NE, true, "openMageGuild", "vcmi.radialWheel.openMageGuild", [this](){
-				if(town->hasBuilt(BuildingID::MAGES_GUILD_1))
-					builds->enterMagesGuild();
-				else
-					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.mageGuildNotBuilt"));
-			}},
+				owner->keyPressed(EShortcut::TOWN_OPEN_MAGE_GUILD);
+			}, !town->hasBuilt(BuildingID::MAGES_GUILD_1)},
 			{ RadialMenuConfig::ITEM_SW, true, "openBlacksmith", "vcmi.radialWheel.openBlacksmith", [this](){
-				auto warMachine = town->getWarMachineInBuilding(BuildingID::BLACKSMITH);
-				if(warMachine.hasValue())
-					builds->buildingTryActivateCustomUI(BuildingID::BLACKSMITH, BuildingID::BLACKSMITH);
-				else
-					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.blacksmithNotBuilt"));
-			}},
+				owner->keyPressed(EShortcut::TOWN_OPEN_BLACKSMITH);
+			}, !town->getWarMachineInBuilding(BuildingID::BLACKSMITH).hasValue()},
 			{ RadialMenuConfig::ITEM_SE, true, "openMarketplace", "vcmi.radialWheel.openMarketplace", [this](){
-				builds->enterAnyMarket();
-			}},
+				owner->keyPressed(EShortcut::TOWN_OPEN_MARKET);
+			}, !isMarketAvailable()},
 			{ RadialMenuConfig::ITEM_EE, true, "openShipyard", "vcmi.radialWheel.openShipyard", [this](){
-				if(town->hasBuilt(BuildingID::SHIPYARD))
-					GAME->interface()->showShipyardDialog(town);
-				else
-					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.shipyardNotBuilt"));
-			}},
+				owner->keyPressed(EShortcut::TOWN_OPEN_SHIPYARD);
+			}, !town->hasBuilt(BuildingID::SHIPYARD)},
 			{ RadialMenuConfig::ITEM_WW, true, "openCastle", "vcmi.radialWheel.openCastle", [this](){
-				if(town->fortLevel() > CGTownInstance::NONE)
-					ENGINE->windows().createAndPushWindow<CFortScreen>(town);
-				else
-					GAME->interface()->showInfoDialog(LIBRARY->generaltexth->translate("vcmi.townWindow.castleNotBuilt"));
-			}},
+				owner->keyPressed(EShortcut::TOWN_OPEN_FORT);
+			}, !(town->fortLevel() > CGTownInstance::NONE)},
 		};
 		ENGINE->windows().createAndPushWindow<RadialMenu>(finalPosition, menuElements);
 	}
@@ -1729,7 +1723,7 @@ void CCastleInterface::recreateIcons()
 		});
 	}
 
-	wikiRadialArea = std::make_shared<WikiRadialArea>(Rect(15, 387, 213, 66), town, builds.get());
+	townRadialArea = std::make_shared<TownRadialArea>(Rect(15, 387, 213, 66), town, builds.get(), this);
 
 	creainfo.clear();
 
@@ -1764,6 +1758,17 @@ void CCastleInterface::keyPressed(EShortcut key)
 	case EShortcut::TOWN_OPEN_MAGE_GUILD:
 		if(town->hasBuilt(BuildingID::MAGES_GUILD_1))
 			builds->enterMagesGuild();
+		break;
+	case EShortcut::TOWN_OPEN_BLACKSMITH:
+	{
+		auto warMachine = town->getWarMachineInBuilding(BuildingID::BLACKSMITH);
+		if(warMachine.hasValue())
+			builds->buildingTryActivateCustomUI(BuildingID::BLACKSMITH, BuildingID::BLACKSMITH);
+		break;
+	}
+	case EShortcut::TOWN_OPEN_SHIPYARD:
+		if(town->hasBuilt(BuildingID::SHIPYARD))
+			GAME->interface()->showShipyardDialog(town);
 		break;
 	case EShortcut::TOWN_OPEN_THIEVES_GUILD:
 		break;
