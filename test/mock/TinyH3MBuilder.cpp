@@ -15,14 +15,131 @@
 
 #include "../../lib/GameLibrary.h"
 #include "../../lib/VCMIDirs.h"
-#include "../../lib/entities/hero/CHeroHandler.h"
+#include "../../lib/texts/CLegacyConfigParser.h"
 #include "../../lib/mapping/MapFeaturesH3M.h"
 #include "../../lib/mapping/MapFormatSettings.h"
+#include "../../lib/texts/TextOperations.h"
 
+#include <boost/algorithm/string.hpp>
 #include <zlib.h>
 
 namespace TinyH3M
 {
+
+namespace
+{
+
+// One row of Data/Objects.txt, parsed verbatim. Used as the source of truth for
+// template bytes — we re-emit the same 9 fields the H3 editor authored.
+struct LegacyTemplate
+{
+	std::string animationFile;
+	std::string blockBits;     // 48 chars '0'/'1'
+	std::string visitBits;     // 48 chars '0'/'1'
+	std::string unknownBits;   // 9 chars (Objects.txt strings[3])
+	std::string terrainBits;   // 9 chars (Objects.txt strings[4])
+	int         id            = 0;
+	int         subid         = 0;
+	int         type          = 0;
+	int         printPriority = 0;
+};
+
+using LegacyKey = std::pair<int, int>;
+
+const std::map<LegacyKey, LegacyTemplate> & legacyTemplates()
+{
+	static const auto cache = []
+	{
+		std::map<LegacyKey, LegacyTemplate> out;
+		CLegacyConfigParser parser(TextPath::builtin("Data/Objects.txt"));
+		const auto total = static_cast<size_t>(parser.readNumber());
+		parser.endLine();
+
+		for(size_t i = 0; i < total; ++i)
+		{
+			const std::string data = parser.readString();
+			std::vector<std::string> fields;
+			boost::split(fields, data, boost::is_any_of(" "));
+			assert(fields.size() == 9);
+
+			LegacyTemplate t;
+			t.animationFile = fields[0];
+			t.blockBits     = fields[1];
+			t.visitBits     = fields[2];
+			t.unknownBits   = fields[3];
+			t.terrainBits   = fields[4];
+			t.id            = std::stoi(fields[5]);
+			t.subid         = std::stoi(fields[6]);
+			t.type          = std::stoi(fields[7]);
+			t.printPriority = std::stoi(fields[8]);
+
+			out.emplace(LegacyKey(t.id, t.subid), t);
+			parser.endLine();
+		}
+		return out;
+	}();
+	return cache;
+}
+
+const LegacyTemplate & legacyTemplate(MapObjectID id, MapObjectSubID subid)
+{
+	const auto & cache = legacyTemplates();
+	const auto it = cache.find(LegacyKey(id.getNum(), subid.getNum()));
+	if(it == cache.end())
+		throw std::runtime_error("TinyH3MBuilder: no Data/Objects.txt entry for id="
+			+ std::to_string(id.getNum()) + " subid=" + std::to_string(subid.getNum()));
+	return it->second;
+}
+
+// Wire blockMask[i] bit j set iff blockStr[(5-i)*8 + (7-j)] == '1'.
+// (See ObjectTemplate::readMap vs ObjectTemplate::readTxt.)
+uint8_t packBlockOrVisitByte(const std::string & bits48, int wireRow, bool wantBit)
+{
+	uint8_t byte = 0;
+	for(int j = 0; j < 8; ++j)
+	{
+		const char ch = bits48[(5 - wireRow) * 8 + (7 - j)];
+		if((ch == '1') == wantBit)
+			byte |= static_cast<uint8_t>(1 << j);
+	}
+	return byte;
+}
+
+uint16_t packTerrainMask(const std::string & bits9)
+{
+	// Per ObjectTemplate::readTxt: terrain i allowed iff bits9[8-i] == '1'.
+	// Per ObjectTemplate::readMap: terrain i allowed iff bit i of terrMask is 1.
+	uint16_t mask = 0;
+	for(int i = 0; i < 9; ++i)
+	{
+		if(bits9[8 - i] == '1')
+			mask |= static_cast<uint16_t>(1 << i);
+	}
+	return mask;
+}
+
+void writeLegacyTemplate(TinyH3MWriter & w, const LegacyTemplate & t)
+{
+	w.writeBaseString(t.animationFile);
+	for(int row = 0; row < 6; ++row)
+		w.writeUInt8(packBlockOrVisitByte(t.blockBits, row, /*wantBit*/ true));
+	for(int row = 0; row < 6; ++row)
+		w.writeUInt8(packBlockOrVisitByte(t.visitBits, row, /*wantBit*/ true));
+
+	// The first uint16 is read-and-discarded by the loader. Real maps seem to
+	// hold editor-cached data here; encoding the unknownBits field the same way
+	// we encode terrainBits is a best-effort match and the loader doesn't care.
+	w.writeUInt16(packTerrainMask(t.unknownBits));
+	w.writeUInt16(packTerrainMask(t.terrainBits));
+
+	w.writeUInt32(static_cast<uint32_t>(t.id));
+	w.writeUInt32(static_cast<uint32_t>(t.subid));
+	w.writeUInt8(static_cast<uint8_t>(t.type));
+	w.writeUInt8(static_cast<uint8_t>(t.printPriority / 100));
+	w.skipZero(16);
+}
+
+} // namespace
 
 TinyH3MBuilder::TinyH3MBuilder(EMapFormat format_)
 	: format(format_)
@@ -52,6 +169,36 @@ TinyH3MBuilder & TinyH3MBuilder::difficulty(EMapDifficulty d)
 {
 	mapDifficulty = d;
 	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::playerActive(PlayerColor color)
+{
+	playerEnabled.at(color.getNum()) = true;
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::randomTown(const int3 & pos, PlayerColor owner)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::RANDOM_TOWN;
+	spec.subid         = MapObjectSubID(0);
+	spec.position      = pos;
+	spec.owner         = owner;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+uint32_t TinyH3MBuilder::registerTemplate(MapObjectID id, MapObjectSubID subid)
+{
+	const auto key = std::make_pair(id, subid);
+	for(size_t i = 0; i < templates.size(); ++i)
+	{
+		if(templates[i] == key)
+			return static_cast<uint32_t>(i);
+	}
+	templates.push_back(key);
+	return static_cast<uint32_t>(templates.size() - 1);
 }
 
 std::vector<uint8_t> TinyH3MBuilder::build()
@@ -107,8 +254,10 @@ void TinyH3MBuilder::writeHeader(TinyH3MWriter & w) const
 	w.writeUInt32(static_cast<uint32_t>(format));   // EMapFormat byte read as uint32
 
 	// areAnyPlayers must be false when no human/computer can play any color, otherwise
-	// the H3 editor rejects the map. Phase 1 has no active players yet, so always false.
-	w.writeBool(/*areAnyPlayers*/ false);
+	// the H3 editor rejects the map.
+	const bool anyPlayer = std::any_of(playerEnabled.begin(), playerEnabled.end(),
+		[](bool b) { return b; });
+	w.writeBool(anyPlayer);
 	w.writeInt32(sideLength);                       // height = width
 	w.writeBool(twoLevel);
 	w.writeBaseString(mapName);
@@ -151,13 +300,19 @@ void TinyH3MBuilder::writePlayerInfo(TinyH3MWriter & w) const
 	// Byte totals: ROE=6, AB=12, SOD=13 — match the loader's skip path exactly.
 	for(int i = 0; i < PlayerColor::PLAYER_LIMIT_I; ++i)
 	{
-		w.writeBool(false); // canHumanPlay
-		w.writeBool(false); // canComputerPlay
+		const bool active = playerEnabled[i];
+
+		w.writeBool(active); // canHumanPlay
+		w.writeBool(active); // canComputerPlay
 
 		w.writeUInt8(0);                                // aiTactic = AI_RANDOM
 		if(features.levelSOD)
-			w.writeUInt8(0);                            // SOD: faction-selectable flag
-		w.skipZero(features.factionsBytes);             // allowedFactions bitmask (none)
+			w.writeUInt8(active ? 0xff : 0);            // SOD: faction-selectable flag
+		// allowedFactions bitmask: all-allowed for active, none for inactive
+		if(active)
+			w.writeAllOnes(features.factionsBytes);
+		else
+			w.skipZero(features.factionsBytes);
 		w.writeBool(false);                             // isFactionRandom
 		w.writeBool(false);                             // hasMainTown
 		w.writeBool(false);                             // hasRandomHero
@@ -300,13 +455,51 @@ void TinyH3MBuilder::writeTerrain(TinyH3MWriter & w) const
 void TinyH3MBuilder::writeObjectTemplates(TinyH3MWriter & w) const
 {
 	// readObjectTemplates (MapFormatH3M.cpp:1726): uint32 count + per-template body.
-	w.writeUInt32(0);
+	w.writeUInt32(static_cast<uint32_t>(templates.size()));
+	for(const auto & key : templates)
+		writeLegacyTemplate(w, legacyTemplate(key.first, key.second));
 }
 
 void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 {
+	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
+
 	// readObjects (MapFormatH3M.cpp:2898): uint32 count + per-object body.
-	w.writeUInt32(0);
+	w.writeUInt32(static_cast<uint32_t>(objects.size()));
+
+	for(const auto & obj : objects)
+	{
+		w.writeInt3(obj.position);
+		w.writeUInt32(obj.templateIndex);
+		w.skipZero(5);
+
+		// Per-type body. Phase 3 only handles RANDOM_TOWN/TOWN (readTown,
+		// MapFormatH3M.cpp:3487) with the minimum-viable shape: no garrison,
+		// standard fort, no events, no custom buildings, neutral alignment.
+		if(obj.id == Obj::RANDOM_TOWN || obj.id == Obj::TOWN)
+		{
+			if(features.levelAB)
+				w.writeUInt32(0);                                 // identifier
+			w.writePlayer(obj.owner);                              // owner
+			w.writeBool(false);                                    // hasName
+			w.writeBool(false);                                    // hasGarrison
+			w.writeInt8(0);                                        // formation = LOOSE
+			w.writeBool(false);                                    // hasCustomBuildings
+			w.writeBool(true);                                     // hasFort
+			if(features.levelAB)
+				w.skipZero(features.spellsBytes);                  // obligatorySpells bitmask (none)
+			w.skipZero(features.spellsBytes);                      // possibleSpells bitmask (defaults)
+			w.writeUInt32(0);                                      // castle events count
+			if(features.levelSOD)
+				w.writeUInt8(0xff);                                // alignment = "same as owner / random"
+			w.skipZero(3);                                         // trailing padding
+		}
+		else
+		{
+			throw std::runtime_error("TinyH3MBuilder: object body not implemented for id="
+				+ std::to_string(obj.id.getNum()));
+		}
+	}
 }
 
 void TinyH3MBuilder::writeEvents(TinyH3MWriter & w) const

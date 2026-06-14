@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../lib/GameConstants.h"
+#include "../../lib/int3.h"
 #include "../../lib/mapping/MapFormat.h"
 #include "../../lib/mapping/MapDifficulty.h"
 
@@ -41,6 +42,14 @@ public:
 	TinyH3MBuilder & description(std::string s);
 	TinyH3MBuilder & difficulty(EMapDifficulty d);
 
+	/// Mark a player as both human- and computer-playable. Required for any
+	/// object that ownership-validates against canAnyonePlay (towns, heroes).
+	TinyH3MBuilder & playerActive(PlayerColor color);
+
+	/// Append a Random Town object owned by `owner`. Builder auto-registers the
+	/// RANDOM_TOWN template on first call. No garrison, standard fort, no events.
+	TinyH3MBuilder & randomTown(const int3 & pos, PlayerColor owner);
+
 	// ---- output ---------------------------------------------------------
 
 	/// Emit the uncompressed .h3m byte stream. The output covers everything
@@ -56,6 +65,19 @@ public:
 	std::vector<uint8_t> buildAndDump(const std::string & testName);
 
 private:
+	struct ObjectSpec
+	{
+		MapObjectID    id;
+		MapObjectSubID subid;
+		int3           position;
+		PlayerColor    owner = PlayerColor::NEUTRAL;
+		uint32_t       templateIndex = 0; // resolved at build() time
+	};
+
+	// Internal helper: register a (id, subid) template in the table if not already there;
+	// return its index. The actual byte content is sourced from Data/Objects.txt at emit time.
+	uint32_t registerTemplate(MapObjectID id, MapObjectSubID subid);
+
 	void writeHeader(TinyH3MWriter & w) const;
 	void writePlayerInfo(TinyH3MWriter & w) const;
 	void writeStandardVictoryLoss(TinyH3MWriter & w) const;
@@ -78,6 +100,10 @@ private:
 	std::string    mapName = "TinyH3M test map";
 	std::string    mapDescription;
 	EMapDifficulty mapDifficulty = EMapDifficulty::NORMAL;
+
+	std::array<bool, 8> playerEnabled{};
+	std::vector<std::pair<MapObjectID, MapObjectSubID>> templates;
+	std::vector<ObjectSpec>                              objects;
 };
 
 } // namespace TinyH3M

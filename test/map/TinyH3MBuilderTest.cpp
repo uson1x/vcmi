@@ -135,3 +135,42 @@ TEST(TinyH3MBuilderTest, EmptySODFullLoad)
 	EXPECT_EQ(map->levels(), 1);
 	EXPECT_TRUE(map->getHeroesOnMap().empty());
 }
+
+TEST(TinyH3MBuilderTest, TwoRandomTownsSOD)
+{
+	// H3 editor only opens maps at the canonical sizes (S=36, M=72, L=108, XL=144);
+	// 9x9 parses through CMapLoaderH3M fine but the editor refuses to open it.
+	const int3 redPos { 5,  5, 0};
+	const int3 bluePos{30, 30, 0};
+
+	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
+		.size(36, /*twoLevel*/ false)
+		.name("TwoTowns")
+		.description("Phase 3 acceptance fixture")
+		.playerActive(PlayerColor(0))
+		.playerActive(PlayerColor(1))
+		.randomTown(redPos, PlayerColor(0))
+		.randomTown(bluePos, PlayerColor(1))
+		.buildAndDump("TwoRandomTownsSOD");
+
+	auto [map, buf] = loadMap(std::move(bytes));
+	ASSERT_NE(map, nullptr);
+	EXPECT_EQ(map->width, 36);
+	EXPECT_EQ(map->height, 36);
+
+	const auto & townIds = map->getAllTowns();
+	ASSERT_EQ(townIds.size(), 2u);
+
+	std::map<int3, PlayerColor> seen;
+	for(ObjectInstanceID id : townIds)
+	{
+		const auto * obj = map->getObject(id);
+		ASSERT_NE(obj, nullptr);
+		seen[obj->anchorPos()] = obj->getOwner();
+	}
+
+	ASSERT_TRUE(seen.count(redPos))  << "No town at " << redPos.toString();
+	ASSERT_TRUE(seen.count(bluePos)) << "No town at " << bluePos.toString();
+	EXPECT_EQ(seen[redPos],  PlayerColor(0));
+	EXPECT_EQ(seen[bluePos], PlayerColor(1));
+}
