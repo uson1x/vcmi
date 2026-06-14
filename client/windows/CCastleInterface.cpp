@@ -1640,11 +1640,10 @@ void CCastleInterface::removeBuilding(BuildingID bid)
 class TownRadialArea : public CIntObject
 {
 	const CGTownInstance * town;
-	CCastleBuildings * builds;
 	CCastleInterface * owner;
 public:
 	TownRadialArea(const Rect & Pos, const CGTownInstance * Town, CCastleBuildings * Builds, CCastleInterface * Owner)
-		: CIntObject(GESTURE), town(Town), builds(Builds), owner(Owner)
+		: CIntObject(GESTURE), town(Town), owner(Owner)
 	{
 		pos = Pos + pos.topLeft();
 	}
