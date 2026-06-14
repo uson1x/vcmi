@@ -62,7 +62,7 @@ TEST(TinyH3MBuilderTest, EmptyROEHeaderRoundTrips)
 	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::ROE)
 		.size(36, /*twoLevel*/ false)
 		.name("EmptyROE")
-		.description("Phase 1 acceptance fixture")
+		.description("Empty ROE map")
 		.difficulty(EMapDifficulty::NORMAL)
 		.buildAndDump("EmptyROEHeaderRoundTrips");
 
@@ -115,7 +115,7 @@ TEST(TinyH3MBuilderTest, EmptySODHeaderRoundTrips)
 	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
 		.size(36, /*twoLevel*/ false)
 		.name("EmptySOD")
-		.description("Phase 2 SOD acceptance fixture")
+		.description("Empty SOD map")
 		.difficulty(EMapDifficulty::NORMAL)
 		.buildAndDump("EmptySODHeaderRoundTrips");
 
@@ -149,35 +149,30 @@ TEST(TinyH3MBuilderTest, EmptySODFullLoad)
 	EXPECT_TRUE(loaded.map->getHeroesOnMap().empty());
 }
 
-TEST(TinyH3MBuilderTest, Phase4And5AllObjectTypes)
+TEST(TinyH3MBuilderTest, AllSupportedObjectsLoad)
 {
-	// A blank SOD map carrying one instance of every object type the builder
-	// supports as of phases 4+5. The acceptance bar is "CMapLoaderH3M::loadMap
-	// returns a non-null CMap" — body assertions for each kind live in the
-	// dedicated per-type tests added later.
+	// One instance of every object kind the builder currently emits. Acceptance
+	// bar is "CMapLoaderH3M::loadMap returns a non-null CMap" — per-type body
+	// assertions live in dedicated tests.
 	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
 		.size(36, /*twoLevel*/ false)
 		.name("AllObjects")
-		.description("Phase 4+5 acceptance fixture")
 		.playerActive(PlayerColor(0))
-		// Phase 3
-		.randomTown({5, 5, 0}, PlayerColor(0))
-		// Phase 4
-		.monster({10, 10, 0}, CreatureID(27), /*count*/ 7) // Gold Dragon
-		.resource({11, 10, 0}, GameResID(GameResID::GOLD), /*amount*/ 1000)
-		.artifact({12, 10, 0}, ArtifactID(7))              // Centaur Axe (first artifact with map sprite)
-		// Phase 5
-		.keymaster({15, 15, 0}, /*color*/ 0)
+		.randomTown ({ 5,  5, 0}, PlayerColor(0))
+		.monster    ({10, 10, 0}, CreatureID(27), /*count*/ 7) // Gold Dragon
+		.resource   ({11, 10, 0}, GameResID(GameResID::GOLD), /*amount*/ 1000)
+		.artifact   ({12, 10, 0}, ArtifactID(7))               // Centaur Axe — first artifact with a map sprite
+		.keymaster  ({15, 15, 0}, /*color*/ 0)
 		.borderGuard({16, 15, 0}, /*color*/ 0)
 		.borderGate ({17, 15, 0}, /*color*/ 0)
 		.questGuard ({20, 20, 0})
 		.seerHut    ({22, 22, 0})
-		.buildAndDump("Phase4And5AllObjectTypes");
+		.buildAndDump("AllSupportedObjectsLoad");
 
 	auto loaded = loadMap(std::move(bytes));
 	ASSERT_NE(loaded.map, nullptr);
 	EXPECT_EQ(loaded.map->width, 36);
-	// Object count: 1 town + 1 monster + 1 resource + 1 artifact + 3 border + 1 quest guard + 1 seer = 9
+	// 1 town + 1 monster + 1 resource + 1 artifact + 3 border + 1 quest guard + 1 seer = 9
 	size_t live = 0;
 	for(const auto & obj : loaded.map->objects)
 		if(obj) ++live;
@@ -194,7 +189,7 @@ TEST(TinyH3MBuilderTest, TwoRandomTownsSOD)
 	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
 		.size(36, /*twoLevel*/ false)
 		.name("TwoTowns")
-		.description("Phase 3 acceptance fixture")
+		.description("Two random towns owned by red and blue")
 		.playerActive(PlayerColor(0))
 		.playerActive(PlayerColor(1))
 		.randomTown(redPos, PlayerColor(0))

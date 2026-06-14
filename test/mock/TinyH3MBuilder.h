@@ -22,14 +22,12 @@ class TinyH3MWriter;
 
 /// Fluent API for building .h3m binary streams in test code.
 ///
-/// Builder holds *intent-level* state (Spec structs). At build() time, per-section
-/// emitters walk the state and produce bytes via TinyH3MWriter, consulting
+/// Builder holds intent-level state. At build() time, per-section emitters
+/// walk the state and produce bytes via TinyH3MWriter, consulting
 /// MapFormatFeaturesH3M for per-format field sizes.
 ///
-/// Phase 1 scope: a parseable header that round-trips through
-/// CMapLoaderH3M::loadMapHeader. Players default to "neither human nor computer"
-/// (i.e., 13-byte inactive blocks for SOD). No objects, no terrain emitter,
-/// no map options — those land in later phases.
+/// Defaults produce a parseable, empty, editor-openable map. Fluent calls
+/// add players and objects on top.
 class TinyH3MBuilder
 {
 public:
@@ -50,7 +48,7 @@ public:
 	/// RANDOM_TOWN template on first call. No garrison, standard fort, no events.
 	TinyH3MBuilder & randomTown(const int3 & pos, PlayerColor owner);
 
-	// ---- Phase 4: wanderer objects -------------------------------------
+	// ---- wanderer objects ----------------------------------------------
 
 	/// Monster stack on the adventure map. `character` is 0..4 (compliant..savage).
 	TinyH3MBuilder & monster(const int3 & pos, CreatureID creature, uint16_t count, int8_t character = 2);
@@ -61,7 +59,7 @@ public:
 	/// Specific artifact pickup.
 	TinyH3MBuilder & artifact(const int3 & pos, ArtifactID artifact);
 
-	// ---- Phase 5: quest objects ----------------------------------------
+	// ---- quest objects -------------------------------------------------
 
 	/// Keymaster Tent. Subid encodes the keymaster colour (0..7).
 	TinyH3MBuilder & keymaster(const int3 & pos, int color);

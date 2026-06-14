@@ -301,7 +301,7 @@ std::vector<uint8_t> TinyH3MBuilder::build()
 
 	writeHeader(w);
 	writeMapOptions(w);
-	// readHotaScripts is HOTA9+ only and the builder doesn't emit HOTA yet, so it has no counterpart.
+	// CMapLoaderH3M::readHotaScripts is HOTA9+ only; builder does not emit HOTA yet.
 	writeAllowedArtifacts(w);
 	writeAllowedSpellsAbilities(w);
 	writeRumors(w);
@@ -341,7 +341,7 @@ void TinyH3MBuilder::writeHeader(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readHeader sequence (MapFormatH3M.cpp:106) — non-HOTA branch only for phase 1.
+	// Mirror of CMapLoaderH3M::readHeader, non-HOTA branch only.
 	w.writeUInt32(static_cast<uint32_t>(format));   // EMapFormat byte read as uint32
 
 	// areAnyPlayers must be false when no human/computer can play any color, otherwise
@@ -376,8 +376,8 @@ void TinyH3MBuilder::writePlayerInfo(TinyH3MWriter & w) const
 	// remember "what would happen if this player were activated"). We must write
 	// canonical inactive values, otherwise the editor refuses to open the map.
 	//
-	// Wire layout for an active player at its minimum size (no main town, no
-	// custom hero), matching MapFormatH3M.cpp:240:
+	// Wire layout for an active player at its minimum size (no main town,
+	// no custom hero), matching CMapLoaderH3M::readPlayerInfo:
 	//   aiTactic              uint8        (0 = AI_RANDOM)
 	//   factionSelectable     uint8 (SOD)  (0)
 	//   allowedFactions       bitmask      (factionsBytes; 0 = none)
@@ -425,7 +425,7 @@ void TinyH3MBuilder::writeStandardVictoryLoss(TinyH3MWriter & w) const
 
 void TinyH3MBuilder::writeTeamInfo(TinyH3MWriter & w) const
 {
-	// readTeamInfo (MapFormatH3M.cpp:667): if howManyTeams == 0 no per-player table follows.
+	// howManyTeams == 0 skips the per-player team table.
 	w.writeUInt8(0);
 }
 
@@ -433,10 +433,8 @@ void TinyH3MBuilder::writeAllowedHeroes(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readAllowedHeroes (MapFormatH3M.cpp:685):
-	//   non-HOTA: readBitmaskHeroes  (features.heroesBytes bytes)
-	//   HOTA:     readBitmaskHeroesSized (uint32 count + ceil(count/8) bytes)
-	// Phase 1 supports non-HOTA formats only.
+	// non-HOTA: fixed-size bitmask (features.heroesBytes bytes)
+	// HOTA:     size-prefixed bitmask (uint32 count + ceil(count/8) bytes)
 	if(features.levelHOTA0)
 	{
 		w.writeUInt32(static_cast<uint32_t>(features.heroesCount));
@@ -458,15 +456,14 @@ void TinyH3MBuilder::writeDisposedHeroes(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readDisposedHeroes (MapFormatH3M.cpp:706): SOD+ only, single count byte.
+	// SOD+ only, single count byte (no entries follow when count == 0).
 	if(features.levelSOD)
 		w.writeUInt8(0);
 }
 
 void TinyH3MBuilder::writeMapOptions(TinyH3MWriter & w) const
 {
-	// readMapOptions (MapFormatH3M.cpp:723): 31 reserved zero bytes, then HOTA-only extensions.
-	// Builder does not emit HOTA yet, so just the reserved block.
+	// 31 reserved zero bytes. Builder does not emit HOTA-only extensions yet.
 	w.skipZero(31);
 }
 
@@ -474,7 +471,6 @@ void TinyH3MBuilder::writeAllowedArtifacts(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readAllowedArtifacts (MapFormatH3M.cpp:1466):
 	//   ROE: no bytes (not AB+).
 	//   AB / SOD: bitmask of features.artifactsBytes (non-HOTA).
 	//   HOTA0+: sized bitmask. (Not emitted yet.)
@@ -488,8 +484,7 @@ void TinyH3MBuilder::writeAllowedSpellsAbilities(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readAllowedSpellsAbilities (MapFormatH3M.cpp:1508): SOD+ only.
-	// Same invert=true convention -> zero bytes means default-allowed.
+	// SOD+ only. Same invert=true convention -> zero bytes means default-allowed.
 	if(features.levelSOD)
 	{
 		w.skipZero(features.spellsBytes);
@@ -499,7 +494,7 @@ void TinyH3MBuilder::writeAllowedSpellsAbilities(TinyH3MWriter & w) const
 
 void TinyH3MBuilder::writeRumors(TinyH3MWriter & w) const
 {
-	// readRumors (MapFormatH3M.cpp:1520): uint32 count, then per-entry name + text.
+	// uint32 count + per-entry name + text. No rumors emitted.
 	w.writeUInt32(0);
 }
 
@@ -507,20 +502,18 @@ void TinyH3MBuilder::writePredefinedHeroes(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readPredefinedHeroes (MapFormatH3M.cpp:1534):
-	//   non-SOD: return early.
-	//   SOD: loop features.heroesCount times, reading one bool 'custom' per hero.
+	//   non-SOD: nothing to emit.
+	//   SOD: one `customised` bool per hero (all false = no overrides).
 	//   HOTA0+: prefix with uint32 heroesCount (not emitted yet).
 	//   HOTA5+: trailing per-hero block (not emitted yet).
-	// All-zero "custom" bools => no per-hero overrides.
 	if(features.levelSOD)
 		w.skipZero(features.heroesCount);
 }
 
 void TinyH3MBuilder::writeTerrain(TinyH3MWriter & w) const
 {
-	// readTerrain (MapFormatH3M.cpp:1699): for each tile (z,y,x), 7 bytes:
-	//   terrainType, terView, riverType, riverDir, roadType, roadDir, extTileFlags.
+	// Per tile (iterated z-y-x): 7 bytes — terrainType, terView, riverType,
+	// riverDir, roadType, roadDir, extTileFlags.
 	//
 	// H3M raw terrain byte uses the H3 ordering DIRT=0, SAND=1, GRASS=2, ...
 	// (which happens to match VCMI's TerrainId enum). Writing 0 would mean DIRT;
@@ -545,7 +538,7 @@ void TinyH3MBuilder::writeTerrain(TinyH3MWriter & w) const
 
 void TinyH3MBuilder::writeObjectTemplates(TinyH3MWriter & w) const
 {
-	// readObjectTemplates (MapFormatH3M.cpp:1726): uint32 count + per-template body.
+	// uint32 count + per-template body.
 	w.writeUInt32(static_cast<uint32_t>(templates.size()));
 	for(const auto & key : templates)
 		writeLegacyTemplate(w, legacyTemplate(key.first, key.second));
@@ -555,7 +548,8 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// readObjects (MapFormatH3M.cpp:2898): uint32 count + per-object body.
+	// uint32 count + per-object body. Per-object header is int3 position +
+	// uint32 template index + 5 reserved bytes, then a type-specific body.
 	w.writeUInt32(static_cast<uint32_t>(objects.size()));
 
 	for(const auto & obj : objects)
@@ -564,12 +558,13 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 		w.writeUInt32(obj.templateIndex);
 		w.skipZero(5);
 
+		// Minimum-viable body per type: empty / "use defaults" wherever possible.
+		// Mirror of CMapLoaderH3M::read{Town,Monster,Resource,Artifact,...}.
 		switch(obj.id.toEnum())
 		{
 			case Obj::RANDOM_TOWN:
 			case Obj::TOWN:
-				// readTown (MapFormatH3M.cpp:3487). Minimum-viable: no garrison,
-				// standard fort, no events, no custom buildings, neutral alignment.
+				// No garrison, standard fort, no events, no custom buildings, neutral alignment.
 				if(features.levelAB)
 					w.writeUInt32(0);                                 // identifier
 				w.writePlayer(obj.owner);                              // owner
@@ -596,7 +591,6 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 			case Obj::RANDOM_MONSTER_L5:
 			case Obj::RANDOM_MONSTER_L6:
 			case Obj::RANDOM_MONSTER_L7:
-				// readMonster (MapFormatH3M.cpp:1897). Minimum-viable: no message.
 				if(features.levelAB)
 					w.writeUInt32(0);                                  // identifier
 				w.writeUInt16(obj.monsterCount);
@@ -609,8 +603,7 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 
 			case Obj::RESOURCE:
 			case Obj::RANDOM_RESOURCE:
-				// readResource (MapFormatH3M.cpp:2129). Minimum-viable: no message.
-				w.writeBool(false);                                    // hasMessage (readMessageAndGuards)
+				w.writeBool(false);                                    // hasMessage
 				w.writeUInt32(obj.resourceAmount);
 				w.skipZero(4);
 				break;
@@ -621,7 +614,6 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 			case Obj::RANDOM_MINOR_ART:
 			case Obj::RANDOM_MAJOR_ART:
 			case Obj::RANDOM_RELIC_ART:
-				// readArtifact (MapFormatH3M.cpp:2091). Minimum-viable: no message.
 				w.writeBool(false);                                    // hasMessage
 				break;
 
@@ -632,16 +624,17 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 				break;
 
 			case Obj::QUEST_GUARD:
-				// readQuestGuard -> readQuest. NONE mission returns after the single missionId byte.
+				// NONE mission returns after the single missionId byte.
 				w.writeInt8(0);                                        // EQuestMission::NONE
 				break;
 
 			case Obj::SEER_HUT:
-				// readSeerHut (MapFormatH3M.cpp:3184). Non-HOTA: one quest, no repeatable block.
-				// readSeerHutQuest -> readQuest (NONE returns early) ; missionType==NONE -> skipZero(1)
+				// Non-HOTA: one quest, no repeatable block. NONE mission =
+				// missionId byte + skipZero(1) for the absent reward block,
+				// then trailing skipZero(2) at the end of the seer.
 				w.writeInt8(0);                                        // missionId = NONE
-				w.skipZero(1);                                         // missionType==NONE pad
-				w.skipZero(2);                                         // readSeerHut trailing
+				w.skipZero(1);
+				w.skipZero(2);
 				break;
 
 			default:
@@ -653,7 +646,7 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 
 void TinyH3MBuilder::writeEvents(TinyH3MWriter & w) const
 {
-	// readEvents (MapFormatH3M.cpp:3689): uint32 count + per-event body.
+	// uint32 count + per-event body. No global events.
 	w.writeUInt32(0);
 }
 

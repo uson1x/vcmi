@@ -15,8 +15,6 @@
 #include "../../lib/mapping/MapIdentifiersH3M.h"
 
 class int3;
-class ObjectTemplate;
-class CGObjectInstance;
 
 namespace TinyH3M
 {
@@ -64,7 +62,6 @@ public:
 	void writeTerrain(TerrainId v);
 	void writeRoad(RoadId v);
 	void writeRiver(RiverId v);
-
 
 	// ---- bitmasks -------------------------------------------------------
 
