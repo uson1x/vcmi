@@ -15,6 +15,7 @@
 #include "../../lib/callback/IGameEventCallback.h"
 #include "../../lib/int3.h"
 #include "../../lib/ResourceSet.h"
+#include "../../lib/networkPacks/PacksForClient.h"
 
 class GameEventCallbackMock : public IGameEventCallback
 {
@@ -24,12 +25,35 @@ public:
 	GameEventCallbackMock(UpperCallback * upperCallback_);
 	virtual ~GameEventCallbackMock();
 
+	// ---- captured dialog queue (consumed by QuestTest::answerDialog etc.) --
+	// showBlockingDialog / showInfoDialog get pushed here instead of being
+	// dispatched to a UI. Tests inspect text / components and drive the answer
+	// via the returned struct's `answer` field.
+	struct CapturedBlockingDialog
+	{
+		BlockingDialog dialog;
+		const IObjectInterface * caller = nullptr;
+	};
+	std::vector<CapturedBlockingDialog> blockingDialogs;
+	std::vector<InfoWindow>             infoWindows;
+
+	// ---- Note for Phase 0.4 wiring -----------------------------------------
+	// Most overrides below are still no-ops. As Phase 2 tests add coverage,
+	// extend the relevant override to construct a CPackForClient and route it
+	// through sendAndApply() so the gameState actually mutates. Methods that
+	// already matter for the quest happy-path (showInfoDialog,
+	// showBlockingDialog) capture into the queues above.
+
 	void setObjPropertyValue(ObjectInstanceID objid, ObjProperty prop, int32_t value) override {}
 	void setObjPropertyID(ObjectInstanceID objid, ObjProperty prop, ObjPropertyID identifier) override {}
 	void setRewardableObjectConfiguration(ObjectInstanceID mapObjectID, const Rewardable::Configuration & configuration) override {}
 	void setRewardableObjectConfiguration(ObjectInstanceID townInstanceID, BuildingID buildingID, const Rewardable::Configuration & configuration) override {}
 
-	void showInfoDialog(InfoWindow * iw) override {}
+	void showInfoDialog(InfoWindow * iw) override
+	{
+		assert(iw);
+		infoWindows.push_back(*iw);
+	}
 
 	void changeSpells(const CGHeroInstance * hero, bool give, const std::set<SpellID> &spells) override {}
 	void setResearchedSpells(const CGTownInstance * town, int level, const std::vector<SpellID> & spells, bool accepted) override {}
@@ -39,7 +63,11 @@ public:
 	void giveExperience(const CGHeroInstance * hero, TExpType val) override {}
 	void changePrimSkill(const CGHeroInstance * hero, PrimarySkill which, si64 val, ChangeValueMode mode) override {}
 	void changeSecSkill(const CGHeroInstance * hero, SecondarySkill which, int val, ChangeValueMode mode) override {}
-	void showBlockingDialog(const IObjectInterface * caller, BlockingDialog *iw) override {}
+	void showBlockingDialog(const IObjectInterface * caller, BlockingDialog *iw) override
+	{
+		assert(iw);
+		blockingDialogs.push_back({*iw, caller});
+	}
 	void showGarrisonDialog(ObjectInstanceID upobj, ObjectInstanceID hid, bool removableUnits, const MetaString & customTitle) override {} //cb will be called when player closes garrison window
 	void showTeleportDialog(TeleportDialog *iw) override {}
 	void showObjectWindow(const CGObjectInstance * object, EOpenWindowMode window, const CGHeroInstance * visitor, bool addQuery) override {};

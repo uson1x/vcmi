@@ -21,10 +21,17 @@ namespace TinyH3M
 
 class TinyH3MWriter;
 
+/// Stable wire identifier of a placed object. Returned by .monster / .hero /
+/// .randomHero so a later .missionKillCreature(handle) / .missionKillHero(handle)
+/// can reference the right object regardless of the order objects are appended.
+struct ObjectHandle
+{
+	uint32_t wireIdentifier = 0;
+};
+
 /// Quest mission spec consumed by .questGuard(...) / .seerHut(...). Construct via
 /// the Mission* factories below; only fields appropriate to `kind` are read at
-/// emit time. KILL_HERO / KILL_CREATURE are intentionally absent — they require
-/// cross-object wire-identifier references the builder does not yet expose.
+/// emit time.
 struct Quest
 {
 	EQuestMission                                kind = EQuestMission::NONE;
@@ -35,6 +42,24 @@ struct Quest
 	uint32_t                                     heroLevel = 0;   // LEVEL
 	HeroTypeID                                   hero;            // HERO
 	PlayerColor                                  player = PlayerColor::NEUTRAL; // PLAYER
+	uint32_t                                     killTargetIdentifier = 0; // KILL_CREATURE / KILL_HERO (wire identifier of target)
+
+	/// Day-of-game past which the quest can no longer be completed. -1 (default) = no timeout.
+	int32_t                                      lastDay = -1;
+
+	/// Localized texts displayed on first / repeat / completion visits. Empty
+	/// strings mean "use engine default text"; non-empty values are written to
+	/// the wire and resolved by the loader through mapRegisterLocalizedString.
+	std::string                                  firstVisitText;
+	std::string                                  nextVisitText;
+	std::string                                  completedText;
+
+	// Fluent setters so a Mission* factory result can be augmented inline:
+	//   B::missionResources({...}).withLastDay(7).withFirstVisitText("Bring me...")
+	Quest & withLastDay(int32_t day)                  { lastDay        = day;             return *this; }
+	Quest & withFirstVisitText(std::string text)      { firstVisitText = std::move(text); return *this; }
+	Quest & withNextVisitText(std::string text)       { nextVisitText  = std::move(text); return *this; }
+	Quest & withCompletedText(std::string text)       { completedText  = std::move(text); return *this; }
 };
 
 /// Seer hut reward. NONE-mission seer huts do not read a reward, so RewardKind
@@ -88,11 +113,33 @@ public:
 
 	/// Place a fixed hero of the given type. All optional fields (name, experience,
 	/// secondary skills, garrison, biography, custom spells, primary skills, ...)
-	/// are emitted as "default" so the hero gets the engine's standard loadout.
+	/// are emitted as "default" unless the matching `hero*(...)` setter below is
+	/// chained immediately after.
 	TinyH3MBuilder & hero(const int3 & pos, HeroTypeID type, PlayerColor owner);
 
 	/// Place a random hero owned by `owner`. Type is resolved at game start.
 	TinyH3MBuilder & randomHero(const int3 & pos, PlayerColor owner);
+
+	// ---- hero customisation (apply to the most recently added hero) -----
+	// Each setter asserts the last object is a HERO / RANDOM_HERO.
+
+	/// Up to 7 stacks. Stacks beyond the 7th are dropped on the floor — the
+	/// wire format has exactly 7 slots.
+	TinyH3MBuilder & heroGarrison(std::vector<std::pair<CreatureID, uint16_t>> stacks);
+
+	/// Total experience points (the engine derives hero level from this).
+	TinyH3MBuilder & heroExperience(uint32_t totalXp);
+
+	/// Per-skill primary stat overrides (attack, defense, spell power, knowledge).
+	TinyH3MBuilder & heroPrimary(uint8_t attack, uint8_t defense, uint8_t spellPower, uint8_t knowledge);
+
+	/// Equipped artifacts keyed by slot. Slots not listed are written as NONE
+	/// (empty). Triggers the hasArtSet branch in `loadArtifactsOfHero`.
+	TinyH3MBuilder & heroEquipped(std::vector<std::pair<ArtifactPosition, ArtifactID>> equipped);
+
+	/// Backpack artifacts. Order matches read order. Triggers hasArtSet even
+	/// when no equipped slots are populated.
+	TinyH3MBuilder & heroBackpack(std::vector<ArtifactID> backpack);
 
 	// ---- wanderer objects ----------------------------------------------
 
@@ -138,6 +185,8 @@ public:
 	static Quest missionLevel(uint32_t level);
 	static Quest missionHero(HeroTypeID hero);
 	static Quest missionPlayer(PlayerColor player);
+	static Quest missionKillCreature(ObjectHandle target);
+	static Quest missionKillHero(ObjectHandle target);
 
 	// ---- seer-hut reward factories --------------------------------------
 
@@ -160,6 +209,11 @@ public:
 	/// original H3 / HOTA editor for manual verification.
 	std::vector<uint8_t> buildAndDump(const std::string & testName);
 
+	/// Wire identifier of the most recently added object. Use in conjunction
+	/// with `missionKillCreature` / `missionKillHero` to point a quest at an
+	/// earlier monster or hero. Asserts there is at least one added object.
+	ObjectHandle lastHandle() const;
+
 private:
 	struct ObjectSpec
 	{
@@ -177,6 +231,20 @@ private:
 		SpellID        scrollSpell;         // SPELL_SCROLL
 		Quest          quest;               // QUEST_GUARD / SEER_HUT
 		SeerReward     reward;              // SEER_HUT (only consumed when quest is non-NONE)
+
+		// Hero customisation. Only consumed for HERO / RANDOM_HERO objects.
+		std::vector<std::pair<CreatureID, uint16_t>>           heroGarrisonStacks;
+		std::optional<uint32_t>                                heroExperienceXp;
+		std::optional<std::array<uint8_t, 4>>                  heroPrimarySkills;
+		std::vector<std::pair<ArtifactPosition, ArtifactID>>   heroEquippedArts;
+		std::vector<ArtifactID>                                heroBackpackArts;
+
+		// Wire identifier emitted on AB+ for heroes / monsters / objects, exposed
+		// via ObjectHandle so later mission factories can target this object.
+		// Zero means "no one cares about this object" — assigned at registration
+		// time as a stable sequence so kill-quest references survive append-only
+		// edits to the object list.
+		uint32_t       wireIdentifier = 0;
 	};
 
 	// Internal helper: register a (id, subid) template in the table if not already there;
@@ -201,6 +269,14 @@ private:
 
 	void writeHeroBody(TinyH3MWriter & w, const ObjectSpec & obj) const;
 	void writeScrollBody(TinyH3MWriter & w, const ObjectSpec & obj) const;
+	/// Mirrors readCreatureSet: 7 fixed slots, each = creature id + uint16 count.
+	/// Slots past the end of `stacks` are written as NONE / 0.
+	void writeCreatureSet(TinyH3MWriter & w, const std::vector<std::pair<CreatureID, uint16_t>> & stacks) const;
+	/// Mirrors loadArtifactsOfHero body (after hasArtSet=true): features.artifactSlotsCount
+	/// equipped slots in fixed order + uint16 backpack count + backpack entries.
+	void writeArtifactSet(TinyH3MWriter & w,
+		const std::vector<std::pair<ArtifactPosition, ArtifactID>> & equipped,
+		const std::vector<ArtifactID> & backpack) const;
 	/// Emits the missionId byte, mission-type-specific payload, lastDay and the
 	/// three localized-text strings. NONE missions emit only the missionId byte.
 	void writeQuestBody(TinyH3MWriter & w, const Quest & quest) const;
@@ -218,6 +294,10 @@ private:
 	std::array<bool, 8> playerEnabled{};
 	std::vector<std::pair<MapObjectID, MapObjectSubID>> templates;
 	std::vector<ObjectSpec>                              objects;
+	uint32_t                                             nextWireIdentifier = 1;
+
+	void registerObject(ObjectSpec spec);
+	ObjectSpec & lastObject(); // asserts there is one
 };
 
 } // namespace TinyH3M

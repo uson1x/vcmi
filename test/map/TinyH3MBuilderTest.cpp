@@ -400,6 +400,59 @@ TEST(TinyH3MBuilderTest, SeerHutMissionAndReward)
 	}
 }
 
+TEST(TinyH3MBuilderTest, HeroCustomisation)
+{
+	// Hero with garrison, experience, primary skills, and a backpack artifact.
+	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
+		.size(36, /*twoLevel*/ false)
+		.name("HeroCustom")
+		.playerActive(PlayerColor(0))
+		.hero({5, 5, 0}, HeroTypeID(0), PlayerColor(0))
+		.heroGarrison({{CreatureID(0), 10}, {CreatureID(1), 5}}) // 10 pikemen + 5 archers
+		.heroExperience(40000)                                    // ~level 5
+		.heroPrimary(5, 3, 1, 2)
+		.heroBackpack({ArtifactID(7)})                            // Centaur Axe in backpack
+		.buildAndDump("HeroCustomisation");
+
+	auto loaded = loadMap(std::move(bytes));
+	ASSERT_NE(loaded.map, nullptr);
+
+	const auto * hero = findFirst<CGHeroInstance>(*loaded.map);
+	ASSERT_NE(hero, nullptr);
+	EXPECT_EQ(hero->exp, 40000);
+	// Garrison: 7 slots, first two populated.
+	EXPECT_TRUE(hero->hasStackAtSlot(SlotID(0)));
+	EXPECT_TRUE(hero->hasStackAtSlot(SlotID(1)));
+	EXPECT_EQ(hero->getStackCount(SlotID(0)), 10);
+	EXPECT_EQ(hero->getStackCount(SlotID(1)), 5);
+}
+
+TEST(TinyH3MBuilderTest, KillCreatureQuest)
+{
+	// Monster + quest guard that targets the monster's wire identifier.
+	TinyH3M::TinyH3MBuilder b(EMapFormat::SOD);
+	b.size(36).name("KillQuest")
+		.playerActive(PlayerColor(0))
+		.hero({5, 5, 0}, HeroTypeID(0), PlayerColor(0))
+		.monster({10, 10, 0}, CreatureID(27), 3); // Gold Dragons
+	const auto target = b.lastHandle();
+	ASSERT_NE(target.wireIdentifier, 0u);
+
+	b.questGuard({15, 15, 0}, TinyH3M::TinyH3MBuilder::missionKillCreature(target)
+		.withLastDay(10)
+		.withFirstVisitText("Slay the dragons"));
+
+	auto loaded = loadMap(b.buildAndDump("KillCreatureQuest"));
+	ASSERT_NE(loaded.map, nullptr);
+
+	const auto * guard = findFirst<CGQuestGuard>(*loaded.map);
+	ASSERT_NE(guard, nullptr);
+	EXPECT_EQ(guard->getQuest().lastDay, 10);
+	// Loader resolves the uint32 wire id to an ObjectInstanceID in afterRead;
+	// the resolved target lives on quest.killTarget once mapping completes.
+	EXPECT_TRUE(guard->getQuest().killTarget.hasValue());
+}
+
 TEST(TinyH3MBuilderTest, TwoRandomTownsSOD)
 {
 	// H3 editor only opens maps at the canonical sizes (S=36, M=72, L=108, XL=144);

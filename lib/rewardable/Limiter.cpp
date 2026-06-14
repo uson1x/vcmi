@@ -48,8 +48,8 @@ bool operator==(const Rewardable::Limiter & l, const Rewardable::Limiter & r)
 	&& l.heroLevel == r.heroLevel
 	&& l.manaPoints == r.manaPoints
 	&& l.manaPercentage == r.manaPercentage
-	&& l.movePoints == r.manaPoints
-	&& l.movePercentage == r.manaPercentage
+	&& l.movePoints == r.movePoints
+	&& l.movePercentage == r.movePercentage
 	&& l.canLearnSkills == r.canLearnSkills
 	&& l.commanderAlive == r.commanderAlive
 	&& l.hasExtraCreatures == r.hasExtraCreatures

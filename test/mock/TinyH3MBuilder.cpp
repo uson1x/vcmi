@@ -192,7 +192,7 @@ TinyH3MBuilder & TinyH3MBuilder::randomTown(const int3 & pos, PlayerColor owner)
 	spec.position      = pos;
 	spec.owner         = owner;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -207,7 +207,7 @@ TinyH3MBuilder & TinyH3MBuilder::hero(const int3 & pos, HeroTypeID type, PlayerC
 	spec.owner         = owner;
 	spec.heroType      = type;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -220,7 +220,47 @@ TinyH3MBuilder & TinyH3MBuilder::randomHero(const int3 & pos, PlayerColor owner)
 	spec.owner         = owner;
 	spec.heroType      = HeroTypeID(-1); // wire sentinel = features.heroIdentifierInvalid
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::heroGarrison(std::vector<std::pair<CreatureID, uint16_t>> stacks)
+{
+	auto & spec = lastObject();
+	assert(spec.id == Obj::HERO || spec.id == Obj::RANDOM_HERO);
+	spec.heroGarrisonStacks = std::move(stacks);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::heroExperience(uint32_t totalXp)
+{
+	auto & spec = lastObject();
+	assert(spec.id == Obj::HERO || spec.id == Obj::RANDOM_HERO);
+	spec.heroExperienceXp = totalXp;
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::heroPrimary(uint8_t attack, uint8_t defense, uint8_t spellPower, uint8_t knowledge)
+{
+	auto & spec = lastObject();
+	assert(spec.id == Obj::HERO || spec.id == Obj::RANDOM_HERO);
+	spec.heroPrimarySkills = std::array<uint8_t, 4>{attack, defense, spellPower, knowledge};
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::heroEquipped(std::vector<std::pair<ArtifactPosition, ArtifactID>> equipped)
+{
+	auto & spec = lastObject();
+	assert(spec.id == Obj::HERO || spec.id == Obj::RANDOM_HERO);
+	spec.heroEquippedArts = std::move(equipped);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::heroBackpack(std::vector<ArtifactID> backpack)
+{
+	auto & spec = lastObject();
+	assert(spec.id == Obj::HERO || spec.id == Obj::RANDOM_HERO);
+	spec.heroBackpackArts = std::move(backpack);
 	return *this;
 }
 
@@ -233,7 +273,7 @@ TinyH3MBuilder & TinyH3MBuilder::monster(const int3 & pos, CreatureID creature, 
 	spec.monsterCount     = count;
 	spec.monsterCharacter = character;
 	spec.templateIndex    = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -245,7 +285,7 @@ TinyH3MBuilder & TinyH3MBuilder::resource(const int3 & pos, GameResID resource, 
 	spec.position       = pos;
 	spec.resourceAmount = amount;
 	spec.templateIndex  = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -256,7 +296,7 @@ TinyH3MBuilder & TinyH3MBuilder::artifact(const int3 & pos, ArtifactID artifact)
 	spec.subid         = MapObjectSubID(artifact.getNum());
 	spec.position      = pos;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -268,7 +308,7 @@ TinyH3MBuilder & TinyH3MBuilder::scroll(const int3 & pos, SpellID spell)
 	spec.position      = pos;
 	spec.scrollSpell   = spell;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -279,7 +319,7 @@ TinyH3MBuilder & TinyH3MBuilder::keymaster(const int3 & pos, int color)
 	spec.subid         = MapObjectSubID(color);
 	spec.position      = pos;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -290,7 +330,7 @@ TinyH3MBuilder & TinyH3MBuilder::borderGuard(const int3 & pos, int color)
 	spec.subid         = MapObjectSubID(color);
 	spec.position      = pos;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -301,7 +341,7 @@ TinyH3MBuilder & TinyH3MBuilder::borderGate(const int3 & pos, int color)
 	spec.subid         = MapObjectSubID(color);
 	spec.position      = pos;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -313,7 +353,7 @@ TinyH3MBuilder & TinyH3MBuilder::questGuard(const int3 & pos, Quest mission)
 	spec.position      = pos;
 	spec.quest         = std::move(mission);
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
 }
 
@@ -326,8 +366,26 @@ TinyH3MBuilder & TinyH3MBuilder::seerHut(const int3 & pos, Quest mission, SeerRe
 	spec.quest         = std::move(mission);
 	spec.reward        = reward;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
-	objects.push_back(spec);
+	registerObject(std::move(spec));
 	return *this;
+}
+
+void TinyH3MBuilder::registerObject(ObjectSpec spec)
+{
+	spec.wireIdentifier = nextWireIdentifier++;
+	objects.push_back(std::move(spec));
+}
+
+TinyH3MBuilder::ObjectSpec & TinyH3MBuilder::lastObject()
+{
+	assert(!objects.empty() && "lastObject() called before any object was added");
+	return objects.back();
+}
+
+ObjectHandle TinyH3MBuilder::lastHandle() const
+{
+	assert(!objects.empty() && "lastHandle() called before any object was added");
+	return ObjectHandle{objects.back().wireIdentifier};
 }
 
 Quest TinyH3MBuilder::missionArtifacts(std::vector<ArtifactID> artifacts)
@@ -383,6 +441,22 @@ Quest TinyH3MBuilder::missionPlayer(PlayerColor player)
 	Quest q;
 	q.kind = EQuestMission::PLAYER;
 	q.player = player;
+	return q;
+}
+
+Quest TinyH3MBuilder::missionKillCreature(ObjectHandle target)
+{
+	Quest q;
+	q.kind = EQuestMission::KILL_CREATURE;
+	q.killTargetIdentifier = target.wireIdentifier;
+	return q;
+}
+
+Quest TinyH3MBuilder::missionKillHero(ObjectHandle target)
+{
+	Quest q;
+	q.kind = EQuestMission::KILL_HERO;
+	q.killTargetIdentifier = target.wireIdentifier;
 	return q;
 }
 
@@ -702,7 +776,7 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 			case Obj::TOWN:
 				// No garrison, standard fort, no events, no custom buildings, neutral alignment.
 				if(features.levelAB)
-					w.writeUInt32(0);                                 // identifier
+					w.writeUInt32(obj.wireIdentifier);                 // identifier
 				w.writePlayer(obj.owner);                              // owner
 				w.writeBool(false);                                    // hasName
 				w.writeBool(false);                                    // hasGarrison
@@ -728,7 +802,7 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 			case Obj::RANDOM_MONSTER_L6:
 			case Obj::RANDOM_MONSTER_L7:
 				if(features.levelAB)
-					w.writeUInt32(0);                                  // identifier
+					w.writeUInt32(obj.wireIdentifier);                 // identifier (referenced by kill-creature quests)
 				w.writeUInt16(obj.monsterCount);
 				w.writeInt8(obj.monsterCharacter);
 				w.writeBool(false);                                    // hasMessage
@@ -796,45 +870,63 @@ void TinyH3MBuilder::writeHeroBody(TinyH3MWriter & w, const ObjectSpec & obj) co
 {
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 
-	// Mirror of CMapLoaderH3M::readHero, "all optional fields absent" branch.
-	// Wire layout (non-HOTA):
-	//   AB+: identifier uint32                  (quest-target wire id; 0 is fine — no one references this hero)
-	//   owner uint8 + heroType uint8            (heroType=0xff for RANDOM_HERO)
-	//   hasName bool
-	//   SOD:  hasCustomExperience bool          (false => no uint32 follows)
-	//   AB:   experience uint32                 (always present in <=AB; 0 = unset)
-	//   hasPortrait bool / hasSecSkills bool / hasGarison bool
-	//   formation int8                          (0 = LOOSE)
-	//   loadArtifactsOfHero: hasArtSet bool     (false => no payload)
-	//   patrolRadius uint8                      (0xff = not patrolling)
-	//   AB+: hasCustomBiography bool, gender int8 (-1 = DEFAULT)
-	//   SOD:  hasCustomSpells bool, hasCustomPrimSkills bool
-	//   16 zero bytes
-	//   HOTA5+ extras not emitted (builder is non-HOTA).
+	// Mirror of CMapLoaderH3M::readHero, non-HOTA branch. Each optional field
+	// is gated on whether the corresponding spec field was populated by the
+	// hero*() setter; absent fields write the "default" bool path so the engine
+	// uses its standard hero loadout.
 	if(features.levelAB)
-		w.writeUInt32(0);                  // wire identifier
+		w.writeUInt32(obj.wireIdentifier); // wire identifier (referenced by kill-hero quests)
 	w.writePlayer(obj.owner);
 	w.writeHero(obj.heroType);
-	w.writeBool(false);                    // hasName
+
+	w.writeBool(false);                    // hasName (always default for now)
+
+	const bool hasExp = obj.heroExperienceXp.has_value();
 	if(features.levelSOD)
-		w.writeBool(false);                // hasCustomExperience
+	{
+		w.writeBool(hasExp);
+		if(hasExp)
+			w.writeUInt32(*obj.heroExperienceXp);
+	}
 	else
-		w.writeUInt32(0);                  // <=AB: always-present experience field
+	{
+		w.writeUInt32(hasExp ? *obj.heroExperienceXp : 0); // <=AB: always-present field; 0 = unset
+	}
+
 	w.writeBool(false);                    // hasPortrait
 	w.writeBool(false);                    // hasSecSkills
-	w.writeBool(false);                    // hasGarison
+
+	const bool hasGarison = !obj.heroGarrisonStacks.empty();
+	w.writeBool(hasGarison);
+	if(hasGarison)
+		writeCreatureSet(w, obj.heroGarrisonStacks);
+
 	w.writeInt8(0);                        // formation = LOOSE
-	w.writeBool(false);                    // loadArtifactsOfHero: hasArtSet
+
+	const bool hasArtSet = !obj.heroEquippedArts.empty() || !obj.heroBackpackArts.empty();
+	w.writeBool(hasArtSet);
+	if(hasArtSet)
+		writeArtifactSet(w, obj.heroEquippedArts, obj.heroBackpackArts);
+
 	w.writeUInt8(0xff);                    // patrolRadius — 0xff disables patrol
+
 	if(features.levelAB)
 	{
 		w.writeBool(false);                // hasCustomBiography
 		w.writeInt8(-1);                   // gender = DEFAULT
 	}
+
 	if(features.levelSOD)
 	{
 		w.writeBool(false);                // hasCustomSpells
-		w.writeBool(false);                // hasCustomPrimSkills
+
+		const bool hasPrim = obj.heroPrimarySkills.has_value();
+		w.writeBool(hasPrim);
+		if(hasPrim)
+		{
+			for(int i = 0; i < 4; ++i)
+				w.writeUInt8((*obj.heroPrimarySkills)[i]);
+		}
 	}
 	w.skipZero(16);
 }
@@ -845,6 +937,46 @@ void TinyH3MBuilder::writeScrollBody(TinyH3MWriter & w, const ObjectSpec & obj) 
 	// is a single zero byte) + 4-byte spell id.
 	w.writeBool(false);                    // hasMessage
 	w.writeSpell32(obj.scrollSpell);
+}
+
+void TinyH3MBuilder::writeCreatureSet(TinyH3MWriter & w, const std::vector<std::pair<CreatureID, uint16_t>> & stacks) const
+{
+	constexpr int slotCount = 7;
+	for(int i = 0; i < slotCount; ++i)
+	{
+		if(i < static_cast<int>(stacks.size()))
+		{
+			w.writeCreature(stacks[i].first);
+			w.writeUInt16(stacks[i].second);
+		}
+		else
+		{
+			w.writeCreature(CreatureID::NONE);
+			w.writeUInt16(0);
+		}
+	}
+}
+
+void TinyH3MBuilder::writeArtifactSet(TinyH3MWriter & w,
+	const std::vector<std::pair<ArtifactPosition, ArtifactID>> & equipped,
+	const std::vector<ArtifactID> & backpack) const
+{
+	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
+
+	// Build a slot lookup so we can iterate equipped slots in fixed order
+	// regardless of the user's input order.
+	std::map<int, ArtifactID> bySlot;
+	for(const auto & entry : equipped)
+		bySlot[entry.first.getNum()] = entry.second;
+
+	for(int slot = 0; slot < features.artifactSlotsCount; ++slot)
+	{
+		auto it = bySlot.find(slot);
+		w.writeArtifact(it == bySlot.end() ? ArtifactID(ArtifactID::NONE) : it->second);
+	}
+	w.writeUInt16(static_cast<uint16_t>(backpack.size()));
+	for(ArtifactID art : backpack)
+		w.writeArtifact(art);
 }
 
 void TinyH3MBuilder::writeQuestBody(TinyH3MWriter & w, const Quest & quest) const
@@ -895,15 +1027,22 @@ void TinyH3MBuilder::writeQuestBody(TinyH3MWriter & w, const Quest & quest) cons
 			w.writePlayer(quest.player);
 			break;
 
+		case EQuestMission::KILL_CREATURE:
+		case EQuestMission::KILL_HERO:
+			// uint32 wire identifier of the target object (set by the builder when
+			// the monster / hero was added; surfaced via .lastHandle()).
+			w.writeUInt32(quest.killTargetIdentifier);
+			break;
+
 		default:
 			throw std::runtime_error("TinyH3MBuilder: mission kind "
 				+ std::to_string(static_cast<int>(quest.kind)) + " not implemented");
 	}
 
-	w.writeInt32(-1);                          // lastDay = no timeout
-	w.writeBaseString(std::string());          // firstVisit
-	w.writeBaseString(std::string());          // nextVisit
-	w.writeBaseString(std::string());          // completed
+	w.writeInt32(quest.lastDay);
+	w.writeBaseString(quest.firstVisitText);
+	w.writeBaseString(quest.nextVisitText);
+	w.writeBaseString(quest.completedText);
 }
 
 void TinyH3MBuilder::writeRewardBody(TinyH3MWriter & w, const SeerReward & reward) const
