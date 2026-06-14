@@ -96,3 +96,42 @@ TEST(TinyH3MBuilderTest, EmptyROEFullLoad)
 	EXPECT_EQ(map->levels(), 1);
 	EXPECT_TRUE(map->getHeroesOnMap().empty());
 }
+
+TEST(TinyH3MBuilderTest, EmptySODHeaderRoundTrips)
+{
+	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
+		.size(36, /*twoLevel*/ false)
+		.name("EmptySOD")
+		.description("Phase 2 SOD acceptance fixture")
+		.difficulty(EMapDifficulty::NORMAL)
+		.buildAndDump("EmptySODHeaderRoundTrips");
+
+	auto header = loadHeader(std::move(bytes));
+	ASSERT_NE(header, nullptr);
+	EXPECT_EQ(header->version, EMapFormat::SOD);
+	EXPECT_EQ(header->width, 36);
+	EXPECT_EQ(header->height, 36);
+	EXPECT_EQ(header->mapLayers.size(), 1u);
+	EXPECT_EQ(header->difficulty, EMapDifficulty::NORMAL);
+	for(const auto & p : header->players)
+	{
+		EXPECT_FALSE(p.canHumanPlay);
+		EXPECT_FALSE(p.canComputerPlay);
+	}
+}
+
+TEST(TinyH3MBuilderTest, EmptySODFullLoad)
+{
+	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
+		.size(36, /*twoLevel*/ false)
+		.name("EmptySODFull")
+		.difficulty(EMapDifficulty::NORMAL)
+		.buildAndDump("EmptySODFullLoad");
+
+	auto [map, buf] = loadMap(std::move(bytes));
+	ASSERT_NE(map, nullptr);
+	EXPECT_EQ(map->width, 36);
+	EXPECT_EQ(map->height, 36);
+	EXPECT_EQ(map->levels(), 1);
+	EXPECT_TRUE(map->getHeroesOnMap().empty());
+}
