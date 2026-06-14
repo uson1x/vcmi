@@ -44,6 +44,7 @@ set(test_SRCS
 		map/CMapFormatTest.cpp
 		map/CGArtifactRegressionTest.cpp
 		map/MapComparer.cpp
+		map/TinyH3MBuilderTest.cpp
 
 		netpacks/NetPackFixture.cpp
 
@@ -89,6 +90,8 @@ set(test_SRCS
  		mock/mock_MapService.cpp
  		mock/mock_BonusBearer.cpp
 		mock/mock_CPSICallback.cpp
+		mock/TinyH3MWriter.cpp
+		mock/TinyH3MBuilder.cpp
 )
 
 set(test_HEADERS
@@ -112,6 +115,8 @@ set(test_HEADERS
  		mock/mock_MapService.h
 		mock/mock_BonusBearer.h
 		mock/TownFake.h
+		mock/TinyH3MWriter.h
+		mock/TinyH3MBuilder.h
 )
 
 if(ENABLE_BATTLE_AI)
