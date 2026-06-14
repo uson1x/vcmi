@@ -189,6 +189,97 @@ TinyH3MBuilder & TinyH3MBuilder::randomTown(const int3 & pos, PlayerColor owner)
 	return *this;
 }
 
+TinyH3MBuilder & TinyH3MBuilder::monster(const int3 & pos, CreatureID creature, uint16_t count, int8_t character)
+{
+	ObjectSpec spec;
+	spec.id               = Obj::MONSTER;
+	spec.subid            = MapObjectSubID(creature.getNum());
+	spec.position         = pos;
+	spec.monsterCount     = count;
+	spec.monsterCharacter = character;
+	spec.templateIndex    = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::resource(const int3 & pos, GameResID resource, uint32_t amount)
+{
+	ObjectSpec spec;
+	spec.id             = Obj::RESOURCE;
+	spec.subid          = MapObjectSubID(resource.getNum());
+	spec.position       = pos;
+	spec.resourceAmount = amount;
+	spec.templateIndex  = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::artifact(const int3 & pos, ArtifactID artifact)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::ARTIFACT;
+	spec.subid         = MapObjectSubID(artifact.getNum());
+	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::keymaster(const int3 & pos, int color)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::KEYMASTER;
+	spec.subid         = MapObjectSubID(color);
+	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::borderGuard(const int3 & pos, int color)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::BORDERGUARD;
+	spec.subid         = MapObjectSubID(color);
+	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::borderGate(const int3 & pos, int color)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::BORDER_GATE;
+	spec.subid         = MapObjectSubID(color);
+	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::questGuard(const int3 & pos)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::QUEST_GUARD;
+	spec.subid         = MapObjectSubID(0);
+	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::seerHut(const int3 & pos)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::SEER_HUT;
+	spec.subid         = MapObjectSubID(0);
+	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
 uint32_t TinyH3MBuilder::registerTemplate(MapObjectID id, MapObjectSubID subid)
 {
 	const auto key = std::make_pair(id, subid);
@@ -473,31 +564,89 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 		w.writeUInt32(obj.templateIndex);
 		w.skipZero(5);
 
-		// Per-type body. Phase 3 only handles RANDOM_TOWN/TOWN (readTown,
-		// MapFormatH3M.cpp:3487) with the minimum-viable shape: no garrison,
-		// standard fort, no events, no custom buildings, neutral alignment.
-		if(obj.id == Obj::RANDOM_TOWN || obj.id == Obj::TOWN)
+		switch(obj.id.toEnum())
 		{
-			if(features.levelAB)
-				w.writeUInt32(0);                                 // identifier
-			w.writePlayer(obj.owner);                              // owner
-			w.writeBool(false);                                    // hasName
-			w.writeBool(false);                                    // hasGarrison
-			w.writeInt8(0);                                        // formation = LOOSE
-			w.writeBool(false);                                    // hasCustomBuildings
-			w.writeBool(true);                                     // hasFort
-			if(features.levelAB)
-				w.skipZero(features.spellsBytes);                  // obligatorySpells bitmask (none)
-			w.skipZero(features.spellsBytes);                      // possibleSpells bitmask (defaults)
-			w.writeUInt32(0);                                      // castle events count
-			if(features.levelSOD)
-				w.writeUInt8(0xff);                                // alignment = "same as owner / random"
-			w.skipZero(3);                                         // trailing padding
-		}
-		else
-		{
-			throw std::runtime_error("TinyH3MBuilder: object body not implemented for id="
-				+ std::to_string(obj.id.getNum()));
+			case Obj::RANDOM_TOWN:
+			case Obj::TOWN:
+				// readTown (MapFormatH3M.cpp:3487). Minimum-viable: no garrison,
+				// standard fort, no events, no custom buildings, neutral alignment.
+				if(features.levelAB)
+					w.writeUInt32(0);                                 // identifier
+				w.writePlayer(obj.owner);                              // owner
+				w.writeBool(false);                                    // hasName
+				w.writeBool(false);                                    // hasGarrison
+				w.writeInt8(0);                                        // formation = LOOSE
+				w.writeBool(false);                                    // hasCustomBuildings
+				w.writeBool(true);                                     // hasFort
+				if(features.levelAB)
+					w.skipZero(features.spellsBytes);                  // obligatorySpells bitmask
+				w.skipZero(features.spellsBytes);                      // possibleSpells bitmask
+				w.writeUInt32(0);                                      // castle events count
+				if(features.levelSOD)
+					w.writeUInt8(0xff);                                // alignment = "same as owner / random"
+				w.skipZero(3);
+				break;
+
+			case Obj::MONSTER:
+			case Obj::RANDOM_MONSTER:
+			case Obj::RANDOM_MONSTER_L1:
+			case Obj::RANDOM_MONSTER_L2:
+			case Obj::RANDOM_MONSTER_L3:
+			case Obj::RANDOM_MONSTER_L4:
+			case Obj::RANDOM_MONSTER_L5:
+			case Obj::RANDOM_MONSTER_L6:
+			case Obj::RANDOM_MONSTER_L7:
+				// readMonster (MapFormatH3M.cpp:1897). Minimum-viable: no message.
+				if(features.levelAB)
+					w.writeUInt32(0);                                  // identifier
+				w.writeUInt16(obj.monsterCount);
+				w.writeInt8(obj.monsterCharacter);
+				w.writeBool(false);                                    // hasMessage
+				w.writeBool(false);                                    // neverFlees
+				w.writeBool(false);                                    // notGrowingTeam
+				w.skipZero(2);
+				break;
+
+			case Obj::RESOURCE:
+			case Obj::RANDOM_RESOURCE:
+				// readResource (MapFormatH3M.cpp:2129). Minimum-viable: no message.
+				w.writeBool(false);                                    // hasMessage (readMessageAndGuards)
+				w.writeUInt32(obj.resourceAmount);
+				w.skipZero(4);
+				break;
+
+			case Obj::ARTIFACT:
+			case Obj::RANDOM_ART:
+			case Obj::RANDOM_TREASURE_ART:
+			case Obj::RANDOM_MINOR_ART:
+			case Obj::RANDOM_MAJOR_ART:
+			case Obj::RANDOM_RELIC_ART:
+				// readArtifact (MapFormatH3M.cpp:2091). Minimum-viable: no message.
+				w.writeBool(false);                                    // hasMessage
+				break;
+
+			case Obj::KEYMASTER:
+			case Obj::BORDERGUARD:
+			case Obj::BORDER_GATE:
+				// readGeneric — no body bytes. Subid (keymaster colour) lives in the template.
+				break;
+
+			case Obj::QUEST_GUARD:
+				// readQuestGuard -> readQuest. NONE mission returns after the single missionId byte.
+				w.writeInt8(0);                                        // EQuestMission::NONE
+				break;
+
+			case Obj::SEER_HUT:
+				// readSeerHut (MapFormatH3M.cpp:3184). Non-HOTA: one quest, no repeatable block.
+				// readSeerHutQuest -> readQuest (NONE returns early) ; missionType==NONE -> skipZero(1)
+				w.writeInt8(0);                                        // missionId = NONE
+				w.skipZero(1);                                         // missionType==NONE pad
+				w.skipZero(2);                                         // readSeerHut trailing
+				break;
+
+			default:
+				throw std::runtime_error("TinyH3MBuilder: object body not implemented for id="
+					+ std::to_string(obj.id.getNum()));
 		}
 	}
 }

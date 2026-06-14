@@ -50,6 +50,34 @@ public:
 	/// RANDOM_TOWN template on first call. No garrison, standard fort, no events.
 	TinyH3MBuilder & randomTown(const int3 & pos, PlayerColor owner);
 
+	// ---- Phase 4: wanderer objects -------------------------------------
+
+	/// Monster stack on the adventure map. `character` is 0..4 (compliant..savage).
+	TinyH3MBuilder & monster(const int3 & pos, CreatureID creature, uint16_t count, int8_t character = 2);
+
+	/// Resource pile. amount=0 means "use default".
+	TinyH3MBuilder & resource(const int3 & pos, GameResID resource, uint32_t amount = 0);
+
+	/// Specific artifact pickup.
+	TinyH3MBuilder & artifact(const int3 & pos, ArtifactID artifact);
+
+	// ---- Phase 5: quest objects ----------------------------------------
+
+	/// Keymaster Tent. Subid encodes the keymaster colour (0..7).
+	TinyH3MBuilder & keymaster(const int3 & pos, int color);
+
+	/// Border Guard checking for the matching keymaster colour.
+	TinyH3MBuilder & borderGuard(const int3 & pos, int color);
+
+	/// Border Gate (pathfinder-passable variant) checking for the matching keymaster colour.
+	TinyH3MBuilder & borderGate(const int3 & pos, int color);
+
+	/// Quest Guard with NONE mission (always accepts). Mission customisation TBD.
+	TinyH3MBuilder & questGuard(const int3 & pos);
+
+	/// Seer Hut with NONE mission (always accepts). Mission/reward customisation TBD.
+	TinyH3MBuilder & seerHut(const int3 & pos);
+
 	// ---- output ---------------------------------------------------------
 
 	/// Emit the uncompressed .h3m byte stream. The output covers everything
@@ -72,6 +100,11 @@ private:
 		int3           position;
 		PlayerColor    owner = PlayerColor::NEUTRAL;
 		uint32_t       templateIndex = 0; // resolved at build() time
+
+		// Body-specific payload. Only the fields appropriate for `id` are read.
+		uint16_t       monsterCount      = 0;
+		int8_t         monsterCharacter  = 0;
+		uint32_t       resourceAmount    = 0;
 	};
 
 	// Internal helper: register a (id, subid) template in the table if not already there;

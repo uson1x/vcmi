@@ -12,6 +12,7 @@
 
 #include "../mock/TinyH3MBuilder.h"
 
+#include "../../lib/callback/EditorCallback.h"
 #include "../../lib/filesystem/CMemoryBuffer.h"
 #include "../../lib/mapping/CMap.h"
 #include "../../lib/mapping/CMapHeader.h"
@@ -31,16 +32,28 @@ auto loadHeader(std::vector<uint8_t> bytes)
 	return loader.loadMapHeader();
 }
 
-// Returned pair keeps the backing buffer alive for the lifetime of the CMap.
-std::pair<std::unique_ptr<CMap>, std::unique_ptr<CMemoryBuffer>> loadMap(std::vector<uint8_t> bytes)
+// Returned aggregate keeps the backing buffer and EditorCallback alive for the lifetime of the CMap.
+struct LoadedMap
 {
-	auto buf = std::make_unique<CMemoryBuffer>();
-	buf->write(bytes.data(), static_cast<si64>(bytes.size()));
-	buf->seek(0);
+	std::unique_ptr<CMap>           map;
+	std::unique_ptr<CMemoryBuffer>  stream;
+	std::unique_ptr<EditorCallback> cb;
+};
 
-	CMapLoaderH3M loader("TinyH3MBuilderTest", "core", "ASCII", buf.get());
-	auto map = loader.loadMap(nullptr);
-	return {std::move(map), std::move(buf)};
+LoadedMap loadMap(std::vector<uint8_t> bytes)
+{
+	LoadedMap r;
+	r.stream = std::make_unique<CMemoryBuffer>();
+	r.stream->write(bytes.data(), static_cast<si64>(bytes.size()));
+	r.stream->seek(0);
+	// Same callback the mapeditor uses — provides the non-null IGameInfoCallback that
+	// per-type object handlers (Keymaster / Border Guard / ...) assert on in their factory.
+	r.cb = std::make_unique<EditorCallback>(nullptr);
+
+	CMapLoaderH3M loader("TinyH3MBuilderTest", "core", "ASCII", r.stream.get());
+	r.map = loader.loadMap(r.cb.get());
+	r.cb->setMap(r.map.get());
+	return r;
 }
 }
 
@@ -89,12 +102,12 @@ TEST(TinyH3MBuilderTest, EmptyROEFullLoad)
 		.difficulty(EMapDifficulty::NORMAL)
 		.buildAndDump("EmptyROEFullLoad");
 
-	auto [map, buf] = loadMap(std::move(bytes));
-	ASSERT_NE(map, nullptr);
-	EXPECT_EQ(map->width, 36);
-	EXPECT_EQ(map->height, 36);
-	EXPECT_EQ(map->levels(), 1);
-	EXPECT_TRUE(map->getHeroesOnMap().empty());
+	auto loaded = loadMap(std::move(bytes));
+	ASSERT_NE(loaded.map, nullptr);
+	EXPECT_EQ(loaded.map->width, 36);
+	EXPECT_EQ(loaded.map->height, 36);
+	EXPECT_EQ(loaded.map->levels(), 1);
+	EXPECT_TRUE(loaded.map->getHeroesOnMap().empty());
 }
 
 TEST(TinyH3MBuilderTest, EmptySODHeaderRoundTrips)
@@ -128,12 +141,47 @@ TEST(TinyH3MBuilderTest, EmptySODFullLoad)
 		.difficulty(EMapDifficulty::NORMAL)
 		.buildAndDump("EmptySODFullLoad");
 
-	auto [map, buf] = loadMap(std::move(bytes));
-	ASSERT_NE(map, nullptr);
-	EXPECT_EQ(map->width, 36);
-	EXPECT_EQ(map->height, 36);
-	EXPECT_EQ(map->levels(), 1);
-	EXPECT_TRUE(map->getHeroesOnMap().empty());
+	auto loaded = loadMap(std::move(bytes));
+	ASSERT_NE(loaded.map, nullptr);
+	EXPECT_EQ(loaded.map->width, 36);
+	EXPECT_EQ(loaded.map->height, 36);
+	EXPECT_EQ(loaded.map->levels(), 1);
+	EXPECT_TRUE(loaded.map->getHeroesOnMap().empty());
+}
+
+TEST(TinyH3MBuilderTest, Phase4And5AllObjectTypes)
+{
+	// A blank SOD map carrying one instance of every object type the builder
+	// supports as of phases 4+5. The acceptance bar is "CMapLoaderH3M::loadMap
+	// returns a non-null CMap" — body assertions for each kind live in the
+	// dedicated per-type tests added later.
+	auto bytes = TinyH3M::TinyH3MBuilder(EMapFormat::SOD)
+		.size(36, /*twoLevel*/ false)
+		.name("AllObjects")
+		.description("Phase 4+5 acceptance fixture")
+		.playerActive(PlayerColor(0))
+		// Phase 3
+		.randomTown({5, 5, 0}, PlayerColor(0))
+		// Phase 4
+		.monster({10, 10, 0}, CreatureID(27), /*count*/ 7) // Gold Dragon
+		.resource({11, 10, 0}, GameResID(GameResID::GOLD), /*amount*/ 1000)
+		.artifact({12, 10, 0}, ArtifactID(7))              // Centaur Axe (first artifact with map sprite)
+		// Phase 5
+		.keymaster({15, 15, 0}, /*color*/ 0)
+		.borderGuard({16, 15, 0}, /*color*/ 0)
+		.borderGate ({17, 15, 0}, /*color*/ 0)
+		.questGuard ({20, 20, 0})
+		.seerHut    ({22, 22, 0})
+		.buildAndDump("Phase4And5AllObjectTypes");
+
+	auto loaded = loadMap(std::move(bytes));
+	ASSERT_NE(loaded.map, nullptr);
+	EXPECT_EQ(loaded.map->width, 36);
+	// Object count: 1 town + 1 monster + 1 resource + 1 artifact + 3 border + 1 quest guard + 1 seer = 9
+	size_t live = 0;
+	for(const auto & obj : loaded.map->objects)
+		if(obj) ++live;
+	EXPECT_EQ(live, 9u);
 }
 
 TEST(TinyH3MBuilderTest, TwoRandomTownsSOD)
@@ -153,18 +201,18 @@ TEST(TinyH3MBuilderTest, TwoRandomTownsSOD)
 		.randomTown(bluePos, PlayerColor(1))
 		.buildAndDump("TwoRandomTownsSOD");
 
-	auto [map, buf] = loadMap(std::move(bytes));
-	ASSERT_NE(map, nullptr);
-	EXPECT_EQ(map->width, 36);
-	EXPECT_EQ(map->height, 36);
+	auto loaded = loadMap(std::move(bytes));
+	ASSERT_NE(loaded.map, nullptr);
+	EXPECT_EQ(loaded.map->width, 36);
+	EXPECT_EQ(loaded.map->height, 36);
 
-	const auto & townIds = map->getAllTowns();
+	const auto & townIds = loaded.map->getAllTowns();
 	ASSERT_EQ(townIds.size(), 2u);
 
 	std::map<int3, PlayerColor> seen;
 	for(ObjectInstanceID id : townIds)
 	{
-		const auto * obj = map->getObject(id);
+		const auto * obj = loaded.map->getObject(id);
 		ASSERT_NE(obj, nullptr);
 		seen[obj->anchorPos()] = obj->getOwner();
 	}
