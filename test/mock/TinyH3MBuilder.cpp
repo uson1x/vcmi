@@ -48,34 +48,41 @@ using LegacyKey = std::pair<int, int>;
 
 const std::map<LegacyKey, LegacyTemplate> & legacyTemplates()
 {
+	// Heroes.txt mirrors Objects.txt format and ships the HERO (id=34, subid=0..17)
+	// and RANDOM_HERO (id=70) template rows that Objects.txt omits.
 	static const auto cache = []
 	{
 		std::map<LegacyKey, LegacyTemplate> out;
-		CLegacyConfigParser parser(TextPath::builtin("Data/Objects.txt"));
-		const auto total = static_cast<size_t>(parser.readNumber());
-		parser.endLine();
-
-		for(size_t i = 0; i < total; ++i)
+		auto loadFile = [&](const std::string & resourcePath)
 		{
-			const std::string data = parser.readString();
-			std::vector<std::string> fields;
-			boost::split(fields, data, boost::is_any_of(" "));
-			assert(fields.size() == 9);
-
-			LegacyTemplate t;
-			t.animationFile = fields[0];
-			t.blockBits     = fields[1];
-			t.visitBits     = fields[2];
-			t.unknownBits   = fields[3];
-			t.terrainBits   = fields[4];
-			t.id            = std::stoi(fields[5]);
-			t.subid         = std::stoi(fields[6]);
-			t.type          = std::stoi(fields[7]);
-			t.printPriority = std::stoi(fields[8]);
-
-			out.emplace(LegacyKey(t.id, t.subid), t);
+			CLegacyConfigParser parser(TextPath::builtin(resourcePath));
+			const auto total = static_cast<size_t>(parser.readNumber());
 			parser.endLine();
-		}
+
+			for(size_t i = 0; i < total; ++i)
+			{
+				const std::string data = parser.readString();
+				std::vector<std::string> fields;
+				boost::split(fields, data, boost::is_any_of(" "));
+				assert(fields.size() == 9);
+
+				LegacyTemplate t;
+				t.animationFile = fields[0];
+				t.blockBits     = fields[1];
+				t.visitBits     = fields[2];
+				t.unknownBits   = fields[3];
+				t.terrainBits   = fields[4];
+				t.id            = std::stoi(fields[5]);
+				t.subid         = std::stoi(fields[6]);
+				t.type          = std::stoi(fields[7]);
+				t.printPriority = std::stoi(fields[8]);
+
+				out.emplace(LegacyKey(t.id, t.subid), t);
+				parser.endLine();
+			}
+		};
+		loadFile("Data/Objects.txt");
+		loadFile("Data/Heroes.txt");
 		return out;
 	}();
 	return cache;
@@ -189,6 +196,34 @@ TinyH3MBuilder & TinyH3MBuilder::randomTown(const int3 & pos, PlayerColor owner)
 	return *this;
 }
 
+TinyH3MBuilder & TinyH3MBuilder::hero(const int3 & pos, HeroTypeID type, PlayerColor owner)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::HERO;
+	// readMap derives the hero's class subID from this slot; HERO objects use the hero-type
+	// number directly.
+	spec.subid         = MapObjectSubID(type.getNum());
+	spec.position      = pos;
+	spec.owner         = owner;
+	spec.heroType      = type;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::randomHero(const int3 & pos, PlayerColor owner)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::RANDOM_HERO;
+	spec.subid         = MapObjectSubID(0);
+	spec.position      = pos;
+	spec.owner         = owner;
+	spec.heroType      = HeroTypeID(-1); // wire sentinel = features.heroIdentifierInvalid
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
 TinyH3MBuilder & TinyH3MBuilder::monster(const int3 & pos, CreatureID creature, uint16_t count, int8_t character)
 {
 	ObjectSpec spec;
@@ -220,6 +255,18 @@ TinyH3MBuilder & TinyH3MBuilder::artifact(const int3 & pos, ArtifactID artifact)
 	spec.id            = Obj::ARTIFACT;
 	spec.subid         = MapObjectSubID(artifact.getNum());
 	spec.position      = pos;
+	spec.templateIndex = registerTemplate(spec.id, spec.subid);
+	objects.push_back(spec);
+	return *this;
+}
+
+TinyH3MBuilder & TinyH3MBuilder::scroll(const int3 & pos, SpellID spell)
+{
+	ObjectSpec spec;
+	spec.id            = Obj::SPELL_SCROLL;
+	spec.subid         = MapObjectSubID(0);
+	spec.position      = pos;
+	spec.scrollSpell   = spell;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
 	objects.push_back(spec);
 	return *this;
@@ -258,26 +305,115 @@ TinyH3MBuilder & TinyH3MBuilder::borderGate(const int3 & pos, int color)
 	return *this;
 }
 
-TinyH3MBuilder & TinyH3MBuilder::questGuard(const int3 & pos)
+TinyH3MBuilder & TinyH3MBuilder::questGuard(const int3 & pos, Quest mission)
 {
 	ObjectSpec spec;
 	spec.id            = Obj::QUEST_GUARD;
 	spec.subid         = MapObjectSubID(0);
 	spec.position      = pos;
+	spec.quest         = std::move(mission);
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
 	objects.push_back(spec);
 	return *this;
 }
 
-TinyH3MBuilder & TinyH3MBuilder::seerHut(const int3 & pos)
+TinyH3MBuilder & TinyH3MBuilder::seerHut(const int3 & pos, Quest mission, SeerReward reward)
 {
 	ObjectSpec spec;
 	spec.id            = Obj::SEER_HUT;
 	spec.subid         = MapObjectSubID(0);
 	spec.position      = pos;
+	spec.quest         = std::move(mission);
+	spec.reward        = reward;
 	spec.templateIndex = registerTemplate(spec.id, spec.subid);
 	objects.push_back(spec);
 	return *this;
+}
+
+Quest TinyH3MBuilder::missionArtifacts(std::vector<ArtifactID> artifacts)
+{
+	Quest q;
+	q.kind = EQuestMission::ARTIFACT;
+	q.artifacts = std::move(artifacts);
+	return q;
+}
+
+Quest TinyH3MBuilder::missionArmy(std::vector<std::pair<CreatureID, uint16_t>> stacks)
+{
+	Quest q;
+	q.kind = EQuestMission::ARMY;
+	q.creatures = std::move(stacks);
+	return q;
+}
+
+Quest TinyH3MBuilder::missionResources(std::array<uint32_t, 7> amounts)
+{
+	Quest q;
+	q.kind = EQuestMission::RESOURCES;
+	q.resources = amounts;
+	return q;
+}
+
+Quest TinyH3MBuilder::missionPrimarySkills(uint8_t attack, uint8_t defense, uint8_t spellPower, uint8_t knowledge)
+{
+	Quest q;
+	q.kind = EQuestMission::PRIMARY_SKILL;
+	q.primarySkills = {attack, defense, spellPower, knowledge};
+	return q;
+}
+
+Quest TinyH3MBuilder::missionLevel(uint32_t level)
+{
+	Quest q;
+	q.kind = EQuestMission::LEVEL;
+	q.heroLevel = level;
+	return q;
+}
+
+Quest TinyH3MBuilder::missionHero(HeroTypeID hero)
+{
+	Quest q;
+	q.kind = EQuestMission::HERO;
+	q.hero = hero;
+	return q;
+}
+
+Quest TinyH3MBuilder::missionPlayer(PlayerColor player)
+{
+	Quest q;
+	q.kind = EQuestMission::PLAYER;
+	q.player = player;
+	return q;
+}
+
+SeerReward TinyH3MBuilder::rewardNothing()
+{
+	return {};
+}
+
+SeerReward TinyH3MBuilder::rewardExperience(uint32_t amount)
+{
+	SeerReward r;
+	r.kind = SeerReward::Kind::EXPERIENCE;
+	r.amount = amount;
+	return r;
+}
+
+SeerReward TinyH3MBuilder::rewardMana(uint32_t amount)
+{
+	SeerReward r;
+	r.kind = SeerReward::Kind::MANA;
+	r.amount = amount;
+	return r;
+}
+
+SeerReward TinyH3MBuilder::rewardResource(GameResID resource, uint32_t amount)
+{
+	SeerReward r;
+	r.kind = SeerReward::Kind::RESOURCES;
+	r.resourceType = resource;
+	r.resourceAmount = amount;
+	return r;
 }
 
 uint32_t TinyH3MBuilder::registerTemplate(MapObjectID id, MapObjectSubID subid)
@@ -617,6 +753,15 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 				w.writeBool(false);                                    // hasMessage
 				break;
 
+			case Obj::HERO:
+			case Obj::RANDOM_HERO:
+				writeHeroBody(w, obj);
+				break;
+
+			case Obj::SPELL_SCROLL:
+				writeScrollBody(w, obj);
+				break;
+
 			case Obj::KEYMASTER:
 			case Obj::BORDERGUARD:
 			case Obj::BORDER_GATE:
@@ -624,16 +769,19 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 				break;
 
 			case Obj::QUEST_GUARD:
-				// NONE mission returns after the single missionId byte.
-				w.writeInt8(0);                                        // EQuestMission::NONE
+				writeQuestBody(w, obj.quest);
 				break;
 
 			case Obj::SEER_HUT:
-				// Non-HOTA: one quest, no repeatable block. NONE mission =
-				// missionId byte + skipZero(1) for the absent reward block,
-				// then trailing skipZero(2) at the end of the seer.
-				w.writeInt8(0);                                        // missionId = NONE
-				w.skipZero(1);
+				// Non-HOTA: single quest, no repeatable block, trailing skipZero(2).
+				// NONE mission emits only the missionId byte then a 1-byte zero
+				// placeholder where the reward kind would live; non-NONE missions
+				// emit the full mission body + a real reward block.
+				writeQuestBody(w, obj.quest);
+				if(obj.quest.kind != EQuestMission::NONE)
+					writeRewardBody(w, obj.reward);
+				else
+					w.skipZero(1);
 				w.skipZero(2);
 				break;
 
@@ -641,6 +789,138 @@ void TinyH3MBuilder::writeObjects(TinyH3MWriter & w) const
 				throw std::runtime_error("TinyH3MBuilder: object body not implemented for id="
 					+ std::to_string(obj.id.getNum()));
 		}
+	}
+}
+
+void TinyH3MBuilder::writeHeroBody(TinyH3MWriter & w, const ObjectSpec & obj) const
+{
+	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
+
+	// Mirror of CMapLoaderH3M::readHero, "all optional fields absent" branch.
+	// Wire layout (non-HOTA):
+	//   AB+: identifier uint32                  (quest-target wire id; 0 is fine — no one references this hero)
+	//   owner uint8 + heroType uint8            (heroType=0xff for RANDOM_HERO)
+	//   hasName bool
+	//   SOD:  hasCustomExperience bool          (false => no uint32 follows)
+	//   AB:   experience uint32                 (always present in <=AB; 0 = unset)
+	//   hasPortrait bool / hasSecSkills bool / hasGarison bool
+	//   formation int8                          (0 = LOOSE)
+	//   loadArtifactsOfHero: hasArtSet bool     (false => no payload)
+	//   patrolRadius uint8                      (0xff = not patrolling)
+	//   AB+: hasCustomBiography bool, gender int8 (-1 = DEFAULT)
+	//   SOD:  hasCustomSpells bool, hasCustomPrimSkills bool
+	//   16 zero bytes
+	//   HOTA5+ extras not emitted (builder is non-HOTA).
+	if(features.levelAB)
+		w.writeUInt32(0);                  // wire identifier
+	w.writePlayer(obj.owner);
+	w.writeHero(obj.heroType);
+	w.writeBool(false);                    // hasName
+	if(features.levelSOD)
+		w.writeBool(false);                // hasCustomExperience
+	else
+		w.writeUInt32(0);                  // <=AB: always-present experience field
+	w.writeBool(false);                    // hasPortrait
+	w.writeBool(false);                    // hasSecSkills
+	w.writeBool(false);                    // hasGarison
+	w.writeInt8(0);                        // formation = LOOSE
+	w.writeBool(false);                    // loadArtifactsOfHero: hasArtSet
+	w.writeUInt8(0xff);                    // patrolRadius — 0xff disables patrol
+	if(features.levelAB)
+	{
+		w.writeBool(false);                // hasCustomBiography
+		w.writeInt8(-1);                   // gender = DEFAULT
+	}
+	if(features.levelSOD)
+	{
+		w.writeBool(false);                // hasCustomSpells
+		w.writeBool(false);                // hasCustomPrimSkills
+	}
+	w.skipZero(16);
+}
+
+void TinyH3MBuilder::writeScrollBody(TinyH3MWriter & w, const ObjectSpec & obj) const
+{
+	// Mirror of CMapLoaderH3M::readScroll: readMessageAndGuards (hasMessage=false
+	// is a single zero byte) + 4-byte spell id.
+	w.writeBool(false);                    // hasMessage
+	w.writeSpell32(obj.scrollSpell);
+}
+
+void TinyH3MBuilder::writeQuestBody(TinyH3MWriter & w, const Quest & quest) const
+{
+	// readQuest reads a single int8 missionId then dispatches per-type. NONE
+	// returns immediately; everything else falls through to lastDay + 3 strings.
+	w.writeInt8(static_cast<int8_t>(quest.kind));
+	if(quest.kind == EQuestMission::NONE)
+		return;
+
+	switch(quest.kind)
+	{
+		case EQuestMission::PRIMARY_SKILL:
+			for(int i = 0; i < 4; ++i)
+				w.writeUInt8(quest.primarySkills[i]);
+			break;
+
+		case EQuestMission::LEVEL:
+			w.writeUInt32(quest.heroLevel);
+			break;
+
+		case EQuestMission::ARTIFACT:
+			w.writeUInt8(static_cast<uint8_t>(quest.artifacts.size()));
+			for(ArtifactID art : quest.artifacts)
+				w.writeArtifact(art);          // 1 byte ROE, 2 bytes AB+
+			// HOTA5+ trailing scroll spell not emitted (builder is non-HOTA).
+			break;
+
+		case EQuestMission::ARMY:
+			w.writeUInt8(static_cast<uint8_t>(quest.creatures.size()));
+			for(const auto & stack : quest.creatures)
+			{
+				w.writeCreature(stack.first);  // 1 byte ROE, 2 bytes AB+
+				w.writeUInt16(stack.second);
+			}
+			break;
+
+		case EQuestMission::RESOURCES:
+			for(int i = 0; i < 7; ++i)
+				w.writeUInt32(quest.resources[i]);
+			break;
+
+		case EQuestMission::HERO:
+			w.writeHero(quest.hero);
+			break;
+
+		case EQuestMission::PLAYER:
+			w.writePlayer(quest.player);
+			break;
+
+		default:
+			throw std::runtime_error("TinyH3MBuilder: mission kind "
+				+ std::to_string(static_cast<int>(quest.kind)) + " not implemented");
+	}
+
+	w.writeInt32(-1);                          // lastDay = no timeout
+	w.writeBaseString(std::string());          // firstVisit
+	w.writeBaseString(std::string());          // nextVisit
+	w.writeBaseString(std::string());          // completed
+}
+
+void TinyH3MBuilder::writeRewardBody(TinyH3MWriter & w, const SeerReward & reward) const
+{
+	w.writeInt8(static_cast<int8_t>(reward.kind));
+	switch(reward.kind)
+	{
+		case SeerReward::Kind::NOTHING:
+			break;
+		case SeerReward::Kind::EXPERIENCE:
+		case SeerReward::Kind::MANA:
+			w.writeUInt32(reward.amount);
+			break;
+		case SeerReward::Kind::RESOURCES:
+			w.writeGameResID(reward.resourceType);
+			w.writeUInt32(reward.resourceAmount);
+			break;
 	}
 }
 

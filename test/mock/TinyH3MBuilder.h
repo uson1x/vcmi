@@ -12,6 +12,7 @@
 
 #include "../../lib/GameConstants.h"
 #include "../../lib/int3.h"
+#include "../../lib/mapObjects/CQuest.h"
 #include "../../lib/mapping/MapFormat.h"
 #include "../../lib/mapping/MapDifficulty.h"
 
@@ -19,6 +20,41 @@ namespace TinyH3M
 {
 
 class TinyH3MWriter;
+
+/// Quest mission spec consumed by .questGuard(...) / .seerHut(...). Construct via
+/// the Mission* factories below; only fields appropriate to `kind` are read at
+/// emit time. KILL_HERO / KILL_CREATURE are intentionally absent — they require
+/// cross-object wire-identifier references the builder does not yet expose.
+struct Quest
+{
+	EQuestMission                                kind = EQuestMission::NONE;
+	std::vector<ArtifactID>                      artifacts;       // ARTIFACT
+	std::vector<std::pair<CreatureID, uint16_t>> creatures;       // ARMY (creature + count)
+	std::array<uint32_t, 7>                      resources{};     // RESOURCES (per-resource amount)
+	std::array<uint8_t, 4>                       primarySkills{}; // PRIMARY_SKILL (attack, defense, spell power, knowledge)
+	uint32_t                                     heroLevel = 0;   // LEVEL
+	HeroTypeID                                   hero;            // HERO
+	PlayerColor                                  player = PlayerColor::NEUTRAL; // PLAYER
+};
+
+/// Seer hut reward. NONE-mission seer huts do not read a reward, so RewardKind
+/// is only consulted when the mission is non-NONE.
+struct SeerReward
+{
+	// Underlying byte values match ESeerHutRewardType in MapFormatH3M.cpp.
+	enum class Kind : uint8_t
+	{
+		NOTHING    = 0,
+		EXPERIENCE = 1,
+		MANA       = 2,
+		RESOURCES  = 5,
+	};
+
+	Kind      kind           = Kind::NOTHING;
+	uint32_t  amount         = 0;             // EXPERIENCE, MANA
+	GameResID resourceType;                   // RESOURCES
+	uint32_t  resourceAmount = 0;             // RESOURCES
+};
 
 /// Fluent API for building .h3m binary streams in test code.
 ///
@@ -48,6 +84,16 @@ public:
 	/// RANDOM_TOWN template on first call. No garrison, standard fort, no events.
 	TinyH3MBuilder & randomTown(const int3 & pos, PlayerColor owner);
 
+	// ---- heroes --------------------------------------------------------
+
+	/// Place a fixed hero of the given type. All optional fields (name, experience,
+	/// secondary skills, garrison, biography, custom spells, primary skills, ...)
+	/// are emitted as "default" so the hero gets the engine's standard loadout.
+	TinyH3MBuilder & hero(const int3 & pos, HeroTypeID type, PlayerColor owner);
+
+	/// Place a random hero owned by `owner`. Type is resolved at game start.
+	TinyH3MBuilder & randomHero(const int3 & pos, PlayerColor owner);
+
 	// ---- wanderer objects ----------------------------------------------
 
 	/// Monster stack on the adventure map. `character` is 0..4 (compliant..savage).
@@ -58,6 +104,9 @@ public:
 
 	/// Specific artifact pickup.
 	TinyH3MBuilder & artifact(const int3 & pos, ArtifactID artifact);
+
+	/// Spell scroll pickup containing the given spell.
+	TinyH3MBuilder & scroll(const int3 & pos, SpellID spell);
 
 	// ---- quest objects -------------------------------------------------
 
@@ -70,11 +119,32 @@ public:
 	/// Border Gate (pathfinder-passable variant) checking for the matching keymaster colour.
 	TinyH3MBuilder & borderGate(const int3 & pos, int color);
 
-	/// Quest Guard with NONE mission (always accepts). Mission customisation TBD.
-	TinyH3MBuilder & questGuard(const int3 & pos);
+	/// Quest Guard. With the default-constructed Quest{} the mission is NONE
+	/// (always accepts); pass one of the Mission* factories to require a hero to
+	/// satisfy the mission before passing.
+	TinyH3MBuilder & questGuard(const int3 & pos, Quest mission = {});
 
-	/// Seer Hut with NONE mission (always accepts). Mission/reward customisation TBD.
-	TinyH3MBuilder & seerHut(const int3 & pos);
+	/// Seer Hut. With default-constructed Quest{} no mission is required and the
+	/// reward is ignored. With a real mission, the reward kind controls what the
+	/// hero receives on completion.
+	TinyH3MBuilder & seerHut(const int3 & pos, Quest mission = {}, SeerReward reward = {});
+
+	// ---- mission factories (for .questGuard / .seerHut) -----------------
+
+	static Quest missionArtifacts(std::vector<ArtifactID> artifacts);
+	static Quest missionArmy(std::vector<std::pair<CreatureID, uint16_t>> stacks);
+	static Quest missionResources(std::array<uint32_t, 7> amounts);
+	static Quest missionPrimarySkills(uint8_t attack, uint8_t defense, uint8_t spellPower, uint8_t knowledge);
+	static Quest missionLevel(uint32_t level);
+	static Quest missionHero(HeroTypeID hero);
+	static Quest missionPlayer(PlayerColor player);
+
+	// ---- seer-hut reward factories --------------------------------------
+
+	static SeerReward rewardNothing();
+	static SeerReward rewardExperience(uint32_t amount);
+	static SeerReward rewardMana(uint32_t amount);
+	static SeerReward rewardResource(GameResID resource, uint32_t amount);
 
 	// ---- output ---------------------------------------------------------
 
@@ -103,6 +173,10 @@ private:
 		uint16_t       monsterCount      = 0;
 		int8_t         monsterCharacter  = 0;
 		uint32_t       resourceAmount    = 0;
+		HeroTypeID     heroType;            // HERO / RANDOM_HERO
+		SpellID        scrollSpell;         // SPELL_SCROLL
+		Quest          quest;               // QUEST_GUARD / SEER_HUT
+		SeerReward     reward;              // SEER_HUT (only consumed when quest is non-NONE)
 	};
 
 	// Internal helper: register a (id, subid) template in the table if not already there;
@@ -124,6 +198,15 @@ private:
 	void writeObjectTemplates(TinyH3MWriter & w) const;
 	void writeObjects(TinyH3MWriter & w) const;
 	void writeEvents(TinyH3MWriter & w) const;
+
+	void writeHeroBody(TinyH3MWriter & w, const ObjectSpec & obj) const;
+	void writeScrollBody(TinyH3MWriter & w, const ObjectSpec & obj) const;
+	/// Emits the missionId byte, mission-type-specific payload, lastDay and the
+	/// three localized-text strings. NONE missions emit only the missionId byte.
+	void writeQuestBody(TinyH3MWriter & w, const Quest & quest) const;
+	/// Emits 1 byte rewardKind + payload. Caller must only invoke when the
+	/// preceding mission was non-NONE — NONE missions skip the reward block.
+	void writeRewardBody(TinyH3MWriter & w, const SeerReward & reward) const;
 
 	EMapFormat     format;
 	int            sideLength = 36;

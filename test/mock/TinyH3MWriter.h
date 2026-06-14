@@ -62,6 +62,9 @@ public:
 	void writeTerrain(TerrainId v);
 	void writeRoad(RoadId v);
 	void writeRiver(RiverId v);
+	void writeSpell(SpellID v);     // 1 byte, NONE sentinel = features.spellIdentifierInvalid
+	void writeSpell32(SpellID v);   // 4 bytes; used by spell scrolls
+	void writeGameResID(GameResID v); // 1 signed byte
 
 	// ---- bitmasks -------------------------------------------------------
 

@@ -165,6 +165,27 @@ void TinyH3MWriter::writeRiver(RiverId v)
 	writeInt8(static_cast<int8_t>(v.getNum()));
 }
 
+void TinyH3MWriter::writeSpell(SpellID v)
+{
+	if(v == SpellID::NONE || v.getNum() < 0)
+		writeUInt8(static_cast<uint8_t>(features.spellIdentifierInvalid));
+	else
+		writeUInt8(static_cast<uint8_t>(v.getNum()));
+}
+
+void TinyH3MWriter::writeSpell32(SpellID v)
+{
+	if(v == SpellID::NONE || v.getNum() < 0)
+		writeInt32(static_cast<int32_t>(features.spellIdentifierInvalid));
+	else
+		writeInt32(v.getNum());
+}
+
+void TinyH3MWriter::writeGameResID(GameResID v)
+{
+	writeInt8(static_cast<int8_t>(v.getNum()));
+}
+
 // ---- bitmasks ----------------------------------------------------------
 
 template<class Identifier>
