@@ -91,6 +91,13 @@ void QuestTest::grantResources(PlayerColor player, GameResID which, int amount)
 	it->second.resources[which] += amount;
 }
 
+void QuestTest::markObjectDestroyed(PlayerColor player, ObjectInstanceID target)
+{
+	auto it = gameState->players.find(player);
+	ASSERT_NE(it, gameState->players.end()) << "Player " << player.getNum() << " not initialised";
+	it->second.destroyedObjects.insert(target);
+}
+
 void QuestTest::visit(CGHeroInstance * hero, CGObjectInstance * obj)
 {
 	ASSERT_NE(hero, nullptr);

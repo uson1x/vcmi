@@ -127,6 +127,12 @@ public:
 	// netpack pipeline because no one is observing pre-test state changes.
 	void grantResources(PlayerColor player, GameResID which, int amount);
 
+	// Mark `target` as destroyed by `player`. Mutates
+	// PlayerState::destroyedObjects directly — the slot CQuest::checkQuest
+	// consults for kill-quest target resolution. Avoids simulating an entire
+	// adventure-map battle just to flip the destroyed flag.
+	void markObjectDestroyed(PlayerColor player, ObjectInstanceID target);
+
 	// Trigger onHeroVisit directly. Pathfinding is bypassed; for tests that
 	// must exercise blockVisit / passableFor, drive moveHero through the
 	// netpack pipeline instead.
