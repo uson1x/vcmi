@@ -48,7 +48,9 @@ set(test_SRCS
 
 		quest/QuestTest.cpp
 		quest/QuestAssertions.cpp
+		quest/QuestScenarios.cpp
 		quest/CQuestLoaderTest.cpp
+		quest/CQuestScenariosSmokeTest.cpp
 
 		netpacks/NetPackFixture.cpp
 
@@ -126,6 +128,7 @@ set(test_HEADERS
 
 		quest/QuestTest.h
 		quest/QuestAssertions.h
+		quest/QuestScenarios.h
 )
 
 if(ENABLE_BATTLE_AI)
