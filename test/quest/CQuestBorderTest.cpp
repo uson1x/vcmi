@@ -17,19 +17,9 @@
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CQuest.h"
 
-// Phase 2.4 — border-guard / border-gate / keymaster runtime tests.
-//
-// CGKeymasterTent::onHeroVisit sends a ChangeObjectVisitors pack via
-// sendAndApply, which (a) flows through GameEventCallbackMock unmodified and
-// (b) is handled by GameStatePackVisitor::visitChangeObjectVisitors against
-// PlayerState::visitedObjectsGlobal. That means the visit() helper alone is
-// enough to drive the "after keymaster" half of these tests — no extra
-// packet-forwarder wiring needed beyond what Phase 0 already shipped.
-//
-// AddQuest-emit / dialog-answer / removeObject tests
-// (Keymaster_FirstVisit_doesNotEmitAddQuest, BorderGuard_AfterKeymaster_*)
-// land alongside the 0.4 pass that captures AddQuest packs and routes
-// removeObject through the gameState apply pipeline.
+// The H3 key-and-gate puzzle as seen by the player: keymaster tents grant
+// access, border gates block until the right colour is held, border guards
+// can be torn down on demand.
 
 using namespace QuestScenarios;
 
@@ -37,9 +27,8 @@ class QuestBorderTest : public QuestTest {};
 
 TEST_F(QuestBorderTest, BorderGate_BeforeKeymaster_passableForFalse)
 {
-	// CGBorderGate::passableFor(color) returns wasMyColorVisited(color),
-	// which reads PlayerState::visitedObjectsGlobal. Without a keymaster
-	// visit that set is empty, so the gate should refuse every colour.
+	// A border gate is impassable until the player has visited the matching
+	// keymaster.
 	auto s = questBorderGate();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -50,9 +39,8 @@ TEST_F(QuestBorderTest, BorderGate_BeforeKeymaster_passableForFalse)
 
 TEST_F(QuestBorderTest, BorderGate_AfterKeymaster_passableForTrue)
 {
-	// Drive the keymaster visit, then re-check the gate. CGKeymasterTent
-	// sends VISITOR_ADD_PLAYER for its own (id, subID) tuple, which is
-	// exactly the slot CGKeys::wasMyColorVisited consults.
+	// Once a hero visits the matching keymaster, the border gate of that
+	// colour becomes passable for the player.
 	auto s = questBorderGate();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -73,10 +61,8 @@ TEST_F(QuestBorderTest, BorderGate_AfterKeymaster_passableForTrue)
 
 TEST_F(QuestBorderTest, BorderGate_NeverRemoved)
 {
-	// Border gate is the "pathfinder-passable variant" — visiting the
-	// matching keymaster should make it passable, but the gate object itself
-	// stays on the map indefinitely (in contrast to border guard, which the
-	// hero can choose to demolish on visit).
+	// A border gate stays on the map after being unlocked — heroes walk
+	// through it but it never disappears (unlike a border guard).
 	auto s = questBorderGate();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -93,9 +79,8 @@ TEST_F(QuestBorderTest, BorderGate_NeverRemoved)
 
 TEST_F(QuestBorderTest, Keymaster_FirstVisit_marksColorVisited)
 {
-	// Direct verification of the visitedObjectsGlobal mutation that drives
-	// border-gate/border-guard passability. Pre-visit the set lacks the
-	// keymaster entry; post-visit it contains it.
+	// Visiting a keymaster tent grants the visiting player the matching key
+	// (recorded in the per-player "visited keymasters" set).
 	auto s = questBorderGate();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -116,10 +101,8 @@ TEST_F(QuestBorderTest, Keymaster_FirstVisit_marksColorVisited)
 
 TEST_F(QuestBorderTest, Keymaster_SecondVisit_doesNotErrorOut)
 {
-	// Re-visiting an already-visited keymaster should be a no-op on
-	// visitedObjectsGlobal (set semantics) and not crash. Captures the
-	// regression "second visit attempts to re-insert and explodes on a
-	// state-machine assertion".
+	// Re-visiting an already-visited keymaster is harmless — no crash and
+	// the player still owns the key.
 	auto s = questBorderGate();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -138,9 +121,8 @@ TEST_F(QuestBorderTest, Keymaster_SecondVisit_doesNotErrorOut)
 
 TEST_F(QuestBorderTest, Keymaster_FirstVisit_doesNotEmitAddQuest)
 {
-	// Keymaster tents are not quest objects (no CQuest, no quest-log entry).
-	// First visit must emit zero AddQuest packets; only InfoWindow(19) plus
-	// the ChangeObjectVisitors mutation handled in earlier tests.
+	// Keymaster tents don't show up in the player's quest log — they pop a
+	// "you found the tent" message and that's it.
 	auto s = questKeymasterTent();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -162,11 +144,8 @@ TEST_F(QuestBorderTest, Keymaster_FirstVisit_doesNotEmitAddQuest)
 
 TEST_F(QuestBorderTest, Keymaster_SecondVisit_showsAlreadyVisitedText)
 {
-	// First visit emits the "you found the tent" infoWindow (txt_id=19),
-	// second visit emits the "you've already been here" infoWindow (txt_id=20).
-	// We assert two InfoWindow captures after two visits — the actual text
-	// IDs flow through MetaString resolution which is too brittle for a
-	// runtime assertion at this layer.
+	// Re-visiting a keymaster shows a distinct "you've already been here"
+	// message rather than the original discovery message.
 	auto s = questKeymasterTent();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -186,9 +165,9 @@ TEST_F(QuestBorderTest, Keymaster_SecondVisit_showsAlreadyVisitedText)
 
 TEST_F(QuestBorderTest, BorderGuard_BeforeKeymaster_blocksAndEmitsAddQuest)
 {
-	// Pre-keymaster border-guard visit emits one InfoWindow (txt 18) plus one
-	// AddQuest. No BlockingDialog yet — the prompt only appears once the
-	// player has the matching key.
+	// Visiting a border guard before having its key adds the quest to the
+	// player's log and tells them what they need, but doesn't offer to remove
+	// the guard.
 	auto s = questBorderGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -207,8 +186,8 @@ TEST_F(QuestBorderTest, BorderGuard_BeforeKeymaster_blocksAndEmitsAddQuest)
 
 TEST_F(QuestBorderTest, BorderGuard_AfterKeymaster_promptsRemovalDialog)
 {
-	// Visit keymaster first, then border guard: the guard sees
-	// wasMyColorVisited==true and switches to the BlockingDialog path.
+	// Once the player has the matching key, visiting the border guard pops
+	// a "tear it down?" prompt.
 	auto s = questBorderGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -235,10 +214,8 @@ TEST_F(QuestBorderTest, BorderGuard_AfterKeymaster_promptsRemovalDialog)
 
 TEST_F(QuestBorderTest, BorderGuard_AnsweredYes_removesObject)
 {
-	// Visit keymaster, then visit border guard, then answer "yes" to the
-	// removal prompt. CGBorderGuard::blockingDialogAnswered sends RemoveObject
-	// — which the mock now routes through gameState->apply. After the apply
-	// the slot at the border-guard position is empty.
+	// Answering "yes" to the tear-it-down prompt removes the border guard
+	// from the map.
 	auto s = questBorderGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 

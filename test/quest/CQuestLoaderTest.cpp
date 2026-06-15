@@ -19,17 +19,9 @@
 #include "../../lib/mapObjects/MiscObjects.h"
 #include "../../lib/mapObjects/army/CStackBasicDescriptor.h"
 
-// Phase 2.1 — loader → CQuest/Limiter structural tests. One per scenario in
-// QuestScenarios that fits SOD format. HOTA-format scenarios (hero class,
-// reach date, repeatable) and the cross-format placeholder kill-quest tests
-// will land alongside their respective Phase 4 follow-ups.
-//
-// Each test:
-//   1. Builds the scenario inline via QuestScenarios::xxx().
-//   2. Loads it through QuestTest::startWithMap (TinyH3M -> CMapLoaderH3M).
-//   3. Locates the produced CGSeerHut / CGQuestGuard by position.
-//   4. Asserts the produced CQuest::mission matches the expected Limiter
-//      via EXPECT_QUEST_MISSION (per-field diff messages on mismatch).
+// What survives the .h3m → CQuest mapping pipeline. Each test loads a SOD
+// scenario and asserts the resulting CQuest::mission matches the limiter the
+// scenario asked for.
 
 using namespace QuestScenarios;
 
@@ -37,15 +29,6 @@ class QuestLoaderTest : public QuestTest {};
 
 namespace
 {
-// Test-side mirror of the IDs hard-coded inside QuestScenarios.cpp. Kept in
-// sync manually — if either side changes the matching loader test will fail
-// immediately rather than passing silently against the wrong identifier.
-constexpr int kHeroChristian      = 6;
-constexpr int kHeroTyris          = 7;
-constexpr int kCreatureGriffin    = 4;
-constexpr int kArtifactSash       = 68;
-constexpr int kArtifactHelm       = 36;
-
 template<class T>
 const T * expectAt(const QuestTest & f, const int3 & pos)
 {
@@ -71,7 +54,7 @@ TEST_F(QuestLoaderTest, QuestSeerArtifact_loadsArtifactLimiter)
 
 TEST_F(QuestLoaderTest, QuestSeerArtifactAssembled_loadsArtifactLimiter)
 {
-	auto s = seerArtifactAssembled();
+	auto s = seerArtifactAssembledInBackpack();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
 
@@ -168,10 +151,8 @@ TEST_F(QuestLoaderTest, QuestSeerPrimarySkill_loadsPrimaryLimiter)
 
 TEST_F(QuestLoaderTest, QuestSeerKillCreature_loadsKillTarget)
 {
-	// Kill-creature missions store the wire identifier in killTarget, resolved
-	// to an ObjectInstanceID by afterRead. EXPECT_QUEST_MISSION's KILL_CREATURE
-	// branch checks the slot is populated; this test additionally verifies the
-	// resolved target points at the actual monster placed by the scenario.
+	// killTarget should resolve to the specific monster the scenario placed,
+	// not just any ObjectInstanceID.
 	auto s = seerKillCreature();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	const auto * seer    = expectAt<CGSeerHut>     (*this, s.questPos);
@@ -206,9 +187,6 @@ TEST_F(QuestLoaderTest, QuestSeerTimeout_loadsLastDay)
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
 
-	// Timeout scenario uses a trivial 1-wood limiter — the loader-side check
-	// is the lastDay slot, which Phase 2.2 will exercise in the runtime
-	// expiry test.
 	ExpectedMission expected;
 	expected.kind                                = EQuestMission::RESOURCES;
 	expected.limiter.resources[GameResID::WOOD]  = 1;
@@ -218,10 +196,8 @@ TEST_F(QuestLoaderTest, QuestSeerTimeout_loadsLastDay)
 
 TEST_F(QuestLoaderTest, QuestGuard_loadsLimiterAndRemoveObject)
 {
-	// scenarioQuestGuard() places a quest guard demanding 1000 wood. The
-	// loader builds a CGQuestGuard (distinct dynamic type from CGSeerHut)
-	// with a ResourceLimiter — the "and removeObject" half of the name is the
-	// runtime acceptance flow, validated in Phase 2.3.
+	// CGQuestGuard is its own dynamic type, distinct from the CGSeerHut it
+	// inherits from. The "and removeObject" half is exercised by QuestGuardTest.
 	auto s = questGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	const auto * guard = expectAt<CGQuestGuard>(*this, s.questPos);

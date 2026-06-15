@@ -98,21 +98,15 @@ testing::AssertionResult playersMatch(const Rewardable::Limiter & a, const Rewar
 void expectQuestMission(const CQuest & actual, const ExpectedMission & expected,
                         const char * file, int line)
 {
-	// Source-pin every failure to the call site so tests can be navigated
-	// from the IDE / test runner output.
+	// Pin failures to the calling test for IDE / runner navigation.
 	::testing::ScopedTrace trace(file, line, "EXPECT_QUEST_MISSION");
 
 	if(actual.lastDay != expected.lastDay)
 		ADD_FAILURE() << "lastDay: expected " << expected.lastDay << ", actual " << actual.lastDay;
 
-	// Limiter comparison is gated per-field on what the mission kind populates.
-	// Rationale: a plain `Limiter == Limiter` would also work (default-constructed
-	// Limiters agree on every field, and the SOD loader only writes the
-	// mission-specific one), but it produces uninformative "Limiter mismatch"
-	// failures with no hint about which field disagreed. Per-field comparison
-	// produces a readable diff. Trade-off: if a future regression makes the
-	// loader populate a field outside the mission-specific one, this helper
-	// will not flag it.
+	// Per-field comparison instead of `Limiter == Limiter`: produces a readable
+	// "which field disagreed" diff. Trade-off: a regression that populates a
+	// field outside the mission's expected slot would slip through unnoticed.
 	switch(expected.kind)
 	{
 		case EQuestMission::ARTIFACT:
@@ -138,14 +132,12 @@ void expectQuestMission(const CQuest & actual, const ExpectedMission & expected,
 			break;
 		case EQuestMission::KILL_CREATURE:
 		case EQuestMission::KILL_HERO:
-			// killTarget is resolved from a wire identifier in afterRead, so
-			// the test only asserts the slot got populated (the specific id
-			// depends on object load order and is not stable across edits).
+			// Only assert the slot is populated; the specific resolved id is
+			// not stable across object-list edits.
 			EXPECT_TRUE(actual.killTarget.hasValue())
 				<< "kill-quest target was not resolved to an ObjectInstanceID";
 			break;
 		case EQuestMission::NONE:
-			// Nothing to compare beyond lastDay.
 			break;
 		default:
 			ADD_FAILURE() << "expectQuestMission: mission kind "

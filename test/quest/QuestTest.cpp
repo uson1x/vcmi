@@ -17,14 +17,11 @@
 
 void QuestTest::startWithMap(TinyH3M::TinyH3MBuilder builder)
 {
-	// Materialise the scenario, hand the bytes to a fresh map service. The
-	// gameState init pipeline calls back into mapLoaded() once the CMap is
-	// constructed.
 	auto bytes = builder.build();
 	mapService = std::make_unique<MapServiceTinyH3M>(std::move(bytes), this);
 
 	StartInfo si;
-	si.mapname    = "tiny";   // arbitrary; the service ignores the ResourcePath.
+	si.mapname    = "tiny";
 	si.difficulty = 0;
 	si.mode       = EStartMode::NEW_GAME;
 
@@ -51,9 +48,7 @@ void QuestTest::startWithMap(TinyH3M::TinyH3MBuilder builder)
 
 	ASSERT_NE(map, nullptr) << "gameState init did not populate the CMap";
 
-	// Wire the event mock's object lookup. The mock needs an IGameInfoCallback
-	// for takeCreatures and any future override that resolves ObjectInstanceIDs
-	// (CGameState is itself an IGameInfoCallback subclass).
+	// Needed by mock takeCreatures and any override that resolves ObjectInstanceIDs.
 	gameEventCallback->setGameInfoCallback(gameState.get());
 }
 
@@ -112,10 +107,8 @@ void QuestTest::visit(CGHeroInstance * hero, CGObjectInstance * obj)
 
 void QuestTest::answerDialog(CGHeroInstance * hero, int32_t answer)
 {
-	// Consume the most recent BlockingDialog from the mock's queue and drive
-	// the caller's blockingDialogAnswered with the chosen answer. Pop-from-back
-	// because nested visits push dialogs in LIFO order and the answer should
-	// resolve the innermost prompt first.
+	// Pop the most recent (innermost) dialog first — nested visits enqueue
+	// in LIFO order and an answer should resolve the topmost prompt.
 	auto & queue = gameEventCallback->blockingDialogs;
 	ASSERT_FALSE(queue.empty())
 		<< "answerDialog called with no pending BlockingDialog — visit must enqueue one first";
@@ -134,10 +127,8 @@ void QuestTest::overrideSettingBeforeInit(EGameSettings option, bool value)
 
 void QuestTest::advanceDays(int days)
 {
-	// Lightweight: bump the day counter directly. CQuest::lastDay is compared
-	// against gameState->day, which is enough to drive the timeout path. Tests
-	// requiring per-turn side effects (creature growth, hero replenishment)
-	// will need a more involved nextDay() helper later.
+	// Bumps the day counter directly — does not run per-turn side effects
+	// (creature growth, hero replenishment). Good enough for lastDay tests.
 	ASSERT_GE(days, 0);
 	gameState->day += static_cast<ui32>(days);
 }

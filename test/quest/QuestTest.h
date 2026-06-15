@@ -32,13 +32,10 @@ class CGHeroInstance;
 class CGSeerHut;
 class CGQuestGuard;
 
-/// Base fixture for quest behaviour tests. Construct a scenario inline with
-/// TinyH3MBuilder, hand it to startWithMap(), then drive interactions through
-/// the helpers below. Mirrors the structure of GameStateTest but swaps the
-/// JSON-archive MapServiceMock for the in-memory MapServiceTinyH3M.
-///
-/// Object lookup is position- or type-based — the builder does not set the
-/// instance-name index, so tests reference what they placed by coordinate.
+/// Test fixture for scenarios involving quest objects. Loads a TinyH3MBuilder
+/// scenario into a live CGameState and exposes helpers for the everyday
+/// quest-flow steps: locate a placed object, walk a hero onto it, answer
+/// dialogs, hand out resources, advance the calendar.
 class QuestTest : public ::testing::Test, public ServerCallback, public MapListener
 {
 public:
@@ -85,9 +82,8 @@ public:
 	{
 		EXPECT_EQ(this->map, nullptr);
 		this->map = loadedMap;
-		// Apply pre-init setting overrides while CMap exists but before
-		// gameState->init walks the object list and calls initObj/init on
-		// each one (where some settings get baked into per-object state).
+		// Game-setting overrides must land before initObj runs, since some
+		// settings get baked into per-object state at init time.
 		for(const auto & ov : pendingOverrides)
 		{
 			JsonNode node;
@@ -98,16 +94,16 @@ public:
 
 	// ---- public test API ------------------------------------------------
 
-	/// Build the scenario, register the bytes with a fresh MapServiceTinyH3M,
-	/// and run the gameState init pipeline. After this returns the `map`
-	/// pointer and `gameState` are ready for assertions.
+	/// Load a scenario into a fresh game. After this returns, `map` and
+	/// `gameState` are populated and ready for assertions.
 	void startWithMap(TinyH3M::TinyH3MBuilder builder);
 
-	// Position-based lookup. Returns the first object whose anchor matches.
+	/// Find the object placed on a given tile.
 	CGObjectInstance * findObjectAt(const int3 & pos) const;
 	CGHeroInstance   * findHeroAt(const int3 & pos) const;
 	CGHeroInstance   * findHeroByOwner(PlayerColor owner) const;
 
+	/// Find the first / all object(s) of a given dynamic type on the map.
 	template<class T>
 	T * findFirst() const
 	{
@@ -131,37 +127,25 @@ public:
 		return out;
 	}
 
-	// Grant resources to a player after load. The builder does not set
-	// starting resources, so any "hero brings 1000 gold" test seeds them
-	// here. Implemented by direct PlayerState mutation — bypasses the
-	// netpack pipeline because no one is observing pre-test state changes.
+	/// Top up a player's stockpile (scenarios start with empty resources).
 	void grantResources(PlayerColor player, GameResID which, int amount);
 
-	// Mark `target` as destroyed by `player`. Mutates
-	// PlayerState::destroyedObjects directly — the slot CQuest::checkQuest
-	// consults for kill-quest target resolution. Avoids simulating an entire
-	// adventure-map battle just to flip the destroyed flag.
+	/// Pretend the player has just defeated `target` — short-circuits the
+	/// adventure-map battle that a kill-quest would normally require.
 	void markObjectDestroyed(PlayerColor player, ObjectInstanceID target);
 
-	// Trigger onHeroVisit directly. Pathfinding is bypassed; for tests that
-	// must exercise blockVisit / passableFor, drive moveHero through the
-	// netpack pipeline instead.
+	/// Walk `hero` onto `obj` and trigger its visit handler.
 	void visit(CGHeroInstance * hero, CGObjectInstance * obj);
 
-	// Drive the most recent BlockingDialog. Throws if there is none queued
-	// (consumeBlockingDialog returns false).
+	/// Answer the most recent BlockingDialog. Fails if none is pending.
 	void answerDialog(CGHeroInstance * hero, int32_t answer);
 
-	// Advance the in-game day counter by `days`. Used by lastDay / reach-date
-	// tests. The implementation calls gameState->onTurn() that many times.
+	/// Advance the in-game calendar by `days`.
 	void advanceDays(int days);
 
-	// Schedule an EGameSettings override to apply before any object's init()
-	// runs. Some settings (e.g. MAP_OBJECTS_H3_BUG_QUEST_TAKES_ENTIRE_ARMY)
-	// are baked into per-object state during init — toggling them post-init
-	// changes the engine's runtime read of the setting but not the stale
-	// mission.hasExtraCreatures field on objects that were already inited.
-	// Call this BEFORE startWithMap.
+	/// Override a game setting before any object's init runs. Must be called
+	/// before startWithMap — some settings bake into per-object state at init,
+	/// so a post-startWithMap override won't take effect on already-built objects.
 	void overrideSettingBeforeInit(EGameSettings option, bool value);
 
 protected:

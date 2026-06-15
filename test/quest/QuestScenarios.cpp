@@ -19,8 +19,8 @@ using TinyH3M::TinyH3MBuilder;
 namespace
 {
 
-// Stable map size + a fresh, named SOD builder with red active. Every scenario
-// starts from this skeleton; per-scenario differences live below it.
+// Fresh, named SOD builder with red active. Every scenario starts from this
+// skeleton; per-scenario differences live below it.
 TinyH3MBuilder fresh(const std::string & name)
 {
 	TinyH3MBuilder b(EMapFormat::SOD);
@@ -29,21 +29,6 @@ TinyH3MBuilder fresh(const std::string & name)
 	 .playerActive(PlayerColor(0));
 	return b;
 }
-
-// Common identifiers used across scenarios. Deliberately avoid id 0/1 for
-// hero/creature: zero-initialised state has historically been misread as
-// "Orrin" or "pikeman", masking field-initialisation bugs. Using ids that no
-// default-constructed value would land on makes those failures visible.
-constexpr int kHeroChristian   = 6;   // knight class, like Orrin but non-zero
-constexpr int kHeroTyris       = 7;   // second knight for two-hero scenarios
-constexpr int kCreatureGriffin     = 4;
-constexpr int kCreatureRoyalGriffin = 5;
-constexpr int kCreatureImp     = 42;
-
-constexpr int kArtifactCentaurAxe   = 7;   // generic small artifact for misc tests
-constexpr int kArtifactSash         = 68;  // ambassadorsSash
-constexpr int kArtifactAngelicAlly  = 129; // angelicAlliance (combo) — sword slot
-constexpr int kArtifactHelm         = 36;  // helmOfHeavenlyEnlightenment (component of alliance)
 
 } // namespace
 
@@ -62,22 +47,33 @@ Scenario seerArtifact()
 	return s;
 }
 
-Scenario seerArtifactAssembled()
+Scenario seerArtifactAssembledInBackpack()
 {
 	Scenario s;
 	s.heroPos  = {5, 5, 0};
 	s.questPos = {10, 10, 0};
-	s.builder  = fresh("SeerArtifactAssembled");
-	// Angelic Alliance lives in the backpack rather than its natural RIGHT_HAND
-	// equipped slot. Rewardable::Limiter::heroAllowed only walks combined-
-	// artifact parts when the assembly is in the backpack; if the assembly is
-	// worn, the limiter sees only the assembly's own type id and refuses the
-	// "bring me the Helm component" mission. Putting it in backpack still
-	// exercises completeQuest's disassemble + take path, which is the point of
-	// this scenario.
+	s.builder  = fresh("SeerArtifactAssembledInBackpack");
 	s.builder
 		.hero(s.heroPos, HeroTypeID(kHeroChristian), PlayerColor(0))
 			.heroBackpack({ArtifactID(kArtifactAngelicAlly)})
+		.seerHut(s.questPos,
+			TinyH3MBuilder::missionArtifacts({ArtifactID(kArtifactHelm)}),
+			TinyH3MBuilder::rewardExperience(1000));
+	return s;
+}
+
+Scenario seerArtifactAssembledEquipped()
+{
+	Scenario s;
+	s.heroPos  = {5, 5, 0};
+	s.questPos = {10, 10, 0};
+	s.builder  = fresh("SeerArtifactAssembledEquipped");
+	// Angelic Alliance worn in its sword-slot. Component slot for the Sword of
+	// Judgement is RIGHT_HAND; equipping the assembly there makes the engine
+	// expand it across all the component slots automatically.
+	s.builder
+		.hero(s.heroPos, HeroTypeID(kHeroChristian), PlayerColor(0))
+			.heroEquipped({{ArtifactPosition::RIGHT_HAND, ArtifactID(kArtifactAngelicAlly)}})
 		.seerHut(s.questPos,
 			TinyH3MBuilder::missionArtifacts({ArtifactID(kArtifactHelm)}),
 			TinyH3MBuilder::rewardExperience(1000));

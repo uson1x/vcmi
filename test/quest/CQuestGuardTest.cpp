@@ -17,10 +17,8 @@
 #include "../../lib/mapObjects/CGObjectInstance.h"
 #include "../../lib/mapObjects/CQuest.h"
 
-// Phase 2.3 — quest-guard runtime tests. Visit-driven flows
-// (SatisfiedQuest_removesObjectOnAcceptance, RepeatVisit_failedRequirements,
-// BringResources_takesResources) need the dialog-answer + take-resources +
-// removeObject packet wiring from a later 0.4 pass.
+// Quest guard behaviour as seen from the adventure map: blocking pathfinding,
+// accepting payment, and getting torn down.
 
 using namespace QuestScenarios;
 
@@ -28,27 +26,23 @@ class QuestGuardTest : public QuestTest {};
 
 TEST_F(QuestGuardTest, PassableForColor_alwaysFalse)
 {
-	// CGQuestGuard::passableFor(color) returns getQuest().isCompleted. A
-	// freshly loaded quest guard has isCompleted=false irrespective of which
-	// colour asks, so adventure-map pathfinding never lets a hero walk
-	// through it directly.
+	// A fresh quest guard blocks every colour — no hero can walk through it
+	// before the quest is completed.
 	auto s = questGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
 	const auto * guard = findObjectAt(s.questPos);
 	ASSERT_NE(guard, nullptr);
-	for(int c = 0; c < 8; ++c)
+	for(int c = 0; c < PlayerColor::PLAYER_LIMIT_I; ++c)
 		EXPECT_FALSE(guard->passableFor(PlayerColor(c)))
 			<< "quest guard should block colour " << c << " before completion";
 }
 
 TEST_F(QuestGuardTest, BlockVisitIsTrue_cannotBeTriggeredFromOnTop)
 {
-	// Quest Guard sets blockVisit=true in its initObj. The adventure map
-	// pathfinder distinguishes "blocking visitable" tiles from "visitable"
-	// tiles so a hero standing on the guard cannot trigger it implicitly.
-	// We only assert the flag here — the actual pathfinder integration is
-	// covered by the engine's own tests.
+	// A hero stepping on the guard tile gets the quest dialog instead of
+	// silently triggering it; this asserts the underlying "blocked visitable"
+	// flag the pathfinder consults.
 	auto s = questGuardBlockVisit();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -59,11 +53,8 @@ TEST_F(QuestGuardTest, BlockVisitIsTrue_cannotBeTriggeredFromOnTop)
 
 TEST_F(QuestGuardTest, BringResources_takesResources)
 {
-	// Scenario asks for 1000 wood; test grants 1500 post-load on top of the
-	// starting bonus (~30 wood for a knight on difficulty 0 — not pinned down,
-	// so the assertion measures the delta, not an absolute). Quest-guard
-	// subID=0 sets reward.removeObject=true in its init, so the guard object
-	// is gone after acceptance — see SatisfiedQuest_removesObjectOnAcceptance.
+	// Paying a "bring 1000 wood" guard deducts exactly 1000 wood from the
+	// player's stockpile.
 	auto s = questGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
@@ -89,9 +80,8 @@ TEST_F(QuestGuardTest, BringResources_takesResources)
 
 TEST_F(QuestGuardTest, SatisfiedQuest_removesObjectOnAcceptance)
 {
-	// CGQuestGuard::init sets reward.removeObject=true when subID==0. The
-	// TinyH3MBuilder emits subID=0 for every quest guard, so accepting a
-	// satisfied mission removes the guard from the map.
+	// After the player pays a quest guard, the guard disappears from the map
+	// so the hero can pass through.
 	auto s = questGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	grantResources(PlayerColor(0), GameResID(GameResID::WOOD), 1500);
@@ -111,9 +101,8 @@ TEST_F(QuestGuardTest, SatisfiedQuest_removesObjectOnAcceptance)
 
 TEST_F(QuestGuardTest, RepeatVisit_failedRequirements_showsNextVisitText)
 {
-	// First visit on an unsatisfied limiter emits AddQuest + first-visit
-	// InfoWindow. Second visit while still unsatisfied emits the
-	// next-visit InfoWindow only (no second AddQuest).
+	// When the player can't yet pay, a re-visit shows the "still need more"
+	// message but doesn't re-add the quest to the log.
 	auto s = questGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	// Deliberately do not grant resources — limiter fails.

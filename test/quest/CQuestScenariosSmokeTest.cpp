@@ -17,12 +17,9 @@
 #include "../../lib/mapObjects/CQuest.h"
 #include "../../lib/mapObjects/MiscObjects.h"
 
-// Phase 1 smoke harness: every scenario factory is exercised end-to-end via
-// startWithMap so a malformed builder (e.g. wire layout drifted from the
-// loader) trips immediately rather than waiting for the Phase 2 test that
-// actually asserts on its quest state. The assertion bar is intentionally
-// shallow — "loaded a non-null CMap, found the expected object at the
-// expected position". Deep behaviour goes in CQuest*Test.cpp files later.
+// Smoke harness: every QuestScenarios factory should produce a map that loads
+// and contains the objects it promised. Catches builder/loader drift early —
+// a wire-format regression here will trip every other test downstream.
 
 using namespace QuestScenarios;
 
@@ -48,9 +45,17 @@ TEST_F(QuestScenariosSmokeTest, SeerArtifact)
 	expectObjectAt<CGSeerHut>(s.questPos);
 }
 
-TEST_F(QuestScenariosSmokeTest, SeerArtifactAssembled)
+TEST_F(QuestScenariosSmokeTest, SeerArtifactAssembledInBackpack)
 {
-	auto s = seerArtifactAssembled();
+	auto s = seerArtifactAssembledInBackpack();
+	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
+	expectObjectAt<CGHeroInstance>(s.heroPos);
+	expectObjectAt<CGSeerHut>(s.questPos);
+}
+
+TEST_F(QuestScenariosSmokeTest, SeerArtifactAssembledEquipped)
+{
+	auto s = seerArtifactAssembledEquipped();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	expectObjectAt<CGHeroInstance>(s.heroPos);
 	expectObjectAt<CGSeerHut>(s.questPos);
