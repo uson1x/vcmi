@@ -17,6 +17,7 @@
 #include "../mock/mock_IGameEventCallback.h"
 
 #include "../../lib/CRandomGenerator.h"
+#include "../../lib/IGameSettings.h"
 #include "../../lib/StartInfo.h"
 #include "../../lib/callback/GameRandomizer.h"
 #include "../../lib/filesystem/ResourcePath.h"
@@ -84,6 +85,15 @@ public:
 	{
 		EXPECT_EQ(this->map, nullptr);
 		this->map = loadedMap;
+		// Apply pre-init setting overrides while CMap exists but before
+		// gameState->init walks the object list and calls initObj/init on
+		// each one (where some settings get baked into per-object state).
+		for(const auto & ov : pendingOverrides)
+		{
+			JsonNode node;
+			node.Bool() = ov.value;
+			loadedMap->overrideGameSetting(ov.option, node);
+		}
 	}
 
 	// ---- public test API ------------------------------------------------
@@ -146,7 +156,22 @@ public:
 	// tests. The implementation calls gameState->onTurn() that many times.
 	void advanceDays(int days);
 
+	// Schedule an EGameSettings override to apply before any object's init()
+	// runs. Some settings (e.g. MAP_OBJECTS_H3_BUG_QUEST_TAKES_ENTIRE_ARMY)
+	// are baked into per-object state during init — toggling them post-init
+	// changes the engine's runtime read of the setting but not the stale
+	// mission.hasExtraCreatures field on objects that were already inited.
+	// Call this BEFORE startWithMap.
+	void overrideSettingBeforeInit(EGameSettings option, bool value);
+
 protected:
+	struct PendingOverride
+	{
+		EGameSettings option;
+		bool          value;
+	};
+	std::vector<PendingOverride> pendingOverrides;
+
 	std::shared_ptr<CGameState>            gameState;
 	std::shared_ptr<GameEventCallbackMock> gameEventCallback;
 	std::unique_ptr<MapServiceTinyH3M>     mapService;

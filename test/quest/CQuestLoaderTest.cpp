@@ -44,7 +44,7 @@ constexpr int kHeroChristian      = 6;
 constexpr int kHeroTyris          = 7;
 constexpr int kCreatureGriffin    = 4;
 constexpr int kArtifactSash       = 68;
-constexpr int kArtifactHelm       = 130;
+constexpr int kArtifactHelm       = 36;
 
 template<class T>
 const T * expectAt(const QuestTest & f, const int3 & pos)

@@ -50,6 +50,11 @@ void QuestTest::startWithMap(TinyH3M::TinyH3MBuilder builder)
 	gameState->init(mapService.get(), &si, randomizer, progressTracker, false);
 
 	ASSERT_NE(map, nullptr) << "gameState init did not populate the CMap";
+
+	// Wire the event mock's object lookup. The mock needs an IGameInfoCallback
+	// for takeCreatures and any future override that resolves ObjectInstanceIDs
+	// (CGameState is itself an IGameInfoCallback subclass).
+	gameEventCallback->setGameInfoCallback(gameState.get());
 }
 
 CGObjectInstance * QuestTest::findObjectAt(const int3 & pos) const
@@ -105,12 +110,26 @@ void QuestTest::visit(CGHeroInstance * hero, CGObjectInstance * obj)
 	obj->onHeroVisit(*gameEventCallback, hero);
 }
 
-void QuestTest::answerDialog(CGHeroInstance * /*hero*/, int32_t /*answer*/)
+void QuestTest::answerDialog(CGHeroInstance * hero, int32_t answer)
 {
-	// Wired once GameEventCallbackMock starts queueing blocking dialogs (0.4).
-	// Left as a stub so test files can refer to it without compilation error;
-	// the first test that needs it will drive the queue consumption here.
-	FAIL() << "answerDialog: blocking-dialog queue is not wired yet (see Phase 0.4)";
+	// Consume the most recent BlockingDialog from the mock's queue and drive
+	// the caller's blockingDialogAnswered with the chosen answer. Pop-from-back
+	// because nested visits push dialogs in LIFO order and the answer should
+	// resolve the innermost prompt first.
+	auto & queue = gameEventCallback->blockingDialogs;
+	ASSERT_FALSE(queue.empty())
+		<< "answerDialog called with no pending BlockingDialog — visit must enqueue one first";
+	auto captured = queue.back();
+	queue.pop_back();
+
+	ASSERT_NE(captured.caller, nullptr)
+		<< "captured BlockingDialog has no caller; blockingDialogAnswered would have nothing to dispatch on";
+	captured.caller->blockingDialogAnswered(*gameEventCallback, hero, answer);
+}
+
+void QuestTest::overrideSettingBeforeInit(EGameSettings option, bool value)
+{
+	pendingOverrides.push_back({option, value});
 }
 
 void QuestTest::advanceDays(int days)

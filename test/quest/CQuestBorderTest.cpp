@@ -135,3 +135,126 @@ TEST_F(QuestBorderTest, Keymaster_SecondVisit_doesNotErrorOut)
 	ASSERT_NE(tent, nullptr);
 	EXPECT_TRUE(tent->wasMyColorVisited(PlayerColor(0)));
 }
+
+TEST_F(QuestBorderTest, Keymaster_FirstVisit_doesNotEmitAddQuest)
+{
+	// Keymaster tents are not quest objects (no CQuest, no quest-log entry).
+	// First visit must emit zero AddQuest packets; only InfoWindow(19) plus
+	// the ChangeObjectVisitors mutation handled in earlier tests.
+	auto s = questKeymasterTent();
+	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
+
+	auto * hero      = findHeroAt(s.heroPos);
+	auto * keymaster = findObjectAt(s.questPos);
+	ASSERT_NE(hero, nullptr);
+	ASSERT_NE(keymaster, nullptr);
+
+	ASSERT_TRUE(gameEventCallback->addedQuests.empty()) << "preconditions";
+
+	visit(hero, keymaster);
+
+	EXPECT_TRUE(gameEventCallback->addedQuests.empty())
+		<< "keymaster visit unexpectedly emitted " << gameEventCallback->addedQuests.size()
+		<< " AddQuest packet(s)";
+	// And the visit still rendered the standard first-visit message:
+	EXPECT_FALSE(gameEventCallback->infoWindows.empty());
+}
+
+TEST_F(QuestBorderTest, Keymaster_SecondVisit_showsAlreadyVisitedText)
+{
+	// First visit emits the "you found the tent" infoWindow (txt_id=19),
+	// second visit emits the "you've already been here" infoWindow (txt_id=20).
+	// We assert two InfoWindow captures after two visits — the actual text
+	// IDs flow through MetaString resolution which is too brittle for a
+	// runtime assertion at this layer.
+	auto s = questKeymasterTent();
+	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
+
+	auto * hero      = findHeroAt(s.heroPos);
+	auto * keymaster = findObjectAt(s.questPos);
+	ASSERT_NE(hero, nullptr);
+	ASSERT_NE(keymaster, nullptr);
+
+	visit(hero, keymaster);
+	const size_t windowsAfterFirst = gameEventCallback->infoWindows.size();
+	ASSERT_GE(windowsAfterFirst, 1u);
+
+	visit(hero, keymaster);
+	EXPECT_GT(gameEventCallback->infoWindows.size(), windowsAfterFirst)
+		<< "second visit should produce its own already-visited dialog";
+}
+
+TEST_F(QuestBorderTest, BorderGuard_BeforeKeymaster_blocksAndEmitsAddQuest)
+{
+	// Pre-keymaster border-guard visit emits one InfoWindow (txt 18) plus one
+	// AddQuest. No BlockingDialog yet — the prompt only appears once the
+	// player has the matching key.
+	auto s = questBorderGuard();
+	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
+
+	auto * hero        = findHeroAt(s.heroPos);
+	auto * borderGuard = findObjectAt(s.questPos2);
+	ASSERT_NE(hero,        nullptr);
+	ASSERT_NE(borderGuard, nullptr);
+
+	visit(hero, borderGuard);
+
+	EXPECT_EQ(gameEventCallback->addedQuests.size(), 1u);
+	EXPECT_FALSE(gameEventCallback->infoWindows.empty());
+	EXPECT_TRUE(gameEventCallback->blockingDialogs.empty())
+		<< "border guard should not prompt for removal before the keymaster has been visited";
+}
+
+TEST_F(QuestBorderTest, BorderGuard_AfterKeymaster_promptsRemovalDialog)
+{
+	// Visit keymaster first, then border guard: the guard sees
+	// wasMyColorVisited==true and switches to the BlockingDialog path.
+	auto s = questBorderGuard();
+	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
+
+	auto * hero        = findHeroAt(s.heroPos);
+	auto * keymaster   = findObjectAt(s.questPos);
+	auto * borderGuard = findObjectAt(s.questPos2);
+	ASSERT_NE(hero,        nullptr);
+	ASSERT_NE(keymaster,   nullptr);
+	ASSERT_NE(borderGuard, nullptr);
+
+	visit(hero, keymaster);
+	// Drop everything queued by the keymaster visit so the assertion is
+	// scoped to the border-guard interaction.
+	gameEventCallback->addedQuests.clear();
+	gameEventCallback->infoWindows.clear();
+
+	visit(hero, borderGuard);
+
+	EXPECT_TRUE(gameEventCallback->addedQuests.empty())
+		<< "AddQuest must be emitted on the *first* border-guard visit only";
+	EXPECT_EQ(gameEventCallback->blockingDialogs.size(), 1u)
+		<< "border guard should prompt the player whether to demolish";
+}
+
+TEST_F(QuestBorderTest, BorderGuard_AnsweredYes_removesObject)
+{
+	// Visit keymaster, then visit border guard, then answer "yes" to the
+	// removal prompt. CGBorderGuard::blockingDialogAnswered sends RemoveObject
+	// — which the mock now routes through gameState->apply. After the apply
+	// the slot at the border-guard position is empty.
+	auto s = questBorderGuard();
+	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
+
+	auto * hero        = findHeroAt(s.heroPos);
+	auto * keymaster   = findObjectAt(s.questPos);
+	auto * borderGuard = findObjectAt(s.questPos2);
+	ASSERT_NE(hero,        nullptr);
+	ASSERT_NE(keymaster,   nullptr);
+	ASSERT_NE(borderGuard, nullptr);
+
+	visit(hero, keymaster);
+	visit(hero, borderGuard);
+
+	ASSERT_EQ(gameEventCallback->blockingDialogs.size(), 1u);
+	answerDialog(hero, /*yes*/ 1);
+
+	EXPECT_EQ(findObjectAt(s.questPos2), nullptr)
+		<< "border guard should be removed from the map after a positive answer";
+}

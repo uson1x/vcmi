@@ -43,7 +43,7 @@ constexpr int kCreatureImp     = 42;
 constexpr int kArtifactCentaurAxe   = 7;   // generic small artifact for misc tests
 constexpr int kArtifactSash         = 68;  // ambassadorsSash
 constexpr int kArtifactAngelicAlly  = 129; // angelicAlliance (combo) — sword slot
-constexpr int kArtifactHelm         = 130; // helmOfHeavenlyEnlightenment (component of alliance)
+constexpr int kArtifactHelm         = 36;  // helmOfHeavenlyEnlightenment (component of alliance)
 
 } // namespace
 
@@ -68,11 +68,16 @@ Scenario seerArtifactAssembled()
 	s.heroPos  = {5, 5, 0};
 	s.questPos = {10, 10, 0};
 	s.builder  = fresh("SeerArtifactAssembled");
-	// Angelic Alliance primary slot is RIGHT_HAND. Equipping it anywhere else (e.g. TORSO) makes the
-	// artifact handler reject the slot during loadArtifactsOfHero and the piece silently removed instead of attaching to the hero.
+	// Angelic Alliance lives in the backpack rather than its natural RIGHT_HAND
+	// equipped slot. Rewardable::Limiter::heroAllowed only walks combined-
+	// artifact parts when the assembly is in the backpack; if the assembly is
+	// worn, the limiter sees only the assembly's own type id and refuses the
+	// "bring me the Helm component" mission. Putting it in backpack still
+	// exercises completeQuest's disassemble + take path, which is the point of
+	// this scenario.
 	s.builder
 		.hero(s.heroPos, HeroTypeID(kHeroChristian), PlayerColor(0))
-			.heroEquipped({{ArtifactPosition(ArtifactPosition::RIGHT_HAND), ArtifactID(kArtifactAngelicAlly)}})
+			.heroBackpack({ArtifactID(kArtifactAngelicAlly)})
 		.seerHut(s.questPos,
 			TinyH3MBuilder::missionArtifacts({ArtifactID(kArtifactHelm)}),
 			TinyH3MBuilder::rewardExperience(1000));
