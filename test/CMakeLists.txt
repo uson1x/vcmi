@@ -51,6 +51,7 @@ set(test_SRCS
 		quest/QuestScenarios.cpp
 		quest/CQuestLoaderTest.cpp
 		quest/CQuestScenariosSmokeTest.cpp
+		quest/CQuestSeerTest.cpp
 
 		netpacks/NetPackFixture.cpp
 
