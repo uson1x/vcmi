@@ -14,12 +14,9 @@
 #include "../../lib/mapObjects/CQuest.h"
 #include "../../lib/rewardable/Limiter.h"
 
-/// What a test expects a loaded CQuest to look like. Populate only the
-/// limiter fields the mission actually uses — the assertion helper ignores
-/// fields not associated with `kind`.
+/// What a test expects a loaded CQuest to look like.
 struct ExpectedMission
 {
-	EQuestMission       kind     = EQuestMission::NONE;
 	Rewardable::Limiter limiter;
 	int                 lastDay  = -1;
 
@@ -32,9 +29,6 @@ struct ExpectedMission
 namespace quest_test
 {
 
-/// Assert a quest matches `expected`. On mismatch emits a non-fatal failure
-/// pinned to `file:line` with a per-field diff naming the limiter slot that
-/// disagreed.
 void expectQuestMission(const CQuest & actual, const ExpectedMission & expected,
                         const char * file, int line);
 

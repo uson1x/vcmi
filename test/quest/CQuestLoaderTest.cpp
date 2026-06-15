@@ -25,185 +25,127 @@
 
 using namespace QuestScenarios;
 
-class QuestLoaderTest : public QuestTest {};
-
 namespace
 {
-template<class T>
-const T * expectAt(const QuestTest & f, const int3 & pos)
+
+// One row per single-seer scenario: (scenario factory, expected limiter).
+struct LoaderCase
 {
-	auto * obj = const_cast<QuestTest &>(f).findObjectAt(pos);
-	EXPECT_NE(obj, nullptr) << "no object at " << pos.toString();
-	const auto * casted = dynamic_cast<const T *>(obj);
-	EXPECT_NE(casted, nullptr) << "object at " << pos.toString() << " has unexpected dynamic type";
-	return casted;
+	const char *                          name;
+	Scenario                            (*factory)();
+	std::function<Rewardable::Limiter()>  expected;
+	int                                   lastDay = -1;
+};
+
+Rewardable::Limiter limArtifact(ArtifactID id)
+{
+	Rewardable::Limiter l;
+	l.artifacts.push_back(id);
+	return l;
 }
+
+Rewardable::Limiter limCreatures(CreatureID id, int count)
+{
+	Rewardable::Limiter l;
+	l.creatures.emplace_back(id, count);
+	return l;
+}
+
+Rewardable::Limiter limResources(GameResID which, int amount)
+{
+	Rewardable::Limiter l;
+	l.resources[which] = amount;
+	return l;
+}
+
 } // namespace
 
-TEST_F(QuestLoaderTest, QuestSeerArtifact_loadsArtifactLimiter)
+class QuestLoaderTest : public QuestTest, public ::testing::WithParamInterface<LoaderCase> {};
+
+TEST_P(QuestLoaderTest, LoadsExpectedMission)
 {
-	auto s = seerArtifact();
+	auto s = GetParam().factory();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
+	const auto * seer = expectAt<CGSeerHut>(s.questPos);
 
 	ExpectedMission expected;
-	expected.kind = EQuestMission::ARTIFACT;
-	expected.limiter.artifacts.push_back(ArtifactID(kArtifactSash));
+	expected.limiter = GetParam().expected();
+	expected.lastDay = GetParam().lastDay;
 	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
 }
 
-TEST_F(QuestLoaderTest, QuestSeerArtifactAssembled_loadsArtifactLimiter)
-{
-	auto s = seerArtifactAssembledInBackpack();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
+INSTANTIATE_TEST_SUITE_P(All, QuestLoaderTest, ::testing::Values(
+	LoaderCase{"SeerArtifact",          seerArtifact,                    [] { return limArtifact (kArtifactSash); }},
+	LoaderCase{"SeerArtifactAssembled", seerArtifactAssembledInBackpack, [] { return limArtifact (kArtifactHelm); }},
+	LoaderCase{"SeerArmy",              seerArmy,                        [] { return limCreatures(kCreatureGriffin, 5); }},
+	LoaderCase{"SeerResources",         seerResources,
+		[] {
+			Rewardable::Limiter l;
+			l.resources[GameResID::WOOD] = 5;
+			l.resources[GameResID::GOLD] = 5000;
+			return l;
+		}},
+	LoaderCase{"SeerHero",              seerHero,
+		[] { Rewardable::Limiter l; l.heroes.push_back(kHeroTyris); return l; }},
+	LoaderCase{"SeerPlayer",            seerPlayer,
+		[] { Rewardable::Limiter l; l.players.push_back(PlayerColor(1));        return l; }},
+	LoaderCase{"SeerTimeout",           seerTimeout,
+		[] { return limResources(GameResID(GameResID::WOOD), 1); }, /*lastDay=*/7},
+	LoaderCase{"QuestGuard",            questGuard,
+		[] { return limResources(GameResID(GameResID::WOOD), 1000); }}
+),
+[](const ::testing::TestParamInfo<LoaderCase> & info) { return std::string(info.param.name); });
 
-	ExpectedMission expected;
-	expected.kind = EQuestMission::ARTIFACT;
-	expected.limiter.artifacts.push_back(ArtifactID(kArtifactHelm));
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
-}
+// Two-seer scenarios don't fit the single-row table cleanly — kept as TEST_F.
 
-TEST_F(QuestLoaderTest, QuestSeerArmy_loadsCreatureLimiter)
-{
-	auto s = seerArmy();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
+class QuestLoaderTwoSeerTest : public QuestTest {};
 
-	ExpectedMission expected;
-	expected.kind = EQuestMission::ARMY;
-	expected.limiter.creatures.emplace_back(CreatureID(kCreatureGriffin), 5);
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
-}
-
-TEST_F(QuestLoaderTest, QuestSeerResources_loadsResourceLimiter)
-{
-	auto s = seerResources();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
-
-	ExpectedMission expected;
-	expected.kind = EQuestMission::RESOURCES;
-	expected.limiter.resources[GameResID::WOOD] = 5;
-	expected.limiter.resources[GameResID::GOLD] = 5000;
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
-}
-
-TEST_F(QuestLoaderTest, QuestSeerHero_loadsHeroLimiter)
-{
-	auto s = seerHero();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
-
-	ExpectedMission expected;
-	expected.kind = EQuestMission::HERO;
-	expected.limiter.heroes.push_back(HeroTypeID(kHeroTyris));
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
-}
-
-TEST_F(QuestLoaderTest, QuestSeerPlayer_loadsPlayerLimiter)
-{
-	auto s = seerPlayer();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
-
-	ExpectedMission expected;
-	expected.kind = EQuestMission::PLAYER;
-	expected.limiter.players.push_back(PlayerColor(1));
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
-}
-
-TEST_F(QuestLoaderTest, QuestSeerLevel_loadsLevelLimiter)
+TEST_F(QuestLoaderTwoSeerTest, SeerLevel)
 {
 	auto s = seerLevel();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * easy = expectAt<CGSeerHut>(*this, s.questPos);
-	const auto * hard = expectAt<CGSeerHut>(*this, s.questPos2);
 
-	ExpectedMission expectedEasy;
-	expectedEasy.kind             = EQuestMission::LEVEL;
-	expectedEasy.limiter.heroLevel = 3;
-	EXPECT_QUEST_MISSION(easy->getQuest(), expectedEasy);
+	ExpectedMission easyExp;
+	easyExp.limiter.heroLevel = 3;
+	ExpectedMission hardExp;
+	hardExp.limiter.heroLevel = 10;
 
-	ExpectedMission expectedHard;
-	expectedHard.kind             = EQuestMission::LEVEL;
-	expectedHard.limiter.heroLevel = 10;
-	EXPECT_QUEST_MISSION(hard->getQuest(), expectedHard);
+	EXPECT_QUEST_MISSION(expectAt<CGSeerHut>(s.questPos )->getQuest(), easyExp);
+	EXPECT_QUEST_MISSION(expectAt<CGSeerHut>(s.questPos2)->getQuest(), hardExp);
 }
 
-TEST_F(QuestLoaderTest, QuestSeerPrimarySkill_loadsPrimaryLimiter)
+TEST_F(QuestLoaderTwoSeerTest, SeerPrimarySkill)
 {
 	auto s = seerPrimarySkill();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * easy = expectAt<CGSeerHut>(*this, s.questPos);
-	const auto * hard = expectAt<CGSeerHut>(*this, s.questPos2);
 
-	ExpectedMission expectedEasy;
-	expectedEasy.kind            = EQuestMission::PRIMARY_SKILL;
-	expectedEasy.limiter.primary = {3, 0, 0, 0};
-	EXPECT_QUEST_MISSION(easy->getQuest(), expectedEasy);
+	ExpectedMission easyExp;
+	easyExp.limiter.primary = {3, 0, 0, 0};
+	ExpectedMission hardExp;
+	hardExp.limiter.primary = {10, 0, 0, 0};
 
-	ExpectedMission expectedHard;
-	expectedHard.kind            = EQuestMission::PRIMARY_SKILL;
-	expectedHard.limiter.primary = {10, 0, 0, 0};
-	EXPECT_QUEST_MISSION(hard->getQuest(), expectedHard);
+	EXPECT_QUEST_MISSION(expectAt<CGSeerHut>(s.questPos )->getQuest(), easyExp);
+	EXPECT_QUEST_MISSION(expectAt<CGSeerHut>(s.questPos2)->getQuest(), hardExp);
 }
 
-TEST_F(QuestLoaderTest, QuestSeerKillCreature_loadsKillTarget)
+// Kill-quest tests assert the resolved ObjectInstanceID matches the placed object.
+
+class QuestLoaderKillTest : public QuestTest {};
+
+TEST_F(QuestLoaderKillTest, SeerKillCreature)
 {
-	// killTarget should resolve to the specific monster the scenario placed,
-	// not just any ObjectInstanceID.
 	auto s = seerKillCreature();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer    = expectAt<CGSeerHut>     (*this, s.questPos);
-	const auto * monster = expectAt<CGCreature>    (*this, s.secondHeroPos);
-	ASSERT_NE(seer,    nullptr);
-	ASSERT_NE(monster, nullptr);
-
-	ExpectedMission expected;
-	expected.kind = EQuestMission::KILL_CREATURE;
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
+	const auto * seer    = expectAt<CGSeerHut> (s.questPos);
+	const auto * monster = expectAt<CGCreature>(s.secondHeroPos);
 	EXPECT_EQ(seer->getQuest().killTarget, monster->id);
 }
 
-TEST_F(QuestLoaderTest, QuestSeerKillHero_loadsKillTarget)
+TEST_F(QuestLoaderKillTest, SeerKillHero)
 {
 	auto s = seerKillHero();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer   = expectAt<CGSeerHut>     (*this, s.questPos);
-	const auto * target = expectAt<CGHeroInstance>(*this, s.secondHeroPos);
-	ASSERT_NE(seer,   nullptr);
-	ASSERT_NE(target, nullptr);
-
-	ExpectedMission expected;
-	expected.kind = EQuestMission::KILL_HERO;
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
+	const auto * seer   = expectAt<CGSeerHut>     (s.questPos);
+	const auto * target = expectAt<CGHeroInstance>(s.secondHeroPos);
 	EXPECT_EQ(seer->getQuest().killTarget, target->id);
-}
-
-TEST_F(QuestLoaderTest, QuestSeerTimeout_loadsLastDay)
-{
-	auto s = seerTimeout();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * seer = expectAt<CGSeerHut>(*this, s.questPos);
-
-	ExpectedMission expected;
-	expected.kind                                = EQuestMission::RESOURCES;
-	expected.limiter.resources[GameResID::WOOD]  = 1;
-	expected.lastDay                             = 7;
-	EXPECT_QUEST_MISSION(seer->getQuest(), expected);
-}
-
-TEST_F(QuestLoaderTest, QuestGuard_loadsLimiterAndRemoveObject)
-{
-	// CGQuestGuard is its own dynamic type, distinct from the CGSeerHut it
-	// inherits from. The "and removeObject" half is exercised by QuestGuardTest.
-	auto s = questGuard();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-	const auto * guard = expectAt<CGQuestGuard>(*this, s.questPos);
-
-	ExpectedMission expected;
-	expected.kind                                = EQuestMission::RESOURCES;
-	expected.limiter.resources[GameResID::WOOD]  = 1000;
-	EXPECT_QUEST_MISSION(guard->getQuest(), expected);
 }

@@ -43,7 +43,7 @@ TEST_F(QuestGuardTest, BlockVisitIsTrue_cannotBeTriggeredFromOnTop)
 	// A hero stepping on the guard tile gets the quest dialog instead of
 	// silently triggering it; this asserts the underlying "blocked visitable"
 	// flag the pathfinder consults.
-	auto s = questGuardBlockVisit();
+	auto s = questGuard();
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 
 	const auto * guard = findObjectAt(s.questPos);

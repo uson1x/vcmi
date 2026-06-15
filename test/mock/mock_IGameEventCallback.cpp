@@ -44,17 +44,11 @@ void GameEventCallbackMock::setObjPropertyID(ObjectInstanceID objid, ObjProperty
 	sendAndApply(sob);
 }
 
-void GameEventCallbackMock::setRewardableObjectConfiguration(ObjectInstanceID, const Rewardable::Configuration &) {}
-void GameEventCallbackMock::setRewardableObjectConfiguration(ObjectInstanceID, BuildingID, const Rewardable::Configuration &) {}
-
 void GameEventCallbackMock::showInfoDialog(InfoWindow * iw)
 {
 	assert(iw);
 	infoWindows.push_back(*iw);
 }
-
-void GameEventCallbackMock::changeSpells(const CGHeroInstance *, bool, const std::set<SpellID> &) {}
-void GameEventCallbackMock::setResearchedSpells(const CGTownInstance *, int, const std::vector<SpellID> &, bool) {}
 
 bool GameEventCallbackMock::removeObject(const CGObjectInstance * obj, const PlayerColor & initiator)
 {
@@ -64,9 +58,6 @@ bool GameEventCallbackMock::removeObject(const CGObjectInstance * obj, const Pla
 	sendAndApply(ro);
 	return true;
 }
-
-void GameEventCallbackMock::createBoat(const int3 &, BoatId, PlayerColor) {}
-void GameEventCallbackMock::setOwner(const CGObjectInstance *, PlayerColor) {}
 
 void GameEventCallbackMock::giveExperience(const CGHeroInstance * hero, TExpType val)
 {
@@ -79,18 +70,11 @@ void GameEventCallbackMock::giveExperience(const CGHeroInstance * hero, TExpType
 	sendAndApply(she);
 }
 
-void GameEventCallbackMock::changePrimSkill(const CGHeroInstance *, PrimarySkill, si64, ChangeValueMode) {}
-void GameEventCallbackMock::changeSecSkill(const CGHeroInstance *, SecondarySkill, int, ChangeValueMode) {}
-
 void GameEventCallbackMock::showBlockingDialog(const IObjectInterface * caller, BlockingDialog * iw)
 {
 	assert(iw);
 	blockingDialogs.push_back({*iw, caller});
 }
-
-void GameEventCallbackMock::showGarrisonDialog(ObjectInstanceID, ObjectInstanceID, bool, const MetaString &) {}
-void GameEventCallbackMock::showTeleportDialog(TeleportDialog *) {}
-void GameEventCallbackMock::showObjectWindow(const CGObjectInstance *, EOpenWindowMode, const CGHeroInstance *, bool) {}
 
 void GameEventCallbackMock::giveResource(PlayerColor player, GameResID which, int val)
 {
@@ -111,9 +95,6 @@ void GameEventCallbackMock::giveResources(PlayerColor player, const ResourceSet 
 	sr.res    = resources;
 	sendAndApply(sr);
 }
-
-void GameEventCallbackMock::giveCreatures(const CGHeroInstance *, const CCreatureSet &) {}
-void GameEventCallbackMock::giveCreatures(const CArmedInstance *, const CGHeroInstance *, const CCreatureSet &, bool) {}
 
 void GameEventCallbackMock::takeCreatures(ObjectInstanceID objid, const std::vector<CStackBasicDescriptor> & creatures, bool forceRemoval)
 {
@@ -179,10 +160,7 @@ bool GameEventCallbackMock::changeStackCount(const StackLocation & sl, TQuantity
 	return true;
 }
 
-bool GameEventCallbackMock::changeStackType(const StackLocation &, const CCreature *) { return false; }
-bool GameEventCallbackMock::insertNewStack(const StackLocation &, const CCreature *, TQuantity) { return false; }
-
-bool GameEventCallbackMock::eraseStack(const StackLocation & sl, bool forceRemoval)
+bool GameEventCallbackMock::eraseStack(const StackLocation & sl, bool /*forceRemoval*/)
 {
 	// Port of CGameHandler::eraseStack minus the COMPLAIN_RET guards — tests
 	// own the scenario, malformed StackLocations would be a bug to fix at the
@@ -194,11 +172,6 @@ bool GameEventCallbackMock::eraseStack(const StackLocation & sl, bool forceRemov
 	return true;
 }
 
-bool GameEventCallbackMock::swapStacks(const StackLocation &, const StackLocation &) { return false; }
-bool GameEventCallbackMock::addToSlot(const StackLocation &, const CCreature *, TQuantity) { return false; }
-void GameEventCallbackMock::tryJoiningArmy(const CArmedInstance *, const CArmedInstance *, bool, bool) {}
-bool GameEventCallbackMock::moveStack(const StackLocation &, const StackLocation &, TQuantity) { return false; }
-
 void GameEventCallbackMock::removeAfterVisit(const ObjectInstanceID & id)
 {
 	// CGameHandler defers the removal until the matching MapObjectVisitQuery
@@ -209,10 +182,6 @@ void GameEventCallbackMock::removeAfterVisit(const ObjectInstanceID & id)
 	sendAndApply(ro);
 }
 
-bool GameEventCallbackMock::giveHeroNewArtifact(const CGHeroInstance *, const ArtifactID &, const ArtifactPosition &) { return false; }
-bool GameEventCallbackMock::giveHeroNewScroll(const CGHeroInstance *, const SpellID &, const ArtifactPosition &) { return false; }
-bool GameEventCallbackMock::putArtifact(const ArtifactLocation &, const ArtifactInstanceID &, std::optional<bool>) { return false; }
-
 void GameEventCallbackMock::removeArtifact(const ArtifactLocation & al)
 {
 	BulkEraseArtifacts ea;
@@ -220,25 +189,6 @@ void GameEventCallbackMock::removeArtifact(const ArtifactLocation & al)
 	ea.posPack.push_back(al.slot);
 	sendAndApply(ea);
 }
-
-bool GameEventCallbackMock::moveArtifact(const PlayerColor &, const ArtifactLocation &, const ArtifactLocation &) { return false; }
-
-void GameEventCallbackMock::heroVisitCastle(const CGTownInstance *, const CGHeroInstance *) {}
-void GameEventCallbackMock::stopHeroVisitCastle(const CGTownInstance *, const CGHeroInstance *) {}
-void GameEventCallbackMock::visitCastleObjects(const CGTownInstance *, const CGHeroInstance *) {}
-void GameEventCallbackMock::startBattle(const CArmedInstance *, const CArmedInstance *, int3, const CGHeroInstance *, const CGHeroInstance *, const BattleLayout &, const CGTownInstance *) {}
-void GameEventCallbackMock::startBattle(const CArmedInstance *, const CArmedInstance *) {}
-bool GameEventCallbackMock::moveHero(ObjectInstanceID, int3, EMovementMode, bool, PlayerColor, const EPathfindingLayer &) { return false; }
-void GameEventCallbackMock::giveHeroBonus(GiveBonus *) {}
-void GameEventCallbackMock::setMovePoints(SetMovePoints *) {}
-void GameEventCallbackMock::setMovePoints(ObjectInstanceID, int) {}
-void GameEventCallbackMock::setManaPoints(ObjectInstanceID, int) {}
-void GameEventCallbackMock::giveHero(ObjectInstanceID, PlayerColor, ObjectInstanceID) {}
-void GameEventCallbackMock::changeObjPos(ObjectInstanceID, int3, const PlayerColor &) {}
-void GameEventCallbackMock::heroExchange(ObjectInstanceID, ObjectInstanceID) {}
-void GameEventCallbackMock::changeFogOfWar(int3, ui32, PlayerColor, ETileVisibility) {}
-void GameEventCallbackMock::changeFogOfWar(const FowTilesType &, PlayerColor, ETileVisibility) {}
-void GameEventCallbackMock::castSpell(const spells::Caster *, SpellID, const int3 &) {}
 
 void GameEventCallbackMock::sendAndApply(CPackForClient & pack)
 {
@@ -255,8 +205,6 @@ void GameEventCallbackMock::sendAndApply(CPackForClient & pack)
 
 	upperCallback->apply(pack);
 }
-
-bool GameEventCallbackMock::isVisitCoveredByAnotherQuery(const CGObjectInstance *, const CGHeroInstance *) { return false; }
 
 vstd::RNG & GameEventCallbackMock::getRandomGenerator()
 {

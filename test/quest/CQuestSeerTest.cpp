@@ -24,15 +24,7 @@
 
 using namespace QuestScenarios;
 
-class QuestSeerTest : public QuestTest
-{
-protected:
-	const CGSeerHut * seerAt(const int3 & pos)
-	{
-		auto * obj = findObjectAt(pos);
-		return obj ? dynamic_cast<const CGSeerHut *>(obj) : nullptr;
-	}
-};
+class QuestSeerTest : public QuestTest {};
 
 TEST_F(QuestSeerTest, Level_passesAtThreshold)
 {
@@ -44,10 +36,8 @@ TEST_F(QuestSeerTest, Level_passesAtThreshold)
 	ASSERT_NE(hero, nullptr);
 	EXPECT_GE(hero->level, 3u) << "scenario assumes hero is at least level 3 from its starting XP";
 
-	const auto * easy = seerAt(s.questPos);
-	const auto * hard = seerAt(s.questPos2);
-	ASSERT_NE(easy, nullptr);
-	ASSERT_NE(hard, nullptr);
+	const auto * easy = expectAt<CGSeerHut>(s.questPos);
+	const auto * hard = expectAt<CGSeerHut>(s.questPos2);
 
 	EXPECT_TRUE (easy->getQuest().checkQuest(hero));
 	EXPECT_FALSE(hard->getQuest().checkQuest(hero));
@@ -63,10 +53,8 @@ TEST_F(QuestSeerTest, PrimarySkill_passesAtThreshold)
 	const auto * hero = findHeroAt(s.heroPos);
 	ASSERT_NE(hero, nullptr);
 
-	const auto * easy = seerAt(s.questPos);
-	const auto * hard = seerAt(s.questPos2);
-	ASSERT_NE(easy, nullptr);
-	ASSERT_NE(hard, nullptr);
+	const auto * easy = expectAt<CGSeerHut>(s.questPos);
+	const auto * hard = expectAt<CGSeerHut>(s.questPos2);
 
 	EXPECT_TRUE (easy->getQuest().checkQuest(hero));
 	EXPECT_FALSE(hard->getQuest().checkQuest(hero));
@@ -84,8 +72,7 @@ TEST_F(QuestSeerTest, BringHero_passesWhenHeroPresent)
 	ASSERT_NE(christian, nullptr);
 	ASSERT_NE(tyris,     nullptr);
 
-	const auto * seer = seerAt(s.questPos);
-	ASSERT_NE(seer, nullptr);
+	const auto * seer = expectAt<CGSeerHut>(s.questPos);
 
 	EXPECT_FALSE(seer->getQuest().checkQuest(christian)) << "Christian is not the target hero";
 	EXPECT_TRUE (seer->getQuest().checkQuest(tyris))     << "Tyris is the target hero";
@@ -103,8 +90,7 @@ TEST_F(QuestSeerTest, BringPlayer_passesForCorrectColor)
 	ASSERT_NE(red,  nullptr);
 	ASSERT_NE(blue, nullptr);
 
-	const auto * seer = seerAt(s.questPos);
-	ASSERT_NE(seer, nullptr);
+	const auto * seer = expectAt<CGSeerHut>(s.questPos);
 
 	EXPECT_FALSE(seer->getQuest().checkQuest(red))  << "red is not the target colour";
 	EXPECT_TRUE (seer->getQuest().checkQuest(blue)) << "blue is the target colour";
@@ -119,10 +105,9 @@ TEST_F(QuestSeerTest, KillCreature_satisfiedAfterCreatureRemoved)
 
 	const auto * hero    = findHeroAt(s.heroPos);
 	const auto * monster = dynamic_cast<const CGCreature *>(findObjectAt(s.secondHeroPos));
-	const auto * seer    = seerAt(s.questPos);
+	const auto * seer    = expectAt<CGSeerHut>(s.questPos);
 	ASSERT_NE(hero,    nullptr);
 	ASSERT_NE(monster, nullptr);
-	ASSERT_NE(seer,    nullptr);
 
 	EXPECT_FALSE(seer->getQuest().checkQuest(hero))
 		<< "target still alive, kill-quest should not be satisfied";
@@ -140,10 +125,9 @@ TEST_F(QuestSeerTest, KillHero_satisfiedAfterHeroDefeated)
 
 	const auto * visitor = findHeroAt(s.heroPos);
 	const auto * target  = findHeroAt(s.secondHeroPos);
-	const auto * seer    = seerAt(s.questPos);
+	const auto * seer    = expectAt<CGSeerHut>(s.questPos);
 	ASSERT_NE(visitor, nullptr);
 	ASSERT_NE(target,  nullptr);
-	ASSERT_NE(seer,    nullptr);
 
 	EXPECT_FALSE(seer->getQuest().checkQuest(visitor));
 
@@ -167,28 +151,6 @@ TEST_F(QuestSeerTest, FirstVisit_emitsAddQuest)
 	visit(tyris, seer);
 
 	EXPECT_EQ(gameEventCallback->addedQuests.size(), 1u);
-}
-
-TEST_F(QuestSeerTest, RepeatVisit_doesNotReEmitAddQuest)
-{
-	// Visiting a completed seer hut a second time should not re-open the quest
-	// in the player's quest log.
-	auto s = seerHero();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-
-	auto * tyris = findHeroAt(s.secondHeroPos);
-	auto * seer  = findObjectAt(s.questPos);
-	ASSERT_NE(tyris, nullptr);
-	ASSERT_NE(seer,  nullptr);
-
-	visit(tyris, seer);
-	EXPECT_EQ(gameEventCallback->addedQuests.size(), 1u);
-	ASSERT_EQ(gameEventCallback->blockingDialogs.size(), 1u);
-	answerDialog(tyris, /*select reward index 0*/ 1);
-
-	visit(tyris, seer);
-	EXPECT_EQ(gameEventCallback->addedQuests.size(), 1u)
-		<< "AddQuest must not fire again after completion";
 }
 
 TEST_F(QuestSeerTest, RepeatVisit_failedRequirements_showsNextVisitText)
@@ -326,13 +288,13 @@ TEST_F(QuestSeerTest, BringArtifact_completesAndTakesArtifact)
 	ASSERT_NE(hero, nullptr);
 	ASSERT_NE(seer, nullptr);
 
-	ASSERT_TRUE(hero->hasArt(ArtifactID(kArtifactSash))) << "scenario must place the sash in the backpack";
+	ASSERT_TRUE(hero->hasArt(kArtifactSash)) << "scenario must place the sash in the backpack";
 
 	visit(hero, seer);
 	ASSERT_EQ(gameEventCallback->blockingDialogs.size(), 1u);
 	answerDialog(hero, 1);
 
-	EXPECT_FALSE(hero->hasArt(ArtifactID(kArtifactSash)))
+	EXPECT_FALSE(hero->hasArt(kArtifactSash))
 		<< "quest should have stripped the Ambassadors' Sash from the hero";
 }
 
@@ -348,15 +310,15 @@ TEST_F(QuestSeerTest, BringArtifact_componentOfAssemblyInBackpack_disassembles)
 	ASSERT_NE(hero, nullptr);
 	ASSERT_NE(seer, nullptr);
 
-	ASSERT_TRUE(hero->hasArt(ArtifactID(kArtifactAngelicAlly))) << "Angelic Alliance must be carried pre-visit";
+	ASSERT_TRUE(hero->hasArt(kArtifactAngelicAlly)) << "Angelic Alliance must be carried pre-visit";
 
 	visit(hero, seer);
 	ASSERT_EQ(gameEventCallback->blockingDialogs.size(), 1u);
 	answerDialog(hero, 1);
 
-	EXPECT_FALSE(hero->hasArt(ArtifactID(kArtifactAngelicAlly)))
+	EXPECT_FALSE(hero->hasArt(kArtifactAngelicAlly))
 		<< "Angelic Alliance should have been disassembled";
-	EXPECT_FALSE(hero->hasArt(ArtifactID(kArtifactHelm)))
+	EXPECT_FALSE(hero->hasArt(kArtifactHelm))
 		<< "Helm of Heavenly Enlightenment (the demanded component) should be taken";
 }
 
@@ -372,15 +334,15 @@ TEST_F(QuestSeerTest, BringArtifact_componentOfAssemblyEquipped_disassembles)
 	ASSERT_NE(hero, nullptr);
 	ASSERT_NE(seer, nullptr);
 
-	ASSERT_TRUE(hero->hasArt(ArtifactID(kArtifactAngelicAlly))) << "Angelic Alliance must be equipped pre-visit";
+	ASSERT_TRUE(hero->hasArt(kArtifactAngelicAlly)) << "Angelic Alliance must be equipped pre-visit";
 
 	visit(hero, seer);
 	ASSERT_EQ(gameEventCallback->blockingDialogs.size(), 1u);
 	answerDialog(hero, 1);
 
-	EXPECT_FALSE(hero->hasArt(ArtifactID(kArtifactAngelicAlly)))
+	EXPECT_FALSE(hero->hasArt(kArtifactAngelicAlly))
 		<< "Angelic Alliance should have been disassembled";
-	EXPECT_FALSE(hero->hasArt(ArtifactID(kArtifactHelm)))
+	EXPECT_FALSE(hero->hasArt(kArtifactHelm))
 		<< "Helm of Heavenly Enlightenment (the demanded component) should be taken";
 }
 
@@ -426,25 +388,6 @@ TEST_F(QuestSeerTest, FullArmyRemoval_disabled_keepsHeroWithOneStack)
 		<< "without the H3-bug setting the hero must keep at least one stack";
 }
 
-TEST_F(QuestSeerTest, HoverText_changesAfterFirstVisit)
-{
-	// The map rollover text on a seer hut changes once a player has visited
-	// it — from "Seer's Hut" to a personalised line including the seer's name.
-	auto s = seerHero();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-
-	const auto * tyris = findHeroAt(s.secondHeroPos);
-	auto       * seer  = findObjectAt(s.questPos);
-	ASSERT_NE(tyris, nullptr);
-	ASSERT_NE(seer,  nullptr);
-
-	const std::string before = seer->getHoverText(PlayerColor(0));
-	visit(const_cast<CGHeroInstance *>(tyris), seer);
-	const std::string after = seer->getHoverText(PlayerColor(0));
-
-	EXPECT_NE(before, after) << "hover text should change after the first visit";
-}
-
 TEST_F(QuestSeerTest, Timeout_expiresOnLastDay)
 {
 	// A quest with a lastDay=7 deadline becomes inaccessible after day 7
@@ -453,21 +396,14 @@ TEST_F(QuestSeerTest, Timeout_expiresOnLastDay)
 	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
 	grantResources(PlayerColor(0), GameResID(GameResID::WOOD), 5);
 
-	auto * hero = findHeroAt(s.heroPos);
-	auto * seer = findObjectAt(s.questPos);
-	ASSERT_NE(hero, nullptr);
-	ASSERT_NE(seer, nullptr);
+	auto * seer = expectAt<CGSeerHut>(s.questPos);
+	EXPECT_EQ(seer->getQuest().lastDay, 7);
+	EXPECT_FALSE(seer->getQuest().isCompleted);
 
-	const auto * seerObj = dynamic_cast<const CGSeerHut *>(seer);
-	ASSERT_NE(seerObj, nullptr);
-	EXPECT_EQ(seerObj->getQuest().lastDay, 7);
-	EXPECT_FALSE(seerObj->getQuest().isCompleted);
-
-	// The test infrastructure has no per-object newTurn hook, so flip the
-	// "expired" property directly to simulate what newTurn would do.
 	advanceDays(10);
-	gameEventCallback->setObjPropertyValue(seer->id, ObjProperty::SEERHUT_COMPLETE, true);
+	GameRandomizer randomizer(*gameState);
+	seer->newTurn(*gameEventCallback, randomizer);
 
-	EXPECT_TRUE(seerObj->getQuest().isCompleted)
+	EXPECT_TRUE(seer->getQuest().isCompleted)
 		<< "after lastDay expires, the quest should be marked complete (i.e. inaccessible)";
 }

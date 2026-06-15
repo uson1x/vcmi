@@ -103,6 +103,18 @@ public:
 	CGHeroInstance   * findHeroAt(const int3 & pos) const;
 	CGHeroInstance   * findHeroByOwner(PlayerColor owner) const;
 
+	/// Locate the object at `pos` and verify it has dynamic type `T`. Fails the
+	/// test if no object is there or the type does not match.
+	template<class T>
+	T * expectAt(const int3 & pos) const
+	{
+		auto * obj = findObjectAt(pos);
+		EXPECT_NE(obj, nullptr) << "no object at " << pos.toString();
+		auto * casted = dynamic_cast<T *>(obj);
+		EXPECT_NE(casted, nullptr) << "object at " << pos.toString() << " has unexpected dynamic type";
+		return casted;
+	}
+
 	/// Find the first / all object(s) of a given dynamic type on the map.
 	template<class T>
 	T * findFirst() const

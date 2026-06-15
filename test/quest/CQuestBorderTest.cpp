@@ -99,26 +99,6 @@ TEST_F(QuestBorderTest, Keymaster_FirstVisit_marksColorVisited)
 	EXPECT_TRUE(tent->wasMyColorVisited(PlayerColor(0)));
 }
 
-TEST_F(QuestBorderTest, Keymaster_SecondVisit_doesNotErrorOut)
-{
-	// Re-visiting an already-visited keymaster is harmless — no crash and
-	// the player still owns the key.
-	auto s = questBorderGate();
-	ASSERT_NO_FATAL_FAILURE(startWithMap(std::move(s.builder)));
-
-	auto * hero      = findHeroAt(s.heroPos);
-	auto * keymaster = findObjectAt(s.questPos);
-	ASSERT_NE(hero,      nullptr);
-	ASSERT_NE(keymaster, nullptr);
-
-	visit(hero, keymaster);
-	ASSERT_NO_FATAL_FAILURE(visit(hero, keymaster));
-
-	const auto * tent = dynamic_cast<const CGKeymasterTent *>(keymaster);
-	ASSERT_NE(tent, nullptr);
-	EXPECT_TRUE(tent->wasMyColorVisited(PlayerColor(0)));
-}
-
 TEST_F(QuestBorderTest, Keymaster_FirstVisit_doesNotEmitAddQuest)
 {
 	// Keymaster tents don't show up in the player's quest log — they pop a

@@ -13,7 +13,6 @@
 
 #include "TinyH3MWriter.h"
 
-#include "../../lib/GameLibrary.h"
 #include "../../lib/VCMIDirs.h"
 #include "../../lib/texts/CLegacyConfigParser.h"
 #include "../../lib/mapping/MapFeaturesH3M.h"
@@ -507,7 +506,6 @@ std::vector<uint8_t> TinyH3MBuilder::build()
 	TinyH3MWriter w;
 	auto features = MapFormatFeaturesH3M::find(format, /*hotaVersion*/ 0);
 	w.setFormatLevel(features);
-	w.setIdentifierRemapper(LIBRARY->mapFormat->getMapping(format));
 
 	writeHeader(w);
 	writeMapOptions(w);

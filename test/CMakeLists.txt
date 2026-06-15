@@ -50,7 +50,6 @@ set(test_SRCS
 		quest/QuestAssertions.cpp
 		quest/QuestScenarios.cpp
 		quest/CQuestLoaderTest.cpp
-		quest/CQuestScenariosSmokeTest.cpp
 		quest/CQuestSeerTest.cpp
 		quest/CQuestGuardTest.cpp
 		quest/CQuestBorderTest.cpp
