@@ -1331,6 +1331,7 @@ void GameStatePackVisitor::visitStartAction(StartAction & pack)
 		switch(pack.ba.actionType)
 		{
 			case EActionType::DEFEND:
+				st->defending = true;
 				st->waiting = false;
 				break;
 			case EActionType::WAIT:
