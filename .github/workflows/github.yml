@@ -890,7 +890,7 @@ jobs:
   draft-release:
     name: Create draft release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [build, windows-installer, upload-source-package, test]
+    needs: [build, windows-installer, upload-source-package]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -923,30 +923,29 @@ jobs:
             name=$(basename "$d")
             case "$name" in
               partial-json-*) continue ;;
-              *-msvc-x64-symbols)   (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-Windows-x64-symbols.zip" .) ;;
-              *-msvc-x86-symbols)   (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-Windows-x86-symbols.zip" .) ;;
-              *-msvc-arm64-symbols) (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-Windows-arm64-symbols.zip" .) ;;
-              *-ios-symbols)        (cd "$d" && zip -qr "$GITHUB_WORKSPACE/release/VCMI-iOS-symbols.zip" .) ;;
+              *-msvc-x64-symbols)   (cd "$d" && zip -qr9 "$GITHUB_WORKSPACE/release/VCMI-Windows-x64-symbols.zip" .) ;;
+              *-msvc-x86-symbols)   (cd "$d" && zip -qr9 "$GITHUB_WORKSPACE/release/VCMI-Windows-x86-symbols.zip" .) ;;
+              *-msvc-arm64-symbols) (cd "$d" && zip -qr9 "$GITHUB_WORKSPACE/release/VCMI-Windows-arm64-symbols.zip" .) ;;
               *)
                 for f in "$d"*; do
                   [ -f "$f" ] || continue
                   case "$(basename "$f")" in
-                    *-intel.dmg)       cp "$f" release/VCMI-macOS-intel.dmg ;;
-                    *-arm.dmg)         cp "$f" release/VCMI-macOS-arm.dmg ;;
-                    *.ipa)             cp "$f" release/VCMI-iOS.ipa ;;
-                    *-x64.zip)         cp "$f" release/VCMI-Windows.zip ;;
-                    *-x64.exe)         cp "$f" release/VCMI-Windows-x64.exe ;;
-                    *-x86.exe)         cp "$f" release/VCMI-Windows-x86.exe ;;
-                    *-arm64.exe)       cp "$f" release/VCMI-Windows-arm64.exe ;;
-                    *-armeabi-v7a.apk) cp "$f" release/VCMI-Android-armeabi-v7a.apk ;;
-                    *-arm64-v8a.apk)   cp "$f" release/VCMI-Android-arm64-v8a.apk ;;
-                    *-x64.apk)         cp "$f" release/VCMI-Android-x86_64.apk ;;
-                    *-armeabi-v7a.aab) cp "$f" release/VCMI-Android-armeabi-v7a.aab ;;
-                    *-arm64-v8a.aab)   cp "$f" release/VCMI-Android-arm64-v8a.aab ;;
-                    *-x64.aab)         cp "$f" release/VCMI-Android-x86_64.aab ;;
-                    *-x86_64.AppImage) cp "$f" release/VCMI-Linux-x64.AppImage ;;
-                    *-arm64.AppImage)  cp "$f" release/VCMI-Linux-arm64.AppImage ;;
-                    release.tar.gz)    cp "$f" release/VCMI-Sources.tar.gz ;;
+                    *-intel.dmg)       mv "$f" release/VCMI-macOS-intel.dmg ;;
+                    *-arm.dmg)         mv "$f" release/VCMI-macOS-arm.dmg ;;
+                    *.ipa)             mv "$f" release/VCMI-iOS.ipa ;;
+                    *-x64.zip)         mv "$f" release/VCMI-Windows.zip ;;
+                    *-x64.exe)         mv "$f" release/VCMI-Windows-x64.exe ;;
+                    *-x86.exe)         mv "$f" release/VCMI-Windows-x86.exe ;;
+                    *-arm64.exe)       mv "$f" release/VCMI-Windows-arm64.exe ;;
+                    *-armeabi-v7a.apk) mv "$f" release/VCMI-Android-armeabi-v7a.apk ;;
+                    *-arm64-v8a.apk)   mv "$f" release/VCMI-Android-arm64-v8a.apk ;;
+                    *-x64.apk)         mv "$f" release/VCMI-Android-x86_64.apk ;;
+                    *-armeabi-v7a.aab) mv "$f" release/VCMI-Android-armeabi-v7a.aab ;;
+                    *-arm64-v8a.aab)   mv "$f" release/VCMI-Android-arm64-v8a.aab ;;
+                    *-x64.aab)         mv "$f" release/VCMI-Android-x86_64.aab ;;
+                    *-x86_64.AppImage) mv "$f" release/VCMI-Linux-x64.AppImage ;;
+                    *-arm64.AppImage)  mv "$f" release/VCMI-Linux-arm64.AppImage ;;
+                    release.tar.gz)    mv "$f" release/VCMI-Sources.tar.gz ;;
                   esac
                 done
                 ;;
@@ -966,9 +965,10 @@ jobs:
             echo "::error::Release $TAG already exists and is published; refusing to overwrite"
             exit 1
           fi
+          RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           gh release create "$TAG" \
             --draft \
             --target "$GITHUB_SHA" \
             --title "VCMI $TAG" \
-            --notes-file .github/release_notes.md.template \
+            --notes "$(cat .github/release_notes.md.template)$(printf '\n\nBuilt by [Actions run #%s](%s).\n' "$GITHUB_RUN_ID" "$RUN_URL")" \
             release/*
