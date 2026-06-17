@@ -536,6 +536,11 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		{
 			if(obj == nullptr)
 				continue;
+			// T1: never offer "visit" moves to objects we already own (our own town,
+			// already-flagged mines/dwellings). Re-visiting them yields nothing and
+			// the model kept burning picks and the hero's movement on them.
+			if(obj->tempOwner == playerID)
+				continue;
 			const int3 opos = obj->visitablePos();
 			if(opos == from)
 				continue;
@@ -952,42 +957,16 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 
 		const int3 destination(*toX, *toY, hero->visitablePos().z);
 
-		// Execute along the engine's path. A bare moveHero(int3) sends a one-tile,
-		// source-less path which the server rejects ("destination tile is blocked"),
-		// so heroes never actually moved. Compute the real path and send the sequence
-		// of tiles reachable this turn (forward order, excluding the start) in one pack.
-		CPathsInfo heroPaths(cb->getMapSize(), hero);
-		auto pathConfig = std::make_shared<SingleHeroPathfinderConfig>(heroPaths, *cb, hero);
-		cb->calculatePaths(pathConfig);
+		const bool reached = executeHeroMoveTo(hero, destination);
 
-		CGPath path;
-		std::vector<int3> tiles;
-		if(heroPaths.getPath(path, destination))
-		{
-			// Mirror the client's HeroMovementController batch construction. Nodes are
-			// stored destination-first, so iterate in reverse (start -> destination).
-			// CRUCIAL: path coords are visitable positions; moveHero expects the hero's
-			// own tile coords, hence convertFromVisitablePos (omitting this was why the
-			// server kept rejecting moves as "destination tile is blocked").
-			for(auto it = path.nodes.rbegin(); it != path.nodes.rend(); ++it)
-			{
-				const CGPathNode & node = *it;
-				if(node.coord == hero->visitablePos())
-					continue; // start node = current hero position
-				if(node.isTeleportAction())
-					break; // pause at monolith / subterranean gate
-				if(node.turns != 0)
-					break; // out of movement points this turn
-				tiles.push_back(hero->convertFromVisitablePos(node.coord));
-				if(cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1))
-					break; // entered a wandering monster's zone of control
-				if(!cb->getVisitableObjs(node.coord).empty())
-					break; // reached a visitable object / garrison / event
-			}
-		}
-
-		if(!tiles.empty())
-			cb->moveHero(hero, tiles, false);
+		// T1 persistent intent: if the model aimed at a still-distant unowned object
+		// and we did not arrive this turn, remember the goal so advanceTravelGoals()
+		// keeps moving toward it next turn instead of letting the hero wander off.
+		const int heroNum = hero->id.getNum();
+		if(!reached && unownedObjectAt(destination) != nullptr)
+			heroTravelGoals[heroNum] = destination;
+		else
+			heroTravelGoals.erase(heroNum);
 		return true;
 	}
 
@@ -1265,6 +1244,11 @@ void CArenaAI::runTurn(QueryID queryID)
 
 	if(bridgeEnabled)
 	{
+		// T1: before asking the model, continue any standing travel goals so a
+		// multi-turn "go take that object" intent actually completes across turns
+		// rather than the hero re-deciding each step and oscillating in place.
+		advanceTravelGoals();
+
 		const auto turnStart = std::chrono::steady_clock::now();
 		for(int actionIndex = 1; actionIndex <= maxActionsPerTurn; ++actionIndex)
 		{
@@ -1316,6 +1300,100 @@ void CArenaAI::waitForBattles()
 	battleCv.wait_until(lock, deadline, [this]() {
 		return battlesInProgress == 0 || aborting.load();
 	});
+}
+
+bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination)
+{
+	// Execute along the engine's path. A bare moveHero(int3) sends a one-tile,
+	// source-less path which the server rejects ("destination tile is blocked"),
+	// so heroes never actually moved. Compute the real path and send the sequence
+	// of tiles reachable this turn (forward order, excluding the start) in one pack.
+	CPathsInfo heroPaths(cb->getMapSize(), hero);
+	auto pathConfig = std::make_shared<SingleHeroPathfinderConfig>(heroPaths, *cb, hero);
+	cb->calculatePaths(pathConfig);
+
+	CGPath path;
+	std::vector<int3> tiles;
+	bool reachedDestination = false;
+	if(heroPaths.getPath(path, destination))
+	{
+		// Mirror the client's HeroMovementController batch construction. Nodes are
+		// stored destination-first, so iterate in reverse (start -> destination).
+		// CRUCIAL: path coords are visitable positions; moveHero expects the hero's
+		// own tile coords, hence convertFromVisitablePos (omitting this was why the
+		// server kept rejecting moves as "destination tile is blocked").
+		for(auto it = path.nodes.rbegin(); it != path.nodes.rend(); ++it)
+		{
+			const CGPathNode & node = *it;
+			if(node.coord == hero->visitablePos())
+				continue; // start node = current hero position
+			if(node.isTeleportAction())
+				break; // pause at monolith / subterranean gate
+			if(node.turns != 0)
+				break; // out of movement points this turn
+			tiles.push_back(hero->convertFromVisitablePos(node.coord));
+			const bool atDestination = (node.coord == destination);
+			if(atDestination)
+				reachedDestination = true;
+			if(cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1))
+				break; // entered a wandering monster's zone of control (battle here)
+			if(!cb->getVisitableObjs(node.coord).empty())
+				break; // reached a visitable object / garrison / event
+		}
+	}
+
+	if(!tiles.empty())
+		cb->moveHero(hero, tiles, false);
+	return reachedDestination;
+}
+
+const CGObjectInstance * CArenaAI::unownedObjectAt(const int3 & pos) const
+{
+	for(const auto * obj : cb->getVisitableObjs(pos, false))
+	{
+		if(obj == nullptr)
+			continue;
+		if(obj->tempOwner == playerID)
+			continue; // already ours
+		return obj;
+	}
+	return nullptr;
+}
+
+void CArenaAI::advanceTravelGoals()
+{
+	for(auto it = heroTravelGoals.begin(); it != heroTravelGoals.end();)
+	{
+		if(aborting)
+			break;
+		const CGHeroInstance * hero = findHeroById(it->first);
+		const int3 goal = it->second;
+		// Drop the goal if the hero is gone or the target is no longer a worthwhile
+		// (unowned) object -- e.g. we already captured it or it was consumed.
+		if(hero == nullptr || unownedObjectAt(goal) == nullptr)
+		{
+			it = heroTravelGoals.erase(it);
+			continue;
+		}
+		// Only auto-advance while a path to the goal still exists.
+		CPathsInfo heroPaths(cb->getMapSize(), hero);
+		auto pathConfig = std::make_shared<SingleHeroPathfinderConfig>(heroPaths, *cb, hero);
+		cb->calculatePaths(pathConfig);
+		const CGPathNode * node = heroPaths.getPathInfo(goal);
+		if(node == nullptr || !node->reachable())
+		{
+			it = heroTravelGoals.erase(it);
+			continue;
+		}
+		const bool reached = executeHeroMoveTo(hero, goal);
+		// A move toward the goal can trigger a guard/enemy battle; let it resolve
+		// before the next step (mirrors the action loop).
+		waitForBattles();
+		if(reached || unownedObjectAt(goal) == nullptr)
+			it = heroTravelGoals.erase(it);
+		else
+			++it;
+	}
 }
 
 void CArenaAI::answerQuery(QueryID queryID, int choice)

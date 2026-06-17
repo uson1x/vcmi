@@ -5,6 +5,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
+#include <map>
 #include <mutex>
 #include <optional>
 #include <string>
@@ -13,6 +14,8 @@
 
 class JsonNode;
 class CGTownInstance;
+class CGHeroInstance;
+class CGObjectInstance;
 
 class CArenaAI : public CAdventureAI
 {
@@ -38,6 +41,12 @@ class CArenaAI : public CAdventureAI
 	int battlesInProgress = 0;
 	std::atomic<bool> aborting{false};
 
+	// T1 persistent MOVE_TO intent: when the model aims a hero at a still-distant
+	// unowned object, we remember the destination (per hero id) and keep advancing
+	// toward it at the start of each turn instead of re-asking the model every step
+	// (which made the hero oscillate locally and never reach distant mines/towns).
+	std::map<int, int3> heroTravelGoals;
+
 public:
 	~CArenaAI() override;
 	void initGameInterface(std::shared_ptr<Environment> env, std::shared_ptr<CCallback> callback) override;
@@ -60,6 +69,15 @@ private:
 	void runTurn(QueryID queryID);
 	void waitForBattles();
 	void answerQuery(QueryID queryID, int choice);
+
+	// Execute the engine-pathed move toward `destination` for this turn; returns
+	// true if the hero reached that tile (so a visit/capture/battle fired there).
+	bool executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination);
+	// Continue any standing per-hero travel goals one turn's worth before asking
+	// the model, so multi-turn "go take that object" intents actually complete.
+	void advanceTravelGoals();
+	// The first unowned (not ours) visitable object on a tile, or nullptr.
+	const CGObjectInstance * unownedObjectAt(const int3 & pos) const;
 
 	JsonNode buildTurnRequestPayload(QueryID queryID, int actionIndex, int turnRemainingMs) const;
 	bool sendEnvelope(const std::string & msgType, const JsonNode & payload, JsonNode & responseOut);
