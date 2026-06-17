@@ -27,6 +27,7 @@
 #include <ctime>
 #include <limits>
 #include <set>
+#include <tuple>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -505,6 +506,59 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			moveOptions.Vector().push_back(option);
 			++emitted;
 		}
+
+		// T0b: also offer reachable VISIBLE OBJECTS as move destinations (closest
+		// first, multi-turn allowed). This lets the hero pursue purposeful goals
+		// (mines, dwellings, resources, enemy towns/heroes) over several turns instead
+		// of only exploring adjacent fog -- the execution path-traverses toward the
+		// object and visits it on arrival. The model maps these coords to entries in
+		// visible_state.map_objects_visible. Multi-turn targets (turns > 0) advance the
+		// hero as far as movement allows each turn and are re-offered until reached.
+		std::vector<std::tuple<int, int, int3>> objTargets; // (turns, moveRemains, pos)
+		for(const auto * obj : visibleObjects)
+		{
+			if(obj == nullptr)
+				continue;
+			const int3 opos = obj->visitablePos();
+			if(opos == from)
+				continue;
+			const CGPathNode * onode = heroPaths.getPathInfo(opos);
+			if(onode == nullptr || !onode->reachable())
+				continue; // no path to this object at all
+			objTargets.emplace_back(static_cast<int>(onode->turns), onode->moveRemains, opos);
+		}
+		std::sort(objTargets.begin(), objTargets.end(),
+			[](const auto & a, const auto & b) { return std::get<0>(a) < std::get<0>(b); });
+
+		for(const auto & target : objTargets)
+		{
+			if(emitted >= MAX_MOVE_OPTIONS)
+				break;
+			const int3 opos = std::get<2>(target);
+			bool duplicate = false;
+			for(int oct = 0; oct < 8; ++oct)
+			{
+				if(bestDistSq[oct] >= 0 && bestTile[oct] == opos)
+				{
+					duplicate = true;
+					break;
+				}
+			}
+			if(duplicate)
+				continue; // already offered as an exploration tile
+
+			JsonNode option;
+			const int heroIdNum = hero->id.getNum();
+			option["option_id"].String() = "move_h_" + std::to_string(heroIdNum) + "_x_" + std::to_string(opos.x) + "_y_" + std::to_string(opos.y);
+			option["hero_id"].String() = heroToken(heroIdNum);
+			option["to_x"].Integer() = opos.x;
+			option["to_y"].Integer() = opos.y;
+			option["turns_to_reach"].Integer() = std::get<0>(target);
+			option["move_remains"].Integer() = std::get<1>(target);
+			moveOptions.Vector().push_back(option);
+			++emitted;
+		}
+
 		if(emitted >= MAX_MOVE_OPTIONS)
 			break;
 	}
