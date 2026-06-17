@@ -332,12 +332,10 @@ if (NOT ENABLE_MINIMAL_LIB)
 endif()
 
 # Version.cpp is a generated file
-if(ENABLE_GITVERSION)
-	list(APPEND lib_SRCS ${CMAKE_BINARY_DIR}/Version.cpp)
-	set_source_files_properties(${CMAKE_BINARY_DIR}/Version.cpp
-		PROPERTIES GENERATED TRUE
-	)
-endif()
+list(APPEND lib_SRCS ${CMAKE_BINARY_DIR}/Version.cpp)
+set_source_files_properties(${CMAKE_BINARY_DIR}/Version.cpp
+	PROPERTIES GENERATED TRUE
+)
 
 set(lib_HEADERS
 	../include/vstd/CLoggerBase.h

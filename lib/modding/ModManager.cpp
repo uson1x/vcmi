@@ -69,7 +69,8 @@ uint32_t ModsState::computeChecksum(const TModID & modName) const
 {
 	boost::crc_32_type modChecksum;
 	// first - add current VCMI version into checksum to force re-validation on VCMI updates
-	modChecksum.process_bytes(static_cast<const void*>(GameConstants::VCMI_VERSION.data()), GameConstants::VCMI_VERSION.size());
+	const std::string_view vcmiVersion{GameConstants::VCMI_VERSION};
+	modChecksum.process_bytes(static_cast<const void*>(vcmiVersion.data()), vcmiVersion.size());
 
 	// second - add mod.json into checksum because filesystem does not contains this file
 	if (modName != ModScope::scopeBuiltin())

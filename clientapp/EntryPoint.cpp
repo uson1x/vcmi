@@ -102,14 +102,14 @@ static void checkForModLoadingFailure()
 
 static void prog_version()
 {
-	printf("%s\n", GameConstants::VCMI_VERSION.c_str());
+	printf("%s\n", GameConstants::VCMI_VERSION);
 	std::cout << VCMIDirs::get().genHelpString();
 }
 
 static void prog_help(const po::options_description &opts)
 {
 	auto time = std::time(nullptr);
-	printf("%s - A Heroes of Might and Magic 3 clone\n", GameConstants::VCMI_VERSION.c_str());
+	printf("%s - A Heroes of Might and Magic 3 clone\n", GameConstants::VCMI_PROJECT_NAME_VERSIONED);
 	printf("Copyright (C) 2007-%d VCMI dev team - see AUTHORS file\n", std::localtime(&time)->tm_year + 1900);
 	printf("This is free software; see the source for copying conditions. There is NO\n");
 	printf("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
@@ -221,7 +221,7 @@ int main(int argc, char * argv[])
 #endif
 
 	logConfigurator.configureDefault();
-	logGlobal->info("Starting client of '%s'", GameConstants::VCMI_VERSION);
+	logGlobal->info("Starting client of '%s'", GameConstants::VCMI_PROJECT_NAME_VERSIONED);
 	logGlobal->info("Creating console and configuring logger: %d ms", pomtime.getDiff());
 	logGlobal->info("The log file will be saved to %s", logPath);
 
