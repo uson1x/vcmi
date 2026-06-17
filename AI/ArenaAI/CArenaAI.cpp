@@ -14,6 +14,8 @@
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/mapping/TerrainTile.h"
 #include "../../lib/networkPacks/Component.h"
+#include "../../lib/pathfinder/CGPathNode.h"
+#include "../../lib/pathfinder/PathfinderOptions.h"
 
 #include <algorithm>
 #include <array>
@@ -25,6 +27,7 @@
 #include <ctime>
 #include <limits>
 #include <set>
+#include <tuple>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -416,15 +419,19 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 	JsonNode moveOptions;
 	moveOptions.setType(JsonNode::JsonType::DATA_VECTOR);
 
-	static const std::array<std::pair<int, int>, 8> deltas = {
-		std::pair<int, int>{1, 0},
-		std::pair<int, int>{-1, 0},
-		std::pair<int, int>{0, 1},
-		std::pair<int, int>{0, -1},
-		std::pair<int, int>{1, 1},
-		std::pair<int, int>{-1, -1},
-		std::pair<int, int>{1, -1},
-		std::pair<int, int>{-1, 1},
+	// Assign a direction octant (0..7) to a (dx,dy) offset from the hero.
+	auto octantOf = [](int dx, int dy) -> int {
+		if(dx == 0 && dy == 0)
+			return -1;
+		const int adx = std::abs(dx);
+		const int ady = std::abs(dy);
+		if(adx >= 2 * ady)
+			return dx > 0 ? 0 : 4; // E / W
+		if(ady >= 2 * adx)
+			return dy > 0 ? 2 : 6; // S / N
+		if(dx > 0)
+			return dy > 0 ? 1 : 7; // SE / NE
+		return dy > 0 ? 3 : 5;     // SW / NW
 	};
 
 	int emitted = 0;
@@ -433,28 +440,125 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		if(hero == nullptr)
 			continue;
 		const int3 from = hero->visitablePos();
-		for(const auto & delta : deltas)
+
+		// T0: drive movement options off the engine's own pathfinder rather than the
+		// 8 immediate neighbours. The old terrain-only adjacent check boxed heroes in
+		// (the only adjacent tiles were often blocking objects) and advertised moves the
+		// server then refused as "...request must have been fishy!". Instead we scan the
+		// reachable-this-turn, standable (NORMAL) tiles and offer the FARTHEST one per
+		// compass direction, so a single decision makes real map progress and every
+		// offered destination is one the engine will actually accept.
+		CPathsInfo heroPaths(cb->getMapSize(), hero);
+		auto pathConfig = std::make_shared<SingleHeroPathfinderConfig>(heroPaths, *cb, hero);
+		cb->calculatePaths(pathConfig);
+
+		std::array<int3, 8> bestTile;
+		std::array<int, 8> bestDistSq;
+		std::array<int, 8> bestMoveRemains;
+		bestTile.fill(int3(-1, -1, -1));
+		bestDistSq.fill(-1);
+		bestMoveRemains.fill(0);
+
+		const int3 mapSize = cb->getMapSize();
+		for(int z = 0; z < mapSize.z; ++z)
+			for(int x = 0; x < mapSize.x; ++x)
+				for(int y = 0; y < mapSize.y; ++y)
+				{
+					const int3 tile(x, y, z);
+					if(tile == from)
+						continue;
+					const CGPathNode * node = heroPaths.getPathInfo(tile);
+					if(node == nullptr || !node->reachable() || node->turns != 0)
+						continue;
+					// Only plain standable destinations as MOVE targets; object/visit
+					// tiles are handled by VISIT_OBJECT (T0b), not a bare move.
+					if(node->action != EPathNodeAction::NORMAL
+						&& node->action != EPathNodeAction::EMBARK
+						&& node->action != EPathNodeAction::DISEMBARK)
+						continue;
+					const int oct = octantOf(x - from.x, y - from.y);
+					if(oct < 0)
+						continue;
+					const int distSq = (x - from.x) * (x - from.x) + (y - from.y) * (y - from.y);
+					if(distSq > bestDistSq[oct])
+					{
+						bestDistSq[oct] = distSq;
+						bestTile[oct] = tile;
+						bestMoveRemains[oct] = node->moveRemains;
+					}
+				}
+
+		for(int oct = 0; oct < 8; ++oct)
 		{
 			if(emitted >= MAX_MOVE_OPTIONS)
 				break;
-			const int3 dst(from.x + delta.first, from.y + delta.second, from.z);
-			if(!cb->isInTheMap(dst))
+			if(bestDistSq[oct] < 0)
 				continue;
-			const TerrainTile * tile = cb->getTile(dst, false);
-			if(tile == nullptr)
-				continue;
-			if(!tile->entrableTerrain() || tile->blocked())
-				continue;
-
+			const int3 dst = bestTile[oct];
 			JsonNode option;
 			const int heroIdNum = hero->id.getNum();
 			option["option_id"].String() = "move_h_" + std::to_string(heroIdNum) + "_x_" + std::to_string(dst.x) + "_y_" + std::to_string(dst.y);
 			option["hero_id"].String() = heroToken(heroIdNum);
 			option["to_x"].Integer() = dst.x;
 			option["to_y"].Integer() = dst.y;
+			option["turns_to_reach"].Integer() = 0;
+			option["move_remains"].Integer() = bestMoveRemains[oct];
 			moveOptions.Vector().push_back(option);
 			++emitted;
 		}
+
+		// T0b: also offer reachable VISIBLE OBJECTS as move destinations (closest
+		// first, multi-turn allowed). This lets the hero pursue purposeful goals
+		// (mines, dwellings, resources, enemy towns/heroes) over several turns instead
+		// of only exploring adjacent fog -- the execution path-traverses toward the
+		// object and visits it on arrival. The model maps these coords to entries in
+		// visible_state.map_objects_visible. Multi-turn targets (turns > 0) advance the
+		// hero as far as movement allows each turn and are re-offered until reached.
+		std::vector<std::tuple<int, int, int3>> objTargets; // (turns, moveRemains, pos)
+		for(const auto * obj : visibleObjects)
+		{
+			if(obj == nullptr)
+				continue;
+			const int3 opos = obj->visitablePos();
+			if(opos == from)
+				continue;
+			const CGPathNode * onode = heroPaths.getPathInfo(opos);
+			if(onode == nullptr || !onode->reachable())
+				continue; // no path to this object at all
+			objTargets.emplace_back(static_cast<int>(onode->turns), onode->moveRemains, opos);
+		}
+		std::sort(objTargets.begin(), objTargets.end(),
+			[](const auto & a, const auto & b) { return std::get<0>(a) < std::get<0>(b); });
+
+		for(const auto & target : objTargets)
+		{
+			if(emitted >= MAX_MOVE_OPTIONS)
+				break;
+			const int3 opos = std::get<2>(target);
+			bool duplicate = false;
+			for(int oct = 0; oct < 8; ++oct)
+			{
+				if(bestDistSq[oct] >= 0 && bestTile[oct] == opos)
+				{
+					duplicate = true;
+					break;
+				}
+			}
+			if(duplicate)
+				continue; // already offered as an exploration tile
+
+			JsonNode option;
+			const int heroIdNum = hero->id.getNum();
+			option["option_id"].String() = "move_h_" + std::to_string(heroIdNum) + "_x_" + std::to_string(opos.x) + "_y_" + std::to_string(opos.y);
+			option["hero_id"].String() = heroToken(heroIdNum);
+			option["to_x"].Integer() = opos.x;
+			option["to_y"].Integer() = opos.y;
+			option["turns_to_reach"].Integer() = std::get<0>(target);
+			option["move_remains"].Integer() = std::get<1>(target);
+			moveOptions.Vector().push_back(option);
+			++emitted;
+		}
+
 		if(emitted >= MAX_MOVE_OPTIONS)
 			break;
 	}
@@ -830,7 +934,43 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 			return false;
 
 		const int3 destination(*toX, *toY, hero->visitablePos().z);
-		cb->moveHero(hero, destination, false);
+
+		// Execute along the engine's path. A bare moveHero(int3) sends a one-tile,
+		// source-less path which the server rejects ("destination tile is blocked"),
+		// so heroes never actually moved. Compute the real path and send the sequence
+		// of tiles reachable this turn (forward order, excluding the start) in one pack.
+		CPathsInfo heroPaths(cb->getMapSize(), hero);
+		auto pathConfig = std::make_shared<SingleHeroPathfinderConfig>(heroPaths, *cb, hero);
+		cb->calculatePaths(pathConfig);
+
+		CGPath path;
+		std::vector<int3> tiles;
+		if(heroPaths.getPath(path, destination))
+		{
+			// Mirror the client's HeroMovementController batch construction. Nodes are
+			// stored destination-first, so iterate in reverse (start -> destination).
+			// CRUCIAL: path coords are visitable positions; moveHero expects the hero's
+			// own tile coords, hence convertFromVisitablePos (omitting this was why the
+			// server kept rejecting moves as "destination tile is blocked").
+			for(auto it = path.nodes.rbegin(); it != path.nodes.rend(); ++it)
+			{
+				const CGPathNode & node = *it;
+				if(node.coord == hero->visitablePos())
+					continue; // start node = current hero position
+				if(node.isTeleportAction())
+					break; // pause at monolith / subterranean gate
+				if(node.turns != 0)
+					break; // out of movement points this turn
+				tiles.push_back(hero->convertFromVisitablePos(node.coord));
+				if(cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1))
+					break; // entered a wandering monster's zone of control
+				if(!cb->getVisitableObjs(node.coord).empty())
+					break; // reached a visitable object / garrison / event
+			}
+		}
+
+		if(!tiles.empty())
+			cb->moveHero(hero, tiles, false);
 		return true;
 	}
 
