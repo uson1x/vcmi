@@ -6,8 +6,10 @@
 #include "../../lib/constants/Enumerations.h"
 #include "../../lib/GameConstants.h"
 #include "../../lib/IGameSettings.h"
+#include "../../lib/UnlockGuard.h"
 #include "../../lib/entities/building/CBuilding.h"
 #include "../../lib/entities/hero/CHero.h"
+#include "../../lib/gameState/CGameState.h"
 #include "../../lib/json/JsonNode.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGObjectInstance.h"
@@ -27,6 +29,7 @@
 #include <ctime>
 #include <limits>
 #include <set>
+#include <shared_mutex>
 #include <tuple>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -188,6 +191,20 @@ void CArenaAI::initGameInterface(std::shared_ptr<Environment> env_, std::shared_
 	}
 
 	bridgeEnabled = !socketPath.empty();
+
+	// Block adventure requests until the server has realized them. Combined with
+	// running the turn loop off the network thread (see yourTurn/runTurn), a move
+	// that starts a battle blocks until the battle auto-resolves via the inherited
+	// CAdventureAI -> BattleAI delegation, instead of deadlocking on the CBattleQuery.
+	cb->waitTillRealize = true;
+}
+
+CArenaAI::~CArenaAI()
+{
+	aborting = true;
+	battleCv.notify_all();
+	if(turnThread.joinable())
+		turnThread.join();
 }
 
 std::string CArenaAI::getBattleAIName() const
@@ -1223,14 +1240,37 @@ int CArenaAI::chooseSelectionViaBridge(QueryID queryID, const std::string & quer
 
 void CArenaAI::yourTurn(QueryID queryID)
 {
+	// Drive the turn from a worker thread. The network thread MUST stay free to
+	// deliver battle packs (battleStart/activeStack/battleEnd) and the
+	// PackageApplied acks that unblock waitTillRealize'd requests. Running the loop
+	// here (on the network thread) would deadlock the instant a blocking request is
+	// issued — the thread would wait on a pack only it can process.
+	if(turnThread.joinable())
+		turnThread.join();
+	turnThread = std::thread(&CArenaAI::runTurn, this, queryID);
+}
+
+void CArenaAI::runTurn(QueryID queryID)
+{
 	if(queryID.getNum() >= 0)
-		cb->selectionMade(0, queryID);
+		answerQuery(queryID, 0);
+
+	// Hold a shared lock on the game state for the whole turn, mirroring Nullkiller's
+	// makeTurn. This both makes our state reads safe against the network thread's pack
+	// application AND satisfies waitTillRealize's contract: sendRequest releases this
+	// shared lock while it waits for the ack (makeUnlockSharedGuard) so the network
+	// thread can take the exclusive lock to apply packs. Without holding it here, that
+	// unlock_shared underflows the reader count and the network thread deadlocks.
+	std::shared_lock<std::shared_mutex> gsLock(CGameState::mutex);
 
 	if(bridgeEnabled)
 	{
 		const auto turnStart = std::chrono::steady_clock::now();
 		for(int actionIndex = 1; actionIndex <= maxActionsPerTurn; ++actionIndex)
 		{
+			if(aborting)
+				break;
+
 			const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
 				std::chrono::steady_clock::now() - turnStart
 			).count();
@@ -1252,10 +1292,81 @@ void CArenaAI::yourTurn(QueryID queryID)
 				break;
 			if(!applyTurnResponse(responsePayload))
 				break;
+
+			// A move can start a battle; wait for it to auto-resolve before issuing
+			// the next action so the bridge sees a clean post-battle state (and so we
+			// don't fire actions the server would reject while a CBattleQuery is open).
+			waitForBattles();
 		}
 	}
 
-	cb->endTurn();
+	if(!aborting)
+		cb->endTurn();
+}
+
+void CArenaAI::waitForBattles()
+{
+	// Release the game-state shared lock for the duration of the wait so the network
+	// thread can take the exclusive lock and drive the battle (battleStart/activeStack/
+	// battleEnd) to completion. Mirrors Nullkiller's waitTillFree.
+	auto gsUnlock = vstd::makeUnlockSharedGuard(CGameState::mutex);
+	std::unique_lock<std::mutex> lock(battleMx);
+	// Bounded so a wedged battle can never hang the worker indefinitely.
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(180);
+	battleCv.wait_until(lock, deadline, [this]() {
+		return battlesInProgress == 0 || aborting.load();
+	});
+}
+
+void CArenaAI::answerQuery(QueryID queryID, int choice)
+{
+	if(queryID.getNum() < 0)
+		return;
+
+	// Query replies arrive on the network thread (post-battle level-up, mid-move
+	// blocking dialogs, ...). With waitTillRealize=true a blocking reply would wedge
+	// the network thread waiting on a PackageApplied only it can deliver, so send the
+	// reply without waiting (mirrors CBattleAI's temporary waitTillRealize toggle).
+	const bool prev = cb->waitTillRealize;
+	cb->waitTillRealize = false;
+	cb->selectionMade(choice, queryID);
+	cb->waitTillRealize = prev;
+}
+
+void CArenaAI::battleStart(const BattleID & battleID, const CCreatureSet * army1, const CCreatureSet * army2, int3 tile, const CGHeroInstance * hero1, const CGHeroInstance * hero2, BattleSide side, bool replayAllowed)
+{
+	{
+		std::lock_guard<std::mutex> lock(battleMx);
+		++battlesInProgress;
+	}
+	battleCv.notify_all();
+	// Delegate to the inherited adventure-AI battle handling: spins up the configured
+	// battle AI (BattleAI) and plays the fight out on the network thread.
+	CAdventureAI::battleStart(battleID, army1, army2, tile, hero1, hero2, side, replayAllowed);
+}
+
+void CArenaAI::battleEnd(const BattleID & battleID, const BattleResult * br, QueryID queryID)
+{
+	// Tear down the battle AI first (this restores cb->waitTillRealize to true).
+	CAdventureAI::battleEnd(battleID, br, queryID);
+	{
+		std::lock_guard<std::mutex> lock(battleMx);
+		if(battlesInProgress > 0)
+			--battlesInProgress;
+	}
+	battleCv.notify_all();
+}
+
+void CArenaAI::gameOver(PlayerColor player, const EVictoryLossCheckResult & victoryLossCheckResult)
+{
+	(void)victoryLossCheckResult;
+	// When our own game resolves, release the worker so it stops issuing actions
+	// (and skips a post-game endTurn that would never be realized).
+	if(player == playerID)
+	{
+		aborting = true;
+		battleCv.notify_all();
+	}
 }
 
 void CArenaAI::heroGotLevel(const CGHeroInstance * hero, PrimarySkill pskill, std::vector<SecondarySkill> & skills, QueryID queryID)
@@ -1264,14 +1375,14 @@ void CArenaAI::heroGotLevel(const CGHeroInstance * hero, PrimarySkill pskill, st
 	(void)pskill;
 	if(skills.empty())
 	{
-		cb->selectionMade(0, queryID);
+		answerQuery(queryID, 0);
 		return;
 	}
 	std::vector<int> options;
 	for(int idx = 0; idx < static_cast<int>(skills.size()); ++idx)
 		options.push_back(idx);
 	const int choice = chooseSelectionViaBridge(queryID, "hero_level_up", options, 0);
-	cb->selectionMade(choice, queryID);
+	answerQuery(queryID, choice);
 }
 
 void CArenaAI::commanderGotLevel(const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
@@ -1279,14 +1390,14 @@ void CArenaAI::commanderGotLevel(const CCommanderInstance * commander, std::vect
 	(void)commander;
 	if(skills.empty())
 	{
-		cb->selectionMade(0, queryID);
+		answerQuery(queryID, 0);
 		return;
 	}
 	std::vector<int> options;
 	for(int idx = 0; idx < static_cast<int>(skills.size()); ++idx)
 		options.push_back(idx);
 	const int choice = chooseSelectionViaBridge(queryID, "commander_level_up", options, 0);
-	cb->selectionMade(choice, queryID);
+	answerQuery(queryID, choice);
 }
 
 void CArenaAI::showBlockingDialog(const std::string & text, const std::vector<Component> & components, QueryID askID, const int soundID, bool selection, bool cancel, bool safeToAutoaccept)
@@ -1310,7 +1421,7 @@ void CArenaAI::showBlockingDialog(const std::string & text, const std::vector<Co
 
 	const int defaultSelection = cancel ? 0 : (selection ? 1 : 0);
 	const int choice = chooseSelectionViaBridge(askID, "blocking_dialog", options, defaultSelection);
-	cb->selectionMade(choice, askID);
+	answerQuery(askID, choice);
 }
 
 void CArenaAI::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID channel, TTeleportExitsList exits, bool impassable, QueryID askID)
@@ -1327,7 +1438,7 @@ void CArenaAI::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID
 			options.push_back(idx);
 
 	const int choice = chooseSelectionViaBridge(askID, "teleport_dialog", options, 0);
-	cb->selectionMade(choice, askID);
+	answerQuery(askID, choice);
 }
 
 void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID)
@@ -1336,7 +1447,7 @@ void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstanc
 	(void)down;
 	(void)removableUnits;
 	const int choice = chooseSelectionViaBridge(queryID, "garrison_dialog", {0}, 0);
-	cb->selectionMade(choice, queryID);
+	answerQuery(queryID, choice);
 }
 
 void CArenaAI::showMapObjectSelectDialog(QueryID askID, const Component & icon, const MetaString & title, const MetaString & description, const std::vector<ObjectInstanceID> & objects)
@@ -1353,7 +1464,7 @@ void CArenaAI::showMapObjectSelectDialog(QueryID askID, const Component & icon, 
 			options.push_back(idx);
 
 	const int choice = chooseSelectionViaBridge(askID, "map_object_select", options, 0);
-	cb->selectionMade(choice, askID);
+	answerQuery(askID, choice);
 }
 
 std::optional<BattleAction> CArenaAI::makeSurrenderRetreatDecision(const BattleID & battleID, const BattleStateInfoForRetreat & battleState)
