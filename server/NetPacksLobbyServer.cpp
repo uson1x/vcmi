@@ -467,7 +467,7 @@ void ApplyOnServerNetPackVisitor::visitLobbyDelete(LobbyDelete & pack)
 	}
 
 	LobbyUpdateState lus;
-	lus.state = srv;
+	lus.state = *static_cast<LobbyState*>(&srv);
 	lus.refreshList = true;
 	srv.announcePack(lus);
 }

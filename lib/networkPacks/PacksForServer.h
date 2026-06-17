@@ -658,7 +658,6 @@ struct DLL_LINKAGE HireHero : public CPackForServer
 	HeroTypeID hid; //available hero serial
 	HeroTypeID nhid; //next hero
 	ObjectInstanceID tid; //town (tavern) id
-	PlayerColor player;
 
 	void visitTyped(ICPackVisitor & visitor) override;
 
@@ -668,7 +667,6 @@ struct DLL_LINKAGE HireHero : public CPackForServer
 		h & hid;
 		h & nhid;
 		h & tid;
-		h & player;
 	}
 };
 
