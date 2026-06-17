@@ -219,11 +219,11 @@ void CTeleportDialogQuery::notifyObjectAboutRemoval(const CGObjectInstance * vis
 		logGlobal->error("Invalid instance in teleport query");
 }
 
-CTeleportDialogQuery::CTeleportDialogQuery(CGameHandler * owner, const TeleportDialog & td) :
+CTeleportDialogQuery::CTeleportDialogQuery(CGameHandler * owner, const TeleportDialog & dialog) :
 	CDialogQuery(owner, TYPE)
 {
-	this->td = td;
-	addPlayer(gh->gameInfo().getHero(td.hero)->getOwner());
+	td = dialog;
+	addPlayer(gh->gameInfo().getHero(dialog.hero)->getOwner());
 }
 
 CHeroLevelUpDialogQuery::CHeroLevelUpDialogQuery(CGameHandler * owner, const HeroLevelUp & Hlu, const CGHeroInstance * Hero):

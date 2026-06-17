@@ -65,15 +65,15 @@ bool CSpell::adventureCast(SpellCastEnvironment * env, const AdventureSpellCastP
 	return adventureMechanics->adventureCast(env, parameters);
 }
 
-const CSpell::LevelInfo & CSpell::getLevelInfo(const int32_t level) const
+const CSpell::LevelInfo & CSpell::getLevelInfo(const int32_t schoolLevel) const
 {
-	if(level < 0 || level >= GameConstants::SPELL_SCHOOL_LEVELS)
+	if(schoolLevel < 0 || schoolLevel >= GameConstants::SPELL_SCHOOL_LEVELS)
 	{
-		logGlobal->error("CSpell::getLevelInfo: invalid school mastery level %d", level);
+		logGlobal->error("CSpell::getLevelInfo: invalid school mastery level %d", schoolLevel);
 		return levels.at(MasteryLevel::EXPERT);
 	}
 
-	return levels.at(level);
+	return levels.at(schoolLevel);
 }
 
 int64_t CSpell::calculateDamage(const spells::Caster * caster) const
@@ -132,8 +132,8 @@ SpellID CSpell::getId() const
 
 std::string CSpell::getNameTextID() const
 {
-	TextIdentifier id("spell", modScope, identifier, "name");
-	return id.get();
+	TextIdentifier textId("spell", modScope, identifier, "name");
+	return textId.get();
 }
 
 std::string CSpell::getNameTranslated() const
@@ -141,15 +141,15 @@ std::string CSpell::getNameTranslated() const
 	return LIBRARY->generaltexth->translate(getNameTextID());
 }
 
-std::string CSpell::getDescriptionTextID(int32_t level) const
+std::string CSpell::getDescriptionTextID(int32_t schoolLevel) const
 {
-	TextIdentifier textID("spell", modScope, identifier, "description", LEVEL_NAMES[level]);
+	TextIdentifier textID("spell", modScope, identifier, "description", LEVEL_NAMES[schoolLevel]);
 	return textID.get();
 }
 
-std::string CSpell::getDescriptionTranslated(int32_t level) const
+std::string CSpell::getDescriptionTranslated(int32_t schoolLevel) const
 {
-	return LIBRARY->generaltexth->translate(getDescriptionTextID(level));
+	return LIBRARY->generaltexth->translate(getDescriptionTextID(schoolLevel));
 }
 
 std::string CSpell::getAdventureEffectTextID(const std::string & effectType, const std::string & field) const
@@ -330,21 +330,21 @@ si32 CSpell::getProbability(const FactionID & factionId) const
 	return probabilities.at(factionId);
 }
 
-void CSpell::getEffects(std::vector<Bonus> & lst, const int level, const bool cumulative, const si32 duration, std::optional<si32 *> maxDuration) const
+void CSpell::getEffects(std::vector<Bonus> & lst, const int schoolLevel, const bool cumulative, const si32 duration, std::optional<si32 *> maxDuration) const
 {
-	if(level < 0 || level >= GameConstants::SPELL_SCHOOL_LEVELS)
+	if(schoolLevel < 0 || schoolLevel >= GameConstants::SPELL_SCHOOL_LEVELS)
 	{
-		logGlobal->error("invalid school level %d", level);
+		logGlobal->error("invalid school level %d", schoolLevel);
 		return;
 	}
 
-	const auto & levelObject = levels.at(level);
+	const auto & levelObject = levels.at(schoolLevel);
 
 	const auto & effectsJson = cumulative ? levelObject.cumulativeEffects : levelObject.effects;
 
 	if(effectsJson.Struct().empty())
 	{
-		logGlobal->error("This spell (%s) has no effects for level %d", getNameTranslated(), level);
+		logGlobal->error("This spell (%s) has no effects for level %d", getNameTranslated(), schoolLevel);
 		return;
 	}
 

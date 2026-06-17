@@ -86,9 +86,9 @@ public:
 //to be used for spells configured with old format
 class FallbackMechanicsFactory : public CustomMechanicsFactory
 {
-	JsonNode usePowerAsVal(const JsonNode & effects, si32 power) const
+	JsonNode usePowerAsVal(const JsonNode & effectsNode, si32 power) const
 	{
-		JsonNode result = effects;
+		JsonNode result = effectsNode;
 		for(auto & [name, bonusNode] : result.Struct())
 			if(bonusNode["val"].isNull())
 				bonusNode["val"].Integer() = power;
