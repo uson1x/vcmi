@@ -41,12 +41,12 @@ struct AIPathNode : public CGPathNode
 	const AIPathNode * chainOther = nullptr;
 	const ChainActor * actor = nullptr;
 
-	uint64_t danger;
-	uint64_t armyLoss;
-	uint32_t version;
+	uint64_t danger = 0;
+	uint64_t armyLoss = 0;
+	uint32_t version = 0;
 
-	int16_t manaCost;
-	DayFlags dayFlags;
+	int16_t manaCost = 0;
+	DayFlags dayFlags = DayFlags::NONE;
 
 	void addSpecialAction(std::shared_ptr<const SpecialAction> action);
 
