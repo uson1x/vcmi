@@ -72,7 +72,10 @@ private:
 
 	// Execute the engine-pathed move toward `destination` for this turn; returns
 	// true if the hero reached that tile (so a visit/capture/battle fired there).
-	bool executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination);
+	// With stopBeforeCombat, the move halts BEFORE stepping into a wandering
+	// monster's zone of control (no battle), setting *blockedByGuard if it did so.
+	bool executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination,
+		bool stopBeforeCombat = false, bool * blockedByGuard = nullptr);
 	// Continue any standing per-hero travel goals one turn's worth before asking
 	// the model, so multi-turn "go take that object" intents actually complete.
 	void advanceTravelGoals();

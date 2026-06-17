@@ -1302,7 +1302,8 @@ void CArenaAI::waitForBattles()
 	});
 }
 
-bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination)
+bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination,
+	bool stopBeforeCombat, bool * blockedByGuard)
 {
 	// Execute along the engine's path. A bare moveHero(int3) sends a one-tile,
 	// source-less path which the server rejects ("destination tile is blocked"),
@@ -1331,11 +1332,21 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 				break; // pause at monolith / subterranean gate
 			if(node.turns != 0)
 				break; // out of movement points this turn
+			const bool guardZoC = cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1);
+			if(stopBeforeCombat && guardZoC)
+			{
+				// Auto-advance must never start a battle: stop BEFORE the guard tile
+				// (do not push it) and let the model decide whether to engage. Battles
+				// are only safe via the model-driven action loop.
+				if(blockedByGuard != nullptr)
+					*blockedByGuard = true;
+				break;
+			}
 			tiles.push_back(hero->convertFromVisitablePos(node.coord));
 			const bool atDestination = (node.coord == destination);
 			if(atDestination)
 				reachedDestination = true;
-			if(cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1))
+			if(guardZoC)
 				break; // entered a wandering monster's zone of control (battle here)
 			if(!cb->getVisitableObjs(node.coord).empty())
 				break; // reached a visitable object / garrison / event
@@ -1362,6 +1373,12 @@ const CGObjectInstance * CArenaAI::unownedObjectAt(const int3 & pos) const
 
 void CArenaAI::advanceTravelGoals()
 {
+	// Kill-switch: ARENA_DISABLE_AUTO_ADVANCE=1 falls back to pure model-driven
+	// movement (prune-owned options still apply) without rebuilding the plugin.
+	if(const char * disable = std::getenv("ARENA_DISABLE_AUTO_ADVANCE"))
+		if(disable[0] == '1')
+			return;
+
 	for(auto it = heroTravelGoals.begin(); it != heroTravelGoals.end();)
 	{
 		if(aborting)
@@ -1385,11 +1402,13 @@ void CArenaAI::advanceTravelGoals()
 			it = heroTravelGoals.erase(it);
 			continue;
 		}
-		const bool reached = executeHeroMoveTo(hero, goal);
-		// A move toward the goal can trigger a guard/enemy battle; let it resolve
-		// before the next step (mirrors the action loop).
-		waitForBattles();
-		if(reached || unownedObjectAt(goal) == nullptr)
+		// Combat-free advance: travel toward the goal capturing only unguarded
+		// objects. If a guard blocks the way, hand the engagement decision back to
+		// the model (battles are only safe via the model-driven action loop, which
+		// runs inside the per-action time budget) and drop the goal.
+		bool blockedByGuard = false;
+		const bool reached = executeHeroMoveTo(hero, goal, /*stopBeforeCombat=*/true, &blockedByGuard);
+		if(reached || blockedByGuard || unownedObjectAt(goal) == nullptr)
 			it = heroTravelGoals.erase(it);
 		else
 			++it;
