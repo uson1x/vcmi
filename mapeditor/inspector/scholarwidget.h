@@ -44,7 +44,7 @@ private:
 	{
 		QRadioButton * radioButton;
 		QComboBox * comboBox;
-		std::string variables[2];
+		std::array<std::string, 2> variables;
 		std::string name;
 		JsonNode dice;
 	};

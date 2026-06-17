@@ -57,9 +57,9 @@ VCMI_LIB_NAMESPACE_BEGIN
 static void createMemoryDump(MINIDUMP_EXCEPTION_INFORMATION * meinfo)
 {
 	//create file where dump will be placed
-	wchar_t executablePath[MAX_PATH + 1];
-	GetModuleFileNameW(nullptr, executablePath, MAX_PATH);
-	const auto dumpName = boost::filesystem::path(executablePath).filename().wstring() + L"_crashinfo.dmp";
+	std::array<wchar_t, MAX_PATH + 1> executablePath{};
+	GetModuleFileNameW(nullptr, executablePath.data(), MAX_PATH);
+	const auto dumpName = boost::filesystem::path(executablePath.data()).filename().wstring() + L"_crashinfo.dmp";
 	const auto dumpPath = VCMIDirs::get().userLogsPath() / dumpName;
 	HANDLE dfile = CreateFileW(dumpPath.c_str(), GENERIC_READ|GENERIC_WRITE, FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
 	logGlobal->error("Crash info will be put in %s", dumpPath.string());

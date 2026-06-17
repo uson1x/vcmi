@@ -469,7 +469,7 @@ bool CVCMIServer::passHost(GameConnectionID toConnectionId)
 	return false;
 }
 
-void CVCMIServer::clientConnected(std::shared_ptr<GameConnection> c, std::vector<std::string> & names, const std::string & uuid, EStartMode mode)
+void CVCMIServer::clientConnected(std::shared_ptr<GameConnection> c, const std::vector<std::string> & names, const std::string & uuid, EStartMode mode)
 {
 	assert(getState() == EServerState::LOBBY);
 
