@@ -1497,10 +1497,22 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 				break; // pause at monolith / subterranean gate
 			if(node.turns != 0)
 				break; // out of movement points this turn
-			const bool guardZoC = cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1);
-			if(stopBeforeCombat && guardZoC)
+			// "Does stepping onto this node start a fight?" — use the engine's own
+			// pathfinder classification, which marks BOTH wandering-monster guards AND
+			// object-embedded battles (enemy hero/town, creature bank, garrison, border
+			// guard, ...) as a BATTLE action. The previous guardingCreaturePosition()
+			// check only caught wandering-monster ZoC, so a path that stepped onto a
+			// battle-triggering *object* slipped through and started a battle inside
+			// auto-advance — the reproducible 0%-CPU deadlock (auto-advance has no
+			// waitForBattles handshake). guardingCreaturePosition() is kept as a
+			// belt-and-suspenders fallback.
+			const bool startsCombat =
+				node.action == EPathNodeAction::BATTLE
+				|| node.action == EPathNodeAction::TELEPORT_BATTLE
+				|| cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1);
+			if(stopBeforeCombat && startsCombat)
 			{
-				// Auto-advance must never start a battle: stop BEFORE the guard tile
+				// Auto-advance must never start a battle: stop BEFORE the combat tile
 				// (do not push it) and let the model decide whether to engage. Battles
 				// are only safe via the model-driven action loop.
 				if(blockedByGuard != nullptr)
@@ -1511,8 +1523,8 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 			const bool atDestination = (node.coord == destination);
 			if(atDestination)
 				reachedDestination = true;
-			if(guardZoC)
-				break; // entered a wandering monster's zone of control (battle here)
+			if(startsCombat)
+				break; // stepping here starts a battle (only when !stopBeforeCombat)
 			if(!cb->getVisitableObjs(node.coord).empty())
 				break; // reached a visitable object / garrison / event
 		}
@@ -1573,6 +1585,12 @@ void CArenaAI::advanceTravelGoals()
 		// runs inside the per-action time budget) and drop the goal.
 		bool blockedByGuard = false;
 		const bool reached = executeHeroMoveTo(hero, goal, /*stopBeforeCombat=*/true, &blockedByGuard);
+		// Defense-in-depth: stepBeforeCombat above should keep auto-advance battle-free,
+		// but if a battle ever slips through (e.g. a path node the pathfinder did not
+		// classify as BATTLE), drain it with the same release-lock/wait handshake the
+		// per-action loop uses — never leave a CBattleQuery open while we hold the
+		// shared game-state lock (that is the deadlock this guards against).
+		waitForBattles();
 		if(reached || blockedByGuard || unownedObjectAt(goal) == nullptr)
 			it = heroTravelGoals.erase(it);
 		else
