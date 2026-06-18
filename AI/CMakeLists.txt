@@ -50,6 +50,7 @@ endif()
 
 # Adventure AI's
 add_subdirectory(EmptyAI)
+add_subdirectory(BattleLLM)
 add_subdirectory(ArenaAI)
 
 if(ENABLE_NULLKILLER_AI)

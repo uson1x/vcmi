@@ -142,6 +142,7 @@ int main(int argc, char * argv[])
 		("version,v", "display version information and exit")
 		("testmap", po::value<std::string>(), "")
 		("testsave", po::value<std::string>(), "")
+		("battle-only", po::value<std::string>(), "start battle-only game directly using battle-only JSON config")
 		("logLocation", po::value<std::string>(), "new location for log files")
 		("spectate,s", "enable spectator interface for AI-only games")
 		("spectate-ignore-hero", "wont follow heroes on adventure map")
@@ -369,6 +370,12 @@ int main(int argc, char * argv[])
 		session["testsave"].String() = vm["testsave"].as<std::string>();
 		session["onlyai"].Bool() = true;
 		GAME->server().debugStartTest(session["testsave"].String(), true);
+	}
+	else if(vm.count("battle-only"))
+	{
+		session["battleOnlyConfig"].String() = vm["battle-only"].as<std::string>();
+		session["onlyai"].Bool() = true;
+		GAME->server().debugStartBattleOnly(session["battleOnlyConfig"].String());
 	}
 	else if (!settings["session"]["headless"].Bool())
 	{
