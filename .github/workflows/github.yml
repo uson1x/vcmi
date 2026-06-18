@@ -440,7 +440,7 @@ jobs:
 
     - name: Upload AAB Artifact
       id: upload_aab
-      if: ${{ startsWith(matrix.platform, 'android') && github.ref == 'refs/heads/master' }}
+      if: ${{ startsWith(matrix.platform, 'android') }}
       uses: actions/upload-artifact@v7
       with:
         archive: false
