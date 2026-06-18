@@ -28,11 +28,17 @@ void expectQuestMission(const CQuest & actual, const ExpectedMission & expected,
 	EXPECT_EQ(actual.mission, normalized);
 
 	if(!expected.firstVisitText.empty())
+	{
 		EXPECT_EQ(expected.firstVisitText, actual.firstVisitText.toString());
+	}
 	if(!expected.nextVisitText.empty())
+	{
 		EXPECT_EQ(expected.nextVisitText, actual.nextVisitText.toString());
+	}
 	if(!expected.completedText.empty())
+	{
 		EXPECT_EQ(expected.completedText, actual.completedText.toString());
+	}
 }
 
 } // namespace quest_test
