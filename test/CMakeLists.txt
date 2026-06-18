@@ -146,6 +146,10 @@ set(mock_HEADERS
 if(MSVC)
 	set(gtest_force_shared_crt ON CACHE BOOL "Use shared (DLL) run-time lib even when Google Test is built as static lib." FORCE)
 endif()
+check_cxx_compiler_flag(-Wcharacter-conversion CHARCONV)
+if(CHARCONV)
+	add_compile_options(-Wno-error=character-conversion) #Used in googletest
+endif()
 check_cxx_compiler_flag(-Wimplicit-int-float-conversion CONV)
 if(CONV)
 	add_compile_options(-Wno-error=implicit-int-float-conversion) #Used in googletest

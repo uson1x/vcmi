@@ -99,7 +99,7 @@ jobs:
             artifact_platform: arm64
 
           - platform: android-32
-            os: ubuntu-latest
+            os: ubuntu-24.04
             upload: 1
             extension: apk
             preset: android-conan-ninja-release
@@ -109,7 +109,7 @@ jobs:
             artifact_platform: armeabi-v7a
 
           - platform: android-64
-            os: ubuntu-latest
+            os: ubuntu-24.04
             upload: 1
             extension: apk
             preset: android-conan-ninja-release
@@ -119,7 +119,7 @@ jobs:
             artifact_platform: arm64-v8a
 
           - platform: android-64-intel
-            os: ubuntu-latest
+            os: ubuntu-24.04
             upload: 1
             extension: apk
             preset: android-conan-ninja-release
@@ -554,17 +554,17 @@ jobs:
       matrix:
         include:
           - platform: gcc-latest-release
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             before_install: linux_qt6.sh
-            compiler_cxx: g++-14
-            compiler_cc: gcc-14
+            compiler_cxx: g++-15
+            compiler_cc: gcc-15
             preset: linux-gcc-test
 
           - platform: clang-latest-debug
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             before_install: linux_qt6.sh
-            compiler_cxx: clang++-18
-            compiler_cc: clang-18
+            compiler_cxx: clang++-22
+            compiler_cc: clang-22
             preset: linux-clang-debug
 
           - platform: gcc-oldest-debug
@@ -832,7 +832,7 @@ jobs:
   validate-code:
     name: Validate Code
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -865,7 +865,7 @@ jobs:
     name: Build report
     if: always()
     needs: [build, windows-installer, validate-code, test, upload-source-package]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       actions: write                   # Partial JSON artifacts can't be deleted in PRs
