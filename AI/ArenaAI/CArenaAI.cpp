@@ -49,6 +49,7 @@ constexpr int MAX_MOVE_OPTIONS = 24;
 constexpr int MAX_BUILD_OPTIONS = 36;
 constexpr int MAX_RECRUIT_OPTIONS = 36;
 constexpr int MAX_RECRUIT_HERO_OPTIONS = 8;
+constexpr int MAX_MANAGE_ARMY_OPTIONS = 16;
 
 std::string sideFromPlayer(const PlayerColor & player)
 {
@@ -797,6 +798,74 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		legalActions.Vector().push_back(recruitHeroGroup);
 	}
 
+	// T2 Phase B: army management. When a friendly hero is VISITING a friendly town,
+	// let the model move stacks between the town garrison and the hero. The key gap
+	// this closes: RECRUIT lands creatures in the town garrison, so a roaming hero
+	// fields a weak army while strength piles up uselessly at home (T2 run: hero 1435
+	// vs garrison 1550). "garrison_to_hero" lets the hero collect what it recruited;
+	// "hero_to_garrison" lets it drop weak troops (never emptying the hero).
+	JsonNode manageGroup;
+	manageGroup["type"].String() = "MANAGE_ARMY";
+	JsonNode manageOptions;
+	manageOptions.setType(JsonNode::JsonType::DATA_VECTOR);
+	int manageEmitted = 0;
+	for(const auto * town : towns)
+	{
+		if(town == nullptr)
+			continue;
+		const CGHeroInstance * visiting = town->getVisitingHero();
+		if(visiting == nullptr || visiting->tempOwner != playerID)
+			continue;
+		const int townIdNum = town->id.getNum();
+		const int heroIdNum = visiting->id.getNum();
+
+		auto pushManageOption = [&](int direction, const CCreatureSet & srcArmy, const SlotID & slotId)
+		{
+			const CCreature * creature = srcArmy.getCreature(slotId);
+			if(creature == nullptr)
+				return;
+			JsonNode option;
+			option["option_id"].String() = "manage_t_" + std::to_string(townIdNum)
+				+ "_h_" + std::to_string(heroIdNum)
+				+ "_dir_" + std::to_string(direction)
+				+ "_s_" + std::to_string(slotId.getNum());
+			option["town_id"].String() = townToken(townIdNum);
+			option["hero_id"].String() = heroToken(heroIdNum);
+			option["direction"].String() = direction == 0 ? "garrison_to_hero" : "hero_to_garrison";
+			option["unit"].String() = creature->getJsonKey();
+			option["unit_name"].String() = creature->getNameSingularTranslated();
+			option["count"].Integer() = srcArmy.getStackCount(slotId);
+			manageOptions.Vector().push_back(option);
+			++manageEmitted;
+		};
+
+		// Pickup: each garrison stack -> hero.
+		for(const auto & slot : town->Slots())
+		{
+			if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
+				break;
+			pushManageOption(0, *town, slot.first);
+		}
+		// Deposit: each hero stack -> garrison, but never offer a move that empties the
+		// hero of its last stack (the engine forbids it and it would be suicidal anyway).
+		if(visiting->stacksCount() >= 2)
+		{
+			for(const auto & slot : visiting->Slots())
+			{
+				if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
+					break;
+				pushManageOption(1, *visiting, slot.first);
+			}
+		}
+		if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
+			break;
+	}
+	if(!manageOptions.Vector().empty())
+	{
+		manageGroup["options"] = manageOptions;
+		legalActions.Vector().push_back(manageGroup);
+	}
+
 	payload["legal_actions"] = legalActions;
 	payload["decision_budget"]["timeout_ms"].Integer() = std::max(100, std::min(decisionTimeoutMs, turnRemainingMs));
 	payload["decision_budget"]["turn_remaining_ms"].Integer() = std::max(0, turnRemainingMs);
@@ -1224,6 +1293,35 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 			return false;
 
 		cb->recruitHero(town, selectedHero);
+		return true;
+	}
+
+	if(actionType == "MANAGE_ARMY")
+	{
+		std::optional<int> townId = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_t_") : std::nullopt;
+		std::optional<int> heroId = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_h_") : std::nullopt;
+		std::optional<int> direction = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_dir_") : std::nullopt;
+		std::optional<int> srcSlot = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_s_") : std::nullopt;
+		if(!townId && selectedAction.isStruct() && selectedAction["town_id"].isString())
+			townId = parseOptionValue(selectedAction["town_id"].String());
+		if(!heroId && selectedAction.isStruct() && selectedAction["hero_id"].isString())
+			heroId = parseOptionValue(selectedAction["hero_id"].String());
+		if(!townId || !heroId || !direction || !srcSlot)
+			return false;
+
+		const CGTownInstance * town = findTownById(*townId);
+		const CGHeroInstance * hero = findHeroById(*heroId);
+		if(town == nullptr || hero == nullptr)
+			return false;
+		// Both armies must be co-located (hero visiting the town) for a transfer.
+		if(town->getVisitingHero() != hero)
+			return false;
+
+		const SlotID slot(*srcSlot);
+		if(*direction == 0)
+			cb->bulkMoveArmy(town->id, hero->id, slot); // garrison -> hero
+		else
+			cb->bulkMoveArmy(hero->id, town->id, slot); // hero -> garrison
 		return true;
 	}
 
