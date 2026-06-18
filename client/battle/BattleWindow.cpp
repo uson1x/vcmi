@@ -41,7 +41,6 @@
 #include "../windows/settings/SettingsMainWindow.h"
 
 #include "../../lib/CConfigHandler.h"
-#include "../../lib/CPlayerState.h"
 #include "../../lib/CStack.h"
 #include "../../lib/GameLibrary.h"
 #include "../../lib/StartInfo.h"
@@ -635,11 +634,7 @@ bool BattleWindow::canOfferMarketplaceForSurrender() const
 	// The feature can be granted either to the hero (e.g. artifact) or to the player
 	// (e.g. global/player-wide config bonus). Accept either source.
 	const CGHeroInstance * hero = owner.getBattle()->battleGetMyHero();
-	if(hero && hero->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS))
-		return true;
-
-	const PlayerState * playerState = owner.curInt->cb->getPlayerState(owner.curInt->playerID);
-	return playerState && playerState->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS);
+	return hero && hero->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS);
 }
 
 void BattleWindow::offerMarketplaceForSurrender()
