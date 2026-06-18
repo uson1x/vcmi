@@ -259,11 +259,9 @@ void ApplyGhNetPackVisitor::visitTradeOnMarketplace(TradeOnMarketplace & pack)
 	gh.throwIfWrongPlayer(connection, &pack);
 	if(resourceTradeDuringBattle)
 	{
-		const PlayerState * playerState = gh.gameState().getPlayerState(pack.player);
-		const bool playerHasAccess = playerState && playerState->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS);
 		const bool heroHasAccess = hero && hero->getOwner() == pack.player && hero->hasBonusOfType(BonusType::SURRENDER_MARKETPLACE_ACCESS);
 
-		if(!playerHasAccess && !heroHasAccess)
+		if(!heroHasAccess)
 			gh.throwAndComplain(connection, "Can not trade - no surrender marketplace access!");
 	}
 	else
