@@ -14,6 +14,8 @@
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGObjectInstance.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
+#include "../../lib/mapObjects/army/CArmedInstance.h"
+#include "../../lib/mapObjects/army/CCreatureSet.h"
 #include "../../lib/mapping/TerrainTile.h"
 #include "../../lib/networkPacks/Component.h"
 #include "../../lib/pathfinder/CGPathNode.h"
@@ -112,6 +114,30 @@ void pushResourceSnapshot(JsonNode & resourcesNode, const ResourceSet & resource
 	resourcesNode["crystal"].Integer() = resources[EGameResID::CRYSTAL];
 	resourcesNode["gems"].Integer() = resources[EGameResID::GEMS];
 	resourcesNode["gold"].Integer() = resources[EGameResID::GOLD];
+}
+
+// Render an army's stacks (hero or town garrison) so the model can reason about
+// specific creatures/counts instead of a single opaque army_power scalar. This is
+// the core of T2's "fight smart" visibility: knowing you have 5 weak stacks vs one
+// strong one changes whether you should press into a guarded fight.
+void pushArmyStacks(JsonNode & stacksNode, const CCreatureSet & army)
+{
+	stacksNode.setType(JsonNode::JsonType::DATA_VECTOR);
+	for(const auto & slot : army.Slots())
+	{
+		const SlotID slotId = slot.first;
+		const CCreature * creature = army.getCreature(slotId);
+		if(creature == nullptr)
+			continue;
+		JsonNode node;
+		node["slot"].Integer() = slotId.getNum();
+		node["unit"].String() = creature->getJsonKey();
+		node["name"].String() = creature->getNameSingularTranslated();
+		node["count"].Integer() = army.getStackCount(slotId);
+		node["power"].Integer() = static_cast<si64>(army.getPower(slotId));
+		node["level"].Integer() = static_cast<si64>(creature->getLevel());
+		stacksNode.Vector().push_back(node);
+	}
 }
 
 std::string heroToken(int heroId)
@@ -289,6 +315,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		heroNode["army_power"].Integer() = static_cast<si64>(hero->getTotalStrength());
 		heroNode["level"].Integer() = hero->level;
 		heroNode["mana"].Integer() = hero->mana;
+		JsonNode heroArmyNodes;
+		pushArmyStacks(heroArmyNodes, *hero);
+		heroNode["army"] = heroArmyNodes;
 		friendlyHeroNodes.Vector().push_back(heroNode);
 	}
 	payload["visible_state"]["friendly"]["heroes"] = friendlyHeroNodes;
@@ -343,6 +372,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			recruitNodes.Vector().push_back(recruitNode);
 		}
 		townNode["recruit_pool"] = recruitNodes;
+
+		JsonNode garrisonNodes;
+		pushArmyStacks(garrisonNodes, *town);
+		townNode["garrison"] = garrisonNodes;
 		friendlyTownNodes.Vector().push_back(townNode);
 	}
 	payload["visible_state"]["friendly"]["towns"] = friendlyTownNodes;
@@ -451,6 +484,24 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		return dy > 0 ? 3 : 5;     // SW / NW
 	};
 
+	// T2 threat estimate: total army strength of the wandering monster(s) guarding a
+	// destination tile. Surfaced on the move option so the model can compare it to its
+	// own army_power and refuse fights it can only win by bleeding out (the T1 failure
+	// mode: the hero won guard battles for territory but lost its army doing it).
+	auto guardPowerAt = [this](const int3 & pos, std::string & nameOut) -> long long {
+		long long total = 0;
+		for(const auto * guard : cb->getGuardingCreatures(pos))
+		{
+			const auto * armed = dynamic_cast<const CArmedInstance *>(guard);
+			if(armed == nullptr)
+				continue;
+			total += static_cast<long long>(armed->getArmyStrength());
+			if(nameOut.empty())
+				nameOut = guard->getObjectName();
+		}
+		return total;
+	};
+
 	int emitted = 0;
 	for(const auto * hero : heroes)
 	{
@@ -520,6 +571,14 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			option["to_y"].Integer() = dst.y;
 			option["turns_to_reach"].Integer() = 0;
 			option["move_remains"].Integer() = bestMoveRemains[oct];
+			std::string guardName;
+			const long long guardPower = guardPowerAt(dst, guardName);
+			if(guardPower > 0)
+			{
+				option["guard_power"].Integer() = guardPower;
+				if(!guardName.empty())
+					option["guard_name"].String() = guardName;
+			}
 			moveOptions.Vector().push_back(option);
 			++emitted;
 		}
@@ -577,6 +636,14 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			option["to_y"].Integer() = opos.y;
 			option["turns_to_reach"].Integer() = std::get<0>(target);
 			option["move_remains"].Integer() = std::get<1>(target);
+			std::string guardName;
+			const long long guardPower = guardPowerAt(opos, guardName);
+			if(guardPower > 0)
+			{
+				option["guard_power"].Integer() = guardPower;
+				if(!guardName.empty())
+					option["guard_name"].String() = guardName;
+			}
 			moveOptions.Vector().push_back(option);
 			++emitted;
 		}
