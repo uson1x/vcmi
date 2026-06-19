@@ -79,6 +79,11 @@ private:
 	// Continue any standing per-hero travel goals one turn's worth before asking
 	// the model, so multi-turn "go take that object" intents actually complete.
 	void advanceTravelGoals();
+	// Pull each town's garrison into its visiting hero at turn start, so recruited
+	// reinforcements join the field army instead of piling up idle (the model
+	// recruits remotely but often never returns to collect). Kill-switch:
+	// ARENA_DISABLE_AUTO_COLLECT=1.
+	void autoCollectGarrisons();
 	// The first unowned (not ours) visitable object on a tile, or nullptr.
 	const CGObjectInstance * unownedObjectAt(const int3 & pos) const;
 

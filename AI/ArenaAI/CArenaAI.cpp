@@ -596,11 +596,24 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		{
 			if(obj == nullptr)
 				continue;
-			// T1: never offer "visit" moves to objects we already own (our own town,
-			// already-flagged mines/dwellings). Re-visiting them yields nothing and
-			// the model kept burning picks and the hero's movement on them.
+			// T1: skip already-owned objects (our flagged mines/dwellings) — re-visiting
+			// yields nothing. EXCEPTION: our own town while it holds an uncollected
+			// garrison. The hero legitimately needs to return there to pick those troops
+			// up; the model recognizes this in its plan ("move onto town to MANAGE_ARMY
+			// merging all N Imps") but, without this move being offered, has no way to act
+			// on it — so its recruited army strands at home (observed: 7500-power garrison
+			// idle vs a 2256 roaming hero). Once the hero arrives, auto-collect / MANAGE_ARMY
+			// grabs the garrison.
 			if(obj->tempOwner == playerID)
-				continue;
+			{
+				const auto * ownTown = dynamic_cast<const CGTownInstance *>(obj);
+				const bool collectableGarrison =
+					ownTown != nullptr
+					&& ownTown->getUpperArmy() != nullptr
+					&& ownTown->getUpperArmy()->stacksCount() > 0;
+				if(!collectableGarrison)
+					continue;
+			}
 			const int3 opos = obj->visitablePos();
 			if(opos == from)
 				continue;
@@ -1428,6 +1441,11 @@ void CArenaAI::runTurn(QueryID queryID)
 
 	if(bridgeEnabled)
 	{
+		// Collect any garrison troops into a visiting hero FIRST, so recruited
+		// reinforcements join the field army before the hero ventures out (the model
+		// recruits remotely but often never returns to collect — observed a 7500-power
+		// garrison stranded idle vs a 2256-power roaming hero).
+		autoCollectGarrisons();
 		// T1: before asking the model, continue any standing travel goals so a
 		// multi-turn "go take that object" intent actually completes across turns
 		// rather than the hero re-deciding each step and oscillating in place.
@@ -1614,6 +1632,40 @@ void CArenaAI::advanceTravelGoals()
 			it = heroTravelGoals.erase(it);
 		else
 			++it;
+	}
+}
+
+void CArenaAI::autoCollectGarrisons()
+{
+	// Kill-switch (mirrors auto-advance), in case it ever needs disabling without a rebuild.
+	if(const char * disable = std::getenv("ARENA_DISABLE_AUTO_COLLECT"))
+		if(disable[0] == '1')
+			return;
+
+	for(const auto * town : cb->getTownsInfo(true))
+	{
+		if(town == nullptr)
+			continue;
+		const CGHeroInstance * hero = town->getVisitingHero();
+		if(hero == nullptr)
+			continue; // no hero standing in the town to receive the garrison
+		// Snapshot the occupied garrison slots first; each move realizes (waitTillRealize)
+		// before the next, so re-reading getCreature(slot) reflects the post-move state.
+		std::vector<SlotID> slots;
+		for(const auto & s : town->Slots())
+			slots.push_back(s.first);
+		for(const SlotID slot : slots)
+		{
+			if(aborting)
+				break;
+			const CCreature * cre = town->getCreature(slot);
+			if(cre == nullptr)
+				continue; // slot already emptied
+			const SlotID dst = hero->getSlotFor(cre);
+			if(!dst.validSlot())
+				break; // hero army full (7 distinct stacks) — leave the rest in town
+			cb->mergeOrSwapStacks(town, hero, slot, dst); // full stack, no leave-one
+		}
 	}
 }
 
