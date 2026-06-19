@@ -24,7 +24,9 @@ jobs:
         java-version: '11'
 
     - name: Download & unpack archive
-      run: curl -L '${{ inputs.build_dir_xz_url }}' | tar -xf - --xz
+      env:
+        BUILD_DIR_XZ_URL: ${{ inputs.build_dir_xz_url }}
+      run: curl -L "$BUILD_DIR_XZ_URL" | tar -xf - --xz
 
     - name: Build aab
       run: |

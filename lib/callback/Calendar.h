@@ -18,7 +18,7 @@ class IGameSettings;
 /// to the IGameSettings that provides week/month length.
 class DLL_LINKAGE Calendar final
 {
-	const IGameSettings * settings;
+	const IGameSettings * gameSettings;
 	int day;
 
 public:

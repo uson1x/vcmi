@@ -145,7 +145,7 @@ Effects::EffectsMap Effects::loadJson(const JsonNode & effectMap, const std::str
 		effect->spellIdentifier = spellIdentifier;
 		effect->init(std::move(data));
 
-		result.emplace(name, std::move(effect));
+		result.try_emplace(name, std::move(effect));
 	}
 
 	return result;

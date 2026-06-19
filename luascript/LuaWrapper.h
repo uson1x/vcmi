@@ -120,7 +120,7 @@ public:
 	void pushMetatable(lua_State * L) const final
 	{
 		static const auto KEY = api::Registry::get()->getTypeName<UDataType>();
-		static auto S_KEY = api::Registry::get()->getTypeName<CUDataType>();
+		static const auto S_KEY = api::Registry::get()->getTypeName<CUDataType>();
 
 		LuaStack S(L);
 

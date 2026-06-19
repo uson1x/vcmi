@@ -9,6 +9,8 @@
  */
 #include "StdInc.h"
 
+#include <vstd/DateUtils.h>
+
 #include "../server/CVCMIServer.h"
 
 #include "../lib/CConsoleHandler.h"
@@ -253,8 +255,9 @@ static void handleCommandOptions(int argc, const char * argv[], boost::program_o
 	if(options.count("help"))
 	{
 		auto time = std::time(nullptr);
+		std::tm tm = vstd::safeLocalTime(time);
 		printf("%s - A Heroes of Might and Magic 3 clone\n", GameConstants::VCMI_PROJECT_NAME_VERSIONED);
-		printf("Copyright (C) 2007-%d VCMI dev team - see AUTHORS file\n", std::localtime(&time)->tm_year + 1900);
+		printf("Copyright (C) 2007-%d VCMI dev team - see AUTHORS file\n", tm.tm_year + 1900);
 		printf("This is free software; see the source for copying conditions. There is NO\n");
 		printf("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
 		printf("\n");

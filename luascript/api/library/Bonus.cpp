@@ -70,7 +70,7 @@ si32        BonusProxy::getParametersAsNumber(const Bonus & b) { return b.parame
 
 std::vector<BonusDuration::BonusDuration> BonusProxy::getDuration(const Bonus & b)
 {
-	static constexpr BonusDuration::BonusDuration all[] = {
+	static constexpr std::array all = {
 		BonusDuration::PERMANENT,
 		BonusDuration::ONE_BATTLE,
 		BonusDuration::ONE_DAY,

@@ -98,7 +98,7 @@ public:
 
 	TeleportDialog td; //copy of pack... debug purposes
 
-	CTeleportDialogQuery(CGameHandler * owner, const TeleportDialog &td);
+	CTeleportDialogQuery(CGameHandler * owner, const TeleportDialog & dialog);
 
 	void notifyObjectAboutRemoval(const CGObjectInstance * visitedObject, const CGHeroInstance * visitingHero) const override;
 };

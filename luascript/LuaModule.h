@@ -24,8 +24,7 @@ namespace scripting
 
 class LuaScriptInstance;
 
-/// Top-level Lua scripting service loaded as a DLL plugin by ScriptingHandler; owns script factories and creates script pools.
-/// Entry point exposed to the engine via GetNewModule() and GetAiName() C exports.
+/// Top-level Lua scripting service; owns script factories and creates script pools.
 class DLL_LINKAGE LuaModule final : public Service
 {
 public:
