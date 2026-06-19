@@ -564,16 +564,10 @@ DamageEstimation DamageCalculator::calculateDmgRange() const
 	double defenseFactorTotal = 1.0;
 
 	for (auto & factor : attackFactors)
-	{
-		assert(factor >= 0.0);
 		attackFactorTotal += factor;
-	}
 
 	for (auto & factor : defenseFactors)
-	{
-		assert(factor >= 0.0);
 		defenseFactorTotal *= (1 - std::min(1.0, factor));
-	}
 
 	double resultingFactor = attackFactorTotal * defenseFactorTotal;
 
