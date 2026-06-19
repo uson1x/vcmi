@@ -1319,9 +1319,28 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 
 		const SlotID slot(*srcSlot);
 		if(*direction == 0)
-			cb->bulkMoveArmy(town->id, hero->id, slot); // garrison -> hero
+		{
+			// garrison -> hero. Do NOT use bulkMoveArmy here: it deliberately leaves one
+			// unit behind so it never empties the SOURCE army (correct for hero<->hero
+			// exchange — a hero may not be left with zero troops). But a town garrison MAY
+			// legally be empty, so against a garrison bulkMoveArmy strands the last creature
+			// of a stack forever; the model then loops on "pick up the remaining unit" and
+			// the whole game stalls (observed: army frozen for 18 turns). Move the entire
+			// stack into the hero's matching slot (merge) or a free slot (swap) instead.
+			const CCreature * cre = town->getCreature(slot);
+			if(cre == nullptr)
+				return false;
+			const SlotID dstSlot = hero->getSlotFor(cre);
+			if(!dstSlot.validSlot())
+				return false; // hero army full with no matching slot — cannot pick up
+			cb->mergeOrSwapStacks(town, hero, slot, dstSlot); // garrison stack -> hero, in full
+		}
 		else
-			cb->bulkMoveArmy(hero->id, town->id, slot); // hero -> garrison
+		{
+			// hero -> garrison: bulkMoveArmy's leave-one rule is DESIRABLE here (never empty
+			// the hero), so keep it for deposits.
+			cb->bulkMoveArmy(hero->id, town->id, slot);
+		}
 		return true;
 	}
 
