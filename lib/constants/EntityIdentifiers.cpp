@@ -10,9 +10,6 @@
 
 #include "StdInc.h"
 
-#ifndef VCMI_NO_EXTRA_VERSION
-#include "../../Version.h"
-#endif
 #include <vcmi/Artifact.h>
 #include <vcmi/ArtifactService.h>
 #include <vcmi/Faction.h>
@@ -127,15 +124,6 @@ const MapLayerId MapLayerId::NONE(-1);
 const MapLayerId MapLayerId::SURFACE(0);
 const MapLayerId MapLayerId::UNDERGROUND(1);
 const MapLayerId MapLayerId::UNKNOWN(2);
-
-namespace GameConstants
-{
-#ifdef VCMI_NO_EXTRA_VERSION
-	const std::string VCMI_VERSION = "VCMI " VCMI_VERSION_STRING;
-#else
-	const std::string VCMI_VERSION = "VCMI " VCMI_VERSION_STRING "." + std::string{GIT_SHA1};
-#endif
-}
 
 BuildingTypeUniqueID::BuildingTypeUniqueID(FactionID factionID, BuildingID buildingID ):
 	BuildingTypeUniqueID(factionID.getNum() * 0x10000 + buildingID.getNum())
