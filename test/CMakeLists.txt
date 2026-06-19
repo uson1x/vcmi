@@ -44,6 +44,15 @@ set(test_SRCS
 		map/CMapFormatTest.cpp
 		map/CGArtifactRegressionTest.cpp
 		map/MapComparer.cpp
+		map/TinyH3MBuilderTest.cpp
+
+		quest/QuestTest.cpp
+		quest/QuestAssertions.cpp
+		quest/QuestScenarios.cpp
+		quest/CQuestLoaderTest.cpp
+		quest/CQuestSeerTest.cpp
+		quest/CQuestGuardTest.cpp
+		quest/CQuestBorderTest.cpp
 
 		netpacks/NetPackFixture.cpp
 
@@ -87,8 +96,11 @@ set(test_SRCS
 		mock/BattleFake.cpp
 		mock/mock_IGameEventCallback.cpp
  		mock/mock_MapService.cpp
+ 		mock/mock_MapServiceTinyH3M.cpp
  		mock/mock_BonusBearer.cpp
 		mock/mock_CPSICallback.cpp
+		mock/TinyH3MWriter.cpp
+		mock/TinyH3MBuilder.cpp
 )
 
 set(test_HEADERS
@@ -110,8 +122,15 @@ set(test_HEADERS
 		mock/mock_CStack.h
 		mock/mock_IGameEventCallback.h
  		mock/mock_MapService.h
+ 		mock/mock_MapServiceTinyH3M.h
 		mock/mock_BonusBearer.h
 		mock/TownFake.h
+		mock/TinyH3MWriter.h
+		mock/TinyH3MBuilder.h
+
+		quest/QuestTest.h
+		quest/QuestAssertions.h
+		quest/QuestScenarios.h
 )
 
 if(ENABLE_BATTLE_AI)
