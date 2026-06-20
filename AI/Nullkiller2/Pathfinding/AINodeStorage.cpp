@@ -18,6 +18,7 @@
 #include "../../../lib/pathfinder/PathfinderOptions.h"
 #include "../../../lib/pathfinder/PathfinderUtil.h"
 #include "../../../lib/spells/ISpellMechanics.h"
+#include "../../../lib/spells/CSpellHandler.h"
 #include "../../../lib/spells/adventure/TownPortalEffect.h"
 #include "../Engine/Nullkiller.h"
 #include "../AIGateway.h"
@@ -178,13 +179,12 @@ void AINodeStorage::clear()
 }
 
 std::optional<AIPathNode *> AINodeStorage::getOrCreateNode(
-	const int3 & pos, 
-	const EPathfindingLayer layer, 
+	const int3 & pos,
+	const EPathfindingLayer layer,
 	const ChainActor * actor)
 {
-	// Mircea: A bit more CPU to drop buckets but better memory usage to use all nodes, then we avoid unbalanced distribution
-	int bucketIndex = ((uintptr_t)actor + layer.getNum()) % aiNk->settings->getPathfinderBucketsCount();
-	int bucketOffset = bucketIndex * aiNk->settings->getPathfinderBucketSize();
+	// Modified to 1 bucket because properly load balancing multiple buckets is not worth. Backwards compatible
+	const int total = aiNk->settings->getPathfinderBucketSize() * aiNk->settings->getPathfinderBucketsCount();
 	auto chains = nodes.get(pos);
 
 	if(blocked(pos, layer))
@@ -192,22 +192,19 @@ std::optional<AIPathNode *> AINodeStorage::getOrCreateNode(
 		return std::nullopt;
 	}
 
-	for(auto i = aiNk->settings->getPathfinderBucketSize() - 1; i >= 0; i--)
+	for(auto i = 0; i < total; i++)
 	{
-		AIPathNode & node = chains[i + bucketOffset];
+		AIPathNode & node = chains[i];
 		if(node.version != AISharedStorage::version)
 		{
 			node.reset(layer, getAccessibility(pos, layer));
 			node.version = AISharedStorage::version;
 			node.actor = actor;
-
 			return &node;
 		}
 
 		if(node.actor == actor && node.layer == layer)
-		{
 			return &node;
-		}
 	}
 
 	aiNk->pathfinderTurnStorageMisses.fetch_add(1);
@@ -233,9 +230,9 @@ std::vector<CGPathNode *> AINodeStorage::getInitialNodes()
 		auto allocated = getOrCreateNode(actor->initialPosition, actor->layer, actor);
 		if(!allocated)
 		{
-#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
-			logAi->trace(
-				"AINodeStorage::getInitialNodes Failed to allocate node at %s[%d]",
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
+			logAi->warn(
+				"P:Step0 AINodeStorage::getInitialNodes Failed to allocate node at %s[%d]",
 				actor->initialPosition.toString(),
 				static_cast<int32_t>(actor->layer));
 #endif
@@ -323,11 +320,11 @@ void AINodeStorage::commit(CDestinationNodeInfo & destination, const PathNodeInf
 }
 
 void AINodeStorage::commit(
-	AIPathNode * destination, 
-	const AIPathNode * source, 
-	EPathNodeAction action, 
-	int turn, 
-	int movementLeft, 
+	AIPathNode * destination,
+	const AIPathNode * source,
+	EPathNodeAction action,
+	int turn,
+	int movementLeft,
 	float cost,
 	bool saveToCommitted) const
 {
@@ -397,9 +394,9 @@ void AINodeStorage::calculateNeighbours(
 		auto nextNode = getOrCreateNode(neighbour, layer, srcNode->actor);
 		if(!nextNode)
 		{
-#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
-			logAi->trace(
-				"AINodeStorage::calculateNeighbours Failed to allocate node at %s[%d]",
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2 // Suuuuper noisy, leave on 2
+			logAi->warn(
+				"P:Step1 AINodeStorage::calculateNeighbours Failed to allocate node at %s[%d]",
 				neighbour.toString(),
 				static_cast<int32_t>(layer));
 #endif
@@ -474,20 +471,6 @@ bool AINodeStorage::calculateHeroChainFinal()
 	return heroChain.size();
 }
 
-struct DelayedWork
-{
-	AIPathNode * carrier;
-	AIPathNode * other;
-
-	DelayedWork()
-	{
-	}
-	
-	DelayedWork(AIPathNode * carrier, AIPathNode * other) : carrier(carrier), other(other)
-	{
-	}
-};
-
 class HeroChainCalculationTask
 {
 private:
@@ -498,18 +481,16 @@ private:
 	int heroChainTurn;
 	std::vector<CGPathNode *> heroChain;
 	const std::vector<int3> & tiles;
-	std::vector<DelayedWork> delayedWork;
 
 public:
-	HeroChainCalculationTask(
-		AINodeStorage & storage, const std::vector<int3> & tiles, uint64_t chainMask, int heroChainTurn)
-		:existingChains(), newChains(), delayedWork(), storage(storage), chainMask(chainMask), heroChainTurn(heroChainTurn), heroChain(), tiles(tiles)
+	HeroChainCalculationTask(AINodeStorage & storage, const std::vector<int3> & tiles, const uint64_t chainMask, const int heroChainTurn)
+		: storage(storage), chainMask(chainMask), heroChainTurn(heroChainTurn), tiles(tiles)
 	{
 		existingChains.reserve(storage.getBucketCount() * storage.getBucketSize());
 		newChains.reserve(storage.getBucketCount() * storage.getBucketSize());
 	}
 
-	void execute(const tbb::blocked_range<size_t>& r)
+	void execute(const tbb::blocked_range<size_t> & r)
 	{
 		std::minstd_rand randomEngine;
 
@@ -520,20 +501,21 @@ public:
 			for(auto layer : phisycalLayers)
 			{
 				existingChains.clear();
-
-				storage.iterateValidNodes(pos, layer, [this](AIPathNode & node)
+				storage.iterateValidNodes(
+					pos,
+					layer,
+					[this](AIPathNode & node)
 					{
 						if(node.turns <= heroChainTurn && node.action != EPathNodeAction::UNKNOWN)
 							existingChains.push_back(&node);
-					});
+					}
+				);
 
 				if(existingChains.empty())
 					continue;
 
 				newChains.clear();
-
 				std::shuffle(existingChains.begin(), existingChains.end(), randomEngine);
-
 				for(AIPathNode * node : existingChains)
 				{
 					if(node->actor->isMovable)
@@ -541,22 +523,6 @@ public:
 						calculateHeroChain(node, existingChains, newChains);
 					}
 				}
-
-				for(auto delayed = delayedWork.begin(); delayed != delayedWork.end();)
-				{
-					auto newActor = delayed->carrier->actor->tryExchangeNoLock(delayed->other->actor);
-
-					if(!newActor.lockAcquired) continue;
-					
-					if(newActor.actor)
-					{
-						newChains.push_back(calculateExchange(newActor.actor, delayed->carrier, delayed->other));
-					}
-					
-					delayed++;
-				}
-
-				delayedWork.clear();
 
 				cleanupInefectiveChains(newChains);
 				addHeroChain(newChains);
@@ -593,27 +559,27 @@ bool AINodeStorage::calculateHeroChain()
 	heroChainPass = EHeroChainPass::CHAIN;
 	heroChain.clear();
 
-	std::vector<int3> data(committedTiles.begin(), committedTiles.end());
-
-	int maxConcurrency = tbb::this_task_arena::max_concurrency();
+	const std::vector<int3> tiles(committedTiles.begin(), committedTiles.end());
+	const int maxConcurrency = tbb::this_task_arena::max_concurrency();
 	std::vector<std::vector<CGPathNode *>> results(maxConcurrency);
+	logAi->trace("AINodeStorage::calculateHeroChain for %d items with %d maxConcurrency", tiles.size(), maxConcurrency);
 
-	logAi->trace("Caculating hero chain for %d items", data.size());
-
-	tbb::parallel_for(tbb::blocked_range<size_t>(0, data.size()), [&](const tbb::blocked_range<size_t>& r)
-	{
-		HeroChainCalculationTask task(*this, data, chainMask, heroChainTurn);
-		int ourThread = tbb::this_task_arena::current_thread_index();
-		task.execute(r);
-		task.flushResult(results.at(ourThread));
-	});
+	tbb::parallel_for(
+		tbb::blocked_range<size_t>(0, tiles.size(), 10),
+		[&](const tbb::blocked_range<size_t> & r)
+		{
+			HeroChainCalculationTask task(*this, tiles, chainMask, heroChainTurn);
+			const int ourThread = tbb::this_task_arena::current_thread_index();
+			task.execute(r);
+			task.flushResult(results.at(ourThread));
+		}
+	);
 
 	// FIXME: potentially non-deterministic behavior due to parallel_for
-	for (const auto & result : results)
+	for(const auto & result : results)
 		vstd::concatenate(heroChain, result);
 
 	committedTiles.clear();
-
 	return !heroChain.empty();
 }
 
@@ -691,7 +657,7 @@ void HeroChainCalculationTask::cleanupInefectiveChains(std::vector<ExchangeCandi
 		{
 			logAi->trace(
 				"Skip exchange %s[%x] -> %s[%x] at %s is inefficient",
-				chainInfo.otherParent->actor->toString(), 
+				chainInfo.otherParent->actor->toString(),
 				chainInfo.otherParent->actor->chainMask,
 				chainInfo.carrierParent->actor->toString(),
 				chainInfo.carrierParent->actor->chainMask,
@@ -704,8 +670,8 @@ void HeroChainCalculationTask::cleanupInefectiveChains(std::vector<ExchangeCandi
 }
 
 void HeroChainCalculationTask::calculateHeroChain(
-	AIPathNode * srcNode, 
-	const std::vector<AIPathNode *> & variants, 
+	AIPathNode * srcNode,
+	const std::vector<AIPathNode *> & variants,
 	std::vector<ExchangeCandidate> & result)
 {
 	for(AIPathNode * node : variants)
@@ -728,7 +694,7 @@ void HeroChainCalculationTask::calculateHeroChain(
 			continue;
 		}
 
-		if(node->turns > heroChainTurn 
+		if(node->turns > heroChainTurn
 			|| (node->action == EPathNodeAction::UNKNOWN && node->actor->hero)
 			|| (node->actor->chainMask & srcNode->actor->chainMask) != 0)
 		{
@@ -740,8 +706,8 @@ void HeroChainCalculationTask::calculateHeroChain(
 				srcNode->actor->toString(),
 				srcNode->actor->chainMask,
 				srcNode->coord.toString(),
-				(node->turns > heroChainTurn 
-					? "turn limit" 
+				(node->turns > heroChainTurn
+					? "turn limit"
 					: (node->action == EPathNodeAction::UNKNOWN && node->actor->hero)
 						? "action unknown"
 						: "chain mask"));
@@ -764,10 +730,10 @@ void HeroChainCalculationTask::calculateHeroChain(
 }
 
 void HeroChainCalculationTask::calculateHeroChain(
-	AIPathNode * carrier, 
-	AIPathNode * other, 
+	AIPathNode * carrier,
+	AIPathNode * other,
 	std::vector<ExchangeCandidate> & result)
-{	
+{
 	if(carrier->armyLoss < carrier->actor->armyValue
 		&& (carrier->action != EPathNodeAction::BATTLE || (carrier->actor->allowBattle && carrier->specialAction))
 		&& carrier->action != EPathNodeAction::BLOCKING_VISIT
@@ -797,10 +763,26 @@ void HeroChainCalculationTask::calculateHeroChain(
 			}
 		}
 
-		auto newActor = carrier->actor->tryExchangeNoLock(other->actor);
-		
-		if(!newActor.lockAcquired) delayedWork.push_back(DelayedWork(carrier, other));
-		if(newActor.actor) result.push_back(calculateExchange(newActor.actor, carrier, other));
+		const auto exchangeResult = carrier->actor->tryExchangeNoLock(other->actor);
+		if(exchangeResult.lockAcquired)
+		{
+			if (exchangeResult.actor)
+			{
+				if(exchangeResult.actor->hero != carrier->actor->hero)
+				{
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
+					logAi->trace(
+		"HeroChainCalculationTask::calculateHeroChain exchange direction mismatch: result=%s, carrier=%s, other=%s",
+						exchangeResult.actor->toString(),
+					carrier->actor->toString(),
+					other->actor->toString());
+#endif
+					return;
+				}
+				result.push_back(calculateExchange(exchangeResult.actor, carrier, other));
+			}
+			return;
+		}
 	}
 }
 
@@ -815,9 +797,9 @@ void HeroChainCalculationTask::addHeroChain(const std::vector<ExchangeCandidate>
 
 		if(!chainNodeOptional)
 		{
-#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
-			logAi->trace(
-				"HeroChainCalculationTask::addHeroChain Failed to allocate node at %s[%d]",
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2 // Suuuuper noisy, leave on 2
+			logAi->warn(
+				"P:Step4 HeroChainCalculationTask::addHeroChain Failed to allocate node at %s[%d]",
 				carrier->coord.toString(),
 				static_cast<int32_t>(carrier->layer));
 #endif
@@ -838,7 +820,7 @@ void HeroChainCalculationTask::addHeroChain(const std::vector<ExchangeCandidate>
 #endif
 			continue;
 		}
-		
+
 		if(exchangeNode->turns != 0xFF && exchangeNode->getCost() < chainInfo.getCost())
 		{
 #if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
@@ -860,7 +842,7 @@ void HeroChainCalculationTask::addHeroChain(const std::vector<ExchangeCandidate>
 			carrier,
 			carrier->action,
 			chainInfo.turns,
-			chainInfo.moveRemains, 
+			chainInfo.moveRemains,
 			chainInfo.getCost(),
 			DO_NOT_SAVE_TO_COMMITTED_TILES);
 
@@ -882,8 +864,8 @@ void HeroChainCalculationTask::addHeroChain(const std::vector<ExchangeCandidate>
 #if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
 		logAi->trace(
 			"HeroChainCalculationTask::addHeroChain Chain accepted at %s %s -> %s, mask %x, cost %f, turn: %s, mp: %d, army %i",
-			exchangeNode->coord.toString(), 
-			other->actor->toString(), 
+			exchangeNode->coord.toString(),
+			other->actor->toString(),
 			exchangeNode->actor->toString(),
 			exchangeNode->actor->chainMask,
 			exchangeNode->getCost(),
@@ -896,12 +878,12 @@ void HeroChainCalculationTask::addHeroChain(const std::vector<ExchangeCandidate>
 }
 
 ExchangeCandidate HeroChainCalculationTask::calculateExchange(
-	ChainActor * exchangeActor, 
-	AIPathNode * carrierParentNode, 
+	ChainActor * exchangeActor,
+	AIPathNode * carrierParentNode,
 	AIPathNode * otherParentNode) const
 {
 	ExchangeCandidate candidate;
-	
+
 	candidate.layer = carrierParentNode->layer;
 	candidate.coord = carrierParentNode->coord;
 	candidate.carrierParent = carrierParentNode;
@@ -947,9 +929,9 @@ bool AINodeStorage::isDistanceLimitReached(const PathNodeInfo & source, CDestina
 	{
 		return true;
 	}
-	
+
 	auto aiNode = getAINode(destination.node);
-	
+
 	if(heroChainPass != EHeroChainPass::CHAIN
 		&& destination.node->turns > turnDistanceLimit[aiNode->actor->heroRole])
 	{
@@ -959,7 +941,7 @@ bool AINodeStorage::isDistanceLimitReached(const PathNodeInfo & source, CDestina
 	return false;
 }
 
-void AINodeStorage::setHeroes(std::map<const CGHeroInstance *, HeroRole> heroes)
+void AINodeStorage::setHeroes(HeroMap<HeroRole> heroes)
 {
 	playerID = aiNk->playerID;
 
@@ -978,8 +960,7 @@ void AINodeStorage::setHeroes(std::map<const CGHeroInstance *, HeroRole> heroes)
 
 		if(actor->hero->tempOwner != aiNk->playerID)
 		{
-			bool onLand = !actor->hero->inBoat() || actor->hero->getBoat()->layer != EPathfindingLayer::SAIL;
-			actor->initialMovement = actor->hero->movementPointsLimit(onLand);
+			actor->initialMovement = actor->hero->movementPointsLimit();
 		}
 
 		playerID = actor->hero->tempOwner;
@@ -1004,7 +985,7 @@ void AINodeStorage::setTownsAndDwellings(
 		}
 	}
 
-	/*auto dayOfWeek = cb->getDate(Date::DAY_OF_WEEK);
+	/*auto dayOfWeek = cb->getCalendar().getDayOfWeek();
 	auto waitForGrowth = dayOfWeek > 4;*/
 
 	for(auto obj: visitableObjs)
@@ -1058,9 +1039,9 @@ std::vector<CGPathNode *> AINodeStorage::calculateTeleportations(
 			std::optional<AIPathNode *> node = getOrCreateNode(neighbour, source.node->layer, srcNode->actor);
 			if(!node)
 			{
-#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
-				logAi->trace(
-					"AINodeStorage::calculateTeleportations Failed to allocate node at %s[%d]",
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
+				logAi->warn(
+					"P:Step3 AINodeStorage::calculateTeleportations Failed to allocate node at %s[%d]",
 					neighbour.toString(),
 					static_cast<int32_t>(source.node->layer));
 #endif
@@ -1144,9 +1125,9 @@ struct TownPortalFinder
 		const auto nodeOptional = nodeStorage->getOrCreateNode(targetTown->visitablePos(), EPathfindingLayer::LAND, actor->castActor);
 		if(!nodeOptional)
 		{
-#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
-			logAi->trace(
-				"createTownPortalNode Failed to allocate node at %s[%d]",
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
+			logAi->warn(
+				"P:Step5 TownPortalFinder createTownPortalNode Failed to allocate node at %s[%d]",
 				targetTown->visitablePos().toString(),
 				static_cast<int32_t>(EPathfindingLayer::LAND));
 #endif
@@ -1154,7 +1135,7 @@ struct TownPortalFinder
 		}
 
 		AIPathNode * node = nodeOptional.value();
-		float movementCost = (float)movementNeeded / (float)hero->movementPointsLimit(EPathfindingLayer::LAND);
+		float movementCost = (float)movementNeeded / (float)hero->movementPointsLimit();
 		movementCost += bestNode->getCost();
 
 		if(node->action == EPathNodeAction::UNKNOWN || node->getCost() > movementCost)
@@ -1179,7 +1160,7 @@ struct TownPortalFinder
 template<class TVector>
 void AINodeStorage::calculateTownPortal(
 	const ChainActor * actor,
-	const std::map<const CGHeroInstance *, int> & maskMap,
+	const HeroMap<int> & maskMap,
 	const std::vector<CGPathNode *> & initialNodes,
 	TVector & output)
 {
@@ -1253,7 +1234,7 @@ void AINodeStorage::calculateTownPortalTeleportations(std::vector<CGPathNode *> 
 			actorsOfInitial.insert(aiNode->actor->baseActor);
 	}
 
-	std::map<const CGHeroInstance *, int> maskMap;
+	HeroMap<int> maskMap;
 
 	for(std::shared_ptr<ChainActor> basicActor : actors)
 	{
@@ -1455,18 +1436,30 @@ void AINodeStorage::calculateChainInfo(std::vector<AIPath> & paths, const int3 &
 		path.targetHero = node.actor->hero;
 		path.heroArmy = node.actor->creatureSet;
 		path.armyLoss = node.armyLoss;
-		path.targetObjectDanger = aiNk->dangerEvaluator->evaluateDanger(pos, path.targetHero, !node.actor->allowBattle);
-		for (auto pathNode : path.nodes)
+		path.chainMask = node.actor->chainMask;
+
+		RealMoveMasksByHero realMoveMasks;
+		int parentIndex = -1;
+		if(!tryReconstructChainInfo(&node, path, parentIndex, realMoveMasks))
 		{
-			path.targetObjectDanger = std::max(aiNk->dangerEvaluator->evaluateDanger(pathNode.coord, path.targetHero, !node.actor->allowBattle), path.targetObjectDanger);
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
+			logAi->trace("AINodeStorage::calculateChainInfo Skip conflicting reconstructed chain path %s", path.toString());
+#endif
+			paths.pop_back();
+			continue;
+		}
+		path.targetObjectDanger = aiNk->dangerEvaluator->evaluateDanger(pos, path.targetHero, !node.actor->allowBattle);
+		for(const auto & pathNode : path.nodes)
+		{
+			auto pathNodeDanger = aiNk->dangerEvaluator->evaluateDanger(pathNode.coord, path.targetHero, !node.actor->allowBattle);
+			path.targetObjectDanger = std::max(pathNodeDanger, path.targetObjectDanger);
 		}
 
 		if(path.targetObjectDanger > 0)
 		{
 			if(node.theNodeBefore)
 			{
-				auto prevNode = getAINode(node.theNodeBefore);
-
+				const auto * prevNode = getAINode(node.theNodeBefore);
 				if(node.coord == prevNode->coord && node.actor->hero == prevNode->actor->hero)
 				{
 					paths.pop_back();
@@ -1485,11 +1478,11 @@ void AINodeStorage::calculateChainInfo(std::vector<AIPath> & paths, const int3 &
 
 		int fortLevel = 0;
 		auto visitableObjects = aiNk->cc->getVisitableObjs(pos);
-		for (auto obj : visitableObjects)
+		for (const auto * obj : visitableObjects)
 		{
 			if (objWithID<Obj::TOWN>(obj))
 			{
-				auto town = dynamic_cast<const CGTownInstance*>(obj);
+				const auto * town = dynamic_cast<const CGTownInstance*>(obj);
 				fortLevel = town->fortLevel();
 			}
 		}
@@ -1498,49 +1491,83 @@ void AINodeStorage::calculateChainInfo(std::vector<AIPath> & paths, const int3 &
 			path.targetHero,
 			getHeroArmyStrengthWithCommander(path.targetHero, path.heroArmy, fortLevel),
 			path.targetObjectDanger);
-
-		path.chainMask = node.actor->chainMask;
 		path.exchangeCount = node.actor->actorExchangeCount;
-		
-		fillChainInfo(&node, path, -1);
 	}
 }
 
-void AINodeStorage::fillChainInfo(const AIPathNode * node, AIPath & path, int parentIndex) const
+bool AINodeStorage::tryReconstructChainInfo(const AIPathNode * node, AIPath & path,	int & parentIndex, RealMoveMasksByHero & realMoveMasks) const
 {
 	while(node != nullptr)
 	{
 		if(!node->actor->hero)
-			return;
+			return true;
+
+		const auto tryAppendCurrentNode = [this, &node](AIPath & candidatePath, int candidateParentIndex,
+																										RealMoveMasksByHero & candidateMasks) -> std::optional<int>
+		{
+			if(isRealMovementNode(node))
+			{
+				auto existingMask = candidateMasks.find(node->actor->hero);
+				if(existingMask != candidateMasks.end() && existingMask->second != node->actor->chainMask)
+					return std::nullopt;
+			}
+
+			AIPathNodeInfo pathNode;
+			pathNode.cost = node->getCost();
+			pathNode.targetHero = node->actor->hero;
+			pathNode.chainMask = node->actor->chainMask;
+			pathNode.specialAction = node->specialAction;
+			pathNode.turns = node->turns;
+			pathNode.danger = node->danger;
+			pathNode.coord = node->coord;
+			pathNode.parentIndex = candidateParentIndex;
+			pathNode.actionIsBlocked = false;
+			pathNode.layer = node->layer;
+
+			if(pathNode.specialAction)
+			{
+				auto targetNode = node->theNodeBefore ? getAINode(node->theNodeBefore) : node;
+				pathNode.actionIsBlocked = !pathNode.specialAction->canAct(aiNk, targetNode);
+			}
+
+			const int nextParentIndex = static_cast<int>(candidatePath.nodes.size());
+
+			candidatePath.nodes.push_back(pathNode);
+			if(isRealMovementNode(node))
+				candidateMasks[node->actor->hero] = node->actor->chainMask;
+
+			return nextParentIndex;
+		};
 
 		if(node->chainOther)
-			fillChainInfo(node->chainOther, path, parentIndex);
-
-		AIPathNodeInfo pathNode;
-
-		pathNode.cost = node->getCost();
-		pathNode.targetHero = node->actor->hero;
-		pathNode.chainMask = node->actor->chainMask;
-		pathNode.specialAction = node->specialAction;
-		pathNode.turns = node->turns;
-		pathNode.danger = node->danger;
-		pathNode.coord = node->coord;
-		pathNode.parentIndex = parentIndex;
-		pathNode.actionIsBlocked = false;
-		pathNode.layer = node->layer;
-
-		if(pathNode.specialAction)
 		{
-			auto targetNode =node->theNodeBefore ?  getAINode(node->theNodeBefore) : node;
+			AIPath pathWithBranch = path;
+			auto masksWithBranch = realMoveMasks;
+			int parentIndexWithBranch = parentIndex;
 
-			pathNode.actionIsBlocked = !pathNode.specialAction->canAct(aiNk, targetNode);
+			if(!tryReconstructChainInfo(node->chainOther, pathWithBranch, parentIndexWithBranch, masksWithBranch))
+				return false; // Reject path because chainOther branch is conflicting for hero
+
+			auto nextParentIndex = tryAppendCurrentNode(pathWithBranch, parentIndexWithBranch, masksWithBranch);
+			if(!nextParentIndex)
+				return false; // Reject path because current node conflicts after chainOther for hero
+
+			path = std::move(pathWithBranch);
+			realMoveMasks = std::move(masksWithBranch);
+			parentIndex = *nextParentIndex;
+			node = getAINode(node->theNodeBefore);
+			continue;
 		}
 
-		parentIndex = path.nodes.size();
+		auto nextParentIndex = tryAppendCurrentNode(path, parentIndex, realMoveMasks);
+		if(!nextParentIndex)
+			return false;
 
-		path.nodes.push_back(pathNode);
+		parentIndex = *nextParentIndex;
 		node = getAINode(node->theNodeBefore);
 	}
+
+	return true;
 }
 
 AIPath::AIPath()
@@ -1586,9 +1613,21 @@ const AIPathNodeInfo & AIPath::firstNode() const
 
 const AIPathNodeInfo & AIPath::targetNode() const
 {
-	auto & node = nodes.front();
+	if(nodes.empty())
+		throw std::runtime_error("AIPath::targetNode called on empty path");
 
-	return targetHero == node.targetHero ? node : nodes.at(1);
+	const auto & node = nodes.front();
+	if(targetHero == node.targetHero)
+		return node;
+
+	if(nodes.size() < 2)
+	{
+		logAi->error("AIPath::targetNode path reconstruction issue: targetHero %s doesn't match first node hero %s, path size: %d",
+			targetHero->getNameTranslated(), node.targetHero->getNameTranslated(), nodes.size());
+		throw std::runtime_error("AIPath::targetNode path reconstruction issue");
+	}
+
+	return nodes.at(1);
 }
 
 uint64_t AIPath::getPathDanger() const
@@ -1650,10 +1689,9 @@ uint64_t AIPath::getTotalArmyLoss() const
 std::string AIPath::toString() const
 {
 	std::stringstream str;
+	str << targetHero->getNameTranslated() << "[" << std::hex << chainMask << std::dec << "]" << ", turn " << (int)turn() << ": ";
 
-	str << targetHero->getNameTranslated() << "[" << std::hex << chainMask << std::dec << "]" << ", turn " << (int)(turn()) << ": ";
-
-	for(auto node : nodes)
+	for(const auto & node : nodes)
 		str << node.targetHero->getNameTranslated() << "[" << std::hex << node.chainMask << std::dec << "]" << "->" << node.coord.toString() << "; ";
 
 	return str.str();

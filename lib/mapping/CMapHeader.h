@@ -20,6 +20,8 @@
 #include "../texts/MetaString.h"
 #include "../texts/TextLocalizationContainer.h"
 
+#include "MapDifficulty.h"
+
 VCMI_LIB_NAMESPACE_BEGIN
 
 class CGObjectInstance;
@@ -106,7 +108,7 @@ struct DLL_LINKAGE EventCondition
 		HAVE_CREATURES,    // type - creatures to collect, value - amount to collect
 		HAVE_RESOURCES,    // type - resource ID, value - amount to collect
 		HAVE_BUILDING,     // position - town, optional, type - building to build
-		CONTROL,           // position - position of object, optional, type - type of object
+		CONTROL,           // specific object: true until first capture, then only while currently controlled; generic type check: same as CONTROL_CURRENT
 		DESTROY,           // position - position of object, optional, type - type of object
 		TRANSPORT,         // position - where artifact should be transported, type - type of artifact
 
@@ -114,8 +116,9 @@ struct DLL_LINKAGE EventCondition
 		IS_HUMAN,          // value - 0 = player is AI, 1 = player is human
 		DAYS_WITHOUT_TOWN, // value - how long player can live without town, 0=instakill
 		STANDARD_WIN,      // normal defeat all enemies condition
-		CONST_VALUE,        // condition that always evaluates to "value" (0 = false, 1 = true)
-	};
+		CONST_VALUE,       // condition that always evaluates to "value" (0 = false, 1 = true)
+		CONTROL_CURRENT    // current ownership check, for specific object or all objects of given type
+		};
 
 	using TargetTypeID = VariantIdentifier<ArtifactID, CreatureID, GameResID, BuildingID, MapObjectID>;
 
@@ -193,15 +196,6 @@ struct DLL_LINKAGE TriggeredEvent
 	}
 };
 
-enum class EMapDifficulty : uint8_t
-{
-	EASY = 0,
-	NORMAL = 1,
-	HARD = 2,
-	EXPERT = 3,
-	IMPOSSIBLE = 4
-};
-
 /// The disposed hero struct describes which hero can be hired from which player.
 struct DLL_LINKAGE DisposedHero
 {
@@ -246,7 +240,7 @@ public:
 
 	si32 height; /// The default value is 72.
 	si32 width; /// The default value is 72.
-	si32 mapLevels; /// The default value is 2.
+	std::vector<MapLayerId> mapLayers;
 	MetaString name;
 	MetaString description;
 	EMapDifficulty difficulty;
@@ -297,20 +291,33 @@ public:
 		h & creationDateTime;
 		h & width;
 		h & height;
-		if (h.version >= Handler::Version::MORE_MAP_LAYERS)
-			h & mapLevels;
+		if (h.version >= Handler::Version::NAME_MAP_LAYERS)
+			h & mapLayers;
+		else if (h.version >= Handler::Version::MORE_MAP_LAYERS)
+		{
+			if (!h.saving)
+			{
+				si32 mapLevels;
+				h & mapLevels;
+				mapLayers.clear();
+				for(int i = 0; i < mapLevels; i++)
+				{
+					if(i == 0)
+						mapLayers.push_back(MapLayerId::SURFACE);
+					else if(i == 1)
+						mapLayers.push_back(MapLayerId::UNDERGROUND);
+					else
+						mapLayers.push_back(MapLayerId::UNKNOWN);
+				}
+			}
+		}
 		else
 		{
-			if (h.saving)
-			{
-				bool hasTwoLevels = mapLevels == 2;
-				h & hasTwoLevels;
-			}
-			else
+			if (!h.saving)
 			{
 				bool hasTwoLevels;
 				h & hasTwoLevels;
-				mapLevels = hasTwoLevels ? 2 : 1;
+				mapLayers = hasTwoLevels ? std::vector<MapLayerId>({MapLayerId::SURFACE, MapLayerId::UNDERGROUND}) : std::vector<MapLayerId>({MapLayerId::SURFACE});
 			}
 		}
 

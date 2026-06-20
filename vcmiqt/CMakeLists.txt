@@ -28,6 +28,12 @@ else()
 endif()
 
 if(WIN32)
+	set(VCMI_FILE_DESCRIPTION "VCMI Qt Library")
+	set(VCMI_ORIGINAL_FILENAME "VCMI_vcmiqt.dll")
+	set(VCMI_ICON_RESOURCE "")
+	set(vcmiqt_ICON "${CMAKE_CURRENT_BINARY_DIR}/VCMI_vcmiqt_versioninfo.rc")
+	configure_file("${CMAKE_SOURCE_DIR}/win/WindowsFileInfo.rc.in" "${vcmiqt_ICON}" @ONLY)
+	target_sources(vcmiqt PRIVATE ${vcmiqt_ICON})
 	set_target_properties(vcmiqt
 		PROPERTIES
 			OUTPUT_NAME "VCMI_vcmiqt"
@@ -36,6 +42,15 @@ if(WIN32)
 endif()
 
 target_link_libraries(vcmiqt vcmi Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
+
+if(IOS AND TARGET_IS_SHARED)
+	target_link_libraries(vcmiqt
+		"-framework CoreFoundation"
+		"-framework Foundation"
+		"-framework UIKit"
+		objc
+	)
+endif()
 
 target_include_directories(vcmiqt PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}

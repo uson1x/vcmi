@@ -72,7 +72,14 @@
 
 	"marketplace":    { 
 		"id" : 14,
-		"marketModes" : ["resource-resource", "resource-player"]
+		"marketModes" : ["resource-resource", "resource-player"],
+		"bonuses": [
+			{
+				"propagator": "PLAYER",
+				"type": "MARKETPLACE_ACCESS",
+				"val": 1
+			}
+		]
 	},
 	"resourceSilo":   { "id" : 15, "requires" : [ "marketplace" ] },
 	"blacksmith":     { "id" : 16 },
@@ -168,7 +175,7 @@
 	"manaVortex": {
 		"configuration" : {
 			"resetParameters" : {
-				"period" : 7,
+				"weeks" : 1,
 				"visitors" : true
 			},
 			"visitMode" : "hero", // Should be 'once' to match (somewhat buggy) H3 logic

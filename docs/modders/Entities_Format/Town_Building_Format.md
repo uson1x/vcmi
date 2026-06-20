@@ -51,7 +51,7 @@ These are just a couple of examples of what can be done in VCMI. See vcmi config
 	},
 	"configuration" : {
 		"resetParameters" : {
-			"period" : 7,
+			"weeks" : 1,
 			"visitors" : true
 		},
 		"visitMode" : "once",
@@ -244,7 +244,6 @@ Following Heroes III buildings can be used as unique buildings for a town. Their
 - `escapeTunnel`
 - `treasury`
 - `auroraBorealis`
-- `deityOfFire`
 
 #### Buildings from other Heroes III mods
 

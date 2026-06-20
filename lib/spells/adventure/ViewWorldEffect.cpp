@@ -12,7 +12,6 @@
 
 #include "ViewWorldEffect.h"
 
-#include "../CSpellHandler.h"
 
 #include "../../CPlayerState.h"
 #include "../../callback/IGameInfoCallback.h"
@@ -55,7 +54,7 @@ ESpellCastResult ViewWorldEffect::applyAdventureEffects(SpellCastEnvironment * e
 		{
 			ObjectPosInfo posInfo(obj);
 
-			if(fowMap[posInfo.pos.z][posInfo.pos.x][posInfo.pos.y] == 0)
+			if(fowMap[posInfo.pos] == 0)
 				pack.objectPositions.push_back(posInfo);
 		}
 	}

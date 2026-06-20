@@ -8,11 +8,6 @@
 *
 */
 #pragma once
-#if __has_include(<fuzzylite/Headers.h>)
-#  include <fuzzylite/Headers.h>
-#else
-#  include <fl/Headers.h>
-#endif
 #include "../Goals/CGoal.h"
 #include "../Pathfinding/AIPathfinder.h"
 
@@ -66,14 +61,14 @@ struct DLL_EXPORT EvaluationContext
 	int32_t goldCost;
 	float skillReward;
 	float strategicalValue;
-	float conquestValue;
+	float conquestValue; // capitol towns: 1.5x base value (boosted if owned by another AI) ... towns without fort: 0.8x, special case: 10.0 if no towns are currently owned (high priority to get first town). Strategic importance of capturing or conquering specific objects in the game, primarily enemy-controlled towns and heroes
 	HeroRole heroRole;
 	uint8_t turn;
 	RewardEvaluator evaluator;
-	float enemyHeroDangerRatio;
+	float enemyHeroDangerRatio; // dangerRatio = enemyDanger.danger / (double)ourStrength. A float value between 0 and 1 (or higher) representing the ratio of enemy hero danger to our army strength
 	float threat;
 	float armyInvolvement;
-	int defenseValue;
+	int defenseValue; // 0-1: No fortifications (undefended), 2: Fort level (basic defensive structure), 3: Citadel level (stronger defenses), 4: Castle level (maximum defenses)
 	bool isDefend;
 	int threatTurns;
 	TResources buildingCost;
@@ -83,8 +78,8 @@ struct DLL_EXPORT EvaluationContext
 	bool isArmyUpgrade;
 	bool isHero;
 	bool isEnemy;
-	int explorePriority;
-	float powerRatio;
+	int explorePriority; // 1 important, 2 medium, 3 lowest importance
+	float powerRatio; // powerRatio = heroPower / totalPower. The ratio of a hero's army strength to the total power of all creatures available to the AI
 
 	EvaluationContext(const Nullkiller * aiNk);
 
@@ -105,7 +100,6 @@ class PriorityEvaluator
 public:
 	PriorityEvaluator(const Nullkiller * aiNk);
 	~PriorityEvaluator();
-	void initVisitTile();
 
 	float evaluate(Goals::TSubgoal task, int priorityTier = BUILDINGS);
 
@@ -115,39 +109,22 @@ public:
 		INSTAKILL,
 		INSTADEFEND,
 		KILL,
-		HIGH_PRIO_EXPLORE,
-		HUNTER_GATHER,
-		LOW_PRIO_EXPLORE,
-		FAR_KILL,
+		EXPLORE_AND_GATHER, // Includes guarded resources/artifacts/portals
+		ESCAPE,
 		DEFEND,
-		FAR_HUNTER_GATHER,
-		MAX_PRIORITY_TIER = FAR_HUNTER_GATHER
+		MAX_PRIORITY_TIER = DEFEND
 	};
 
 private:
 	const Nullkiller * aiNk;
 
-	fl::Engine * engine;
-	fl::InputVariable * armyLossRatioVariable;
-	fl::InputVariable * heroRoleVariable;
-	fl::InputVariable * mainTurnDistanceVariable;
-	fl::InputVariable * scoutTurnDistanceVariable;
-	fl::InputVariable * turnVariable;
-	fl::InputVariable * goldRewardVsMovementVariable;
-	fl::InputVariable * armyRewardVariable;
-	fl::InputVariable * armyGrowthVariable;
-	fl::InputVariable * dangerVariable;
-	fl::InputVariable * skillRewardVariable;
-	fl::InputVariable * strategicalValueVariable;
-	fl::InputVariable * rewardTypeVariable;
-	fl::InputVariable * closestHeroRatioVariable;
-	fl::InputVariable * goldPressureVariable;
-	fl::InputVariable * goldCostVariable;
-	fl::InputVariable * fearVariable;
-	fl::OutputVariable * value;
 	std::vector<std::shared_ptr<IEvaluationContextBuilder>> evaluationContextBuilders;
 
-	EvaluationContext buildEvaluationContext(Goals::TSubgoal goal) const;
+	EvaluationContext buildEvaluationContext(const Goals::TSubgoal & goal) const;
+	static float evaluateMovement(float score, float movementCost);
+	static float evaluateArmyLossRatio(float score, float armyLossRatio, HeroRole heroRole);
+	static float evaluateSkillReward(float score, float skillReward, float armyInvolvement, float armyLossRatio);
+	static float evaluateConquestValue(float score, float conquestValue, float armyInvolvement);
 };
 
 }

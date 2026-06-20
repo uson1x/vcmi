@@ -25,7 +25,7 @@
 #include "../GameEngine.h"
 #include "../GameInstance.h"
 #include "../adventureMap/CInGameConsole.h"
-#include "../client/render/CAnimation.h"
+#include "../render/CAnimation.h"
 #include "../gui/CursorHandler.h"
 #include "../render/CAnimation.h"
 #include "../render/Canvas.h"
@@ -37,6 +37,8 @@
 #include "../../lib/CStack.h"
 #include "../../lib/battle/CPlayerBattleCallback.h"
 #include "../../lib/spells/ISpellMechanics.h"
+#include "../../lib/spells/Problem.h"
+#include "../../lib/spells/CSpell.h"
 
 namespace HexMasks
 {
@@ -374,11 +376,32 @@ BattleHexArray BattleFieldController::getHighlightedHexesForMovementTarget()
 	if(!stack)
 		return {};
 
-	auto hoveredStack = owner.getBattle()->battleGetStackByPos(hoveredHex, true);
+	auto hoveredStack = owner.getBattle()->battleGetStackByPos(hoveredHex, false);
 
-	if(owner.getBattle()->battleCanAttackUnit(stack, hoveredStack) && owner.getBattle()->battleCanAttackHex(availableHexes, stack, hoveredHex))
+	bool canReach = owner.getBattle()->battleCanAttackHex(availableHexes, stack, hoveredHex);
+	bool canAttack = canReach && (owner.getBattle()->battleCanAttackUnit(stack, hoveredStack));
+	bool adjacentSpellCaster = stack->hasBonusOfType(BonusType::ADJACENT_SPELLCASTER) && stack->canCast();
+	bool canCastAdjacentSpell = false;
+	if (canReach && adjacentSpellCaster && hoveredStack)
 	{
-		BattleHex fromHex = owner.getBattle()->fromWhichHexAttack(stack, hoveredHex, selectAttackDirection(hoveredHex));
+		spells::Mode mode = owner.actionsController->getCurrentCastMode();
+		auto * spell = owner.actionsController->getCurrentSpell(hoveredHex);
+		auto * caster = owner.actionsController->getCurrentSpellcaster();
+		if(caster && spell)
+		{
+			spells::Target target;
+			target.emplace_back(hoveredStack);
+			target.emplace_back(hoveredHex);
+
+			spells::BattleCast event(owner.getBattle().get(), caster, mode, spell);
+			canCastAdjacentSpell = spell->battleMechanics(&event)->canBeCastAt(target);
+		}
+	}
+
+	if(canAttack || canCastAdjacentSpell)
+	{
+		const bool allowLongWeapon = owner.actionsController->currentActionUsesLongWeapon(hoveredHex);
+		BattleHex fromHex = owner.getBattle()->fromWhichHexAttack(stack, hoveredHex, selectAttackDirection(hoveredHex), allowLongWeapon);
 		assert(fromHex.isValid());
 		if(stack->doubleWide())
 			return {fromHex, stack->occupiedHex(fromHex)};
@@ -542,7 +565,22 @@ void BattleFieldController::showHighlightedHexes(Canvas & canvas)
 			|| owner.actionsController->creatureSpellcastingModeActive()); //at least shooting with SPELL_LIKE_ATTACK can operate in spellcasting mode without being actual spellcast
 	bool useMoveRangeForMouse = !hoveredMoveHexes.empty() || !settings["battle"]["mouseShadow"].Bool();
 
-	const auto & hoveredMouseHexes = useSpellRangeForMouse ? hoveredSpellHexes : ( useMoveRangeForMouse ? hoveredMoveHexes : hoveredMouseHex);
+
+	BattleHexArray hoveredMouseHexes;
+	if(hoveredHex != BattleHex::INVALID && owner.actionsController->currentActionWalkAndCast(getHoveredHex()))
+	{
+		hoveredMouseHexes = hoveredSpellHexes;
+		for(const auto & hex : useMoveRangeForMouse ? hoveredMoveHexes : hoveredMouseHex)
+		{
+			hoveredMouseHexes.insert(hex);
+		}
+	}
+	else
+	{
+		hoveredMouseHexes = useSpellRangeForMouse
+			? hoveredSpellHexes
+			: ( useMoveRangeForMouse ? hoveredMoveHexes : hoveredMouseHex);
+	}
 
 	for(int hex = 0; hex < GameConstants::BFIELD_SIZE; ++hex)
 	{
@@ -631,7 +669,7 @@ BattleHex BattleFieldController::getHexAtPosition(Point hoverPos)
 
 	if (owner.defendingHero)
 	{
-		if (owner.attackingHero->pos.isInside(hoverPos))
+		if (owner.defendingHero->pos.isInside(hoverPos))
 			return BattleHex::HERO_DEFENDER;
 	}
 

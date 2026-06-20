@@ -10,11 +10,13 @@
 
 #include "StdInc.h"
 #include "translations.h"
+#include "../helper.h"
 #include "ui_translations.h"
 #include "../../lib/texts/Languages.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/mapObjects/CGObjectInstance.h"
 #include "../../lib/GameLibrary.h"
+#include "../../lib/mapping/MapFormatJson.h"
 
 void Translations::cleanupRemovedItems(CMap & map)
 {
@@ -65,7 +67,20 @@ Translations::Translations(CMapHeader & mh, QWidget *parent) :
 	setAttribute(Qt::WA_DeleteOnClose, true);
 	ui->setupUi(this);
 	
-	setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+	Helper::decorateDialog(this);
+	
+	// Remove "map.<mapname>." prefix from all translation keys for editor display
+	// Internal VMAP translations are saved WITHOUT this prefix
+	for(auto & langPair : mapHeader.translations.Struct())
+	{
+		JsonNode cleanedTranslations;
+		for(auto & entry : langPair.second.Struct())
+		{
+			std::string key = CMapFormatJson::removeMapNamePrefix(entry.first);
+			cleanedTranslations.Struct()[key] = entry.second;
+		}
+		langPair.second = cleanedTranslations;
+	}
 	
 	//fill languages list
 	std::set<int> indexFoundLang;
@@ -108,6 +123,7 @@ void Translations::fillTranslationsTable(const std::string & language)
 	ui->translationsTable->blockSignals(true);
 	ui->translationsTable->setRowCount(0);
 	ui->translationsTable->setRowCount(translation.Struct().size());
+	
 	int i = 0;
 	for(auto & s : translation.Struct())
 	{

@@ -2,7 +2,7 @@
 	"castle" :
 	{
 		"index" : 0,
-		"nativeTerrain": "grass",
+		"nativeTerrain": [ "grass" ],
 		"alignment" : "good",
 		"creatureBackground" :
 		{
@@ -219,7 +219,7 @@
 					],
 					"upgrades" : "tavern"
 				},
-				"grail":          { },
+				"grail":          { "bonuses": [ { "type": "MORALE", "val": 2, "propagator": "PLAYER" } ] },
 
 				"dwellingLvl1":   { "requires" : [ "fort" ] },
 				"dwellingLvl2":   { "requires" : [ "dwellingLvl1" ] },

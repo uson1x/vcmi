@@ -34,6 +34,36 @@ void StatisticDataSet::add(StatisticDataSetEntry entry)
 	data.push_back(entry);
 }
 
+StatisticDataSet::PlayerAccumulatedValueStorage & StatisticDataSet::getPlayerAccumulator(PlayerColor player)
+{
+	if(!player.isValidPlayer())
+		throw std::runtime_error("Invalid player color " + std::to_string(player.getNum()) + " for statistics accumulator");
+	return accumulatedValues[player];
+}
+
+const StatisticDataSet::PlayerAccumulatedValueStorage & StatisticDataSet::getPlayerAccumulator(PlayerColor player) const
+{
+	if(!player.isValidPlayer())
+		throw std::runtime_error("Invalid player color " + std::to_string(player.getNum()) + " for statistics accumulator");
+	auto it = accumulatedValues.find(player);
+	if(it == accumulatedValues.end())
+		throw std::runtime_error("No statistics accumulator found for player " + std::to_string(player.getNum()));
+	return it->second;
+}
+
+void StatisticDataSet::filterByTeam(const TeamState * team)
+{
+	for(auto it = accumulatedValues.begin(); it != accumulatedValues.end();) {
+		if (std::find(team->players.begin(), team->players.end(), it->first) == team->players.end())
+			it = accumulatedValues.erase(it);
+		else
+			++it;
+	}
+	data.erase(std::remove_if(data.begin(), data.end(), [&team](const StatisticDataSetEntry& entry) {
+		return std::find(team->players.begin(), team->players.end(), entry.player) == team->players.end();
+	}), data.end());
+}
+
 StatisticDataSetEntry StatisticDataSet::createEntry(const PlayerState * ps, const CGameState * gs, const StatisticDataSet & accumulatedData)
 {
 	StatisticDataSetEntry data;
@@ -45,7 +75,7 @@ StatisticDataSetEntry StatisticDataSet::createEntry(const PlayerState * ps, cons
 
 	data.map = gs->getMap().name.toString();
 	data.timestamp = std::time(nullptr);
-	data.day = gs->getDate(Date::DAY);
+	data.day = gs->getCalendar().getCurrentDay();
 	data.player = ps->color;
 	data.playerName = gs->getStartInfo()->playerInfos.at(ps->color).name;
 	data.team = ps->team;
@@ -75,8 +105,8 @@ StatisticDataSetEntry StatisticDataSet::createEntry(const PlayerState * ps, cons
 	data.spentResourcesForArmy = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).spentResourcesForArmy : TResources();
 	data.spentResourcesForBuildings = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).spentResourcesForBuildings : TResources();
 	data.tradeVolume = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).tradeVolume : TResources();
-	data.eventCapturedTown = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).lastCapturedTownDay == gs->getDate(Date::DAY) : false;
-	data.eventDefeatedStrongestHero = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).lastDefeatedStrongestHeroDay == gs->getDate(Date::DAY) : false;
+	data.eventCapturedTown = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).lastCapturedTownDay == data.day : false;
+	data.eventDefeatedStrongestHero = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).lastDefeatedStrongestHeroDay == data.day : false;
 	data.movementPointsUsed = accumulatedData.accumulatedValues.count(ps->color) ? accumulatedData.accumulatedValues.at(ps->color).movementPointsUsed : 0;
 
 	return data;

@@ -13,6 +13,7 @@
 #include "CPlayerInterface.h"
 #include "CMT.h"
 #include "CServerHandler.h"
+#include "GameEngine.h"
 #include "mapView/mapHandler.h"
 #include "globalLobby/GlobalLobbyClient.h"
 #include "mainmenu/CMainMenu.h"
@@ -82,6 +83,9 @@ void GameInstance::setInterfaceInstance(CPlayerInterface * ptr)
 
 void GameInstance::onGlobalLobbyInterfaceActivated()
 {
+	if(ENGINE->isDemoData())
+		return;
+
 	server().getGlobalLobby().activateInterface();
 }
 
@@ -142,5 +146,5 @@ void GameInstance::pauseAutoSave()
 		return;
 	}
 
-	GAME->interface()->cb->save(autoSaveName);
+	GAME->interface()->cb->save(autoSaveName, false);
 }

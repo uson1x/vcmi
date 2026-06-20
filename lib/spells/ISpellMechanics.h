@@ -31,6 +31,7 @@ class CStack;
 class CGObjectInstance;
 class CGHeroInstance;
 class IAdventureSpellEffect;
+class MetaString;
 
 namespace spells
 {
@@ -46,13 +47,10 @@ namespace vstd
 	class RNG;
 }
 
-#if SCRIPTING_ENABLED
 namespace scripting
 {
 	class Service;
 }
-#endif
-
 
 ///callback to be provided by server
 class DLL_LINKAGE SpellCastEnvironment : public ServerCallback
@@ -65,6 +63,7 @@ public:
 
 	virtual void createBoat(const int3 & visitablePosition, BoatId type, PlayerColor initiator) = 0;
 	virtual bool moveHero(ObjectInstanceID hid, int3 dst, EMovementMode mode) = 0;	//TODO: remove
+	virtual void showGarrisonDialog(ObjectInstanceID upobj, ObjectInstanceID hid, bool removableUnits, const MetaString & customTitle) = 0;
 
 	virtual void genericQuery(Query * request, PlayerColor color, std::function<void(std::optional<int32_t>)> callback) = 0;//TODO: type safety on query, use generic query packet when implemented
 };
@@ -144,8 +143,6 @@ public:
 	///cast with silent check for permitted cast
 	bool castIfPossible(ServerCallback * server, Target target);
 
-	std::vector<Target> findPotentialTargets(bool fast = false) const;
-
 private:
 	///spell school level
 	OptionalValue magicSkillLevel;
@@ -179,7 +176,7 @@ protected:
 	ISpellMechanicsFactory(const CSpell * s);
 };
 
-class DLL_LINKAGE Mechanics
+class DLL_LINKAGE Mechanics : public scripting::ApiRawPointer<Mechanics>
 {
 public:
 	virtual ~Mechanics();
@@ -210,6 +207,7 @@ public:
 	virtual std::vector<const CStack *> getAffectedStacks(const Target & target) const = 0;
 
 	virtual bool canBeCast(Problem & problem) const = 0;
+	virtual bool canBeCastAt(const Target & target) const = 0;
 	virtual bool canBeCastAt(const Target & target, Problem & problem) const = 0;
 
 	virtual void applyEffects(ServerCallback * server, const Target & targets, bool indirect, bool ignoreImmunity) const = 0;
@@ -222,8 +220,6 @@ public:
 	virtual bool wouldResist(const battle::Unit * target) const = 0;
 
 	virtual std::vector<AimType> getTargetTypes() const = 0;
-
-	virtual std::vector<Destination> getPossibleDestinations(size_t index, AimType aimType, const Target & current, bool fast = false) const = 0;
 
 	virtual const Spell * getSpell() const = 0;
 
@@ -238,11 +234,15 @@ public:
 	virtual IBattleCast::Value64 getEffectValue() const = 0;
 
 	virtual PlayerColor getCasterColor() const = 0;
+	virtual BattleSide getCasterSide() const { return casterSide; };
+	virtual const CGHeroInstance * getHeroCaster() const = 0;
+	virtual const battle::Unit * getUnitCaster() const = 0;
 
 	//Spell facade
 	virtual int32_t getSpellIndex() const = 0;
 	virtual SpellID getSpellId() const = 0;
 	virtual std::string getSpellName() const = 0;
+	virtual std::string getCasterNameTextID() const = 0;
 	virtual int32_t getSpellLevel() const = 0;
 
 	virtual bool isSmart() const = 0;
@@ -252,6 +252,7 @@ public:
 
 	virtual bool isNegativeSpell() const = 0;
 	virtual bool isPositiveSpell() const = 0;
+	virtual bool isNeutralSpell() const = 0;
 	virtual bool isMagicalEffect() const = 0;
 
 	virtual int64_t adjustEffectValue(const battle::Unit * target) const = 0;
@@ -266,12 +267,11 @@ public:
 
 	//Global environment facade
 	virtual const CreatureService * creatures() const = 0;
-#if SCRIPTING_ENABLED
 	virtual const scripting::Service * scripts() const = 0;
-#endif
 	virtual const Service * spells() const = 0;
 
 	virtual const CBattleInfoCallback * battle() const = 0;
+	virtual BattleID getBattleID() const = 0;
 
 	const Caster * caster;
 
@@ -292,17 +292,18 @@ public:
 	int32_t getSpellIndex() const override;
 	SpellID getSpellId() const override;
 	std::string getSpellName() const override;
+	std::string getCasterNameTextID() const override;
 	int32_t getSpellLevel() const override;
 
 	IBattleCast::Value getEffectLevel() const override;
 	IBattleCast::Value getRangeLevel() const override;
-
 	IBattleCast::Value getEffectPower() const override;
 	IBattleCast::Value getEffectDuration() const override;
-
 	IBattleCast::Value64 getEffectValue() const override;
 
 	PlayerColor getCasterColor() const override;
+	const CGHeroInstance * getHeroCaster() const override;
+	const battle::Unit * getUnitCaster() const override;
 
 	bool isSmart() const override;
 	bool isMassive() const override;
@@ -311,6 +312,7 @@ public:
 
 	bool isNegativeSpell() const override;
 	bool isPositiveSpell() const override;
+	bool isNeutralSpell() const override;
 	bool isMagicalEffect() const override;
 
 	int64_t adjustEffectValue(const battle::Unit * target) const override;
@@ -325,12 +327,11 @@ public:
 	std::vector<AimType> getTargetTypes() const override;
 
 	const CreatureService * creatures() const override;
-#if SCRIPTING_ENABLED
 	const scripting::Service * scripts() const override;
-#endif
 	const Service * spells() const override;
 
 	const CBattleInfoCallback * battle() const override;
+	BattleID getBattleID() const override;
 
 protected:
 	const CSpell * owner;

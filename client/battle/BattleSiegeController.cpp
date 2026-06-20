@@ -26,8 +26,27 @@
 #include "../../lib/CStack.h"
 #include "../../lib/battle/CPlayerBattleCallback.h"
 #include "../../lib/entities/building/TownFortifications.h"
+#include "../../lib/mapping/CMapHeader.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/networkPacks/PacksForClientBattle.h"
+#include "../../lib/callback/CCallback.h"
+
+const std::string & BattleSiegeController::getSiegePrefix() const
+{
+	const auto & siegePrefixes = town->getTown()->clientInfo.siegePrefix;
+	const auto & currentLayer = owner.curInt->cb->getMapHeader()->mapLayers.at(town->pos.z);
+	if(siegePrefixes.count(currentLayer))
+		return siegePrefixes.at(currentLayer);
+	else
+	{
+		logGlobal->warn("No siege prefix for town %s for layer %s found, fallback", town->getObjectName(), MapLayerId::encode(currentLayer));
+		if(siegePrefixes.count(MapLayerId::UNKNOWN))
+			return siegePrefixes.at(MapLayerId::UNKNOWN);
+		if(siegePrefixes.count(MapLayerId::SURFACE))
+			return siegePrefixes.at(MapLayerId::SURFACE);
+		return siegePrefixes.begin()->second;
+	}
+}
 
 ImagePath BattleSiegeController::getWallPieceImageName(EWallVisual::EWallVisual what, EWallState state) const
 {
@@ -56,7 +75,7 @@ ImagePath BattleSiegeController::getWallPieceImageName(EWallVisual::EWallVisual 
 		};
 	};
 
-	const std::string & prefix = town->getTown()->clientInfo.siegePrefix;
+	const std::string & prefix = getSiegePrefix();
 	std::string addit = std::to_string(getImageIndex());
 
 	switch(what)
@@ -118,7 +137,7 @@ void BattleSiegeController::showWallPiece(Canvas & canvas, EWallVisual::EWallVis
 
 ImagePath BattleSiegeController::getBattleBackgroundName() const
 {
-	const std::string & prefix = town->getTown()->clientInfo.siegePrefix;
+	const std::string & prefix = getSiegePrefix();
 	return ImagePath::builtinTODO(prefix + "BACK.BMP");
 }
 
@@ -334,34 +353,24 @@ void BattleSiegeController::stackIsCatapulting(const CatapultAttack & ca)
 	if (ca.attacker != -1)
 	{
 		const CStack *stack = owner.getBattle()->battleGetStackByID(ca.attacker);
-		for (auto attackInfo : ca.attackedParts)
-		{
-			owner.stacksController->addNewAnim(new CatapultAnimation(owner, stack, attackInfo.destinationTile, nullptr, attackInfo.damageDealt));
-		}
+		owner.stacksController->addNewAnim(new CatapultAnimation(owner, stack, ca.destinationTile, nullptr, ca.damageDealt));
 	}
 	else
 	{
-		std::vector<Point> positions;
-
 		//no attacker stack, assume spell-related (earthquake) - only hit animation
-		for (auto attackInfo : ca.attackedParts)
-			positions.push_back(owner.stacksController->getStackPositionAtHex(attackInfo.destinationTile, nullptr) + Point(99, 120));
+		std::vector<Point> positions;
+		positions.push_back(owner.stacksController->getStackPositionAtHex(ca.destinationTile, nullptr) + Point(99, 120));
 
 		ENGINE->sound().playSound( AudioPath::builtin("WALLHIT") );
 		owner.stacksController->addNewAnim(new EffectAnimation(owner, AnimationPath::builtin("SGEXPL.DEF"), positions));
 	}
-
 	owner.waitForAnimations();
 
-	for (auto attackInfo : ca.attackedParts)
+	int wallId = static_cast<int>(ca.attackedPart) + EWallVisual::DESTRUCTIBLE_FIRST;
+	//gate state changing handled separately
+	if (wallId != EWallVisual::GATE)
 	{
-		int wallId = static_cast<int>(attackInfo.attackedPart) + EWallVisual::DESTRUCTIBLE_FIRST;
-		//gate state changing handled separately
-		if (wallId == EWallVisual::GATE)
-			continue;
-
-		auto wallState = EWallState(owner.getBattle()->battleGetWallState(attackInfo.attackedPart));
-
+		auto wallState = EWallState(owner.getBattle()->battleGetWallState(ca.attackedPart));
 		wallPieceImages[wallId] = ENGINE->renderHandler().loadImage(getWallPieceImageName(EWallVisual::EWallVisual(wallId), wallState), EImageBlitMode::COLORKEY);
 	}
 }

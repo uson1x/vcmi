@@ -169,7 +169,7 @@ void AIGateway::gameOver(PlayerColor player, const EVictoryLossCheckResult & vic
 		if(victoryLossCheckResult.victory())
 		{
 			logAi->debug("AIGateway: Player %d (%s) won. I won! Incredible!", player, player.toString());
-			logAi->debug("Turn nr %d", cc->getDate());
+			logAi->debug("Turn nr %d", cc->getCalendar().getCurrentDay());
 		}
 		else
 		{
@@ -245,32 +245,41 @@ void AIGateway::heroExchangeStarted(ObjectInstanceID hero1, ObjectInstanceID her
 	auto firstHero = cc->getHero(hero1);
 	auto secondHero = cc->getHero(hero2);
 
-	status.addQuery(query, boost::str(boost::format("Exchange between heroes %s (%d) and %s (%d)") % firstHero->getNameTranslated() % firstHero->tempOwner % secondHero->getNameTranslated() % secondHero->tempOwner));
+	status.addQuery(
+		query,
+		boost::str(
+			boost::format("Exchange between heroes %s (%d) and %s (%d)") % firstHero->getNameTranslated() % firstHero->tempOwner
+			% secondHero->getNameTranslated() % secondHero->tempOwner
+		)
+	);
 
-	executeActionAsync("heroExchangeStarted", [this, firstHero, secondHero, query]()
-	{
-		auto transferFrom2to1 = [this](const CGHeroInstance * h1, const CGHeroInstance * h2) -> void
+	executeActionAsync(
+		"heroExchangeStarted",
+		[this, firstHero, secondHero, query]()
 		{
-			this->pickBestCreatures(h1, h2);
-			pickBestArtifacts(cc, h1, h2);
-		};
+			auto transferFrom2to1 = [this](const CGHeroInstance * h1, const CGHeroInstance * h2) -> void
+			{
+				this->pickBestCreatures(h1, h2);
+				pickBestArtifacts(cc, h1, h2);
+			};
 
-		//Do not attempt army or artifacts exchange if we visited ally player
-		//Visits can still be useful if hero have skills like Scholar
-		if(firstHero->tempOwner != secondHero->tempOwner)
-		{
-			logAi->debug("Heroes owned by different players. Do not exchange army or artifacts.");
-		}
-		else
-		{
-			if(nullkiller->isActive(firstHero))
-				transferFrom2to1(secondHero, firstHero);
+			//Do not attempt army or artifacts exchange if we visited ally player
+			//Visits can still be useful if hero have skills like Scholar
+			if(firstHero->tempOwner != secondHero->tempOwner)
+			{
+				logAi->debug("Heroes owned by different players. Do not exchange army or artifacts.");
+			}
 			else
-				transferFrom2to1(firstHero, secondHero);
-		}
+			{
+				if(nullkiller->isActive(firstHero))
+					transferFrom2to1(secondHero, firstHero);
+				else
+					transferFrom2to1(firstHero, secondHero);
+			}
 
-		answerQuery(query, 0);
-	});
+			answerQuery(query, 0);
+		}
+	);
 }
 
 void AIGateway::heroExperienceChanged(const CGHeroInstance * hero, si64 val)
@@ -525,6 +534,7 @@ void AIGateway::yourTurn(QueryID queryID)
 	asyncTasks->run([this]()
 	{
 		ScopedThreadName guard("NK2AI::AIGateway::makingTurn");
+		status.waitTillFree();
 		makeTurn();
 	});
 }
@@ -620,9 +630,8 @@ void AIGateway::showBlockingDialog(const std::string & text, const std::vector<C
 	{
 		int sel = 0;
 
-		if(selection) //select from multiple components -> take the last one (they'bool executeTask(Goals::TTask task);re indexed [1-size])
+		if(selection) // select the last component; they are indexed in range [1, size]
 			sel = components.size();
-
 		{
 				std::unique_lock mxLock(nullkiller->aiStateMutex);
 
@@ -683,7 +692,7 @@ void AIGateway::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelI
 	});
 }
 
-void AIGateway::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID)
+void AIGateway::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle)
 {
 	LOG_TRACE_PARAMS(logAi, "removableUnits '%i', queryID '%i'", removableUnits % queryID);
 	std::string s1 = up->nodeName();
@@ -756,46 +765,39 @@ bool AIGateway::makePossibleUpgrades(const CArmedInstance * obj)
 
 void AIGateway::makeTurn()
 {
-	auto day = cc->getDate(Date::DAY);
-	logAi->info("Player %d (%s) starting turn, day %d", playerID, playerID.toString(), day);
-
-	std::shared_lock gsLock(CGameState::mutex);
-	cheatMapReveal(nullkiller);
-	memorizeVisitableObjs(nullkiller->memory, nullkiller->dangerHitMap, playerID, cc);
-	memorizeRevisitableObjs(nullkiller->memory, playerID, cc);
-
 	try
 	{
-		nullkiller->pathfinderTurnStorageMisses.store(0);
-		nullkiller->makeTurn();
+		auto day = cc->getCalendar().getCurrentDay();
+		logAi->info("Player %d (%s) starting turn, day %d", playerID, playerID.toString(), day);
 
-		// for debug purpose
-		if (nullkiller->pathfinderTurnStorageMisses.load() != 0)
-			logAi->warn("AINodeStorage had %d nodeAllocationFailures due to limited capacity", nullkiller->pathfinderTurnStorageMisses.load());
+		std::shared_lock gsLock(CGameState::mutex);
+		cheatMapReveal(nullkiller);
+		memorizeVisitableObjs(nullkiller->memory, nullkiller->dangerHitMap, playerID, cc);
+		memorizeRevisitableObjs(nullkiller->memory, playerID, cc);
+
+		const auto start = std::chrono::high_resolution_clock::now();
+		nullkiller->makeTurn();
+		const auto timeElapsedMs = timeElapsed(start);
+		if(timeElapsedMs > 5000)
+			logAi->warn("PERFORMANCE: NK2 makeTurn took %ld ms", timeElapsedMs);
+		else
+			logAi->info("PERFORMANCE: NK2 makeTurn took %ld ms", timeElapsedMs);
 
 		for (const auto *h : cc->getHeroesInfo())
 		{
 			if (h->movementPointsRemaining())
-				logAi->info("Hero %s has %d MP left", h->getNameTranslated(), h->movementPointsRemaining());
+				logAi->warn("Hero %s has %d MP left", h->getNameTranslated(), h->movementPointsRemaining());
 		}
-	}
-	catch (const TerminationRequestedException &)
-	{
-		logAi->debug("Making turn thread has been interrupted while nullkiller->makeTurn(). We'll end without calling endTurn.");
-		return;
-	}
-	catch (const std::exception & e)
-	{
-		logAi->debug("Making turn thread has caught an exception: %s", e.what());
-	}
 
-	try
-	{
 		endTurn();
 	}
+	catch (const InterruptionRequestedException &)
+	{
+		logAi->debug("Making turn thread has been interrupted. We'll end without calling endTurn.");
+	}
 	catch (const TerminationRequestedException &)
 	{
-		logAi->debug("Making turn thread has been interrupted endTurn().");
+		logAi->debug("Making turn thread has been terminated. We'll end without calling endTurn");
 	}
 }
 
@@ -1350,14 +1352,8 @@ void AIGateway::finish()
 
 	if (asyncTasks)
 	{
-		try {
-			asyncTasks->wait();
-			asyncTasks.reset();
-		}
-		catch (const TerminationRequestedException &)
-		{
-			// ignore, tbb caught this exception from task and propagated it to our thread
-		}
+		asyncTasks->wait();
+		asyncTasks.reset();
 	}
 }
 
@@ -1366,11 +1362,18 @@ void AIGateway::executeActionAsync(const std::string & description, const std::f
 	if (!asyncTasks)
 		throw std::runtime_error("Attempt to execute task on shut down AI state!");
 
-	asyncTasks->run([description, whatToDo]()
+	asyncTasks->run([description, whatToDo]() noexcept
 	{
 		ScopedThreadName guard("NK2AI::AIGateway::" + description);
 		std::shared_lock gsLock(CGameState::mutex);
-		whatToDo();
+		try
+		{
+			whatToDo();
+		}
+		catch (const TerminationRequestedException &)
+		{
+			logAi->debug("%s thread has been terminated. We'll end it immediately", description);
+		}
 	});
 }
 
@@ -1596,7 +1599,7 @@ void AIGateway::invalidatePaths()
 
 void AIGateway::cheatMapReveal(const std::unique_ptr<Nullkiller> & nullkiller)
 {
-	if(nullkiller->cc->getDate(Date::DAY) == 1) // No need to execute every day, only the first time
+	if(nullkiller->cc->getCalendar().getCurrentDay() == 1) // No need to execute every day, only the first time
 	{
 		if(nullkiller->isOpenMap())
 		{
@@ -1639,7 +1642,7 @@ void AIGateway::memorizeVisitableObj(const CGObjectInstance * obj,
 
 void AIGateway::memorizeRevisitableObjs(const std::unique_ptr<AIMemory> & memory, const PlayerColor & playerID, const std::shared_ptr<CCallback> & cc)
 {
-	if(cc->getDate(Date::DAY_OF_WEEK) == 1)
+	if(cc->getCalendar().getDayOfWeek() == 1)
 	{
 		for(const ObjectInstanceID objId : memory->visitableObjs)
 		{
@@ -1655,7 +1658,7 @@ void AIGateway::pickBestArtifacts(const std::shared_ptr<CCallback> & cc, const C
 	auto equipBest = [cc](const CGHeroInstance * h, const CGHeroInstance * otherh, bool giveStuffToFirstHero) -> void
 	{
 		bool changeMade = false;
-		std::set<std::pair<ArtifactInstanceID, ArtifactInstanceID> > swappedSet;
+		std::set<std::pair<ArtifactInstanceID, ArtifactInstanceID>> swappedSet;
 		do
 		{
 			changeMade = false;
@@ -1730,25 +1733,30 @@ void AIGateway::pickBestArtifacts(const std::shared_ptr<CCallback> & cc, const C
 						if(otherSlot && otherSlot->getArt()) //we need to exchange artifact for better one
 						{
 							int64_t otherArtifactScore = getArtifactScoreForHero(target, otherSlot->getArt());
-							logAi->trace( "Comparing artifacts of %s: %s vs %s. Score: %d vs %d", target->getHeroTypeName(), artifact->getType()->getJsonKey(), otherSlot->getArt()->getType()->getJsonKey(), artifactScore, otherArtifactScore);
+							logAi->trace(
+								"Comparing artifacts of %s: %s vs %s. Score: %d vs %d",
+								target->getHeroTypeName(),
+								artifact->getType()->getJsonKey(),
+								otherSlot->getArt()->getType()->getJsonKey(),
+								artifactScore,
+								otherArtifactScore
+							);
 
 							//if that artifact is better than what we have, pick it
 							//combined artifacts are not always allowed to move
 							if(artifactScore > otherArtifactScore && artifact->canBePutAt(target, slot, true))
 							{
 								std::pair swapPair = std::minmax<ArtifactInstanceID>({artifact->getId(), otherSlot->artifactID});
-								if (swappedSet.find(swapPair) != swappedSet.end())
+								if(swappedSet.find(swapPair) != swappedSet.end())
 								{
 									logAi->warn(
 										"Artifacts % s < -> % s have already swapped before, ignored.",
 										artifact->getType()->getJsonKey(),
-										otherSlot->getArt()->getType()->getJsonKey());
+										otherSlot->getArt()->getType()->getJsonKey()
+									);
 									continue;
 								}
-								logAi->trace(
-									"Exchange artifacts %s <-> %s",
-									artifact->getType()->getJsonKey(),
-									otherSlot->getArt()->getType()->getJsonKey());
+								logAi->trace("Exchange artifacts %s <-> %s", artifact->getType()->getJsonKey(), otherSlot->getArt()->getType()->getJsonKey());
 
 								if(!otherSlot->getArt()->canBePutAt(artHolder, location.slot, true))
 								{
@@ -1773,8 +1781,7 @@ void AIGateway::pickBestArtifacts(const std::shared_ptr<CCallback> & cc, const C
 				if(changeMade)
 					break; //start evaluating artifacts from scratch
 			}
-		}
-		while(changeMade);
+		} while(changeMade);
 	};
 
 	equipBest(h, other, true);

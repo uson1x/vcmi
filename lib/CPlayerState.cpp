@@ -122,7 +122,20 @@ std::vector<const CGHeroInstance *> PlayerState::getHeroes() const
 
 std::vector<const CGTownInstance *> PlayerState::getTowns() const
 {
-	return getObjectsOfType<const CGTownInstance *>();
+	// optimized due to numerous AI access
+	using T = const CGTownInstance *;
+	std::vector<T> result;
+	for (const ObjectInstanceID & objectID : ownedObjects)
+	{
+		const auto * objectPtr = cb->gameState().getObjInstance(objectID);
+		if (objectPtr->ID != MapObjectID::TOWN)
+			continue;
+
+		assert(dynamic_cast<T>(objectPtr) != nullptr);
+		auto casted = static_cast<T>(objectPtr);
+		result.push_back(casted);
+	}
+	return result;
 }
 
 std::vector<CGHeroInstance *> PlayerState::getHeroes()
@@ -144,11 +157,23 @@ void PlayerState::addOwnedObject(CGObjectInstance * object)
 {
 	assert(object->asOwnable() != nullptr);
 	ownedObjects.push_back(object->id);
+	markObjectControlled(object->id);
 }
 
 void PlayerState::removeOwnedObject(CGObjectInstance * object)
 {
 	vstd::erase(ownedObjects, object->id);
+}
+
+void PlayerState::markObjectControlled(ObjectInstanceID objectID)
+{
+	if(objectID != ObjectInstanceID::NONE)
+		everControlledObjects.insert(objectID);
+}
+
+bool PlayerState::hasEverControlled(ObjectInstanceID objectID) const
+{
+	return everControlledObjects.count(objectID) != 0;
 }
 
 VCMI_LIB_NAMESPACE_END

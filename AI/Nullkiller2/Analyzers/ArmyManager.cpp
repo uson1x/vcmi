@@ -130,7 +130,7 @@ std::vector<SlotInfo>::iterator ArmyManager::getBestUnitForScout(std::vector<Slo
 	auto fastest = boost::min_element(army, [&](const SlotInfo & left, const SlotInfo & right) -> bool
 	{
 		uint64_t leftUnitPower = left.power / left.count;
-		uint64_t rightUnitPower = left.power / left.count;
+		uint64_t rightUnitPower = right.power / right.count;
 		bool leftUnitIsWeak = leftUnitPower < maxUnitValue || left.creature->getLevel() < 4;
 		bool rightUnitIsWeak = rightUnitPower < maxUnitValue || right.creature->getLevel() < 4;
 
@@ -139,15 +139,17 @@ std::vector<SlotInfo>::iterator ArmyManager::getBestUnitForScout(std::vector<Slo
 
 		if (terrainHasPenalty)
 		{
-			auto leftNativeTerrain = left.creature->getFactionID().toFaction()->nativeTerrain;
-			auto rightNativeTerrain = right.creature->getFactionID().toFaction()->nativeTerrain;
+			const auto leftFaction = left.creature->getFactionID().toFaction();
+			const auto rightFaction = right.creature->getFactionID().toFaction();
+			const bool leftIsNative = leftFaction->isNativeTerrain(armyTerrain);
+			const bool rightIsNative = rightFaction->isNativeTerrain(armyTerrain);
 
-			if (leftNativeTerrain != rightNativeTerrain)
+			if (leftIsNative != rightIsNative)
 			{
-				if (leftNativeTerrain == armyTerrain)
+				if (leftIsNative)
 					return true;
 
-				if (rightNativeTerrain == armyTerrain)
+				if (rightIsNative)
 					return false;
 			}
 		}
@@ -180,7 +182,6 @@ public:
 std::vector<SlotInfo> ArmyManager::getBestArmy(const IBonusBearer * armyCarrier, const CCreatureSet * target, const CCreatureSet * source, const TerrainId & armyTerrain) const
 {
 	auto sortedSlots = getSortedSlots(target, source);
-
 	if(source->stacksCount() == 0)
 		return sortedSlots;
 
@@ -194,8 +195,11 @@ std::vector<SlotInfo> ArmyManager::getBestArmy(const IBonusBearer * armyCarrier,
 	std::set<FactionID> allowedFactions;
 	std::vector<SlotInfo> resultingArmy;
 	uint64_t armyValue = 0;
-
 	TemporaryArmy newArmyInstance;
+
+	const auto & badMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_BAD_MORALE_CHANCE);
+	const auto & highMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_GOOD_MORALE_CHANCE);
+	int moraleDiceSize = cpsic->getSettings().getInteger(EGameSettings::COMBAT_MORALE_DICE_SIZE);
 
 	while(allowedFactions.size() < alignmentMap.size())
 	{
@@ -231,10 +235,6 @@ std::vector<SlotInfo> ArmyManager::getBestArmy(const IBonusBearer * armyCarrier,
 			auto morale = slot.second->moraleVal();
 			auto multiplier = 1.0f;
 
-			const auto & badMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_BAD_MORALE_CHANCE);
-			const auto & highMoraleChance = cpsic->getSettings().getVector(EGameSettings::COMBAT_GOOD_MORALE_CHANCE);
-			int moraleDiceSize = cpsic->getSettings().getInteger(EGameSettings::COMBAT_MORALE_DICE_SIZE);
-
 			if(morale < 0 && !badMoraleChance.empty())
 			{
 				size_t chanceIndex = std::min<size_t>(badMoraleChance.size(), -morale) - 1;
@@ -263,11 +263,10 @@ std::vector<SlotInfo> ArmyManager::getBestArmy(const IBonusBearer * armyCarrier,
 		&& source->needsLastStack())
 	{
 		auto weakest = getBestUnitForScout(resultingArmy, armyTerrain);
-
-		if(weakest->count == 1) 
+		if(weakest->count == 1)
 		{
 			if (resultingArmy.size() == 1)
-				logAi->warn("Unexpected resulting army size!");
+				logAi->warn("ArmyManager::getBestArmy Unexpected resulting army size!");
 
 			resultingArmy.erase(weakest);
 		}
@@ -347,7 +346,8 @@ std::vector<creInfo> ArmyManager::getArmyAvailableToBuy(
 {
 	std::vector<creInfo> creaturesInDwellings;
 	int freeHeroSlots = GameConstants::ARMY_SIZE - hero->stacksCount();
-	bool countGrowth = (cpsic->getDate(Date::DAY_OF_WEEK) + turn) > 7;
+	auto calendar = cpsic->getCalendar();
+	bool countGrowth = (calendar.getDayOfWeek() + turn) > calendar.getDaysInWeek();
 
 	const CGTownInstance * town = dwelling->ID == Obj::TOWN
 		? dynamic_cast<const CGTownInstance *>(dwelling)

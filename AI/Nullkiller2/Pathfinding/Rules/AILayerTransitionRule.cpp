@@ -15,6 +15,7 @@
 #include "../../../../lib/pathfinder/TurnInfo.h"
 #include "../../../../lib/spells/ISpellMechanics.h"
 #include "../../../../lib/spells/adventure/SummonBoatEffect.h"
+#include "../../../../lib/spells/CSpellHandler.h"
 
 namespace NK2AI
 {
@@ -198,7 +199,7 @@ namespace AIPathfinding
 		{
 			const CGHeroInstance * hero = nodeStorage->getHero(source.node);
 
-			if(vstd::contains(summonableVirtualBoats, hero) && summonableVirtualBoats.at(hero)->canAct(aiNk, nodeStorage->getAINode(source.node)))
+			if(summonableVirtualBoats.contains(hero) && summonableVirtualBoats.at(hero)->canAct(aiNk, nodeStorage->getAINode(source.node)))
 			{
 				virtualBoat = summonableVirtualBoats.at(hero);
 			}
@@ -223,9 +224,9 @@ namespace AIPathfinding
 				const auto castNodeOptional = nodeStorage->getOrCreateNode(node->coord, node->layer, specialAction->getActor(node->actor));
 				if(!castNodeOptional)
 				{
-#if NK2AI_PATHFINDER_TRACE_LEVEL >= 2
-					logAi->trace(
-						"AILayerTransitionRule::tryUseSpecialAction Failed to allocate node at %s[%d]. "
+#if NK2AI_PATHFINDER_TRACE_LEVEL >= 1
+					logAi->warn(
+						"P:Step2A AILayerTransitionRule::tryUseSpecialAction Failed to allocate node at %s[%d]. "
 						"Can not allocate special transition node while moving %s -> %s",
 						node->coord.toString(),
 						static_cast<int32_t>(node->layer),

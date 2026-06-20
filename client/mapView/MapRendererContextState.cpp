@@ -45,7 +45,7 @@ int3 getMapSizeSafe()
 		return callback->getMapSize();
 
 	const auto * map = GAME->map().getMap();
-	return int3(map->width, map->height, map->mapLevels);
+	return int3(map->width, map->height, map->levels());
 }
 
 bool isInMapSafe(const int3 & tile)
@@ -65,11 +65,8 @@ static bool compareObjectBlitOrder(ObjectInstanceID left, ObjectInstanceID right
 }
 
 MapRendererContextState::MapRendererContextState()
+	: objects(getMapSizeSafe())
 {
-	auto mapSize = getMapSizeSafe();
-
-	objects.resize(boost::extents[mapSize.z][mapSize.x][mapSize.y]);
-
 	logGlobal->debug("Loading map objects");
 	for(const auto & obj : GAME->map().getMap()->getObjects())
 		addObject(obj);
@@ -89,9 +86,11 @@ void MapRendererContextState::addObject(const CGObjectInstance * obj)
 
 			if(isInMapSafe(currTile) && obj->coveringAt(currTile))
 			{
-				auto & container = objects[currTile.z][currTile.x][currTile.y];
+				auto & container = objects[currTile];
 				auto position = std::upper_bound(container.begin(), container.end(), obj->id, compareObjectBlitOrder);
 				container.insert(position, obj->id);
+
+				usedTiles[obj->id].push_back(currTile);
 			}
 		}
 	}
@@ -112,10 +111,11 @@ void MapRendererContextState::addMovingObject(const CGObjectInstance * object, c
 
 			if(isInMapSafe(currTile))
 			{
-				auto & container = objects[currTile.z][currTile.x][currTile.y];
+				auto & container = objects[currTile];
+				auto position = std::upper_bound(container.begin(), container.end(), object->id, compareObjectBlitOrder);
+				container.insert(position, object->id);
 
-				container.push_back(object->id);
-				boost::range::sort(container, compareObjectBlitOrder);
+				usedTiles[object->id].push_back(currTile);
 			}
 		}
 	}
@@ -123,10 +123,8 @@ void MapRendererContextState::addMovingObject(const CGObjectInstance * object, c
 
 void MapRendererContextState::removeObject(const CGObjectInstance * object)
 {
-	auto mapSize = getMapSizeSafe();
+	for (const auto & usedTile : usedTiles[object->id])
+		vstd::erase(objects[usedTile], object->id);
 
-	for(int z = 0; z < mapSize.z; z++)
-		for(int x = 0; x < mapSize.x; x++)
-			for(int y = 0; y < mapSize.y; y++)
-				vstd::erase(objects[z][x][y], object->id);
+	usedTiles.erase(object->id);
 }

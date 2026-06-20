@@ -13,6 +13,7 @@
 
 #include "AdventureMapInterface.h"
 
+#include "../windows/wiki/WikiWindow.h"
 #include "../widgets/CComponent.h"
 #include "../widgets/Images.h"
 #include "../windows/CMessage.h"
@@ -32,7 +33,9 @@
 #include "../../lib/callback/CCallback.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/entities/hero/CHero.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
+#include "../../lib/filesystem/Filesystem.h"
 
 CInfoBar::CVisibleInfo::CVisibleInfo()
 	: CIntObject(0, Point(offset_x, offset_y))
@@ -59,6 +62,16 @@ CInfoBar::VisibleHeroInfo::VisibleHeroInfo(const CGHeroInstance * hero)
 		heroTooltip = std::make_shared<CInteractableHeroTooltip>(Point(0,0), hero);
 	else
 		heroTooltip = std::make_shared<CHeroTooltip>(Point(0,0), hero);
+
+	{
+		const std::string heroKey = hero->getHeroType()->getJsonKey();
+		wikiPortrait = std::make_shared<LRClickableArea>(Rect(3, 2, 58, 64), [heroKey]()
+		{
+			ENGINE->windows().createAndPushWindow<WikiWindow>(
+				WikiWindow::Style::BROWN,
+				WikiEntryKey{WikiCategory::HERO, heroKey});
+		});
+	}
 }
 
 CInfoBar::VisibleTownInfo::VisibleTownInfo(const CGTownInstance * town)
@@ -79,11 +92,12 @@ CInfoBar::VisibleDateInfo::VisibleDateInfo()
 	animation = std::make_shared<CShowableAnim>(1, 0, getNewDayName(), CShowableAnim::PLAY_ONCE, 180);// H3 uses around 175-180 ms per frame
 	animation->setDuration(1500);
 
+	auto calendar = GAME->interface()->cb->getCalendar();
 	std::string labelText;
-	if(GAME->interface()->cb->getDate(Date::DAY_OF_WEEK) == 1 && GAME->interface()->cb->getDate(Date::DAY) != 1) // monday of any week but first - show new week info
-		labelText = LIBRARY->generaltexth->allTexts[63] + " " + std::to_string(GAME->interface()->cb->getDate(Date::WEEK));
+	if(calendar.getDayOfWeek() == 1 && calendar.getCurrentDay() != 1) // monday of any week but first - show new week info
+		labelText = LIBRARY->generaltexth->allTexts[63] + " " + std::to_string(calendar.getWeek());
 	else
-		labelText = LIBRARY->generaltexth->allTexts[64] + " " + std::to_string(GAME->interface()->cb->getDate(Date::DAY_OF_WEEK));
+		labelText = LIBRARY->generaltexth->allTexts[64] + " " + std::to_string(calendar.getDayOfWeek());
 
 	label = std::make_shared<CLabel>(95, 31, FONT_MEDIUM, ETextAlignment::CENTER, Colors::WHITE, labelText);
 
@@ -92,24 +106,21 @@ CInfoBar::VisibleDateInfo::VisibleDateInfo()
 
 AnimationPath CInfoBar::VisibleDateInfo::getNewDayName()
 {
-	if(GAME->interface()->cb->getDate(Date::DAY) == 1)
+	auto calendar = GAME->interface()->cb->getCalendar();
+	if(calendar.getCurrentDay() == 1)
 		return AnimationPath::builtin("NEWDAY");
 
-	if(GAME->interface()->cb->getDate(Date::DAY_OF_WEEK) != 1)
+	if(calendar.getDayOfWeek() != 1)
 		return AnimationPath::builtin("NEWDAY");
 
-	switch(GAME->interface()->cb->getDate(Date::WEEK))
+	int week = calendar.getWeek();
+	auto resourceName = AnimationPath::builtin("NEWWEEK" + std::to_string(week));
+	if(CResourceHandler::get()->existsResource(resourceName.addPrefix("SPRITES/")))
+		return resourceName;
+	else
 	{
-	case 1:
+		logGlobal->warn("NEWWEEK animation for week %d not found. Falling back to animation for week 1.", week);
 		return AnimationPath::builtin("NEWWEEK1");
-	case 2:
-		return AnimationPath::builtin("NEWWEEK2");
-	case 3:
-		return AnimationPath::builtin("NEWWEEK3");
-	case 4:
-		return AnimationPath::builtin("NEWWEEK4");
-	default:
-		return AnimationPath();
 	}
 }
 
@@ -236,11 +247,12 @@ void CInfoBar::playNewDaySound()
 	if(volume == 0)
 		ENGINE->sound().setVolume(settings["general"]["sound"].Integer());
 
-	if(GAME->interface()->cb->getDate(Date::DAY_OF_WEEK) != 1) // not first day of the week
+	auto calendar = GAME->interface()->cb->getCalendar();
+	if(calendar.getDayOfWeek() != 1) // not first day of the week
 		handle = ENGINE->sound().playSound(soundBase::newDay);
-	else if(GAME->interface()->cb->getDate(Date::WEEK) != 1) // not first week in month
+	else if(calendar.getWeek() != 1) // not first week in month
 		handle = ENGINE->sound().playSound(soundBase::newWeek);
-	else if(GAME->interface()->cb->getDate(Date::MONTH) != 1) // not first month
+	else if(calendar.getMonth() != 1) // not first month
 		handle = ENGINE->sound().playSound(soundBase::newMonth);
 	else
 		handle = ENGINE->sound().playSound(soundBase::newDay);

@@ -20,6 +20,8 @@
 #include "../texts/CGeneralTextHandler.h"
 #include "../constants/StringConstants.h"
 #include "../TerrainHandler.h"
+#include "../BattleFieldHandler.h"
+#include "../CRandomGenerator.h"
 #include "../mapObjectConstructors/AObjectTypeHandler.h"
 #include "../mapObjectConstructors/CObjectClassesHandler.h"
 #include "../mapping/CMap.h"
@@ -122,12 +124,46 @@ const std::set<int3> & CGObjectInstance::getBlockedOffsets() const
 void CGObjectInstance::setType(MapObjectID newID, MapObjectSubID newSubID)
 {
 	auto position = visitablePos();
-	auto oldOffset = appearance->getCornerOffset();
 	const auto * tile = cb->getTile(position);
+
+	if(!tile)
+	{
+		logGlobal->warn(
+			"CGObjectInstance::setType: object %s at %s has invalid visitablePos (null tile). "
+			"Skipping appearance update.",
+			LIBRARY->objtypeh->getObjectName(ID, newSubID), position.toString());
+		return;
+		// skip visual/type update here which would fail; object is already on map with bad coords.
+	}
 
 	//recalculate blockvis tiles - new appearance might have different blockmap than before
 	cb->gameState().getMap().hideObject(this);
 	auto handler = LIBRARY->objtypeh->getHandlerFor(newID, newSubID);
+
+	bool needToAdjustOffset = false;
+
+	// Current prison-release flow does not use setType(PRISON, HERO):
+	// GameStatePackVisitor::visitGiveHero updates appearance and anchor directly.
+	// Keep this branch as fallback in case another code path converts prisons via setType.
+	needToAdjustOffset |= this->ID == Obj::PRISON && newID == Obj::HERO;
+	needToAdjustOffset |= newID == Obj::MONSTER;
+	needToAdjustOffset |= newID == Obj::CREATURE_GENERATOR1 || newID == Obj::CREATURE_GENERATOR2 || newID == Obj::CREATURE_GENERATOR3 || newID == Obj::CREATURE_GENERATOR4;
+
+	int3 oldOffset;
+	if(needToAdjustOffset)
+	{
+		if(appearance->isVisitable())
+		{
+			oldOffset = appearance->getCornerOffset();
+		}
+		else
+		{
+			logGlobal->warn(
+				"CGObjectInstance::setType: object %s at %s has non-visitable template '%s'; "
+				"skipping old corner offset adjustment",
+				getObjectName(), pos.toString(), appearance->stringID);
+		}
+	}
 
 	if(!handler->getTemplates(tile->getTerrainID()).empty())
 	{
@@ -135,17 +171,12 @@ void CGObjectInstance::setType(MapObjectID newID, MapObjectSubID newSubID)
 	}
 	else
 	{
-		logGlobal->warn("Object %d:%d at %s has no templates suitable for terrain %s", newID, newSubID, visitablePos().toString(), tile->getTerrain()->getNameTranslated());
+		logGlobal->warn(
+			"Object %s at %s has no templates suitable for terrain %s",
+			LIBRARY->objtypeh->getObjectName(ID, newSubID), visitablePos().toString(),
+			tile->getTerrain()->getNameTranslated());
 		appearance = handler->getTemplates()[0]; // get at least some appearance since alternative is crash
 	}
-
-	bool needToAdjustOffset = false;
-
-	// FIXME: potentially unused code - setType is NOT called when releasing hero from prison
-	// instead, appearance update & pos adjustment occurs in GiveHero::applyGs
-	needToAdjustOffset |= this->ID == Obj::PRISON && newID == Obj::HERO;
-	needToAdjustOffset |= newID == Obj::MONSTER;
-	needToAdjustOffset |= newID == Obj::CREATURE_GENERATOR1 || newID == Obj::CREATURE_GENERATOR2 || newID == Obj::CREATURE_GENERATOR3 || newID == Obj::CREATURE_GENERATOR4;
 
 	if(needToAdjustOffset)
 	{
@@ -178,10 +209,6 @@ void CGObjectInstance::setProperty( ObjProperty what, ObjPropertyID identifier )
 	{
 	case ObjProperty::OWNER:
 		tempOwner = identifier.as<PlayerColor>();
-		break;
-	case ObjProperty::BLOCKVIS:
-		// Never actually used in code, but possible in ERM
-		blockVisit = identifier.getNum();
 		break;
 	case ObjProperty::ID:
 		ID = identifier.as<MapObjectID>();
@@ -395,7 +422,13 @@ void CGObjectInstance::serializeJsonOwner(JsonSerializeFormat & handler)
 
 BattleField CGObjectInstance::getBattlefield() const
 {
-	return LIBRARY->objtypeh->getHandlerFor(ID, subID)->getBattlefield();
+	auto currentLayer = cb->gameState().getMap().mapLayers.at(pos.z);
+	const auto & objectBattlefields = LIBRARY->objtypeh->getHandlerFor(ID, subID)->getBattlefields();
+
+	if (objectBattlefields.empty())
+		return BattleField::NONE;
+
+	return BattleFieldHandler::selectRandomBattlefield(objectBattlefields, currentLayer, CRandomGenerator::getDefault());
 }
 
 const IOwnableObject * CGObjectInstance::asOwnable() const

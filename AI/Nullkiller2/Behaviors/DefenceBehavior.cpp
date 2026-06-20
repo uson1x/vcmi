@@ -12,7 +12,7 @@
 
 #include "../AIGateway.h"
 #include "../AIUtility.h"
-#include "../Behaviors/CaptureObjectsBehavior.h"
+#include "CaptureObjectsBehavior.h"
 #include "../Engine/Nullkiller.h"
 #include "../Goals/BuyArmy.h"
 #include "../Goals/Composition.h"
@@ -21,6 +21,7 @@
 #include "../Goals/ExecuteHeroChain.h"
 #include "../Goals/RecruitHero.h"
 #include "../Markers/DefendTown.h"
+#include "../../../lib/IGameSettings.h"
 
 namespace NK2AI
 {
@@ -48,12 +49,12 @@ Goals::TGoalVec DefenceBehavior::decompose(const Nullkiller * aiNk) const
 
 bool isThreatUnderControl(const CGTownInstance * town, const HitMapInfo & threat, const Nullkiller * aiNk, const std::vector<AIPath> & paths)
 {
-	int dayOfWeek = aiNk->cc->getDate(Date::DAY_OF_WEEK);
+	int dayOfWeek = aiNk->cc->getCalendar().getDayOfWeek();
 
 	for(const AIPath & path : paths)
 	{
 		bool threatIsWeak = path.getHeroStrength() / (float)threat.danger > THREAT_IGNORE_RATIO;
-		bool needToSaveGrowth = threat.turn == 0 && dayOfWeek == 7;
+		bool needToSaveGrowth = threat.turn == 0 && dayOfWeek == LIBRARY->engineSettings()->getInteger(EGameSettings::GENERAL_DAYS_PER_WEEK);
 
 		if(threatIsWeak && !needToSaveGrowth)
 		{
@@ -196,7 +197,7 @@ void DefenceBehavior::evaluateDefence(Goals::TGoalVec & tasks, const CGTownInsta
 		}
 
 		std::vector<int> pathsToDefend;
-		std::map<const CGHeroInstance *, std::vector<int>> defferedPaths;
+		HeroMap<std::vector<int>> defferedPaths;
 		AIPath * closestWay = nullptr;
 
 		for(int i = 0; i < paths.size(); i++)
@@ -295,7 +296,7 @@ void DefenceBehavior::evaluateDefence(Goals::TGoalVec & tasks, const CGTownInsta
 				continue;
 			}
 
-			if(threat.turn == 0 || (path.turn() <= threat.turn && path.getHeroStrength() * aiNk->settings->getSafeAttackRatio() >= threat.danger))
+			if(threat.turn == 0 || (path.turn() <= threat.turn && path.getHeroStrength() >= threat.danger * aiNk->settings->getSafeAttackRatio()))
 			{
 				if(aiNk->arePathHeroesLocked(path))
 				{

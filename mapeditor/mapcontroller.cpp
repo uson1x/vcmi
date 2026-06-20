@@ -27,9 +27,9 @@
 #include "../lib/modding/ModDescription.h"
 #include "../lib/TerrainHandler.h"
 #include "../lib/CSkillHandler.h"
-#include "../lib/spells/CSpellHandler.h"
 #include "../lib/CRandomGenerator.h"
 #include "../lib/serializer/CMemorySerializer.h"
+#include "../lib/spells/CSpellHandler.h"
 #include "mapsettings/modsettings.h"
 #include "mapview.h"
 #include "scenelayer.h"
@@ -44,7 +44,7 @@ MapController::MapController(QObject * parent)
 {
 }
 
-MapController::MapController(MainWindow * m): main(m)
+MapController::MapController(EditorMainWindow * m): main(m)
 {
 	for(int i = 0; i < MAX_LEVELS; i++)
 	{
@@ -100,6 +100,16 @@ MapHandler * MapController::mapHandler()
 MapScene * MapController::scene(int level)
 {
 	return _scenes[level].get();
+}
+
+std::set<MapScene *> MapController::getScenes()
+{
+	std::set<MapScene *>result;
+	if (!map())
+		return result;
+	for (int i=0; i<map()->levels(); i++)
+		result.insert(_scenes[i].get());
+	return result;
 }
 
 MinimapScene * MapController::miniScene(int level)
@@ -227,7 +237,7 @@ void MapController::setMap(std::unique_ptr<CMap> cmap)
 	
 	repairMap();
 	
-	for(int i = 0; i < _map->mapLevels; i++)
+	for(int i = 0; i < _map->levels(); i++)
 	{
 		_scenes[i].reset(new MapScene(i));
 		_miniscenes[i].reset(new MinimapScene(i));
@@ -262,7 +272,7 @@ void MapController::initObstaclePainters(CMap * map)
 
 void MapController::initializeMap()
 {
-	for(int i = 0; i < _map->mapLevels; i++)
+	for(int i = 0; i < _map->levels(); i++)
 	{
 		_scenes[i]->createMap();
 		_miniscenes[i]->createMap();
@@ -271,7 +281,7 @@ void MapController::initializeMap()
 
 void MapController::sceneForceUpdate()
 {
-	for(int i = 0; i < _map->mapLevels; i++)
+	for(int i = 0; i < _map->levels(); i++)
 	{
 		_scenes[i]->updateMap();
 		_miniscenes[i]->updateMap();

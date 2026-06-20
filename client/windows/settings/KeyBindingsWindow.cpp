@@ -15,13 +15,14 @@
 #include "../../GameEngine.h"
 #include "../../GameInstance.h"
 #include "../../gui/Shortcut.h"
+#include "../../gui/ShortcutHandler.h"
 #include "../../gui/WindowHandler.h"
 #include "../../widgets/Buttons.h"
 #include "../../widgets/GraphicalPrimitiveCanvas.h"
 #include "../../widgets/Images.h"
 #include "../../widgets/TextControls.h"
 #include "../../widgets/Slider.h"
-#include "../../windows/InfoWindows.h"
+#include "../InfoWindows.h"
 
 #include "../../../lib/CConfigHandler.h"
 #include "../../../lib/texts/MetaString.h"
@@ -39,7 +40,10 @@ KeyBindingsWindow::KeyBindingsWindow()
 	center();
 
 	backgroundTexture = std::make_shared<CFilledTexture>(ImagePath::builtin("DiBoxBck"), Rect(0, 0, pos.w, pos.h));
-	buttonOk = std::make_shared<CButton>(Point(218, 404), AnimationPath::builtin("IOKAY"), CButton::tooltip(), [this](){ close(); }, EShortcut::GLOBAL_ACCEPT);
+	buttonOk = std::make_shared<CButton>(Point(218, 404), AnimationPath::builtin("IOKAY"), CButton::tooltip(), [this](){
+		close();
+		ENGINE->shortcuts().reloadShortcuts();
+	}, EShortcut::GLOBAL_ACCEPT);
 	labelTitle = std::make_shared<CLabel>(
 		pos.w / 2, 20, FONT_BIG, ETextAlignment::CENTER, Colors::YELLOW, MetaString::createFromTextID("vcmi.keyBindings.button.hover").toString()
 	);
@@ -54,6 +58,7 @@ KeyBindingsWindow::KeyBindingsWindow()
 
 	slider = std::make_shared<CSlider>(Point(backgroundRect->pos.x - pos.x + backgroundRect->pos.w - 18, backgroundRect->pos.y - pos.y + 1), backgroundRect->pos.h - 3, [this](int pos){ fillList(pos); redraw(); }, MAX_LINES, count, 0, Orientation::VERTICAL, CSlider::BROWN);
 	slider->setPanningStep(LINE_HEIGHT);
+	slider->setInertiaEnabled(true);
 	slider->setScrollBounds(Rect(-backgroundRect->pos.w + slider->pos.w, 0, slider->pos.x - pos.x + slider->pos.w, slider->pos.h));
 
 	buttonReset = std::make_shared<CButton>(Point(411, 403), AnimationPath::builtin("settingsWindow/button80"), std::make_pair("", MetaString::createFromTextID("vcmi.keyBindings.reset.help").toString()));

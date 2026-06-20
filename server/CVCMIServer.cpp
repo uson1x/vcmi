@@ -81,9 +81,15 @@ CVCMIServer::CVCMIServer(uint16_t port, bool runByClient)
 	logNetwork->trace("CVCMIServer created! UUID: %s", uuid);
 
 	networkHandler = INetworkHandler::createHandler();
+
+	if(state == EServerState::LOBBY)
+		startDiscoveryListener();
 }
 
-CVCMIServer::~CVCMIServer() = default;
+CVCMIServer::~CVCMIServer()
+{
+	stopDiscoveryListener();
+}
 
 uint16_t CVCMIServer::prepare(bool connectToLobby, bool listenForConnections) {
 	if(connectToLobby) {
@@ -146,15 +152,42 @@ void CVCMIServer::setState(EServerState value)
 
 	// do not attempt to restart dying server
 	assert(state != EServerState::SHUTDOWN || state == value);
+
+	if(state != EServerState::LOBBY && value == EServerState::LOBBY && discoveryListener)
+		startDiscoveryListener();
+	if(state == EServerState::LOBBY && value != EServerState::LOBBY && discoveryListener)
+		stopDiscoveryListener();
+
 	state = value;
 
 	if (state == EServerState::SHUTDOWN)
 		networkHandler->stop();
 }
+void CVCMIServer::startDiscoveryListener()
+{
+	if(!discoveryListener)
+		discoveryListener = getNetworkHandler().createServerDiscoveryListener(*this);
+
+	discoveryListener->start();
+}
+
+void CVCMIServer::stopDiscoveryListener()
+{
+	if(discoveryListener)
+	{
+		discoveryListener->stop();
+		discoveryListener.reset();
+	}
+}
 
 EServerState CVCMIServer::getState() const
 {
 	return state;
+}
+
+bool CVCMIServer::isInLobby() const
+{
+	return getState() == EServerState::LOBBY;
 }
 
 std::shared_ptr<GameConnection> CVCMIServer::findConnection(const std::shared_ptr<INetworkConnection> & netConnection)
@@ -209,7 +242,6 @@ void CVCMIServer::prepareToRestart()
 		return;
 	}
 
-	* si = * gh->gs->getInitialStartInfo();
 	setState(EServerState::LOBBY);
 	if (si->campState)
 	{
@@ -303,9 +335,9 @@ bool CVCMIServer::prepareToStartGame()
 	catch(const std::exception & e)
 	{
 		logGlobal->error("Failed to launch game: %s", e.what());
-		auto str = MetaString::createFromTextID("vcmi.broadcast.failedLoadGame");
+		auto str = MetaString::createFromTextID("vcmi.client.errors.invalidMap");
 		str.appendRawString(":\n");
-		str.appendRawString(e.what());
+		str.replaceRawString(e.what());
 		announceMessage(str);
 	}
 	current.finish();
@@ -437,7 +469,7 @@ bool CVCMIServer::passHost(GameConnectionID toConnectionId)
 	return false;
 }
 
-void CVCMIServer::clientConnected(std::shared_ptr<GameConnection> c, std::vector<std::string> & names, const std::string & uuid, EStartMode mode)
+void CVCMIServer::clientConnected(std::shared_ptr<GameConnection> c, const std::vector<std::string> & names, const std::string & uuid, EStartMode mode)
 {
 	assert(getState() == EServerState::LOBBY);
 
@@ -463,7 +495,11 @@ void CVCMIServer::clientConnected(std::shared_ptr<GameConnection> c, std::vector
 		cp.connection = c->connectionID;
 		cp.name = name;
 		playerNames.try_emplace(id, cp);
-		announceTxt(boost::str(boost::format("%s (pid %d cid %d) joins the game") % name % static_cast<int>(id) % static_cast<int>(c->connectionID)));
+		logNetwork->info("Player joined lobby: name='%s', playerId=%d, connectionId=%d", name, static_cast<int>(id), static_cast<int>(c->connectionID));
+		MetaString joinMessage;
+		joinMessage.appendTextID("vcmi.lobby.system.playerJoined");
+		joinMessage.replaceRawString(name);
+		announceTxt(joinMessage);
 
 		//put new player in first slot with AI
 		for(auto & elem : si->playerInfos)
@@ -483,6 +519,23 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 	logGlobal->trace("Received disconnection request");
 	vstd::erase(activeConnections, connection);
 
+	std::vector<PlayerConnectionID> disconnectedPlayerIds;
+	for(const auto & playerEntry : playerNames)
+	{
+		if(playerEntry.second.connection != connection->connectionID)
+			continue;
+
+		disconnectedPlayerIds.push_back(playerEntry.first);
+		logNetwork->info("Player disconnected from lobby: name='%s', connectionId=%d", playerEntry.second.name, static_cast<int>(connection->connectionID));
+		MetaString disconnectMessage;
+		disconnectMessage.appendTextID("vcmi.lobby.system.playerDisconnected");
+		disconnectMessage.replaceRawString(playerEntry.second.name);
+		announceTxt(disconnectMessage);
+	}
+
+	if(disconnectedPlayerIds.empty())
+		logNetwork->info("Connection %d disconnected from lobby with no mapped player names", static_cast<int>(connection->connectionID));
+
 	if(activeConnections.empty() || hostClientId == connection->connectionID)
 	{
 		setState(EServerState::SHUTDOWN);
@@ -491,7 +544,17 @@ void CVCMIServer::clientDisconnected(std::shared_ptr<GameConnection> connection)
 
 	if(gh && getState() == EServerState::GAMEPLAY)
 	{
-		gh->handleClientDisconnection(connection->connectionID);
+		gh->handleClientDisconnection(connection->connectionID, disconnectedPlayerIds);
+	}
+
+	for(const auto & playerId : disconnectedPlayerIds)
+		playerNames.erase(playerId);
+
+	for(auto & playerInfoEntry : si->playerInfos)
+	{
+		auto & connectedPlayerIDs = playerInfoEntry.second.connectedPlayerIDs;
+		for(const auto & playerId : disconnectedPlayerIds)
+			connectedPlayerIDs.erase(playerId);
 	}
 }
 
@@ -502,6 +565,7 @@ void CVCMIServer::setPlayerConnectedId(PlayerSettings & pset, PlayerConnectionID
 	else
 		pset.name = LIBRARY->generaltexth->allTexts[468]; //Computer
 
+	logGlobal->debug("Player color %d will be controlled from connection %d", pset.color, static_cast<int>(player));
 	pset.connectedPlayerIDs.clear();
 	if(player != PlayerConnectionID::PLAYER_AI)
 		pset.connectedPlayerIDs.insert(player);
@@ -1163,4 +1227,3 @@ void CVCMIServer::sendPack(CPackForClient & pack, GameConnectionID connectionID)
 		if (c->connectionID == connectionID)
 			c->sendPack(pack);
 }
-

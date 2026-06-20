@@ -41,7 +41,6 @@
 #include "../../lib/GameLibrary.h"
 #include "../../lib/battle/CPlayerBattleCallback.h"
 #include "../../lib/callback/CCallback.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/ISpellMechanics.h"
 #include "../../lib/spells/adventure/AdventureSpellEffect.h"
 #include "../../lib/spells/Problem.h"
@@ -49,6 +48,7 @@
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/texts/TextOperations.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 // Ordering of spell school tabs in SpelTab.def
 static const std::array schoolTabOrder =
@@ -178,6 +178,8 @@ CSpellWindow::CSpellWindow(const CGHeroInstance * _myHero, CPlayerInterface * _m
 		offL = offR = offT = offB = offRM = 0;
 		spellsPerPage = 12;
 	}
+
+	background->setPlayerColor(GAME->interface()->playerID);
 
 	pos = background->center(Point(pos.w/2 + pos.x, pos.h/2 + pos.y));
 

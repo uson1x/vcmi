@@ -18,10 +18,10 @@
 #include "../mapObjects/CGHeroInstance.h"
 #include "../mapObjects/CGTownInstance.h"
 #include "../mapObjects/MiscObjects.h"
+#include "../spells/CSpell.h"
 #include "../StartInfo.h"
 #include "../battle/BattleInfo.h"
 #include "../IGameSettings.h"
-#include "../spells/CSpellHandler.h"
 #include "../mapping/CMap.h"
 #include "../CPlayerState.h"
 
@@ -97,13 +97,13 @@ TurnTimerInfo CGameInfoCallback::getPlayerTurnTime(PlayerColor color) const
 	{
 		return TurnTimerInfo{};
 	}
-	
+
 	auto player = gameState().players.find(color);
 	if(player != gameState().players.end())
 	{
 		return player->second.turnTimer;
 	}
-	
+
 	return TurnTimerInfo{};
 }
 
@@ -171,6 +171,11 @@ const StartInfo * CGameInfoCallback::getStartInfo() const
 const StartInfo * CGameInfoCallback::getInitialStartInfo() const
 {
 	return gameState().getInitialStartInfo();
+}
+
+const scripting::Pool & CGameInfoCallback::getScriptContextPool() const
+{
+	return gameState().getScriptContextPool();
 }
 
 int32_t CGameInfoCallback::getSpellCost(const spells::Spell * sp, const CGHeroInstance * caster) const
@@ -245,7 +250,7 @@ bool CGameInfoCallback::getTownInfo(const CGObjectInstance * town, InfoAboutTown
 int3 CGameInfoCallback::guardingCreaturePosition (int3 pos) const
 {
 	ERROR_RET_VAL_IF(!isVisible(pos), "Tile is not visible!", int3(-1,-1,-1));
-	return gameState().getMap().guardingCreaturePositions[pos.z][pos.x][pos.y];
+	return gameState().getMap().guardingCreaturePositions[pos];
 }
 
 std::vector<const CGObjectInstance*> CGameInfoCallback::getGuardingCreatures (int3 pos) const
@@ -380,9 +385,9 @@ bool CGameInfoCallback::getHeroInfo(const CGObjectInstance * hero, InfoAboutHero
 	return true;
 }
 
-int CGameInfoCallback::getDate(Date mode) const
+Calendar CGameInfoCallback::getCalendar() const
 {
-	return gameState().getDate(mode);
+	return gameState().getCalendar();
 }
 
 bool CGameInfoCallback::isVisibleFor(int3 pos, PlayerColor player) const
@@ -617,7 +622,7 @@ std::string CGameInfoCallback::getTavernRumor(const CGObjectInstance * townOrTav
 {
 	MetaString text;
 	text.appendLocalString(EMetaText::GENERAL_TXT, 216);
-	
+
 	std::string extraText;
 	if(gameState().currentRumor.type == RumorState::TYPE_NONE)
 		return text.toString();
@@ -869,8 +874,8 @@ void CGameInfoCallback::getTilesInRange(FowTilesType & tiles,
 				if(distance <= radious)
 				{
 					if(!player
-					   || (mode == ETileVisibility::HIDDEN  && team->fogOfWarMap[pos.z][xd][yd] == 0)
-					   || (mode == ETileVisibility::REVEALED && team->fogOfWarMap[pos.z][xd][yd] == 1)
+					   || (mode == ETileVisibility::HIDDEN  &&  team->fogOfWarMap[int3(xd,yd, pos.z)] == 0)
+					   || (mode == ETileVisibility::REVEALED && team->fogOfWarMap[int3(xd,yd, pos.z)] == 1)
 					   )
 						tiles.insert(int3(xd,yd,pos.z));
 				}
@@ -934,12 +939,5 @@ bool CGameInfoCallback::checkForVisitableDir(const int3 & src, const int3 & dst)
 	const TerrainTile * pom = &map.getTile(dst);
 	return map.checkForVisitableDir(src, pom, dst);
 }
-
-#if SCRIPTING_ENABLED
-scripting::Pool * CGameInfoCallback::getGlobalContextPool() const
-{
-	return nullptr; // TODO
-}
-#endif
 
 VCMI_LIB_NAMESPACE_END

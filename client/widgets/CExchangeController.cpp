@@ -13,10 +13,10 @@
 #include "../CPlayerInterface.h"
 #include "../GameInstance.h"
 
-#include "../widgets/CGarrisonInt.h"
+#include "CGarrisonInt.h"
 
-#include "../lib/callback/CCallback.h"
-#include "../lib/mapObjects/CGHeroInstance.h"
+#include "../../lib/callback/CCallback.h"
+#include "../../lib/mapObjects/CGHeroInstance.h"
 
 CExchangeController::CExchangeController(ObjectInstanceID hero1, ObjectInstanceID hero2)
 	: left(GAME->interface()->cb->getHero(hero1))
@@ -67,10 +67,12 @@ void CExchangeController::swapArmy()
 	// Move remaining unpaired stacks (if armies size is different)
 	// [A] [ ] => [ ] [A]
 	for(; leftIt != leftSlots.end(); leftIt++)
-		GAME->interface()->cb->swapCreatures(left, right, leftIt->first, leftIt->first);
+		if (!right->hasStackAtSlot(leftIt->first))
+			GAME->interface()->cb->swapCreatures(left, right, leftIt->first, leftIt->first);
 
 	for(; rightIt != rightSlots.end(); rightIt++)
-		GAME->interface()->cb->swapCreatures(left, right, rightIt->first, rightIt->first);
+		if (!left->hasStackAtSlot(rightIt->first))
+			GAME->interface()->cb->swapCreatures(left, right, rightIt->first, rightIt->first);
 }
 
 void CExchangeController::moveArmy(bool leftToRight, std::optional<SlotID> heldSlot)

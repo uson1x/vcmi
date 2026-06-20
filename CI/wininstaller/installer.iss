@@ -86,9 +86,14 @@
 
 #define VCMIFilesFolder "My Games\vcmi"
 
+; Display name (user-facing). VCMIFolder above is the install/registry identity and must not change.
+#ifndef VCMIDisplayName
+  #define VCMIDisplayName "VCMI - Open Heroes 3"
+#endif
+
 #define AppComment "VCMI is an open-source engine for Heroes III, offering new and extended possibilities."
 #define VCMITeam "VCMI Team"
-#define VCMICopyright "Copyright © VCMI Community. All rights reserved."
+#define VCMICopyright "Copyright © VCMI Team. All rights reserved."
 
 #define VCMIHome "https://vcmi.eu/"
 #define VCMIContact "https://discord.gg/chBT42V"
@@ -96,9 +101,9 @@
 
 [Setup]
 AppId={#VCMIFolder}.{#InstallerArch}
-AppName={#VCMIFolder}
+AppName={#VCMIDisplayName}
 AppVersion={#AppVersion}.{#AppBuild}
-AppVerName={#VCMIFolder}
+AppVerName={#VCMIDisplayName}
 AppPublisher={#VCMITeam}
 AppPublisherURL={#VCMIHome}
 AppSupportURL={#VCMIContact}
@@ -133,8 +138,8 @@ WizardImageFile={#WizardLogo}
 ; Version informations
 MinVersion=6.1sp1
 VersionInfoCompany={#VCMITeam}
-VersionInfoDescription={#VCMIFolder} {#AppVersion} Setup (Build {#AppBuild})
-VersionInfoProductName={#VCMIFolder}
+VersionInfoDescription={#VCMIDisplayName} {#AppVersion} Setup (Build {#AppBuild})
+VersionInfoProductName={#VCMIDisplayName}
 VersionInfoCopyright={#VCMICopyright}
 VersionInfoVersion={#AppVersion}
 VersionInfoOriginalFileName={#InstallerName}.exe
@@ -638,7 +643,7 @@ begin
   // Create a custom label for the footer message
   FooterLabel := TLabel.Create(WizardForm);
   FooterLabel.Parent := WizardForm;
-  FooterLabel.Caption := '{#VCMIFolder} v' + '{#AppVersion}' + '.' + '{#AppBuild}';
+  FooterLabel.Caption := '{#VCMIDisplayName} v' + '{#AppVersion}' + '.' + '{#AppBuild}';
   // Padding from the left edge
   FooterLabel.Left := 10;
   // Adjust to leave space for multiple lines
@@ -713,21 +718,46 @@ begin
   Result := True;
 end;
 
+function TryReadUninstallExeFromHKLM(const SubKey: String; var UninstallerPath: String): Boolean;
+begin
+  Result := RegQueryStringValue(HKLM, SubKey, 'UninstallString', UninstallerPath);
+  if (not Result) or (Trim(UninstallerPath) = '') then
+  begin
+    UninstallerPath := '';
+    Result := False;
+  end;
+
+  UninstallerPath := RemoveQuotes(Trim(UninstallerPath));
+end;
+
+function GetLegacyUninstallerPath(var UninstallerPath: String): Boolean;
+begin
+  Result := TryReadUninstallExeFromHKLM('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\VCMI', UninstallerPath) or TryReadUninstallExeFromHKLM('SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\VCMI', UninstallerPath);
+end;
+
 
 procedure RemoveLegacyInstaller();
 var
   AppFolder: String;
+  UninstallerPath: String;
   ResultCode: Integer;
 begin
   AppFolder := ExpandConstant('{app}');
+  UninstallerPath := '';
 
-  // Silently remove old NSIS installation
-  if FileExists(AppFolder + '\Uninstall.exe') then
+  // 1) Prefer uninstall path from registry (full path)
+  if not GetLegacyUninstallerPath(UninstallerPath) then
   begin
-    Exec(AppFolder + '\Uninstall.exe', '/S', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    // 2) Fallback: uninstall.exe in current target dir
+    UninstallerPath := AppFolder + '\Uninstall.exe';
+  end;
 
-    // Attempt to remove leftovers from target folder to ensure clean install
-    if DirExists(AppFolder) then
+  if (UninstallerPath <> '') and FileExists(UninstallerPath) then
+  begin
+    Exec(UninstallerPath, '/S', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+    // Clean leftovers only if uninstall.exe is in current {app} folder
+    if DirExists(AppFolder) and (CompareText(ExtractFileDir(UninstallerPath), AppFolder) = 0) then
       DelTree(AppFolder, True, True, False);
   end;
 end;

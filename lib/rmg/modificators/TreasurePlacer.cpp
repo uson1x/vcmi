@@ -30,9 +30,10 @@
 #include "../../mapObjects/CQuest.h"
 #include "../../mapObjects/MiscObjects.h"
 #include "../../CCreatureHandler.h"
-#include "../../spells/CSpellHandler.h" //for choosing random spells
 #include "../../mapping/CMap.h"
 #include "../../mapping/CMapEditManager.h"
+#include "../../spells/CSpellHandler.h"
+
 
 #include <vstd/RNG.h>
 
@@ -302,7 +303,7 @@ void TreasurePlacer::addScrolls()
 				if(map.isAllowedSpell(spellID) && spellID.toSpell()->getLevel() == i + 1)
 					out.push_back(spellID);
 			}
-			auto * a = map.mapInstance->createScroll(*RandomGeneratorUtil::nextItem(out, zone.getRand()));
+			auto * a = mapProxy->createScroll(*RandomGeneratorUtil::nextItem(out, zone.getRand()));
 			obj->setArtifactInstance(a);
 			return obj;
 		};
@@ -1173,7 +1174,7 @@ void TreasurePlacer::ObjectPool::patchWithZoneConfig(const Zone & zone, Treasure
 			auto category = getObjectCategory(oi.getCompoundID());
 			if (categoriesSet.count(category))
 			{
-				logGlobal->info("Removing object %s from possible objects", oi.templates.front()->stringID);
+				logGlobal->debug("Removing object %s from possible objects", oi.templates.front()->stringID);
 				return true;
 			}
 			return false;
@@ -1190,7 +1191,7 @@ void TreasurePlacer::ObjectPool::patchWithZoneConfig(const Zone & zone, Treasure
 				if (bannedObjectsSet.count(key) || bannedObjectsSet.count(keyGroup))
 				{
 					// FIXME: Stopped working, nothing is banned
-					logGlobal->info("Banning object %s from possible objects", templ->stringID);
+					logGlobal->debug("Banning object %s from possible objects", templ->stringID);
 					return true;
 				}
 			}
@@ -1205,7 +1206,7 @@ void TreasurePlacer::ObjectPool::patchWithZoneConfig(const Zone & zone, Treasure
 	{
 		tp->setBasicProperties(object, object.getCompoundID());
 		addObject(object);
-		logGlobal->info("Added custom object of type %d.%d", object.primaryID, object.secondaryID);
+		logGlobal->debug("Added custom object of type %d.%d", object.primaryID, object.secondaryID);
 	}
 	// TODO: Overwrite or add to possibleObjects
 
@@ -1252,8 +1253,7 @@ ObjectConfig::EObjectCategory TreasurePlacer::ObjectPool::getObjectCategory(Comp
 			return ObjectConfig::EObjectCategory::NONE;
 		}
 
-		auto temp = handler->getTemplates().front();
-		auto info = handler->getObjectInfo(temp);
+		auto info = handler->getObjectInfo();
 
 		if (info->hasGuards())
 		{

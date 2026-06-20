@@ -14,7 +14,6 @@
 #include "TownBuildingInstance.h"
 
 #include "../IGameSettings.h"
-#include "../spells/CSpellHandler.h"
 #include "../bonuses/Bonus.h"
 #include "../battle/IBattleInfoCallback.h"
 #include "../battle/BattleLayout.h"
@@ -35,7 +34,7 @@
 #include "../entities/ResourceTypeHandler.h"
 #include "../mapObjectConstructors/AObjectTypeHandler.h"
 #include "../mapObjectConstructors/CObjectClassesHandler.h"
-#include "../mapObjects/CGHeroInstance.h"
+#include "CGHeroInstance.h"
 #include "../modding/ModScope.h"
 #include "../networkPacks/StackLocation.h"
 #include "../networkPacks/PacksForClient.h"
@@ -276,6 +275,7 @@ CGTownInstance::CGTownInstance(IGameInfoCallback *cb):
 	alignmentToPlayer(PlayerColor::NEUTRAL),
 	spellResearchCounterDay(0),
 	spellResearchAcceptedCounter(0),
+	spellResearchPendingRerollsCounters(GameConstants::SPELL_LEVELS, 0),
 	spellResearchAllowed(true)
 {
 	attachTo(townAndVis);
@@ -555,6 +555,11 @@ bool CGTownInstance::passableFor(PlayerColor color) const
 	return cb->getPlayerRelations(tempOwner, color) != PlayerRelations::ENEMIES;
 }
 
+EPathfindingLayer CGTownInstance::getBoatLayer() const
+{
+	return EPathfindingLayer::SAIL;
+}
+
 void CGTownInstance::getOutOffsets( std::vector<int3> &offsets ) const
 {
 	offsets = {int3(-1,2,0), int3(+1,2,0)};
@@ -657,10 +662,7 @@ int CGTownInstance::getMarketEfficiency() const
 	const PlayerState *p = cb->getPlayerState(tempOwner);
 	assert(p);
 
-	int marketCount = 0;
-	for(const CGTownInstance *t : p->getTowns())
-		if(t->hasBuiltResourceMarketplace())
-			marketCount++;
+	int marketCount = p->valOfBonuses(BonusType::MARKETPLACE_ACCESS);
 
 	return marketCount;
 }
@@ -1138,6 +1140,13 @@ void CGTownInstance::serializeJsonOptions(JsonSerializeFormat & handler)
 	{
 		handler.serializeIdArray( "possibleSpells", possibleSpells);
 		handler.serializeIdArray( "obligatorySpells", obligatorySpells);
+
+		if (!handler.saving)
+		{
+			// Workaround for invalid spells in	loaded map
+			vstd::erase(possibleSpells, SpellID());
+			vstd::erase(obligatorySpells, SpellID());
+		}
 	}
 
 	{
@@ -1166,9 +1175,18 @@ FactionID CGTownInstance::getFactionID() const
 	return FactionID(subID.getNum());
 }
 
-TerrainId CGTownInstance::getNativeTerrain() const
+bool CGTownInstance::isNativeTerrain(TerrainId terrain) const
 {
-	return getTown()->faction->getNativeTerrain();
+	return getTown()->faction->isNativeTerrain(terrain);
+}
+
+TerrainId CGTownInstance::getTownSiegeTerrain(TerrainId defaultTerrain) const
+{
+	const auto & nativeTerrains = getTown()->faction->nativeTerrains;
+	if(nativeTerrains.empty())
+		return defaultTerrain;
+
+	return nativeTerrains.front();
 }
 
 ArtifactID CGTownInstance::getWarMachineInBuilding(BuildingID building) const

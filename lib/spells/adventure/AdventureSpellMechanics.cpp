@@ -14,12 +14,13 @@
 #include "AdventureSpellEffect.h"
 #include "DimensionDoorEffect.h"
 #include "RemoveObjectEffect.h"
+#include "ReinforcementsEffect.h"
 #include "SummonBoatEffect.h"
 #include "TownPortalEffect.h"
 #include "ViewWorldEffect.h"
 
-#include "../CSpellHandler.h"
 #include "../Problem.h"
+#include "../CSpell.h"
 
 #include "../../json/JsonBonus.h"
 #include "../../mapObjects/CGHeroInstance.h"
@@ -42,6 +43,8 @@ std::unique_ptr<IAdventureSpellEffect> AdventureSpellMechanics::createAdventureE
 		return std::make_unique<SummonBoatEffect>(s, node);
 	if(typeID == "townPortal")
 		return std::make_unique<TownPortalEffect>(s, node);
+	if(typeID == "reinforcements")
+		return std::make_unique<ReinforcementsEffect>(s, node);
 	if(typeID == "viewWorld")
 		return std::make_unique<ViewWorldEffect>(s, node);
 
@@ -59,7 +62,16 @@ AdventureSpellMechanics::AdventureSpellMechanics(const CSpell * s)
 		levelOptions[level].castsPerDay = config["castsPerDay"].Integer();
 		levelOptions[level].castsPerDayXL = config["castsPerDayXL"].Integer();
 
-		levelOptions[level].bonuses = s->getLevelInfo(level).effects;
+		for(const auto & [name, bonusNode] : s->getLevelInfo(level).effects.Struct())
+		{
+			auto b = JsonUtils::parseBonus(bonusNode);
+			if(b)
+			{
+				b->sid = BonusSourceID(s->id);
+				b->source = BonusSource::SPELL_EFFECT;
+				levelOptions[level].bonuses.push_back(b);
+			}
+		}
 
 		for(const auto & elem : config["bonuses"].Struct())
 		{
@@ -126,7 +138,7 @@ bool AdventureSpellMechanics::canBeCast(spells::Problem & problem, const IGameIn
 		if(castsLimit > 0 && castsLimit <= castsAlreadyPerformedThisTurn ) //limit casts per turn
 		{
 			MetaString message = MetaString::createFromTextID("core.genrltxt.338");
-			caster->getCasterName(message);
+			message.replaceTextID(caster->getCasterNameTextID());
 			problem.add(std::move(message));
 			return false;
 		}

@@ -32,8 +32,7 @@ namespace BuildingSubID
 		ESCAPE_TUNNEL,
 		TREASURY,
 		BANK,
-		AURORA_BOREALIS,
-		DEITY_OF_FIRE
+		AURORA_BOREALIS
 	};
 }
 
@@ -128,15 +127,6 @@ namespace MasteryLevel
 	};
 }
 
-enum class Date : int8_t
-{
-	DAY = 0,
-	DAY_OF_WEEK = 1,
-	WEEK = 2,
-	MONTH = 3,
-	DAY_OF_MONTH
-};
-
 enum class EActionType : int8_t
 {
 	NO_ACTION,
@@ -156,6 +146,7 @@ enum class EActionType : int8_t
 	MONSTER_SPELL,
 	BAD_MORALE,
 	STACK_HEAL,
+	WALK_AND_CAST,
 };
 
 enum class EDiggingStatus : int8_t
@@ -241,7 +232,7 @@ enum class EMovementMode : int8_t
 	DIMENSION_DOOR,
 	MONOLITH,
 	CASTLE_GATE,
-	TOWN_PORTAL,
+	TOWN_PORTAL
 };
 
 enum class EMapLevel : int8_t
@@ -273,6 +264,20 @@ enum class ChangeValueMode : int8_t
 {
 	RELATIVE,
 	ABSOLUTE
+};
+
+enum class CombatEventType : int8_t
+{
+	INVALID = 0,
+	BEFORE_ATTACK = 1,
+	AFTER_ATTACK = 2,
+	BEFORE_ATTACKED = 3,
+	AFTER_ATTACKED = 4,
+	WAIT = 5,
+	DEFEND = 6,
+	BEFORE_MOVE = 7,
+	AFTER_MOVE = 8,
+	UNIT_SPELLCAST = 9,
 };
 
 VCMI_LIB_NAMESPACE_END

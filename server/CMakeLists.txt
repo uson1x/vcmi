@@ -24,6 +24,7 @@ set(vcmiservercommon_SRCS
 		NetPacksServer.cpp
 		NetPacksLobbyServer.cpp
 		TurnTimerHandler.cpp
+		TurnStartVisitScheduler.cpp
 )
 
 set(vcmiservercommon_HEADERS
@@ -39,6 +40,7 @@ set(vcmiservercommon_HEADERS
 		queries/MapQueries.h
 		queries/VisitQueries.h
 		queries/QueriesProcessor.h
+		queries/IQueryStackListener.h
 
 		processors/HeroPoolProcessor.h
 		processors/NewTurnProcessor.h
@@ -53,6 +55,7 @@ set(vcmiservercommon_HEADERS
 		LobbyNetPackVisitors.h
 		ServerNetPackVisitors.h
 		TurnTimerHandler.h
+		TurnStartVisitScheduler.h
 )
 
 assign_source_group(${vcmiservercommon_SRCS} ${vcmiservercommon_HEADERS})
@@ -76,6 +79,10 @@ if(WIN32)
 			OUTPUT_NAME "VCMI_vcmiservercommon"
 			PROJECT_LABEL "VCMI_vcmiservercommon"
 	)
+	if (MINGW)
+		# Link Windows system libs: WinSock2 (ws2_32)
+		target_link_libraries(vcmiservercommon PRIVATE ws2_32)
+	endif()
 endif()
 
 vcmi_set_output_dir(vcmiservercommon "")

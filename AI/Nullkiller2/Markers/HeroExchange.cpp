@@ -13,6 +13,7 @@
 #include "../Engine/Nullkiller.h"
 #include "../AIUtility.h"
 #include "../Analyzers/ArmyManager.h"
+#include "../../../lib/mapping/TerrainTile.h"
 
 namespace NK2AI
 {
@@ -31,9 +32,13 @@ std::string HeroExchange::toString() const
 
 uint64_t HeroExchange::getReinforcementArmyStrength(const Nullkiller * aiNk) const
 {
-	uint64_t armyValue = aiNk->armyManager->howManyReinforcementsCanGet(hero, exchangePath.heroArmy);
+	assert(exchangePath.targetHero && exchangePath.heroArmy);
 
-	return armyValue;
+	return aiNk->armyManager->howManyReinforcementsCanGet(
+		hero,
+		hero,
+		exchangePath.heroArmy,
+		aiNk->cc->getTile(exchangePath.targetTile())->getTerrainID());
 }
 
 }

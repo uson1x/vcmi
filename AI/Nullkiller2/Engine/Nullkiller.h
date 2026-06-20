@@ -70,7 +70,7 @@ private:
 
 public:
 	Goals::TTaskVec getTasks() const;
-	void merge(const Goals::TSubgoal& task);
+	void mergeAndFilter(const Goals::TSubgoal& task);
 };
 
 class Nullkiller
@@ -79,7 +79,7 @@ private:
 	const CGHeroInstance * activeHero;
 	int3 targetTile;
 	ObjectInstanceID targetObject;
-	std::map<const CGHeroInstance *, HeroLockedReason> lockedHeroes;
+	HeroMap<HeroLockedReason> lockedHeroes;
 	std::unique_ptr<PathfinderCache> pathfinderCache;
 	ScanDepth scanDepth;
 	TResources lockedResources;
@@ -139,14 +139,14 @@ public:
 	void invalidatePathfinderData();
 	std::shared_ptr<const CPathsInfo> getPathsInfo(const CGHeroInstance * h) const;
 	void invalidatePaths();
-	std::map<const CGHeroInstance *, HeroRole> getHeroesForPathfinding() const;
+	HeroMap<HeroRole> getHeroesForPathfinding() const;
 
 private:
 	void resetState();
 	void updateState();
 	void decompose(Goals::TGoalVec & results, const Goals::TSubgoal& behavior, int decompositionMaxDepth) const;
 	Goals::TTask choseBestTask(Goals::TGoalVec & tasks) const;
-	Goals::TTaskVec buildPlan(Goals::TGoalVec & tasks, int priorityTier) const;
+	Goals::TTaskVec buildPlanAndFilter(Goals::TGoalVec & tasks, int priorityTier) const;
 	bool executeTask(const Goals::TTask & task) const;
 	bool areAffectedObjectsPresent(const Goals::TTask & task) const;
 	HeroRole getTaskRole(const Goals::TTask & task) const;

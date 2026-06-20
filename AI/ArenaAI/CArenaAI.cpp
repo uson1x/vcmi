@@ -242,7 +242,7 @@ std::string CArenaAI::getBattleAIName() const
 JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int turnRemainingMs) const
 {
 	JsonNode payload;
-	const int day = cb->getDate(Date::DAY);
+	const int day = cb->getCalendar().getCurrentDay();
 	const std::string baseTurnId = turnIdFor(matchId, playerID, day);
 	auto heroes = cb->getHeroesInfo();
 	auto towns = cb->getTownsInfo(true);
@@ -1568,7 +1568,7 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 	}
 
 	if(!tiles.empty())
-		cb->moveHero(hero, tiles, false);
+		cb->moveHero(hero, tiles, false, EPathfindingLayer::AUTO);
 	return reachedDestination;
 }
 
@@ -1792,11 +1792,12 @@ void CArenaAI::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID
 	answerQuery(askID, choice);
 }
 
-void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID)
+void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle)
 {
 	(void)up;
 	(void)down;
 	(void)removableUnits;
+	(void)customTitle;
 	const int choice = chooseSelectionViaBridge(queryID, "garrison_dialog", {0}, 0);
 	answerQuery(queryID, choice);
 }

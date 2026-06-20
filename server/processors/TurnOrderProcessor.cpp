@@ -192,10 +192,11 @@ bool TurnOrderProcessor::computeCanActSimultaneously(PlayerColor active, PlayerC
 			return false;
 	}
 
-	if (gameHandler->gameInfo().getDate(Date::DAY) < simturnsTurnsMinLimit())
+	int currentDay = gameHandler->gameInfo().getCalendar().getCurrentDay();
+	if (currentDay < simturnsTurnsMinLimit())
 		return true;
 
-	if (gameHandler->gameInfo().getDate(Date::DAY) > simturnsTurnsMaxLimit())
+	if (currentDay > simturnsTurnsMaxLimit())
 		return false;
 
 	if (gameHandler->gameInfo().getStartInfo()->simturnsInfo.ignoreAlliedContacts && activeInfo->team == waitingInfo->team)
@@ -222,9 +223,6 @@ bool TurnOrderProcessor::mustActBefore(PlayerColor left, PlayerColor right) cons
 
 	if (leftInfo->isHuman() && !rightInfo->isHuman())
 		return true;
-
-	if (!leftInfo->isHuman() && rightInfo->isHuman())
-		return false;
 
 	return false;
 }
@@ -284,14 +282,20 @@ void TurnOrderProcessor::doStartPlayerTurn(PlayerColor which)
 	actingPlayers.insert(which);
 	awaitingPlayers.erase(which);
 
-	auto turnQuery = std::make_shared<TimerPauseQuery>(gameHandler, which);
-	gameHandler->queries->addQuery(turnQuery);
-
 	PlayerStartsTurn pst;
 	pst.player = which;
-	pst.queryID = turnQuery->queryID;
-	gameHandler->sendAndApply(pst);
 
+	bool timersActive = gameHandler->gameInfo().getStartInfo()->turnTimerInfo.isEnabled();
+	bool isHuman = gameHandler->gameInfo().getPlayerState(which)->isHuman();
+
+	if(timersActive && isHuman)
+	{
+		auto turnQuery = std::make_shared<TimerPauseQuery>(gameHandler, which);
+		gameHandler->queries->addQuery(turnQuery);
+		pst.queryID = turnQuery->queryID;
+	}
+
+	gameHandler->sendAndApply(pst);
 	assert(!actingPlayers.empty());
 }
 
@@ -369,6 +373,9 @@ void TurnOrderProcessor::onGameStarted()
 	{
 		auto towns = gameHandler->gameState().getMap().getObjects<CGTownInstance>();
 		auto heroes = gameHandler->gameState().getMap().getObjects<CGHeroInstance>();
+		for (auto hero : heroes)
+			if (auto cmd = hero->getCommander())
+				const_cast<CCommanderInstance*>(cmd)->setAlive(false); // TODO: support commanders in battle mode setup
 		if(!towns.size() && heroes.size() == 2)
 			gameHandler->startBattle(heroes.at(0), heroes.at(1));
 		else
@@ -415,10 +422,10 @@ bool TurnOrderProcessor::isPlayerAwaitsNewDay(PlayerColor which) const
 
 void TurnOrderProcessor::setMinSimturnsDuration(int days)
 {
-	simturnsMinDurationDays = gameHandler->gameInfo().getDate(Date::DAY) + days;
+	simturnsMinDurationDays = gameHandler->gameInfo().getCalendar().getCurrentDay() + days;
 }
 
 void TurnOrderProcessor::setMaxSimturnsDuration(int days)
 {
-	simturnsMaxDurationDays = gameHandler->gameInfo().getDate(Date::DAY) + days;
+	simturnsMaxDurationDays = gameHandler->gameInfo().getCalendar().getCurrentDay() + days;
 }

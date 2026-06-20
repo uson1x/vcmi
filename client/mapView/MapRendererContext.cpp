@@ -26,9 +26,9 @@
 #include "../../lib/mapObjects/MiscObjects.h"
 #include "../../lib/mapping/CMap.h"
 #include "../../lib/pathfinder/CGPathNode.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/ISpellMechanics.h"
 #include "../../lib/spells/adventure/AdventureSpellEffect.h"
+#include "../../lib/spells/CSpell.h"
 
 namespace
 {
@@ -170,7 +170,7 @@ const TerrainTile & MapRendererBaseContext::getMapTile(const int3 & coordinates)
 const MapRendererBaseContext::MapObjectsList & MapRendererBaseContext::getObjects(const int3 & coordinates) const
 {
 	assert(isInMap(coordinates));
-	return viewState.objects[coordinates.z][coordinates.x][coordinates.y];
+	return viewState.objects[coordinates];
 }
 
 const CGObjectInstance * MapRendererBaseContext::getObject(ObjectInstanceID objectID) const

@@ -141,7 +141,7 @@ void MainWindow::detectPreferredLanguage()
 		logGlobal->info("Preferred language: %s", userLang.toStdString());
 
 		for (auto const & vcmiLang : Languages::getLanguageList())
-			if (vcmiLang.tagIETF == userLang.toStdString() && vcmiLang.selectable)
+			if (vcmiLang.selectable && (vcmiLang.tagIETF == userLang.toStdString() || vcmiLang.localeName == userLang.toStdString()))
 				selectedLanguage = vcmiLang.identifier;
 
 		if (!selectedLanguage.empty())
@@ -156,11 +156,9 @@ void MainWindow::detectPreferredLanguage()
 
 void MainWindow::enterSetup()
 {
-	ui->startGameButton->setEnabled(false);
-	ui->settingsButton->setEnabled(false);
-	ui->aboutButton->setEnabled(false);
-	ui->modslistButton->setEnabled(false);
+	ui->sidePanel->setVisible(false);
 	ui->tabListWidget->setCurrentIndex(TabRows::SETUP);
+	ui->setupView->enterSetup();
 }
 
 void MainWindow::exitSetup(bool goToMods)
@@ -168,14 +166,11 @@ void MainWindow::exitSetup(bool goToMods)
 	Settings writer = settings.write["launcher"]["setupCompleted"];
 	writer->Bool() = true;
 
-	ui->startGameButton->setEnabled(true);
-	ui->settingsButton->setEnabled(true);
-	ui->aboutButton->setEnabled(true);
-	ui->modslistButton->setEnabled(true);
+	ui->sidePanel->setVisible(true);
 	if (goToMods)
-		ui->tabListWidget->setCurrentIndex(TabRows::MODS);
+		switchToModsTab();
 	else
-		ui->tabListWidget->setCurrentIndex(TabRows::START);
+		switchToStartTab();
 }
 
 void MainWindow::switchToStartTab()
@@ -248,7 +243,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
 	if(event->mimeData()->hasUrls())
 		for(const auto & url : event->mimeData()->urls())
-			for(const auto & ending : QStringList({".zip", ".h3m", ".h3c", ".vmap", ".vcmp", ".json", ".exe"}))
+			for(const auto & ending : QStringList({".zip", ".vsgm1", ".h3m", ".h3c", ".vmap", ".vcmp", ".json", ".exe"}))
 				if(url.fileName().endsWith(ending, Qt::CaseInsensitive))
 				{
 					event->acceptProposedAction();
@@ -336,6 +331,8 @@ void MainWindow::updateTranslation()
 	QString translationFileResourcePath = QString{":/translation/%1"}.arg(translationFile.c_str());
 
 	logGlobal->info("Loading translation %s", translationFile);
+
+	qApp->removeTranslator(&translator);
 
 	if(!QFile::exists(translationFileResourcePath))
 	{

@@ -48,6 +48,7 @@
 #include "../../lib/gameState/InfoAboutArmy.h"
 #include "../../lib/mapObjects/CGTownInstance.h"
 #include "../../lib/networkPacks/PacksForClientBattle.h"
+#include "../../lib/spells/CSpell.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 
 BattleInterface::BattleInterface(const BattleID & battleID, const CCreatureSet *army1, const CCreatureSet *army2,
@@ -414,6 +415,14 @@ void BattleInterface::spellCast(const BattleSpellCast * sc)
 
 		if(casterStack != nullptr )
 		{
+			if (stacksController->shouldRotate(casterStack, casterStack->getPosition(), targetedTile))
+			{
+				addToAnimationStage(EAnimationEvents::MOVEMENT, [this, casterStack]()
+				{
+					stacksController->addNewAnim(new ReverseAnimation(*this, casterStack, casterStack->getPosition()));
+				});
+			}
+
 			addToAnimationStage(EAnimationEvents::BEFORE_HIT, [this, casterStack, targetedTile, spell]()
 			{
 				stacksController->addNewAnim(new CastAnimation(*this, casterStack, targetedTile, getBattle()->battleGetStackByPos(targetedTile), spell));
@@ -520,9 +529,9 @@ void BattleInterface::displayBattleLog(const std::vector<MetaString> & battleLog
 	}
 }
 
-void BattleInterface::displaySpellAnimationQueue(const CSpell * spell, const CSpell::TAnimationQueue & q, const BattleHex & destinationTile, bool isHit)
+void BattleInterface::displaySpellAnimationQueue(const CSpell * spell, const SpellAnimationQueue & q, const BattleHex & destinationTile, bool isHit)
 {
-	for(const CSpell::TAnimation & animation : q)
+	for(const auto & animation : q)
 	{
 		if(animation.pause > 0)
 			stacksController->addNewAnim(new DummyAnimation(*this, animation.pause));

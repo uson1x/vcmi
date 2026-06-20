@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include "../windows/CWindowObject.h"
+#include "CWindowObject.h"
 #include "../widgets/Images.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -104,8 +104,6 @@ class CHeroGSlot : public CIntObject
 	HeroSlots * owner;
 	const CGHeroInstance * hero;
 	int upg; //0 - up garrison, 1 - down garrison
-
-	auto getUpgradableSlots(const CArmedInstance *obj) const;
 
 public:
 	CHeroGSlot(int x, int y, int updown, const CGHeroInstance *h, HeroSlots * Owner);
@@ -241,7 +239,8 @@ class CCastleInterface final : public CStatusbarWindow, public IGarrisonHolder, 
 	std::shared_ptr<CButton> fastTownHall;
 	std::shared_ptr<CButton> fastArmyPurchase;
 	std::shared_ptr<LRClickableArea> fastMarket;
-	std::shared_ptr<LRClickableArea> fastTavern;
+	std::shared_ptr<LRClickableArea> fastWiki;
+	std::shared_ptr<CIntObject> townRadialArea;
 
 	std::vector<std::shared_ptr<CCreaInfo>> creainfo;//small icons of creatures (bottom-left corner);
 
@@ -380,6 +379,24 @@ public:
 	void creaturesChangedEventHandler();
 };
 
+class CSpellResearchDialog : public CStatusbarWindow
+{
+	std::shared_ptr<CLabel> title;
+	std::shared_ptr<CTextBox> description;
+	std::shared_ptr<CComponentBox> components;
+	std::shared_ptr<CButton> acceptButton;
+	std::shared_ptr<CButton> rerollButton;
+	std::shared_ptr<CButton> closeButton;
+
+public:
+	CSpellResearchDialog(
+		const std::string & textToShow,
+		const std::vector<std::shared_ptr<CComponent>> & components,
+		const CGTownInstance * town,
+		SpellID oldSpell,
+		bool canAfford);
+};
+
 /// The mage guild screen where you can see which spells you have
 class CMageGuildScreen : public CStatusbarWindow
 {
@@ -433,5 +450,5 @@ class CBlacksmithDialog : public CStatusbarWindow
 	std::shared_ptr<CLabel> costValue;
 
 public:
-	CBlacksmithDialog(bool possible, CreatureID creMachineID, ArtifactID aid, ObjectInstanceID hid);
+	CBlacksmithDialog(bool possible, ArtifactID newArtifact, ArtifactID existingArtifact, ObjectInstanceID hid);
 };

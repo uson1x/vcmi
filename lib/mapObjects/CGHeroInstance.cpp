@@ -24,7 +24,6 @@
 #include "../RoadHandler.h"
 #include "../IGameSettings.h"
 #include "../CSoundBase.h"
-#include "../spells/CSpellHandler.h"
 #include "../CSkillHandler.h"
 #include "../gameState/CGameState.h"
 #include "../gameState/UpgradeInfo.h"
@@ -40,13 +39,15 @@
 #include "../entities/hero/CHeroClass.h"
 #include "../entities/ResourceTypeHandler.h"
 #include "../battle/CBattleInfoEssentials.h"
+#include "../bonuses/BonusParameters.h"
 #include "../campaign/CampaignState.h"
 #include "../json/JsonBonus.h"
 #include "../pathfinder/TurnInfo.h"
 #include "../serializer/JsonSerializeFormat.h"
+#include "../spells/CSpell.h"
 #include "../mapObjectConstructors/AObjectTypeHandler.h"
 #include "../mapObjectConstructors/CObjectClassesHandler.h"
-#include "../mapObjects/MiscObjects.h"
+#include "MiscObjects.h"
 #include "../modding/ModScope.h"
 #include "../networkPacks/PacksForClient.h"
 #include "../networkPacks/PacksForClientBattle.h"
@@ -89,20 +90,12 @@ const IBonusBearer* CGHeroInstance::getBonusBearer() const
 	return this;
 }
 
-TerrainId CGHeroInstance::getNativeTerrain() const
+bool CGHeroInstance::isNativeTerrain(TerrainId terrain) const
 {
-	TerrainId nativeTerrain = ETerrainId::ANY_TERRAIN;
-
 	for(const auto & stack : stacks)
-	{
-		TerrainId stackNativeTerrain = stack.second->getNativeTerrain(); //consider terrain bonuses e.g. Lodestar.
-
-		if(nativeTerrain == ETerrainId::ANY_TERRAIN)
-			nativeTerrain = stackNativeTerrain;
-		else if(nativeTerrain != stackNativeTerrain)
-			return ETerrainId::NONE;
-	}
-	return nativeTerrain;
+		if(!stack.second->isNativeTerrain(terrain))
+			return false;
+	return true;
 }
 
 bool CGHeroInstance::isCoastVisitable() const
@@ -205,10 +198,10 @@ void CGHeroInstance::setMovementPoints(int points)
 		movement = std::max(0, points);
 }
 
-int CGHeroInstance::movementPointsLimit(bool onLand) const
+int CGHeroInstance::movementPointsLimit() const
 {
-	auto ti = getTurnInfo(0);
-	return onLand ? ti->getMovePointsLimitLand() : ti->getMovePointsLimitWater();
+	auto layer = inBoat() ? getBoat()->layer : EPathfindingLayer::LAND;
+	return getTurnInfo(0)->getMaxMovePoints(layer);
 }
 
 int CGHeroInstance::getLowestCreatureSpeed() const
@@ -236,18 +229,25 @@ std::unique_ptr<TurnInfo> CGHeroInstance::getTurnInfo(int days) const
 	return std::make_unique<TurnInfo>(turnInfoCache.get(), this, days);
 }
 
-int CGHeroInstance::movementPointsLimitCached(bool onLand, const TurnInfo * ti) const
+int CGHeroInstance::movementPointsLimitCached(const EPathfindingLayer & layer, const TurnInfo * ti) const
 {
-	if (onLand)
+	if (layer == EPathfindingLayer::LAND)
 		return ti->getMovePointsLimitLand();
-	else
+	else if (layer == EPathfindingLayer::SAIL)
 		return ti->getMovePointsLimitWater();
+	else if (layer == EPathfindingLayer::AVIATE)
+		return ti->getMovePointsLimitAir();
+	else
+	{
+		logGlobal->error("CGHeroInstance::movementPointsLimitCached: invalid layer %d", static_cast<int>(layer));
+		return ti->getMovePointsLimitLand();
+	}
 }
 
 CGHeroInstance::CGHeroInstance(IGameInfoCallback * cb)
 	: CArmedInstance(cb, BonusNodeType::HERO, false),
 	CArtifactSet(cb),
-	tacticFormationEnabled(false),
+	tacticFormationEnabled(true),
 	inTownGarrison(false),
 	moveDir(4),
 	mana(UNINITIALIZED_MANA),
@@ -468,7 +468,7 @@ void CGHeroInstance::initHero(IGameRandomizer & gameRandomizer, bool isFake)
 	//initialize bonuses
 	recreateSecondarySkillsBonuses();
 
-	movement = movementPointsLimit(true);
+	movement = movementPointsLimit();
 	mana = manaLimit(); //after all bonuses are taken into account, make sure this line is the last one
 }
 
@@ -575,7 +575,6 @@ void CGHeroInstance::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroIn
 			const auto boatPos = visitablePos();
 			if (cb->getTile(boatPos)->isWater())
 			{
-				smp.val = movementPointsLimit(false);
 				if (!inBoat())
 				{
 					//Create a new boat for hero
@@ -583,10 +582,7 @@ void CGHeroInstance::onHeroVisit(IGameEventCallback & gameEvents, const CGHeroIn
 					boatId = cb->getTopObj(boatPos)->id;
 				}
 			}
-			else
-			{
-				smp.val = movementPointsLimit(true);
-			}
+			smp.val = movementPointsLimit();
 			gameEvents.giveHero(id, h->tempOwner, boatId); //recreates def and adds hero to player
 			gameEvents.setObjPropertyID(id, ObjProperty::ID, Obj(Obj::HERO)); //set ID to 34 AFTER hero gets correct flag color
 			gameEvents.setMovePoints (&smp);
@@ -625,7 +621,7 @@ std::string CGHeroInstance::getMovementPointsTextIfOwner(PlayerColor player) con
 	if(player == getOwner())
 	{
 		output += " " + LIBRARY->generaltexth->translate("vcmi.adventureMap.movementPointsHeroInfo");
-		boost::replace_first(output, "%POINTS", std::to_string(movementPointsLimit(!inBoat())));
+		boost::replace_first(output, "%POINTS", std::to_string(movementPointsLimit()));
 		boost::replace_first(output, "%REMAINING", std::to_string(movementPointsRemaining()));
 	}
 
@@ -870,10 +866,9 @@ PlayerColor CGHeroInstance::getCasterOwner() const
 	return tempOwner;
 }
 
-void CGHeroInstance::getCasterName(MetaString & text) const
+std::string CGHeroInstance::getCasterNameTextID() const
 {
-	//FIXME: use local name, MetaString need access to gamestate as hero name is part of map object
-	text.replaceRawString(getNameTranslated());
+	return getNameTextID();
 }
 
 void CGHeroInstance::getCastDescription(const spells::Spell * spell, const battle::Units & attacked, MetaString & text) const
@@ -882,7 +877,7 @@ void CGHeroInstance::getCastDescription(const spells::Spell * spell, const battl
 	const int textIndex = singleTarget ? 195 : 196;
 
 	text.appendLocalString(EMetaText::GENERAL_TXT, textIndex);
-	getCasterName(text);
+	text.replaceTextID(getCasterNameTextID());
 	text.replaceName(spell->getId());
 	if(singleTarget)
 		attacked.at(0)->addNameReplacement(text, true);
@@ -994,7 +989,7 @@ CStackBasicDescriptor CGHeroInstance::calculateNecromancy (const BattleResult &b
 	for(const std::shared_ptr<Bonus> & newPick : *improvedNecromancy)
 	{
 		// addInfo[0] = required necromancy skill
-		if(newPick->additionalInfo[0] > necromancerPower)
+		if(newPick->parameters && newPick->parameters->toNumber() > necromancerPower)
 			continue;
 
 		CreatureID newCreature = newPick->subtype.as<CreatureID>();;
@@ -1091,6 +1086,11 @@ si32 CGHeroInstance::getManaNewTurn() const
 BoatId CGHeroInstance::getBoatType() const
 {
 	return BoatId(LIBRARY->townh->getById(getHeroClass()->faction)->getBoatType());
+}
+
+EPathfindingLayer CGHeroInstance::getBoatLayer() const
+{
+	return EPathfindingLayer::SAIL;
 }
 
 void CGHeroInstance::getOutOffsets(std::vector<int3> &offsets) const
@@ -1363,6 +1363,9 @@ int CGHeroInstance::movementPointsAfterEmbark(int MPsBefore, int basicCost, bool
 	
 	auto boatLayer = inBoat() ? getBoat()->layer : EPathfindingLayer::SAIL;
 
+	if(boatLayer == EPathfindingLayer::AVIATE)
+		return 0; // boarding an airship takes all MPs, can be extended to support airship boarding bonuses (similar to hasFreeShipBoarding)
+
 	int mp1 = ti->getMaxMovePoints(disembark ? EPathfindingLayer::LAND : boatLayer);
 	int mp2 = ti->getMaxMovePoints(disembark ? boatLayer : EPathfindingLayer::LAND);
 	int ret = static_cast<int>((MPsBefore - basicCost) * static_cast<double>(mp1) / mp2);
@@ -1371,7 +1374,7 @@ int CGHeroInstance::movementPointsAfterEmbark(int MPsBefore, int basicCost, bool
 
 EDiggingStatus CGHeroInstance::diggingStatus() const
 {
-	if(static_cast<int>(movement) < movementPointsLimit(true))
+	if(static_cast<int>(movement) < movementPointsLimit())
 		return EDiggingStatus::LACK_OF_MOVEMENT;
 	if(!ArtifactID(ArtifactID::GRAIL).toArtifact()->canBePutAt(this))
 		return EDiggingStatus::BACKPACK_IS_FULL;
@@ -1382,47 +1385,6 @@ ArtBearer CGHeroInstance::bearerType() const
 {
 	return ArtBearer::HERO;
 }
-
-std::vector<SecondarySkill> CGHeroInstance::getLevelupSkillCandidates(IGameRandomizer & gameRandomizer) const
-{
-	std::set<SecondarySkill> basicAndAdv;
-	std::set<SecondarySkill> none;
-	std::vector<SecondarySkill>	skills;
-
-	if (canLearnSkill())
-	{
-		for(int i = 0; i < LIBRARY->skillh->size(); i++)
-			if (canLearnSkill(SecondarySkill(i)))
-				none.insert(SecondarySkill(i));
-	}
-
-	for(const auto & elem : secSkills)
-	{
-		if(elem.second < MasteryLevel::EXPERT)
-			basicAndAdv.insert(elem.first);
-		none.erase(elem.first);
-	}
-	
-	int maxUpgradedSkills = cb->getSettings().getInteger(EGameSettings::LEVEL_UP_UPGRADED_SKILLS_AMOUNT);
-	int maxTotalSkills = cb->getSettings().getInteger(EGameSettings::LEVEL_UP_TOTAL_SKILLS_AMOUNT);
-	int newSkillsAvailable = none.size();
-	int upgradedSkillsToSelect = std::max(maxUpgradedSkills, maxTotalSkills - newSkillsAvailable);
-
-	while (skills.size() < upgradedSkillsToSelect && !basicAndAdv.empty())
-	{
-		skills.push_back(gameRandomizer.rollSecondarySkillForLevelup(this, basicAndAdv));
-		basicAndAdv.erase(skills.back());
-	}
-
-	while (skills.size() < maxTotalSkills && !none.empty())
-	{
-		skills.push_back(gameRandomizer.rollSecondarySkillForLevelup(this, none));
-		none.erase(skills.back());
-	}
-
-	return skills;
-}
-
 
 void CGHeroInstance::setPrimarySkill(PrimarySkill primarySkill, si64 value, ChangeValueMode mode)
 {
@@ -1477,7 +1439,7 @@ void CGHeroInstance::levelUpAutomatically(IGameRandomizer & gameRandomizer)
 	while(gainsLevel())
 	{
 		const auto primarySkill = gameRandomizer.rollPrimarySkillForLevelup(this);
-		const auto proposedSecondarySkills = getLevelupSkillCandidates(gameRandomizer);
+		const auto proposedSecondarySkills = gameRandomizer.rollSecondarySkills(this);
 
 		setPrimarySkill(primarySkill, 1, ChangeValueMode::RELATIVE);
 		if(!proposedSecondarySkills.empty())
@@ -1748,8 +1710,8 @@ bool CGHeroInstance::isMissionCritical() const
 
 		auto const & testFunctor = [&](const EventCondition & condition)
 		{
-			if ((condition.condition == EventCondition::CONTROL) && condition.objectID != ObjectInstanceID::NONE)
-				return (id != condition.objectID);
+				if ((condition.condition == EventCondition::CONTROL || condition.condition == EventCondition::CONTROL_CURRENT) && condition.objectID != ObjectInstanceID::NONE)
+					return (id != condition.objectID);
 
 			if (condition.condition == EventCondition::HAVE_ARTIFACT)
 			{
@@ -1774,10 +1736,11 @@ void CGHeroInstance::fillUpgradeInfo(UpgradeInfo & info, const CStackInstance & 
 	TConstBonusListPtr lista = stack.getBonusesOfType(BonusType::SPECIAL_UPGRADE, BonusSubtypeID(stack.getId()));
 	for(const auto & it : *lista)
 	{
-		auto nid = CreatureID(it->additionalInfo[0]);
-		if (nid != stack.getId()) //in very specific case the upgrade is available by default (?)
+		if (it->parameters)
 		{
-			info.addUpgrade(nid, stack.getType());
+			auto nid = it->parameters->toCreature();
+			if (nid != stack.getId()) //in very specific case the upgrade is available by default (?)
+				info.addUpgrade(nid, stack.getType());
 		}
 	}
 }
@@ -1823,5 +1786,23 @@ int CGHeroInstance::getBasePrimarySkillValue(PrimarySkill which) const
 	auto minSkillValue = LIBRARY->engineSettings()->getVectorValue(EGameSettings::HEROES_MINIMAL_PRIMARY_SKILLS, which.getNum());
 	return std::max(valOfBonuses(selector, cachingStr), minSkillValue);
 }
+
+ArtifactID CGHeroInstance::getReplacedWarMachine(ArtifactID artifactID) const
+{
+	ArtifactID replacedArtifact;
+	auto art = artifactID.toArtifact();
+
+	for(auto slot : art->getPossibleSlots().at(ArtBearer::HERO))
+	{
+		const auto * currentArtifact = getArt(slot);
+
+		if(currentArtifact == nullptr)
+			return ArtifactID();
+		else
+			replacedArtifact = currentArtifact->getTypeId();
+	}
+	return replacedArtifact;
+}
+
 
 VCMI_LIB_NAMESPACE_END

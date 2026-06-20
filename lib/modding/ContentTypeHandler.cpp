@@ -34,14 +34,15 @@
 #include "../mapObjects/ObstacleSetHandler.h"
 #include "../RiverHandler.h"
 #include "../RoadHandler.h"
-#include "../ScriptHandler.h"
 #include "../constants/StringConstants.h"
 #include "../TerrainHandler.h"
+#include "../MapLayerHandler.h"
 #include "../json/JsonUtils.h"
 #include "../mapObjectConstructors/CObjectClassesHandler.h"
 #include "../rmg/CRmgTemplateStorage.h"
 #include "../spells/CSpellHandler.h"
 #include "../spells/SpellSchoolHandler.h"
+#include "../spells/effects/SpellEffectHandler.h"
 #include "../GameLibrary.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
@@ -60,7 +61,7 @@ ContentTypeHandler::ContentTypeHandler(IHandlerBase * handler, const std::string
 bool ContentTypeHandler::preloadModData(const std::string & modName, const JsonNode & fileList, bool validate)
 {
 	bool result = true;
-	JsonNode data = JsonUtils::assembleFromFiles(fileList, result);
+	JsonNode data = JsonUtils::assembleFromFiles(fileList, {}, result);
 	data.setModScope(modName);
 
 	ModInfo & modInfo = modData[modName];
@@ -84,12 +85,7 @@ bool ContentTypeHandler::preloadModData(const std::string & modName, const JsonN
 				logMod->warn("Redundant namespace definition for %s", objectName);
 
 			logMod->trace("Patching object %s (%s) from %s", objectName, remoteName, modName);
-			JsonNode & remoteConf = modData[remoteName].patches[objectName];
-
-			if (!remoteConf.isNull() && settings["mods"]["validation"].String() != "off")
-				JsonUtils::detectConflicts(conflictList, remoteConf, entry.second, objectName);
-
-			JsonUtils::merge(remoteConf, entry.second);
+			modData[remoteName].patches[objectName].push_back(entry.second);
 		}
 	}
 	return result;
@@ -107,8 +103,16 @@ bool ContentTypeHandler::loadMod(const std::string & modName, bool validate)
 	};
 
 	// apply patches
-	if (!modInfo.patches.isNull())
-		JsonUtils::merge(modInfo.modData, modInfo.patches);
+	for (auto & [objectName, objectPatches] : modInfo.patches)
+	{
+		for (auto & objectPatch : objectPatches)
+		{
+			if (settings["mods"]["validation"].String() != "off" && !modInfo.modData[objectName].isNull())
+				JsonUtils::detectConflicts(conflictList, modInfo.modData[objectName], objectPatch, objectName);
+
+			JsonUtils::merge(modInfo.modData[objectName], objectPatch);
+		}
+	}
 
 	for(auto & entry : modInfo.modData.Struct())
 	{
@@ -175,8 +179,9 @@ void ContentTypeHandler::afterLoadFinalization()
 		{
 			if (data.second.modData.isNull())
 			{
-				for (const auto & node : data.second.patches.Struct())
-					logMod->warn("Mod '%s' have added patch for object '%s' from mod '%s', but this mod was not loaded or has no new objects.", node.second.getModScope(), node.first, data.first);
+				for (auto & [objectName, objectPatches] : data.second.patches)
+					for (auto & node : objectPatches)
+						logMod->warn("Mod '%s' have added patch for object '%s' from mod '%s', but this mod was not loaded or has no new objects.", node.getModScope(), objectName, data.first);
 			}
 
 			for(auto & otherMod : modData)
@@ -252,12 +257,10 @@ void CContentHandler::init()
 	handlers.insert(std::make_pair("objects", ContentTypeHandler(LIBRARY->objtypeh.get(), "object")));
 	handlers.insert(std::make_pair("heroes", ContentTypeHandler(LIBRARY->heroh.get(), "hero")));
 	handlers.insert(std::make_pair("spells", ContentTypeHandler(LIBRARY->spellh.get(), "spell")));
+	handlers.insert(std::make_pair("spellEffects", ContentTypeHandler(LIBRARY->spellEffectHandler.get(), "SpellEffect")));
 	handlers.insert(std::make_pair("spellSchools", ContentTypeHandler(LIBRARY->spellSchoolHandler.get(), "spellSchool")));
 	handlers.insert(std::make_pair("skills", ContentTypeHandler(LIBRARY->skillh.get(), "skill")));
 	handlers.insert(std::make_pair("templates", ContentTypeHandler(LIBRARY->tplh.get(), "template")));
-#if SCRIPTING_ENABLED
-	handlers.insert(std::make_pair("scripts", ContentTypeHandler(LIBRARY->scriptHandler.get(), "script")));
-#endif
 	handlers.insert(std::make_pair("battlefields", ContentTypeHandler(LIBRARY->battlefieldsHandler.get(), "battlefield")));
 	handlers.insert(std::make_pair("terrains", ContentTypeHandler(LIBRARY->terrainTypeHandler.get(), "terrain")));
 	handlers.insert(std::make_pair("rivers", ContentTypeHandler(LIBRARY->riverTypeHandler.get(), "river")));
@@ -265,6 +268,7 @@ void CContentHandler::init()
 	handlers.insert(std::make_pair("obstacles", ContentTypeHandler(LIBRARY->obstacleHandler.get(), "obstacle")));
 	handlers.insert(std::make_pair("biomes", ContentTypeHandler(LIBRARY->biomeHandler.get(), "biome")));
 	handlers.insert(std::make_pair("resources", ContentTypeHandler(LIBRARY->resourceTypeHandler.get(), "resources")));
+	handlers.insert(std::make_pair("mapLayers", ContentTypeHandler(LIBRARY->mapLayerHandler.get(), "mapLayer")));
 }
 
 bool CContentHandler::preloadData(const ModDescription & mod, bool validate)

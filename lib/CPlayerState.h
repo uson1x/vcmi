@@ -18,6 +18,7 @@
 #include "bonuses/Bonus.h"
 #include "bonuses/CBonusSystemNode.h"
 #include "mapObjects/CGObjectInstance.h"
+#include "mapping/MapTilesStorage.h"
 
 VCMI_LIB_NAMESPACE_BEGIN
 
@@ -56,7 +57,7 @@ class DLL_LINKAGE PlayerState : public CBonusSystemNode, public Player, public G
 
 public:
 	PlayerColor color;
-	bool human; //true if human controlled player, false for AI
+	bool human = false; //true if human controlled player, false for AI
 	TeamID team;
 	TResources resources;
 
@@ -103,6 +104,8 @@ public:
 
 	void addOwnedObject(CGObjectInstance * object);
 	void removeOwnedObject(CGObjectInstance * object);
+	void markObjectControlled(ObjectInstanceID objectID);
+	bool hasEverControlled(ObjectInstanceID objectID) const;
 
 	bool checkVanquished() const
 	{
@@ -140,7 +143,12 @@ public:
 		h & enteredWinningCheatCode;
 		h & static_cast<CBonusSystemNode&>(*this);
 		h & destroyedObjects;
+		if(h.hasFeature(Handler::Version::CONTROL_LOSS_TRACKING))
+			h & everControlledObjects;
 	}
+
+	private:
+		std::set<ObjectInstanceID> everControlledObjects;
 };
 
 struct DLL_LINKAGE TeamState : public CBonusSystemNode
@@ -148,8 +156,8 @@ struct DLL_LINKAGE TeamState : public CBonusSystemNode
 public:
 	TeamID id; //position in gameState::teams
 	std::set<PlayerColor> players; // members of this team
-	//TODO: boost::array, bool if possible
-	boost::multi_array<ui8, 3> fogOfWarMap; //[z][x][y] true - visible, false - hidden
+	//TODO: bool if possible
+	MapTilesStorage<uint8_t> fogOfWarMap; //true - visible, false - hidden
 
 	std::set<ObjectInstanceID> scoutedObjects;
 

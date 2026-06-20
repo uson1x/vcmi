@@ -59,7 +59,6 @@
 #include "../../lib/mapping/CMapEditManager.h"
 #include "../../lib/mapping/CMapService.h"
 #include "../../lib/mapping/MapFormat.h"
-#include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/SpellSchoolHandler.h"
 #include "../../lib/texts/CGeneralTextHandler.h"
 #include "../../lib/texts/MetaString.h"
@@ -67,6 +66,7 @@
 #include "../../lib/filesystem/Filesystem.h"
 #include "../../lib/serializer/JsonSerializer.h"
 #include "../../lib/serializer/JsonDeserializer.h"
+#include "../../lib/spells/CSpellHandler.h"
 
 BattleOnlyModeTab::BattleOnlyModeTab()
 	: startInfo(std::make_shared<BattleOnlyModeStartInfo>())
@@ -195,7 +195,7 @@ void BattleOnlyModeTab::init()
 	map->creationDateTime = std::time(nullptr);
 	map->width = 10;
 	map->height = 10;
-	map->mapLevels = 1;
+	map->mapLayers = {MapLayerId::SURFACE};
 	map->battleOnly = true;
 	map->name = MetaString::createFromTextID("vcmi.lobby.battleOnlyMode");
 

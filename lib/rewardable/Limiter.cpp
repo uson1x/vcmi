@@ -29,6 +29,8 @@ Rewardable::Limiter::Limiter()
 	, heroLevel(-1)
 	, manaPercentage(0)
 	, manaPoints(0)
+	, movePercentage(0)
+	, movePoints(0)
 	, canLearnSkills(false)
 	, commanderAlive(false)
 	, hasExtraCreatures(false)
@@ -46,6 +48,8 @@ bool operator==(const Rewardable::Limiter & l, const Rewardable::Limiter & r)
 	&& l.heroLevel == r.heroLevel
 	&& l.manaPoints == r.manaPoints
 	&& l.manaPercentage == r.manaPercentage
+	&& l.movePoints == r.movePoints
+	&& l.movePercentage == r.movePercentage
 	&& l.canLearnSkills == r.canLearnSkills
 	&& l.commanderAlive == r.commanderAlive
 	&& l.hasExtraCreatures == r.hasExtraCreatures
@@ -75,13 +79,13 @@ bool Rewardable::Limiter::heroAllowed(const CGHeroInstance * hero) const
 {
 	if(dayOfWeek != 0)
 	{
-		if (hero->cb->getDate(Date::DAY_OF_WEEK) != dayOfWeek)
+		if (hero->cb->getCalendar().getDayOfWeek() != dayOfWeek)
 			return false;
 	}
 
 	if(daysPassed != 0)
 	{
-		if (hero->cb->getDate(Date::DAY) < daysPassed)
+		if (hero->cb->getCalendar().getCurrentDay() < daysPassed)
 			return false;
 	}
 
@@ -119,10 +123,16 @@ bool Rewardable::Limiter::heroAllowed(const CGHeroInstance * hero) const
 	if(manaPoints > hero->mana)
 		return false;
 
+	if(movePoints > hero->movementPointsRemaining())
+		return false;
+
 	if (canLearnSkills && !hero->canLearnSkill())
 		return false;
 
 	if (hero->manaLimit() != 0 && manaPercentage > 100 * hero->mana / hero->manaLimit())
+		return false;
+
+	if (hero->movementPointsLimit() != 0 && movePercentage > 100 * hero->movementPointsRemaining()/ hero->movementPointsLimit())
 		return false;
 
 	for(size_t i=0; i<primary.size(); i++)
@@ -281,13 +291,15 @@ void Rewardable::Limiter::serializeJson(JsonSerializeFormat & handler)
 	handler.serializeInt("dayOfWeek", dayOfWeek);
 	handler.serializeInt("daysPassed", daysPassed);
 	resources.serializeJson(handler, "resources");
-	handler.serializeInt("manaPercentage", manaPercentage);
 	handler.serializeInt("heroExperience", heroExperience);
 	handler.serializeInt("heroLevel", heroLevel);
 	handler.serializeIdArray("heroes", heroes);
 	handler.serializeIdArray("heroClasses", heroClasses);
 	handler.serializeIdArray("colors", players);
 	handler.serializeInt("manaPoints", manaPoints);
+	handler.serializeInt("manaPercentage", manaPercentage);
+	handler.serializeInt("movePoints", movePoints);
+	handler.serializeInt("movePercentage", movePercentage);
 	handler.serializeIdArray("artifacts", artifacts);
 	handler.serializeIdArray("spells", spells);
 	handler.enterArray("creatures").serializeStruct(creatures);

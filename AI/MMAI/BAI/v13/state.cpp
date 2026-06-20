@@ -20,9 +20,6 @@
 #include "common.h"
 #include "schema/v13/constants.h"
 
-#include <algorithm>
-#include <memory>
-
 namespace MMAI::BAI::V13
 {
 namespace S13 = Schema::V13;
@@ -231,8 +228,8 @@ void State::onActiveStack(const CStack * astack, CombatResult result, bool recor
 		encodePlayer(lpstats.get());
 		encodePlayer(rpstats.get());
 
-		for(auto & hexrow : *battlefield->hexes)
-			for(auto & hex : hexrow)
+		for(const auto & hexrow : *battlefield->hexes)
+			for(const auto & hex : hexrow)
 				encodeHex(hex.get());
 
 		// Links are not part of the state
@@ -328,8 +325,7 @@ void State::_onActionStarted(const BattleAction & ba)
 	}
 	ASSERT(found, "could not find cstack with unitId: " + std::to_string(ba.stackNumber));
 
-	if(actingStack->creatureId() == CreatureID::FIRST_AID_TENT || actingStack->creatureId() == CreatureID::CATAPULT
-	   || actingStack->creatureId() == CreatureID::ARROW_TOWERS)
+	if(actingStack->isFirstAidTent() || actingStack->isCatapult() || actingStack->isTurret())
 	{
 		// These are auto-acting for BAI
 		// Cannot build state in this case
@@ -465,7 +461,11 @@ void State::onBattleStacksAttacked(const std::vector<BattleStackAttacked> & bsa)
 		const auto * cdefender = battle->battleGetStackByID(elem.stackAttacked, false);
 		const auto * cattacker = battle->battleGetStackByID(elem.attackerID, false);
 
-		ASSERT(cdefender, "defender cannot be NULL");
+		if(!cdefender)
+		{
+			logAi->error("MMAI: received BattleStackAttacked with invalid stackAttacked: " + std::to_string(elem.stackAttacked));
+			continue;
+		}
 
 		const auto defender = std::ranges::find_if(
 			stacks,
@@ -520,7 +520,7 @@ void State::onBattleTriggerEffect(const BattleTriggerEffect & bte)
 	isMorale = true;
 }
 
-void State::onActionFinished(const BattleAction & ba)
+void State::onActionFinished(const BattleAction & ba) const
 {
 	// XXX: assuming action was OK (no server error about failed/fishy action)
 }

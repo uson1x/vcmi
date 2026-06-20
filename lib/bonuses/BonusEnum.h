@@ -196,10 +196,20 @@ class JsonNode;
 	BONUS_NAME(SPECIFIC_SPELL_RANGE) /* value used for allowed spell range, subtype - spell id */\
 	BONUS_NAME(HATES_TRAIT) /* affected unit deals additional damage to units with specific bonus. subtype - bonus, val - damage bonus percent */ \
 	BONUS_NAME(DAMAGE_RECEIVED_CAP) /* limits the damage dealt to affected unit */ \
-	BONUS_NAME(FORCE_NEUTRAL_ENCOUNTER_STACK_COUNT) /* Forces the number of neutral stacks in hero–neutral encounters.*/ \
-	BONUS_NAME(SPELL_CAST_COUNTER)  /*used to keep count how many times a particular spells has been cast*/
-	/* end of list */
+	BONUS_NAME(FORCE_NEUTRAL_ENCOUNTER_STACK_COUNT) /* Forces the number of neutral stacks in hero–neutral encounters.*/\
+	BONUS_NAME(ADJACENT_SPELLCASTER) /*Allows spellcasting units from adjacent tile, val - spell school level, subtype - spell id */\
+	BONUS_NAME(UNIT_DEFENDING) /* tag applied to units which are currently waiting in battle */\
+	BONUS_NAME(MARKETPLACE_ACCESS) \
+	BONUS_NAME(CPU_CONTROLLED) /* Makes unit CPU controller by default, like ballista. Currently, target picking uses custom server logic rather than using battle AI */ \
+	BONUS_NAME(DEITYOFFIRE) /* Controls special week */ \
+	BONUS_NAME(ON_COMBAT_EVENT) /* Allows triggering various effects on combat events */ \
+	BONUS_NAME(LONG_WEAPON) /* melee attack from one hex away (attacker-empty-victim), without retaliation */ \
+	BONUS_NAME(SPELL_CAST_COUNTER)  /*used to keep count how many times a particular spells has been cast*/ \
+	BONUS_NAME(LEARN_BATTLE_SPELL_CHANCE_PRE_BATTLE) /*skill-agnostic eagle eye chance to learn enemy hero spells at battle start*/\
+	BONUS_NAME(LEARN_BATTLE_SPELL_LEVEL_LIMIT_PRE_BATTLE) /*skill-agnostic eagle eye spell level limit to learn enemy hero spells at battle start*/\
+	BONUS_NAME(SURRENDER_MARKETPLACE_ACCESS) /*Allows hero to open marketplace when unable to pay surrender cost*/ \
 
+	/* end of list */
 
 #define BONUS_SOURCE_LIST \
 	BONUS_SOURCE(ARTIFACT)\
@@ -246,7 +256,7 @@ namespace BonusDuration  //when bonus is automatically removed
 {
 	// We use uint16_t directly because std::bitset<11> eats whole 8 byte word.
 	using Type = uint16_t;
-	constexpr size_t Size = 11;
+	constexpr size_t Size = 13;
 
 	enum BonusDuration : Type {
 		PERMANENT = 1 << 0,
@@ -255,11 +265,14 @@ namespace BonusDuration  //when bonus is automatically removed
 		ONE_WEEK = 1 << 3, //at the end of week (bonus lasts till the end of week, thats NOT 7 days
 		N_TURNS = 1 << 4, //used during battles, after battle bonus is always removed
 		N_DAYS = 1 << 5,
-		UNTIL_BEING_ATTACKED = 1 << 6, /*removed after attack and counterattacks are performed*/
-		UNTIL_ATTACK = 1 << 7, /*removed after attack and counterattacks are performed*/
+		UNTIL_BEING_ATTACKED = 1 << 6, /*removed each time a creature is damaged*/
+		UNTIL_ATTACK = 1 << 7, /*removed after each attack or counterattack in a seuqence is performed */
 		STACK_GETS_TURN = 1 << 8, /*removed when stack gets its turn - used for defensive stance*/
 		COMMANDER_KILLED = 1 << 9,
 		UNTIL_OWN_ATTACK = 1 << 10 /*removed after attack is performed (not counterattack)*/,
+		UNTIL_TAKING_INDIRECT_DAMAGE = 1 << 11 /*removed after unit takes indirect damage (any damage except melee or range creature attacks, tower or ballista damage)*/,
+		UNTIL_AFTER_ATTACK_SEQUENCE = 1 << 12 /*removed on both the attacker and defendant after a full attacks and counterattack sequence is performed
+							(including creature attacks, towers and war machines)*/
 	};
 
 	extern JsonNode toJson(const Type & duration);

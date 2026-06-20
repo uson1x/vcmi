@@ -70,10 +70,11 @@ std::string CResDataBar::buildDateString()
 {
 	std::string pattern = "%s: %d, %s: %d, %s: %d";
 
+	auto calendar = GAME->interface()->cb->getCalendar();
 	auto formatted = boost::format(pattern)
-		% LIBRARY->generaltexth->translate("core.genrltxt.62") % GAME->interface()->cb->getDate(Date::MONTH)
-		% LIBRARY->generaltexth->translate("core.genrltxt.63") % GAME->interface()->cb->getDate(Date::WEEK)
-		% LIBRARY->generaltexth->translate("core.genrltxt.64") % GAME->interface()->cb->getDate(Date::DAY_OF_WEEK);
+		% LIBRARY->generaltexth->translate("core.genrltxt.62") % calendar.getMonth()
+		% LIBRARY->generaltexth->translate("core.genrltxt.63") % calendar.getWeek()
+		% LIBRARY->generaltexth->translate("core.genrltxt.64") % calendar.getDayOfWeek();
 
 	return boost::str(formatted);
 }
@@ -81,6 +82,13 @@ std::string CResDataBar::buildDateString()
 void CResDataBar::showAll(Canvas & to)
 {
 	CIntObject::showAll(to);
+
+	if(!GAME->interface()->cb->getPlayerState(GAME->interface()->playerID, false))
+	{
+		if (datePosition)
+			to.drawText(pos.topLeft() + *datePosition, FONT_SMALL, Colors::WHITE, ETextAlignment::TOPLEFT, buildDateString());
+		return;
+	}
 
 	//TODO: all this should be labels, but they require proper text update on change
 	for (auto & entry : resourcePositions)
@@ -104,9 +112,12 @@ void CResDataBar::showPopupWindow(const Point & cursorPosition)
 	if((cursorPosition.x - pos.x) > 600)
 		return;
 
+	auto playerState = GAME->interface()->cb->getPlayerState(GAME->interface()->playerID, false);
+	if(!playerState)
+		return;
+
 	// only daily income
 	ResourceSet income;
-	auto playerState = GAME->interface()->cb->getPlayerState(GAME->interface()->playerID);
 	auto playerSettings = GAME->interface()->cb->getPlayerSettings(GAME->interface()->playerID);
 	for(auto & k : LIBRARY->resourceTypeHandler->getAllObjects())
 	{

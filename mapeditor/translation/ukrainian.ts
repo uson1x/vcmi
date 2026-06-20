@@ -2,6 +2,34 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="uk_UA">
 <context>
+    <name>AbilitiesWidget</name>
+    <message>
+        <location filename="../inspector/abilitieswidget.ui" line="29"/>
+        <source>Abilities</source>
+        <translation type="unfinished">Уміння</translation>
+    </message>
+    <message>
+        <location filename="../inspector/abilitieswidget.ui" line="52"/>
+        <source>Deselect All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/abilitieswidget.ui" line="59"/>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/abilitieswidget.ui" line="66"/>
+        <source>Customize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/abilitieswidget.ui" line="97"/>
+        <source>&lt;font color=&apos;red&apos;&gt;Displayed skills assume default witch hut implementation. Mods can overwrite it.&lt;/font&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ArmyWidget</name>
     <message>
         <location filename="../inspector/armywidget.ui" line="23"/>
@@ -47,10 +75,9 @@
     <name>CampaignEditor</name>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="14"/>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="140"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="173"/>
         <source>VCMI Campaign Editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редактор кампаній VCMI</translation>
+        <translation>Редактор кампаній VCMI</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="36"/>
@@ -80,8 +107,7 @@
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="113"/>
         <source>Open Campaignset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відкрити набір кампаній</translation>
+        <translation>Відкрити набір кампаній</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="121"/>
@@ -107,120 +133,114 @@
         <location filename="../campaigneditor/campaigneditor.ui" line="145"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="148"/>
         <source>Campaign Properties</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Властивості кампанії</translation>
+        <translation>Властивості кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="159"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="162"/>
         <source>Scenario Properties</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Властивості сценарію</translation>
+        <translation>Властивості сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaigneditor.ui" line="173"/>
         <location filename="../campaigneditor/campaigneditor.ui" line="176"/>
         <source>Show full background</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Показати повний фон</translation>
+        <translation>Показати повний фон</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="105"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="138"/>
         <source>Scenario editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редактор сценарію</translation>
+        <translation>Редактор сценарію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="128"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="161"/>
         <source>Confirmation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підтвердження</translation>
+        <translation>Підтвердити</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="128"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="161"/>
         <source>Unsaved changes will be lost, are you sure?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Незбережені зміни буде втрачено, ви впевнені?</translation>
+        <translation>Незбережені зміни буде втрачено. Ви впевнені?</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="184"/>
-        <source>Fewer Scenarios than regions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Менше сценаріїв, ніж регіонів</translation>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="80"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="445"/>
+        <source>Failed to open campaign</source>
+        <translation>Не вдалося відкрити кампанію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="184"/>
-        <source>You have fewer scenarios than regions. This is only allowed if the missing scenarios occur in the last regions, not in the middle or beginning.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">У вас менше сценаріїв, ніж регіонів. Це дозволено лише якщо відсутні сценарії знаходяться в останніх регіонах, а не посередині чи на початку.</translation>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="187"/>
+        <source>Validation failed</source>
+        <translation>Валідація не пройшла</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="214"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="187"/>
+        <source>Campaign has no maps defined.</source>
+        <translation>У кампанії відсутні будь-які мапи.</translation>
+    </message>
+    <message>
         <source>Open map</source>
-        <translation>Відкрити мапу</translation>
+        <translation type="vanished">Відкрити мапу</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="216"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="267"/>
+        <source>Open campaign</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="269"/>
         <source>All supported campaigns (*.vcmp *.h3c);;VCMI campaigns(*.vcmp);;HoMM3 campaigns(*.h3c)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Всі підтримувані кампанії (*.vcmp *.h3c);;Кампанії VCMI (*.vcmp);;Кампанії HoMM3 (*.h3c)</translation>
+        <translation>Всі підтримувані кампанії (*.vcmp *.h3c);;Кампанії VCMI (*.vcmp);;Кампанії HoMM3 (*.h3c)</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="259"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="298"/>
         <source>Open Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відкрити набір кампаній</translation>
+        <translation>Відкрити набір кампаній</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="259"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="298"/>
         <source>Select Campaign set</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибрати набір кампаній</translation>
+        <translation>Обрати набір кампаній</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="271"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="310"/>
         <source>Open Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відкрити кампанію</translation>
+        <translation>Відкрити кампанію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="271"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="310"/>
         <source>Select Campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибрати кампанію</translation>
+        <translation>Обрати кампанію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="287"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="326"/>
         <source>Save campaign</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зберегти кампанію</translation>
+        <translation>Зберегти кампанію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="287"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="328"/>
         <source>VCMI campaigns (*.vcmp)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кампанії VCMI (*.vcmp)</translation>
+        <translation>Кампанії VCMI (*.vcmp)</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="373"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="463"/>
         <source>Mods are required</source>
         <translation>Необхідні моди</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="381"/>
-        <location filename="../campaigneditor/campaigneditor.cpp" line="386"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="471"/>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="476"/>
         <source>Failed to open map</source>
-        <translation>Не вдалося відкрити карту</translation>
+        <translation>Не вдалося відкрити мапу</translation>
     </message>
 </context>
 <context>
     <name>CampaignProperties</name>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="14"/>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="28"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="27"/>
         <source>Campaign Properties</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Властивості кампанії</translation>
+        <translation>Властивості кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="30"/>
@@ -230,14 +250,12 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="36"/>
         <source>Campaign name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва кампанії</translation>
+        <translation>Назва кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="46"/>
         <source>Campaign description</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Опис кампанії</translation>
+        <translation>Опис кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="56"/>
@@ -247,69 +265,58 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="66"/>
         <source>Author contact (e.g. e-mail)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Контакт автора (наприклад, e‑mail)</translation>
+        <translation>Контактна інформація авторів (наприклад, e‑mail)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="76"/>
         <source>Campaign creation date</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дата створення кампанії</translation>
+        <translation>Дата створення кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="86"/>
         <source>Campaign version</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Версія кампанії</translation>
+        <translation>Версія кампанії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="96"/>
         <source>Music</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Музика</translation>
+        <translation>Музика</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="106"/>
         <source>Scenario difficulty is user selectable</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір складності сценарію доступний користувачу</translation>
+        <translation>Гравець може обирати складність сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="114"/>
         <location filename="../campaigneditor/campaignproperties.ui" line="197"/>
         <source>Regions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Регіони</translation>
+        <translation>Регіони</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="120"/>
         <source>Regions Preset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Набір регіонів</translation>
+        <translation>Набір регіонів</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="137"/>
         <source>Background</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Фон</translation>
+        <translation>Фонове зображення</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="147"/>
         <source>Suffix</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Суфікс</translation>
+        <translation>Суфікс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="173"/>
         <source>Prefix</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Префікс</translation>
+        <translation>Префікс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="183"/>
         <source>Color suffix length</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Довжина кольорового суфіксу</translation>
+        <translation>Довжина суфіксу кольору</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="226"/>
@@ -324,86 +331,889 @@
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="258"/>
         <source>Misc</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Різне</translation>
+        <translation>Різне</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="264"/>
         <source>Loading background image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Завантаження фонового зображення</translation>
+        <translation>Фон зображення екрану завантаження</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="274"/>
         <source>Video rim image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зображення рамки відео</translation>
+        <translation>Зображення рамки відео</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="292"/>
         <source>Enable rim image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Увімкнути зображення рамки</translation>
+        <translation>Увімкнути зображення рамки</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="304"/>
         <source>Intro video</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вступне відео</translation>
+        <translation>Вступне відео</translation>
     </message>
     <message>
         <location filename="../campaigneditor/campaignproperties.ui" line="314"/>
         <source>Outro video</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Фінальне відео</translation>
+        <translation>Фінальне відео</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="57"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="56"/>
         <source>Custom</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Користувацьке</translation>
+        <translation>Користувацьке</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="148"/>
         <source>Infix</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Інфікс</translation>
+        <translation>Інфікс</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="148"/>
         <source>X</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="148"/>
         <source>Y</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Y</translation>
+        <translation>Y</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="148"/>
         <source>Label Pos X</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Позиція мітки X</translation>
+        <translation>Позиція мітки (X)</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="149"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="148"/>
         <source>Label Pos Y</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Позиція мітки Y</translation>
+        <translation>Позиція мітки (Y)</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="201"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="200"/>
         <source>Fewer Scenarios</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Менше сценаріїв</translation>
+        <translation>Менше сценаріїв</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/campaignproperties.cpp" line="201"/>
+        <location filename="../campaigneditor/campaignproperties.cpp" line="200"/>
         <source>New Region setup supports fewer scenarios than before. Some will removed. Continue?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Налаштування нового регіону підтримує менше сценаріїв, ніж раніше. Деякі будуть видалені. Продовжити?</translation>
+        <translation>Новий регіон підтримує менше сценаріїв, ніж раніше. Деякі будуть видалені. Продовжити?</translation>
+    </message>
+</context>
+<context>
+    <name>EditorMainWindow</name>
+    <message>
+        <location filename="../mainwindow.ui" line="14"/>
+        <location filename="../mainwindow.cpp" line="536"/>
+        <source>VCMI Map Editor</source>
+        <translation>Редактор мап VCMI</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="59"/>
+        <source>File</source>
+        <translation>Файл</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="63"/>
+        <location filename="../mainwindow.ui" line="1041"/>
+        <source>Open Recent</source>
+        <translation>Відкрити останні</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="82"/>
+        <source>Map</source>
+        <translation>Мапа</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="94"/>
+        <source>Edit</source>
+        <translation>Редагування</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="107"/>
+        <source>View</source>
+        <translation>Вигляд</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="119"/>
+        <source>Player</source>
+        <translation>Гравець</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="139"/>
+        <source>Toolbar</source>
+        <translation>Панель інструментів</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="200"/>
+        <source>Minimap</source>
+        <translation>Мінімапа</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="273"/>
+        <source>Map Objects View</source>
+        <translation>Перегляд об&apos;єктів мапи</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="317"/>
+        <source>Browser</source>
+        <translation>Навігатор</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="395"/>
+        <source>Inspector</source>
+        <translation>Інспектор</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="437"/>
+        <source>Property</source>
+        <translation>Властивість</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="442"/>
+        <source>Value</source>
+        <translation>Значення</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="466"/>
+        <source>Tools</source>
+        <translation>Інструменти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="830"/>
+        <source>Painting</source>
+        <translation>Малювання</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="882"/>
+        <source>Terrains</source>
+        <translation>Землі</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="925"/>
+        <source>Roads</source>
+        <translation>Шляхи</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="965"/>
+        <source>Rivers</source>
+        <translation>Річки</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="999"/>
+        <source>Preview</source>
+        <translation>Попередній перегляд</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1033"/>
+        <source>Open</source>
+        <translation>Відкрити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1036"/>
+        <source>Ctrl+O</source>
+        <translation>Ctrl+O</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1046"/>
+        <source>More...</source>
+        <translation>Ще...</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1054"/>
+        <source>Save</source>
+        <translation>Зберегти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1057"/>
+        <source>Ctrl+S</source>
+        <translation>Ctrl+S</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1062"/>
+        <source>New</source>
+        <translation>Створити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1065"/>
+        <source>Ctrl+N</source>
+        <translation>Ctrl+N</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1070"/>
+        <source>Save as...</source>
+        <translation>Зберегти як...</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1073"/>
+        <source>Ctrl+Shift+S</source>
+        <translation>Ctrl+Shift+S</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1078"/>
+        <location filename="../mainwindow.ui" line="1081"/>
+        <source>Campaign editor</source>
+        <translation>Редактор кампанії</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1086"/>
+        <location filename="../mainwindow.ui" line="1089"/>
+        <source>Template editor</source>
+        <translation>Редактор шаблонів випадкових мап</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1097"/>
+        <location filename="../mainwindow.ui" line="1100"/>
+        <source>View underground</source>
+        <translation>Дивитись підземелля</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1103"/>
+        <source>Ctrl+U</source>
+        <translation>Ctrl+U</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1111"/>
+        <source>Pass</source>
+        <translation>Прохідність</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1114"/>
+        <source>Ctrl+Shift+P</source>
+        <translation>Ctrl+Shift+P</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1119"/>
+        <source>Cut</source>
+        <translation>Вирізати</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1122"/>
+        <source>Ctrl+X</source>
+        <translation>Ctrl+X</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1127"/>
+        <source>Copy</source>
+        <translation>Скопіювати</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1130"/>
+        <source>Ctrl+C</source>
+        <translation>Ctrl+C</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1135"/>
+        <source>Paste</source>
+        <translation>Вставити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1138"/>
+        <source>Ctrl+V</source>
+        <translation>Ctrl+V</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1143"/>
+        <source>Fill</source>
+        <translation>Заповнити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1146"/>
+        <source>Fills the selection with obstacles</source>
+        <translation>Заповнити перешкодами</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1157"/>
+        <source>Grid</source>
+        <translation>Сітка</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1160"/>
+        <source>Ctrl+G</source>
+        <translation>Ctrl+G</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1168"/>
+        <source>General</source>
+        <translation>Загальний</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1171"/>
+        <source>Map title and description</source>
+        <translation>Назва та опис мапи</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1174"/>
+        <source>Ctrl+Enter</source>
+        <translation>Ctrl+Enter</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1182"/>
+        <source>Players settings</source>
+        <translation>Налаштування гравців</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1185"/>
+        <source>Ctrl+P</source>
+        <translation>Ctrl+P</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1193"/>
+        <location filename="../mainwindow.ui" line="1196"/>
+        <source>Undo</source>
+        <translation>Відмінити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1199"/>
+        <source>Ctrl+Z</source>
+        <translation>Ctrl+Z</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1210"/>
+        <source>Redo</source>
+        <translation>Повторити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1213"/>
+        <source>Ctrl+Y</source>
+        <translation>Ctrl+Y</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1224"/>
+        <source>Erase</source>
+        <translation>Стерти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1227"/>
+        <source>Del</source>
+        <translation>Del</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1235"/>
+        <source>Neutral</source>
+        <translation>Нейтральний</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1238"/>
+        <source>Ctrl+0</source>
+        <translation>Ctrl+0</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1243"/>
+        <source>Validate</source>
+        <translation>Перевірити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1246"/>
+        <source>Ctrl+Shift+V</source>
+        <translation>Ctrl+Shift+V</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1254"/>
+        <location filename="../mainwindow.cpp" line="1542"/>
+        <source>Select map layer type</source>
+        <translation>Оберіть тип рівня мапи</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1265"/>
+        <location filename="../mainwindow.cpp" line="1451"/>
+        <location filename="../mainwindow.cpp" line="1455"/>
+        <location filename="../mainwindow.cpp" line="1513"/>
+        <source>Update appearance</source>
+        <translation>Оновити вигляд</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1276"/>
+        <source>Recreate obstacles</source>
+        <translation>Оновити перешкоди</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1287"/>
+        <source>Player 1</source>
+        <translation>Гравець 1</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1290"/>
+        <source>Ctrl+1</source>
+        <translation>Ctrl+1</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1298"/>
+        <source>Player 2</source>
+        <translation>Гравець 2</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1301"/>
+        <source>Ctrl+2</source>
+        <translation>Ctrl+2</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1309"/>
+        <source>Player 3</source>
+        <translation>Гравець 3</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1312"/>
+        <source>Ctrl+3</source>
+        <translation>Ctrl+3</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1320"/>
+        <source>Player 4</source>
+        <translation>Гравець 4</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1323"/>
+        <source>Ctrl+4</source>
+        <translation>Ctrl+4</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1331"/>
+        <source>Player 5</source>
+        <translation>Гравець 5</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1334"/>
+        <source>Ctrl+5</source>
+        <translation>Ctrl+5</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1342"/>
+        <source>Player 6</source>
+        <translation>Гравець 6</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1345"/>
+        <source>Ctrl+6</source>
+        <translation>Ctrl+6</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1353"/>
+        <source>Player 7</source>
+        <translation>Гравець 7</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1356"/>
+        <source>Ctrl+7</source>
+        <translation>Ctrl+7</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1364"/>
+        <source>Player 8</source>
+        <translation>Гравець 8</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1367"/>
+        <source>Ctrl+8</source>
+        <translation>Ctrl+8</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1372"/>
+        <source>Export as...</source>
+        <translation>Експортувати як...</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1375"/>
+        <source>Ctrl+E</source>
+        <translation>Ctrl+E</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1383"/>
+        <source>Translations</source>
+        <translation>Переклади</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1386"/>
+        <source>Ctrl+T</source>
+        <translation>Ctrl+T</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1391"/>
+        <location filename="../mainwindow.ui" line="1394"/>
+        <source>h3m converter</source>
+        <translation>конвертер h3m</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1397"/>
+        <source>Ctrl+Shift+M</source>
+        <translation>Ctrl+Shift+M</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1402"/>
+        <location filename="../mainwindow.ui" line="1405"/>
+        <source>h3c converter</source>
+        <translation>конвертер h3c</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1408"/>
+        <source>Ctrl+Shift+C</source>
+        <translation>Ctrl+Shift+C</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1413"/>
+        <source>Lock</source>
+        <translation>Заблокувати</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1416"/>
+        <source>Lock objects on map to avoid unnecessary changes</source>
+        <translation>Заблокувати об’єкти на мапі, щоб уникнути небажаних змін</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1419"/>
+        <source>Ctrl+L</source>
+        <translation>Ctrl+L</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1424"/>
+        <source>Unlock</source>
+        <translation>Розблокувати</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1427"/>
+        <source>Unlock all objects on the map</source>
+        <translation>Розблокувати всі об’єкти на мапі</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1257"/>
+        <location filename="../mainwindow.ui" line="1430"/>
+        <source>Ctrl+Shift+L</source>
+        <translation>Ctrl+Shift+L</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1435"/>
+        <source>Zoom in</source>
+        <translation>Збільшити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1438"/>
+        <source>Ctrl++</source>
+        <translation>Ctrl++</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1443"/>
+        <source>Zoom out</source>
+        <translation>Зменшити</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1446"/>
+        <source>Ctrl+-</source>
+        <translation>Ctrl+-</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1451"/>
+        <source>Zoom reset</source>
+        <translation>Скинути масштаб</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="1454"/>
+        <source>Ctrl+Shift+=</source>
+        <translation>Ctrl+Shift+=</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="484"/>
+        <source>Mapeditor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="485"/>
+        <source>Mapeditor on Android is experimental.
+
+For the best experience, we recommend using the map editor on a tablet (or with a mouse/pen).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="504"/>
+        <source>Confirmation</source>
+        <translation>Підтвердження</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="504"/>
+        <source>Unsaved changes will be lost, are you sure?</source>
+        <translation>Незбережені зміни буде втрачено, ви впевнені?</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="575"/>
+        <location filename="../mainwindow.cpp" line="1559"/>
+        <source>Level %1: %2</source>
+        <translation>Рівень %1: %2</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="601"/>
+        <source>Mods are required</source>
+        <translation>Є необхідні модифікації</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="609"/>
+        <location filename="../mainwindow.cpp" line="615"/>
+        <source>Failed to open map</source>
+        <translation>Не вдалося відкрити мапу</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="646"/>
+        <source>Open map</source>
+        <translation>Відкрити мапу</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="648"/>
+        <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
+        <translation>Всі підтримувані мапи (*.vmap *.h3m);;Мапи VCMI (*.vmap);;Мапи HoMM3 (*.h3m)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="703"/>
+        <source>Recently Opened Files</source>
+        <translation>Нещодавні файли</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="756"/>
+        <source>Map validation</source>
+        <translation>Валідація мапи</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="758"/>
+        <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
+        <translation>На мапі знайдено критичні помилки і, ймовірно, вона не буде придатна для гри. Відкрийте валідатор у меню Мапа щоб побачити знайдені проблеми</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="760"/>
+        <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
+        <translation>На мапі знайдено деякі помилки. Відкрийте валідатор у меню Мапа, щоб побачити знайдені проблеми</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="787"/>
+        <source>Failed to save map</source>
+        <translation>Не вдалося зберегти мапу</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="800"/>
+        <source>Save map</source>
+        <translation>Зберегти мапу</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="801"/>
+        <source>VCMI maps (*.vmap)</source>
+        <translation>Мапи VCMI</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1014"/>
+        <source>Type</source>
+        <translation>Тип</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1027"/>
+        <source>Towns</source>
+        <translation>Міста</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1028"/>
+        <source>Objects</source>
+        <translation>Об’єкти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1029"/>
+        <source>Heroes</source>
+        <translation>Герої</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1030"/>
+        <source>Artifacts</source>
+        <translation>Артефакти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1031"/>
+        <source>Resources</source>
+        <translation>Ресурси</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1032"/>
+        <source>Banks</source>
+        <translation>Банки істот</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1033"/>
+        <source>Dwellings</source>
+        <translation>Зовнішні житла</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1034"/>
+        <source>Grounds</source>
+        <translation>Ґрунти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1035"/>
+        <source>Teleports</source>
+        <translation>Телепорти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1036"/>
+        <source>Mines</source>
+        <translation>Шахти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1037"/>
+        <source>Triggers</source>
+        <translation>Тригери</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1038"/>
+        <source>Monsters</source>
+        <translation>Істоти</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1039"/>
+        <source>Quests</source>
+        <translation>Завдання</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1040"/>
+        <source>Wog Objects</source>
+        <translation>об’єкти WoG</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1041"/>
+        <source>Obstacles</source>
+        <translation>Перешкоди</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1042"/>
+        <source>Other</source>
+        <translation>Інші</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1179"/>
+        <source>Mods loading problem</source>
+        <translation>Проблема з завантаженням модифікацій</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1179"/>
+        <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
+        <translation>Критична помилка під час завантаження модифікацій. Вимкніть невірні модифікації та перезапустіть.</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1185"/>
+        <source>Undo clicked</source>
+        <translation>Дія відмінена</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1196"/>
+        <source>Redo clicked</source>
+        <translation>Дія повторена</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1207"/>
+        <source>Passability clicked</source>
+        <translation>Прохідність переключена</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1220"/>
+        <source>Grid clicked</source>
+        <translation>Сітка переключена</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1301"/>
+        <source>Fill clicked</source>
+        <translation>Заповнення переключено</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1451"/>
+        <source>No objects selected</source>
+        <translation>Немає обраних об&apos;єктів</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1455"/>
+        <source>This operation is irreversible. Do you want to continue?</source>
+        <translation>Ця операція незворотна. Ви впевнені що бажаєте продовжити?</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1513"/>
+        <source>Errors occurred. %1 objects were not updated</source>
+        <translation>Сталися помилки. %1 об’єкт(ів) не було оновлено</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1543"/>
+        <source>Type:</source>
+        <translation>Тип:</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1604"/>
+        <source>Image format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1605"/>
+        <source>Select image format:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1619"/>
+        <location filename="../mainwindow.cpp" line="1623"/>
+        <source>Save to image</source>
+        <translation>Зберегти як зображення</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1665"/>
+        <source>Failed to save image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1665"/>
+        <source>Cannot save image to %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1685"/>
+        <source>Select maps to convert</source>
+        <translation>Виберіть мапи для перетворення</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1687"/>
+        <source>HoMM3 maps(*.h3m)</source>
+        <translation>Мапи HoMM3 (*.h3m)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1693"/>
+        <location filename="../mainwindow.cpp" line="1700"/>
+        <source>Choose directory to save converted maps</source>
+        <translation>Виберіть теку для збереження перетворених мап</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1695"/>
+        <source>Directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1716"/>
+        <source>Operation completed</source>
+        <translation>Операція виконана</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1716"/>
+        <source>Successfully converted %1 maps</source>
+        <translation>Успішно перетворено %1 мап(и)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1720"/>
+        <source>Failed to convert the map. Abort operation</source>
+        <translation>Не вдалося перетворити мапу. Операції перервано</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1728"/>
+        <source>Select campaign to convert</source>
+        <translation>Виберіть кампанію для перетворення</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1729"/>
+        <source>HoMM3 campaigns (*.h3c)</source>
+        <translation>Кампанії HoMM3 (*.h3c)</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1735"/>
+        <source>Select destination file</source>
+        <translation>Виберіть файл призначення</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="1736"/>
+        <source>VCMI campaigns (*.vcmp)</source>
+        <translation>Кампанії VCMI (*.vcmp)</translation>
     </message>
 </context>
 <context>
@@ -412,8 +1222,7 @@
         <location filename="../templateeditor/entitiesselector.ui" line="14"/>
         <location filename="../templateeditor/entitiesselector.ui" line="20"/>
         <source>Select Entities</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть сутності</translation>
+        <translation>Виберіть об&apos;єкти</translation>
     </message>
 </context>
 <context>
@@ -450,14 +1259,12 @@
         <location filename="../templateeditor/factionselector.ui" line="14"/>
         <location filename="../templateeditor/factionselector.ui" line="20"/>
         <source>Select Factions</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть фракції</translation>
+        <translation>Оберіть фракції</translation>
     </message>
     <message>
-        <location filename="../templateeditor/factionselector.cpp" line="25"/>
+        <location filename="../templateeditor/factionselector.cpp" line="24"/>
         <source>Faction Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір фракції</translation>
+        <translation>Вибір фракції</translation>
     </message>
 </context>
 <context>
@@ -567,8 +1374,7 @@
         <location filename="../inspector/heroskillswidget.ui" line="48"/>
         <location filename="../inspector/heroskillswidget.ui" line="58"/>
         <source>TextLabel</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текстова мітка</translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.ui" line="97"/>
@@ -635,6 +1441,29 @@
     </message>
 </context>
 <context>
+    <name>HeroesSettings</name>
+    <message>
+        <location filename="../mapsettings/heroessettings.ui" line="14"/>
+        <source>Form</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="47"/>
+        <source>All heroes</source>
+        <translation>Усі герої</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="48"/>
+        <source>Exclusive heroes</source>
+        <translation>Унікальні герої</translation>
+    </message>
+    <message>
+        <location filename="../mapsettings/heroessettings.h" line="49"/>
+        <source>Banned Heroes</source>
+        <translation>Заборонені герої</translation>
+    </message>
+</context>
+<context>
     <name>LoseConditions</name>
     <message>
         <location filename="../mapsettings/loseconditions.ui" line="14"/>
@@ -683,904 +1512,38 @@
     </message>
 </context>
 <context>
-    <name>MainWindow</name>
-    <message>
-        <location filename="../mainwindow.ui" line="14"/>
-        <location filename="../mainwindow.cpp" line="407"/>
-        <source>VCMI Map Editor</source>
-        <translation>Редактор мап VCMI</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="59"/>
-        <source>File</source>
-        <translation>Файл</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="63"/>
-        <location filename="../mainwindow.ui" line="1040"/>
-        <source>Open Recent</source>
-        <translation>Відкрити останні</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="82"/>
-        <source>Map</source>
-        <translation>Мапа</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="93"/>
-        <source>Edit</source>
-        <translation>Редагування</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="106"/>
-        <source>View</source>
-        <translation>Вигляд</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="118"/>
-        <source>Player</source>
-        <translation>Гравець</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="138"/>
-        <source>Toolbar</source>
-        <translation>Панель інструментів</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="199"/>
-        <source>Minimap</source>
-        <translation>Мінімапа</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="272"/>
-        <source>Map Objects View</source>
-        <translation>Перегляд об&apos;єктів мапи</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="316"/>
-        <source>Browser</source>
-        <translation>Навігатор</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="394"/>
-        <source>Inspector</source>
-        <translation>Інспектор</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="436"/>
-        <source>Property</source>
-        <translation>Властивість</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="441"/>
-        <source>Value</source>
-        <translation>Значення</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="465"/>
-        <source>Tools</source>
-        <translation>Інструменти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="829"/>
-        <source>Painting</source>
-        <translation>Малювання</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="881"/>
-        <source>Terrains</source>
-        <translation>Землі</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="924"/>
-        <source>Roads</source>
-        <translation>Шляхи</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="964"/>
-        <source>Rivers</source>
-        <translation>Річки</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="998"/>
-        <source>Preview</source>
-        <translation>Попередній перегляд</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1032"/>
-        <source>Open</source>
-        <translation>Відкрити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1035"/>
-        <source>Ctrl+O</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+O</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1045"/>
-        <source>More...</source>
-        <translation>Ще...</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1053"/>
-        <source>Save</source>
-        <translation>Зберегти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1056"/>
-        <source>Ctrl+S</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+S</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1061"/>
-        <source>New</source>
-        <translation>Створити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1064"/>
-        <source>Ctrl+N</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+N</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1069"/>
-        <source>Save as...</source>
-        <translation>Зберегти як...</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1072"/>
-        <source>Ctrl+Shift+S</source>
-        <translation>Ctrl+Shift+S</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1077"/>
-        <location filename="../mainwindow.ui" line="1080"/>
-        <source>Campaign editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редактор кампанії</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1085"/>
-        <location filename="../mainwindow.ui" line="1088"/>
-        <source>Template editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редактор шаблонів</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1093"/>
-        <location filename="../mainwindow.ui" line="1096"/>
-        <source>View underground</source>
-        <translation>Дивитись підземелля</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1099"/>
-        <source>Ctrl+U</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+U</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1107"/>
-        <source>Pass</source>
-        <translation>Прохідність</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1110"/>
-        <source>Ctrl+Shift+P</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+P</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1115"/>
-        <source>Cut</source>
-        <translation>Вирізати</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1118"/>
-        <source>Ctrl+X</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+X</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1123"/>
-        <source>Copy</source>
-        <translation>Скопіювати</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1126"/>
-        <source>Ctrl+C</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+C</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1131"/>
-        <source>Paste</source>
-        <translation>Вставити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1134"/>
-        <source>Ctrl+V</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+V</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1139"/>
-        <source>Fill</source>
-        <translation>Заповнити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1142"/>
-        <source>Fills the selection with obstacles</source>
-        <translation>Заповнити перешкодами</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1153"/>
-        <source>Grid</source>
-        <translation>Сітка</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1156"/>
-        <source>Ctrl+G</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+G</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1164"/>
-        <source>General</source>
-        <translation>Загальний</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1167"/>
-        <source>Map title and description</source>
-        <translation>Назва та опис мапи</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1170"/>
-        <source>Ctrl+Enter</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Enter</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1178"/>
-        <source>Players settings</source>
-        <translation>Налаштування гравців</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1181"/>
-        <source>Ctrl+P</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+P</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1189"/>
-        <location filename="../mainwindow.ui" line="1192"/>
-        <source>Undo</source>
-        <translation>Відмінити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1195"/>
-        <source>Ctrl+Z</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Z</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1206"/>
-        <source>Redo</source>
-        <translation>Повторити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1209"/>
-        <source>Ctrl+Y</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Y</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1220"/>
-        <source>Erase</source>
-        <translation>Стерти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1223"/>
-        <source>Del</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1231"/>
-        <source>Neutral</source>
-        <translation>Нейтральний</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1234"/>
-        <source>Ctrl+0</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+0</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1239"/>
-        <source>Validate</source>
-        <translation>Перевірити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1242"/>
-        <source>Ctrl+Shift+V</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+V</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1250"/>
-        <location filename="../mainwindow.cpp" line="1312"/>
-        <location filename="../mainwindow.cpp" line="1316"/>
-        <location filename="../mainwindow.cpp" line="1374"/>
-        <source>Update appearance</source>
-        <translation>Оновити вигляд</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1261"/>
-        <source>Recreate obstacles</source>
-        <translation>Оновити перешкоди</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1272"/>
-        <source>Player 1</source>
-        <translation>Гравець 1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1275"/>
-        <source>Ctrl+1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1283"/>
-        <source>Player 2</source>
-        <translation>Гравець 2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1286"/>
-        <source>Ctrl+2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1294"/>
-        <source>Player 3</source>
-        <translation>Гравець 3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1297"/>
-        <source>Ctrl+3</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1305"/>
-        <source>Player 4</source>
-        <translation>Гравець 4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1308"/>
-        <source>Ctrl+4</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1316"/>
-        <source>Player 5</source>
-        <translation>Гравець 5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1319"/>
-        <source>Ctrl+5</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1327"/>
-        <source>Player 6</source>
-        <translation>Гравець 6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1330"/>
-        <source>Ctrl+6</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1338"/>
-        <source>Player 7</source>
-        <translation>Гравець 7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1341"/>
-        <source>Ctrl+7</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1349"/>
-        <source>Player 8</source>
-        <translation>Гравець 8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1352"/>
-        <source>Ctrl+8</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1357"/>
-        <source>Export as...</source>
-        <translation>Експортувати як...</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1360"/>
-        <source>Ctrl+E</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+E</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1368"/>
-        <source>Translations</source>
-        <translation>Переклади</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1371"/>
-        <source>Ctrl+T</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+T</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1376"/>
-        <location filename="../mainwindow.ui" line="1379"/>
-        <source>h3m converter</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">конвертер h3m</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1382"/>
-        <source>Ctrl+Shift+M</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+M</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1387"/>
-        <location filename="../mainwindow.ui" line="1390"/>
-        <source>h3c converter</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">конвертер h3c</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1393"/>
-        <source>Ctrl+Shift+C</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+C</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1398"/>
-        <source>Lock</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заблокувати</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1401"/>
-        <source>Lock objects on map to avoid unnecessary changes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заблокувати об’єкти на карті, щоб уникнути небажаних змін</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1404"/>
-        <source>Ctrl+L</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+L</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1409"/>
-        <source>Unlock</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Розблокувати</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1412"/>
-        <source>Unlock all objects on the map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Розблокувати всі об’єкти на карті</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1415"/>
-        <source>Ctrl+Shift+L</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+L</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1420"/>
-        <source>Zoom in</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Збільшити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1423"/>
-        <source>Ctrl++</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl++</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1428"/>
-        <source>Zoom out</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зменшити</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1431"/>
-        <source>Ctrl+-</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+-</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1436"/>
-        <source>Zoom reset</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Скидання масштабу</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1439"/>
-        <source>Ctrl+Shift+=</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+=</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="383"/>
-        <source>Confirmation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підтвердження</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="383"/>
-        <source>Unsaved changes will be lost, are you sure?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Незбережені зміни буде втрачено, ви впевнені?</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="446"/>
-        <source>Surface</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Поверхня</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="448"/>
-        <source>Underground</source>
-        <translation>Підземелля</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="450"/>
-        <source>Level - %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівень - %1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="474"/>
-        <source>Mods are required</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Необхідні моди</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="482"/>
-        <location filename="../mainwindow.cpp" line="488"/>
-        <source>Failed to open map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Не вдалося відкрити карту</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="514"/>
-        <source>Open map</source>
-        <translation>Відкрити мапу</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="516"/>
-        <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
-        <translation>Всі підтримувані мапи (*.vmap *.h3m);;Мапи VCMI (*.vmap);;Мапи HoMM3 (*.h3m)</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="570"/>
-        <source>Recently Opened Files</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Останні файли</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="623"/>
-        <source>Map validation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Валідація карти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="625"/>
-        <source>Map has critical problems and most probably will not be playable. Open Validator from the Map menu to see issues found</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">На карті знайдено критичні помилки і, ймовірно, вона не буде придатна для гри. Відкрийте Валідатор у меню Карта, щоб побачити знайдені проблеми</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="627"/>
-        <source>Map has some errors. Open Validator from the Map menu to see issues found</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">На карті знайдено деякі помилки. Відкрийте Валідатор у меню Карта, щоб побачити знайдені проблеми</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="654"/>
-        <source>Failed to save map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Не вдалося зберегти карту</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="667"/>
-        <source>Save map</source>
-        <translation>Зберегти мапу</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="667"/>
-        <source>VCMI maps (*.vmap)</source>
-        <translation>Мапи VCMI</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="875"/>
-        <source>Type</source>
-        <translation>Тип</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="888"/>
-        <source>Towns</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Міста</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="889"/>
-        <source>Objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Об’єкти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="890"/>
-        <source>Heroes</source>
-        <translation>Герої</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="891"/>
-        <source>Artifacts</source>
-        <translation>Артефакти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="892"/>
-        <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурси</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="893"/>
-        <source>Banks</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Банки</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="894"/>
-        <source>Dwellings</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Житла</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="895"/>
-        <source>Grounds</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Місцевості</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="896"/>
-        <source>Teleports</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Телепорти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="897"/>
-        <source>Mines</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Шахти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="898"/>
-        <source>Triggers</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тригери</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="899"/>
-        <source>Monsters</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Монстри</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="900"/>
-        <source>Quests</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Квести</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="901"/>
-        <source>Wog Objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Wog‑об’єкти</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="902"/>
-        <source>Obstacles</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Перешкоди</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="903"/>
-        <source>Other</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Інше</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1040"/>
-        <source>Mods loading problem</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Проблема з завантаженням модів</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1040"/>
-        <source>Critical error during Mods loading. Disable invalid mods and restart.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Критична помилка під час завантаження модів. Вимкніть невірні моди та перезапустіть.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1046"/>
-        <source>Undo clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Натиснуто «Скасувати»</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1057"/>
-        <source>Redo clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Натиснуто «Повторити»</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1068"/>
-        <source>Passability clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Натиснуто «Прохідність»</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1081"/>
-        <source>Grid clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Натиснуто «Сітка»</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1162"/>
-        <source>Fill clicked</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Натиснуто «Заповнення»</translation>
-    </message>
-    <message>
-        <source>View surface</source>
-        <translation type="vanished">Дивитись поверхню</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1312"/>
-        <source>No objects selected</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Об’єкти не вибрані</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1316"/>
-        <source>This operation is irreversible. Do you want to continue?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ця операція незворотна. Продовжити?</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1374"/>
-        <source>Errors occurred. %1 objects were not updated</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сталися помилки. %1 об’єкт(ів) не було оновлено</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1414"/>
-        <source>Save to image</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зберегти як зображення</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1433"/>
-        <source>Select maps to convert</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть карти для конвертації</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1435"/>
-        <source>HoMM3 maps(*.h3m)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Карти HoMM3 (*.h3m)</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1439"/>
-        <source>Choose directory to save converted maps</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть каталог для збереження конвертованих карт</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1453"/>
-        <source>Operation completed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Операція завершена</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1453"/>
-        <source>Successfully converted %1 maps</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Успішно конвертовано %1 карту(и)</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1457"/>
-        <source>Failed to convert the map. Abort operation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Не вдалося конвертувати карту. Аварійне завершення операції</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1463"/>
-        <source>Select campaign to convert</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть кампанію для конвертації</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1465"/>
-        <source>HoMM3 campaigns (*.h3c)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кампанії HoMM3 (*.h3c)</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1469"/>
-        <source>Select destination file</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть файл призначення</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1471"/>
-        <source>VCMI campaigns (*.vcmp)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кампанії VCMI (*.vcmp)</translation>
-    </message>
-</context>
-<context>
     <name>MapController</name>
     <message>
-        <location filename="../mapcontroller.cpp" line="602"/>
+        <location filename="../mapcontroller.cpp" line="612"/>
         <source>Hero %1 cannot be created as NEUTRAL.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герой %1 не може бути створений як НЕЙТРАЛЬНИЙ.</translation>
+        <translation>Герой %1 не може бути створений як нейтральний.</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="616"/>
+        <location filename="../mapcontroller.cpp" line="626"/>
         <source>Missing Required Mod</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відсутній необхідний мод</translation>
+        <translation>Відсутня необхідна модифікація</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="616"/>
+        <location filename="../mapcontroller.cpp" line="626"/>
         <source>
 
 Do you want to do that now ?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">
-
+        <translation>
 
 Бажаєте зробити це зараз?</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="626"/>
+        <location filename="../mapcontroller.cpp" line="636"/>
         <source>This object&apos;s mod is mandatory for map to remain valid.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мод цього об’єкта обов’язковий для того, щоб карта залишалася дійсною.</translation>
+        <translation>Модифікація що містить цей об’єкт обов’язкова для того, щоб мапа лишалася дійсною.</translation>
+    </message>
+</context>
+<context>
+    <name>MapEditor::MapView</name>
+    <message>
+        <location filename="../mapview.cpp" line="664"/>
+        <source>Can&apos;t place object</source>
+        <translation type="unfinished">Неможливо розмістити об&apos;єкт</translation>
     </message>
 </context>
 <context>
@@ -1646,7 +1609,7 @@ Do you want to do that now ?</source>
         <translation>Герої</translation>
     </message>
     <message>
-        <location filename="../mapsettings/mapsettings.ui" line="322"/>
+        <location filename="../mapsettings/mapsettings.ui" line="306"/>
         <source>Ok</source>
         <translation>Підтвердити</translation>
     </message>
@@ -1654,9 +1617,8 @@ Do you want to do that now ?</source>
 <context>
     <name>MapView</name>
     <message>
-        <location filename="../mapview.cpp" line="637"/>
         <source>Can&apos;t place object</source>
-        <translation>Неможливо розмістити об&apos;єкт</translation>
+        <translation type="vanished">Неможливо розмістити об&apos;єкт</translation>
     </message>
 </context>
 <context>
@@ -1673,22 +1635,20 @@ Do you want to do that now ?</source>
         <location filename="../templateeditor/mineselector.ui" line="14"/>
         <location filename="../templateeditor/mineselector.ui" line="20"/>
         <source>Select Mines</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть копальні</translation>
+        <translation>Виберіть шахти</translation>
     </message>
     <message>
-        <location filename="../templateeditor/mineselector.cpp" line="29"/>
+        <location filename="../templateeditor/mineselector.cpp" line="28"/>
         <source>Mine Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір копальні</translation>
+        <translation>Вибір шахти</translation>
     </message>
     <message>
-        <location filename="../templateeditor/mineselector.cpp" line="35"/>
+        <location filename="../templateeditor/mineselector.cpp" line="34"/>
         <source>Resource</source>
         <translation>Ресурс</translation>
     </message>
     <message>
-        <location filename="../templateeditor/mineselector.cpp" line="35"/>
+        <location filename="../templateeditor/mineselector.cpp" line="34"/>
         <source>Mines</source>
         <translation>Шахти</translation>
     </message>
@@ -1703,8 +1663,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="32"/>
         <source>Mandatory mods to play this map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Обов’язкові моди для гри на цій карті</translation>
+        <translation>Обов’язкові модифікації для гри на цій мапі</translation>
     </message>
     <message>
         <location filename="../mapsettings/modsettings.ui" line="46"/>
@@ -1747,8 +1706,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="14"/>
         <source>Select Objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть об’єкти</translation>
+        <translation>Оберіть об’єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="20"/>
@@ -1757,140 +1715,150 @@ Do you want to do that now ?</source>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="30"/>
-        <source>Banned Objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені об’єкти</translation>
+        <source>Required Objects</source>
+        <translation>Необхідні об&apos;єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.ui" line="40"/>
+        <source>Banned Objects</source>
+        <translation>Заборонені об’єкти</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/objectselector.ui" line="50"/>
         <source>Banned Object Categories</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені категорії об’єктів</translation>
+        <translation>Заборонені категорії об’єктів</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="33"/>
         <source>Object Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір об’єкта</translation>
+        <translation>Вибір об’єкта</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="95"/>
+        <location filename="../templateeditor/objectselector.cpp" line="96"/>
         <source>Category</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Категорія</translation>
+        <translation>Категорія</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="95"/>
+        <location filename="../templateeditor/objectselector.cpp" line="96"/>
         <location filename="../templateeditor/objectselector.cpp" line="164"/>
-        <location filename="../templateeditor/objectselector.cpp" line="224"/>
+        <location filename="../templateeditor/objectselector.cpp" line="226"/>
+        <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Action</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="99"/>
+        <location filename="../templateeditor/objectselector.cpp" line="100"/>
         <source>Other</source>
         <translation>Інше</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="100"/>
+        <location filename="../templateeditor/objectselector.cpp" line="101"/>
         <source>All</source>
         <translation>Усі</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="101"/>
-        <source>None</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Немає</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/objectselector.cpp" line="102"/>
-        <source>Creature bank</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Банк істот</translation>
+        <location filename="../templateeditor/objectselector.cpp" line="257"/>
+        <source>None</source>
+        <translation>Нічого</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="103"/>
+        <source>Creature bank</source>
+        <translation>Банк істот</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/objectselector.cpp" line="104"/>
         <source>Bonus</source>
         <translation>Бонус</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="104"/>
+        <location filename="../templateeditor/objectselector.cpp" line="105"/>
         <source>Dwelling</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Житло</translation>
+        <translation>Зовнішнє житло</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="105"/>
+        <location filename="../templateeditor/objectselector.cpp" line="106"/>
         <source>Resource</source>
         <translation>Ресурс</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="106"/>
+        <location filename="../templateeditor/objectselector.cpp" line="107"/>
         <source>Resource generator</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Генератор ресурсів</translation>
+        <translation>Генератор ресурсів</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="107"/>
+        <location filename="../templateeditor/objectselector.cpp" line="108"/>
         <source>Spell scroll</source>
         <translation>Сувій закляття</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="108"/>
-        <source>Random artifact</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Випадковий артефакт</translation>
-    </message>
-    <message>
         <location filename="../templateeditor/objectselector.cpp" line="109"/>
-        <source>Pandoras box</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Скриня Пандори</translation>
+        <source>Random artifact</source>
+        <translation>Випадковий артефакт</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="110"/>
-        <source>Quest artifact</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Квестовий артефакт</translation>
+        <source>Pandoras box</source>
+        <translation>Скриня Пандори</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="111"/>
-        <source>Seer hut</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Хатина провидця</translation>
+        <source>Quest artifact</source>
+        <translation>Артефакт для завдання</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="123"/>
+        <location filename="../templateeditor/objectselector.cpp" line="112"/>
+        <source>Seer hut</source>
+        <translation>Хатина провидця</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/objectselector.cpp" line="124"/>
         <location filename="../templateeditor/objectselector.cpp" line="184"/>
-        <location filename="../templateeditor/objectselector.cpp" line="259"/>
+        <location filename="../templateeditor/objectselector.cpp" line="261"/>
+        <location filename="../templateeditor/objectselector.cpp" line="345"/>
         <source>Delete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/objectselector.cpp" line="139"/>
+        <location filename="../templateeditor/objectselector.cpp" line="199"/>
+        <location filename="../templateeditor/objectselector.cpp" line="278"/>
+        <location filename="../templateeditor/objectselector.cpp" line="360"/>
+        <source>Add</source>
+        <translation>Додати</translation>
     </message>
     <message>
         <location filename="../templateeditor/objectselector.cpp" line="164"/>
-        <location filename="../templateeditor/objectselector.cpp" line="224"/>
+        <location filename="../templateeditor/objectselector.cpp" line="226"/>
+        <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Object</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Об’єкт</translation>
+        <translation>Об’єкт</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="224"/>
+        <location filename="../templateeditor/objectselector.cpp" line="226"/>
+        <source>Count</source>
+        <translation>Кількість</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/objectselector.cpp" line="226"/>
+        <source>Guard</source>
+        <translation>Охорона</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Value</source>
         <translation>Значення</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="224"/>
+        <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Probability</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ймовірність</translation>
+        <translation>Ймовірність</translation>
     </message>
     <message>
-        <location filename="../templateeditor/objectselector.cpp" line="224"/>
+        <location filename="../templateeditor/objectselector.cpp" line="310"/>
         <source>Max per zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Макс. на зону</translation>
+        <translation>Максимум на зону</translation>
     </message>
 </context>
 <context>
@@ -1923,8 +1891,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../playerparams.ui" line="164"/>
         <source>...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../playerparams.ui" line="221"/>
@@ -1944,8 +1911,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../playerparams.cpp" line="27"/>
         <source>No team</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Без команди</translation>
+        <translation>Без команди</translation>
     </message>
     <message>
         <location filename="../playerparams.cpp" line="108"/>
@@ -1958,26 +1924,30 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="45"/>
         <source>Select Player</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть гравця</translation>
+        <translation>Оберіть гравця</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="54"/>
         <source>Hero cannot be created as NEUTRAL</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герой не може бути створений як НЕЙТРАЛЬНИЙ</translation>
+        <translation>Герой не може бути створений як нейтральний</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="60"/>
         <source>Switch to one of the available players:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Переключитися на одного з доступних гравців:</translation>
+        <translation>Переключитися на одного з доступних гравців:</translation>
     </message>
     <message>
         <location filename="../PlayerSelectionDialog.cpp" line="89"/>
         <source>Shortcut: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Комбінація: %1</translation>
+        <translation>Гаряча клавіша: %1</translation>
+    </message>
+</context>
+<context>
+    <name>PlayerSelectionWidget</name>
+    <message>
+        <location filename="../inspector/playerselectionwidget.ui" line="14"/>
+        <source>Select players</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1990,8 +1960,7 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../PlayerSettingsDialog.ui" line="63"/>
         <source>Players</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравці</translation>
+        <translation>Гравці</translation>
     </message>
     <message>
         <location filename="../PlayerSettingsDialog.ui" line="74"/>
@@ -2009,21 +1978,18 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="14"/>
         <source>Portrait</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Портрет</translation>
+        <translation>Портрет</translation>
     </message>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="52"/>
         <location filename="../inspector/portraitwidget.ui" line="71"/>
         <source>...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../inspector/portraitwidget.ui" line="85"/>
         <source>Default</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
 </context>
 <context>
@@ -2031,668 +1997,626 @@ Do you want to do that now ?</source>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="22"/>
         <source>Beginner</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Новачок</translation>
+        <translation>1й ранг</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="23"/>
         <source>Advanced</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Просунутий</translation>
+        <translation>2й ранг</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="24"/>
         <source>Expert</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Експерт</translation>
+        <translation>3й ранг</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="170"/>
         <source>Default secondary skills:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Початкові вторинні навички:</translation>
+        <translation>Початкові вторинні навички:</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="175"/>
         <source>Random hero secondary skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Випадкові другорядні навички героя</translation>
+        <translation>Випадкові другорядні навички героя</translation>
     </message>
     <message>
         <location filename="../inspector/heroskillswidget.cpp" line="181"/>
         <source>Secondary skills:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вторинні навички:</translation>
+        <translation>Вторинні навички:</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="937"/>
+        <location filename="../inspector/inspector.cpp" line="989"/>
         <source>Compliant</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сумісний</translation>
+        <translation>Слухняний</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="938"/>
+        <location filename="../inspector/inspector.cpp" line="990"/>
         <source>Friendly</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дружній</translation>
+        <translation>Дружній</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="939"/>
+        <location filename="../inspector/inspector.cpp" line="991"/>
         <source>Aggressive</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Агресивний</translation>
+        <translation>Агресивний</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="940"/>
+        <location filename="../inspector/inspector.cpp" line="992"/>
         <source>Hostile</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ворожий</translation>
+        <translation>Ворожий</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="941"/>
+        <location filename="../inspector/inspector.cpp" line="993"/>
         <source>Savage</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Жорстокий</translation>
+        <translation>Лютий</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="355"/>
-        <location filename="../inspector/inspector.cpp" line="358"/>
+        <location filename="../inspector/inspector.cpp" line="357"/>
+        <location filename="../inspector/inspector.cpp" line="360"/>
         <source>No patrol</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Без патрулювання</translation>
+        <translation>Без патрулювання</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="298"/>
+        <location filename="../inspector/inspector.cpp" line="300"/>
         <source>POWER RANK</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">РАНГ СИЛИ</translation>
+        <translation>РАНГ СИЛИ</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="298"/>
+        <location filename="../inspector/inspector.cpp" line="300"/>
         <source>HERO TYPE</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">ТИП ГЕРОЯ</translation>
+        <translation>ТИП ГЕРОЯ</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="321"/>
+        <location filename="../inspector/inspector.cpp" line="323"/>
         <source>Hero class</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Клас героя</translation>
+        <translation>Клас героя</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="330"/>
+        <location filename="../inspector/inspector.cpp" line="332"/>
         <source>Portrait</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Портрет</translation>
+        <translation>Портрет</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="333"/>
+        <location filename="../inspector/inspector.cpp" line="335"/>
         <source>Skills</source>
         <translation>Вміння</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="335"/>
+        <location filename="../inspector/inspector.cpp" line="337"/>
         <source>Artifacts</source>
         <translation>Артефакти</translation>
     </message>
     <message numerus="yes">
-        <location filename="../inspector/inspector.cpp" line="357"/>
-        <location filename="../inspector/inspector.cpp" line="358"/>
+        <location filename="../inspector/inspector.cpp" line="359"/>
+        <location filename="../inspector/inspector.cpp" line="360"/>
         <source>%n tile(s)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%n клітинка</numerusform>
             <numerusform>%n клітинки</numerusform>
             <numerusform>%n клітинок</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="370"/>
+        <location filename="../inspector/inspector.cpp" line="372"/>
         <source>Buildings</source>
         <translation>Будівлі</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="372"/>
+        <location filename="../inspector/inspector.cpp" line="374"/>
         <source>Events</source>
         <translation>Події</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="406"/>
+        <location filename="../inspector/inspector.cpp" line="414"/>
         <source>Resource</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурс</translation>
+        <translation>Ресурс</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="437"/>
+        <location filename="../inspector/inspector.cpp" line="445"/>
         <source>Artifact reward</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Нагорода — артефакт</translation>
-    </message>
-    <message>
-        <location filename="../inspector/inspector.cpp" line="480"/>
-        <source>Quest</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Квест</translation>
+        <translation>Нагорода — артефакт</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="498"/>
+        <source>Quest</source>
+        <translation>Завдання</translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="516"/>
         <source>Identifier</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ідентифікатор</translation>
+        <translation>Ідентифікатор</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="499"/>
+        <location filename="../inspector/inspector.cpp" line="517"/>
         <source>ID</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">ID</translation>
+        <translation>ІД</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="500"/>
+        <location filename="../inspector/inspector.cpp" line="518"/>
         <source>SubID</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">SubID</translation>
+        <translation>Вторинний ІД</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="501"/>
+        <location filename="../inspector/inspector.cpp" line="519"/>
         <source>InstanceName</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">InstanceName</translation>
+        <translation>Унікальний ідентифікатор</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="506"/>
+        <location filename="../inspector/inspector.cpp" line="524"/>
         <source>IsStatic</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">IsStatic</translation>
+        <translation>Об&apos;єкт статичний</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="880"/>
-        <location filename="../inspector/inspector.cpp" line="991"/>
+        <location filename="../inspector/inspector.cpp" line="915"/>
+        <location filename="../inspector/inspector.cpp" line="1043"/>
         <source>neutral</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">нейтральний</translation>
+        <translation>нейтральний</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="246"/>
-        <location filename="../inspector/inspector.cpp" line="438"/>
+        <location filename="../inspector/inspector.cpp" line="248"/>
+        <location filename="../inspector/inspector.cpp" line="446"/>
         <source>Army</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Армія</translation>
+        <translation>Армія</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="253"/>
-        <location filename="../inspector/inspector.cpp" line="266"/>
-        <location filename="../inspector/inspector.cpp" line="273"/>
-        <location filename="../inspector/inspector.cpp" line="281"/>
-        <location filename="../inspector/inspector.cpp" line="288"/>
-        <location filename="../inspector/inspector.cpp" line="319"/>
-        <location filename="../inspector/inspector.cpp" line="404"/>
-        <location filename="../inspector/inspector.cpp" line="509"/>
-        <location filename="../inspector/inspector.cpp" line="556"/>
+        <location filename="../inspector/inspector.cpp" line="255"/>
+        <location filename="../inspector/inspector.cpp" line="268"/>
+        <location filename="../inspector/inspector.cpp" line="275"/>
+        <location filename="../inspector/inspector.cpp" line="283"/>
+        <location filename="../inspector/inspector.cpp" line="290"/>
+        <location filename="../inspector/inspector.cpp" line="321"/>
+        <location filename="../inspector/inspector.cpp" line="412"/>
+        <location filename="../inspector/inspector.cpp" line="527"/>
+        <location filename="../inspector/inspector.cpp" line="574"/>
         <source>Owner</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Власник</translation>
+        <translation>Власник</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="258"/>
-        <location filename="../inspector/inspector.cpp" line="664"/>
+        <location filename="../inspector/inspector.cpp" line="260"/>
+        <location filename="../inspector/inspector.cpp" line="699"/>
         <source>Same as town</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Як у міста</translation>
+        <translation>Таке ж як і місто</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="274"/>
-        <location filename="../inspector/inspector.cpp" line="679"/>
+        <location filename="../inspector/inspector.cpp" line="276"/>
+        <location filename="../inspector/inspector.cpp" line="714"/>
         <source>Removable units</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видаляємі юніти</translation>
+        <translation>Загони можна переміщати</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="299"/>
-        <location filename="../inspector/inspector.cpp" line="687"/>
+        <location filename="../inspector/inspector.cpp" line="301"/>
+        <location filename="../inspector/inspector.cpp" line="722"/>
         <source>Placeholder type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тип-заповнювач</translation>
+        <translation>Тип місця для героя</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="302"/>
-        <location filename="../inspector/inspector.cpp" line="705"/>
+        <location filename="../inspector/inspector.cpp" line="304"/>
+        <location filename="../inspector/inspector.cpp" line="740"/>
         <source>Power rank</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ранг сили</translation>
+        <translation>Ранг сили</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="310"/>
-        <location filename="../inspector/inspector.cpp" line="350"/>
-        <location filename="../inspector/inspector.cpp" line="708"/>
-        <location filename="../inspector/inspector.cpp" line="732"/>
+        <location filename="../inspector/inspector.cpp" line="312"/>
+        <location filename="../inspector/inspector.cpp" line="352"/>
+        <location filename="../inspector/inspector.cpp" line="743"/>
+        <location filename="../inspector/inspector.cpp" line="767"/>
         <source>Hero type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тип героя</translation>
+        <translation>Тип героя</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="320"/>
-        <location filename="../inspector/inspector.cpp" line="729"/>
+        <location filename="../inspector/inspector.cpp" line="322"/>
+        <location filename="../inspector/inspector.cpp" line="764"/>
         <source>Experience</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Досвід</translation>
+        <translation>Досвід</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="325"/>
-        <location filename="../inspector/inspector.cpp" line="326"/>
+        <location filename="../inspector/inspector.cpp" line="327"/>
+        <location filename="../inspector/inspector.cpp" line="328"/>
         <source>MALE</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">ЧОЛОВІК</translation>
+        <translation>ЧОЛОВІК</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="325"/>
-        <location filename="../inspector/inspector.cpp" line="326"/>
+        <location filename="../inspector/inspector.cpp" line="327"/>
+        <location filename="../inspector/inspector.cpp" line="328"/>
         <source>FEMALE</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">ЖІНКА</translation>
-    </message>
-    <message>
-        <location filename="../inspector/inspector.cpp" line="326"/>
-        <location filename="../inspector/inspector.cpp" line="718"/>
-        <source>Gender</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Стать</translation>
+        <translation>ЖІНКА</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="328"/>
-        <location filename="../inspector/inspector.cpp" line="721"/>
+        <location filename="../inspector/inspector.cpp" line="753"/>
+        <source>Gender</source>
+        <translation>Стать</translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="330"/>
+        <location filename="../inspector/inspector.cpp" line="756"/>
         <source>Name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ім&apos;я</translation>
+        <translation>Ім&apos;я</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="329"/>
-        <location filename="../inspector/inspector.cpp" line="725"/>
+        <location filename="../inspector/inspector.cpp" line="331"/>
+        <location filename="../inspector/inspector.cpp" line="760"/>
         <source>Biography</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Біографія</translation>
+        <translation>Біографія</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="334"/>
-        <location filename="../inspector/inspector.cpp" line="371"/>
+        <location filename="../inspector/inspector.cpp" line="336"/>
+        <location filename="../inspector/inspector.cpp" line="373"/>
         <source>Spells</source>
         <translation>Закляття</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="359"/>
-        <location filename="../inspector/inspector.cpp" line="744"/>
+        <location filename="../inspector/inspector.cpp" line="361"/>
+        <location filename="../inspector/inspector.cpp" line="779"/>
         <source>Patrol radius</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Радіус патруля</translation>
+        <translation>Радіус патруля</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="367"/>
-        <location filename="../inspector/inspector.cpp" line="621"/>
+        <location filename="../inspector/inspector.cpp" line="369"/>
+        <location filename="../inspector/inspector.cpp" line="656"/>
         <source>Town name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва міста</translation>
+        <translation>Назва міста</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="374"/>
-        <location filename="../inspector/inspector.cpp" line="625"/>
+        <location filename="../inspector/inspector.cpp" line="376"/>
+        <location filename="../inspector/inspector.cpp" line="660"/>
         <source>Same as player</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Як у гравця</translation>
+        <translation>Таке ж як і гравець</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="381"/>
-        <location filename="../inspector/inspector.cpp" line="415"/>
-        <location filename="../inspector/inspector.cpp" line="422"/>
-        <location filename="../inspector/inspector.cpp" line="429"/>
-        <location filename="../inspector/inspector.cpp" line="455"/>
-        <location filename="../inspector/inspector.cpp" line="598"/>
-        <location filename="../inspector/inspector.cpp" line="633"/>
-        <location filename="../inspector/inspector.cpp" line="650"/>
-        <location filename="../inspector/inspector.cpp" line="769"/>
+        <location filename="../inspector/inspector.cpp" line="383"/>
+        <location filename="../inspector/inspector.cpp" line="423"/>
+        <location filename="../inspector/inspector.cpp" line="430"/>
+        <location filename="../inspector/inspector.cpp" line="437"/>
+        <location filename="../inspector/inspector.cpp" line="472"/>
+        <location filename="../inspector/inspector.cpp" line="616"/>
+        <location filename="../inspector/inspector.cpp" line="668"/>
+        <location filename="../inspector/inspector.cpp" line="685"/>
+        <location filename="../inspector/inspector.cpp" line="804"/>
         <source>Message</source>
         <translation>Повідомлення</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="395"/>
-        <location filename="../inspector/inspector.cpp" line="654"/>
+        <location filename="../inspector/inspector.cpp" line="403"/>
+        <location filename="../inspector/inspector.cpp" line="689"/>
         <source>Spell</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття</translation>
+        <translation>Закляття</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="407"/>
-        <location filename="../inspector/inspector.cpp" line="642"/>
+        <location filename="../inspector/inspector.cpp" line="415"/>
+        <location filename="../inspector/inspector.cpp" line="677"/>
         <source>Productivity</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Продуктивність</translation>
+        <translation>Продуктивність</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="414"/>
-        <location filename="../inspector/inspector.cpp" line="439"/>
-        <location filename="../inspector/inspector.cpp" line="761"/>
-        <location filename="../inspector/inspector.cpp" line="778"/>
+        <location filename="../inspector/inspector.cpp" line="422"/>
+        <location filename="../inspector/inspector.cpp" line="447"/>
+        <location filename="../inspector/inspector.cpp" line="796"/>
+        <location filename="../inspector/inspector.cpp" line="813"/>
         <source>Amount</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кількість</translation>
+        <translation>Кількість</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="433"/>
-        <location filename="../inspector/inspector.cpp" line="772"/>
+        <location filename="../inspector/inspector.cpp" line="441"/>
+        <location filename="../inspector/inspector.cpp" line="807"/>
         <source>Character</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Персонаж</translation>
+        <translation>Характер</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="923"/>
+        <location filename="../inspector/inspector.cpp" line="459"/>
+        <source>Abilities</source>
+        <translation type="unfinished">Уміння</translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="483"/>
+        <location filename="../inspector/inspector.cpp" line="634"/>
+        <source>Available for</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="958"/>
         <source>Select town</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибрати місто</translation>
+        <translation>Обрати місто</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="435"/>
-        <location filename="../inspector/inspector.cpp" line="774"/>
+        <location filename="../inspector/inspector.cpp" line="969"/>
+        <location filename="../inspector/playerselectionwidget.cpp" line="103"/>
+        <source>Available for:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="443"/>
+        <location filename="../inspector/inspector.cpp" line="809"/>
         <source>Never flees</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ніколи не тікає</translation>
+        <translation>Ніколи не тікає</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="436"/>
-        <location filename="../inspector/inspector.cpp" line="776"/>
+        <location filename="../inspector/inspector.cpp" line="444"/>
+        <location filename="../inspector/inspector.cpp" line="811"/>
         <source>Not growing</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Не розмножується</translation>
-    </message>
-    <message>
-        <location filename="../inspector/inspector.cpp" line="448"/>
-        <location filename="../inspector/inspector.cpp" line="488"/>
-        <source>Reward</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Нагорода</translation>
-    </message>
-    <message>
-        <location filename="../inspector/inspector.cpp" line="462"/>
-        <location filename="../inspector/inspector.cpp" line="607"/>
-        <source>Remove after</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити після</translation>
-    </message>
-    <message>
-        <location filename="../inspector/inspector.cpp" line="463"/>
-        <location filename="../inspector/inspector.cpp" line="610"/>
-        <source>Human trigger</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тригер гравця</translation>
+        <translation>Розмір не зростає</translation>
     </message>
     <message>
         <location filename="../inspector/inspector.cpp" line="464"/>
-        <location filename="../inspector/inspector.cpp" line="613"/>
+        <location filename="../inspector/inspector.cpp" line="506"/>
+        <source>Reward</source>
+        <translation>Нагорода</translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="479"/>
+        <location filename="../inspector/inspector.cpp" line="625"/>
+        <source>Remove after</source>
+        <translation>Видалити після події</translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="480"/>
+        <location filename="../inspector/inspector.cpp" line="628"/>
+        <source>Human trigger</source>
+        <translation>Активація гравцем-людиною</translation>
+    </message>
+    <message>
+        <location filename="../inspector/inspector.cpp" line="481"/>
+        <location filename="../inspector/inspector.cpp" line="631"/>
         <source>Cpu trigger</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тригер ІІ</translation>
+        <translation>Активація ШІ гравцем</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="472"/>
-        <location filename="../inspector/inspector.cpp" line="786"/>
+        <location filename="../inspector/inspector.cpp" line="490"/>
+        <location filename="../inspector/inspector.cpp" line="821"/>
         <source>First visit text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст при першому візиті</translation>
+        <translation>Текст при першому відвідуванні</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="473"/>
-        <location filename="../inspector/inspector.cpp" line="789"/>
+        <location filename="../inspector/inspector.cpp" line="491"/>
+        <location filename="../inspector/inspector.cpp" line="824"/>
         <source>Next visit text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст при наступному візиті</translation>
+        <translation>Текст при наступному відвідуванні</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="474"/>
-        <location filename="../inspector/inspector.cpp" line="792"/>
+        <location filename="../inspector/inspector.cpp" line="492"/>
+        <location filename="../inspector/inspector.cpp" line="827"/>
         <source>Completed text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст при виконанні</translation>
+        <translation>Текст при виконанні завдання</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="475"/>
-        <location filename="../inspector/inspector.cpp" line="489"/>
-        <location filename="../inspector/inspector.cpp" line="795"/>
+        <location filename="../inspector/inspector.cpp" line="493"/>
+        <location filename="../inspector/inspector.cpp" line="507"/>
+        <location filename="../inspector/inspector.cpp" line="830"/>
         <source>Repeat quest</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Повторюваний квест</translation>
+        <translation>Багаторазове завдання</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="476"/>
-        <location filename="../inspector/inspector.cpp" line="797"/>
+        <location filename="../inspector/inspector.cpp" line="494"/>
+        <location filename="../inspector/inspector.cpp" line="832"/>
         <source>Time limit</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Обмеження за часом</translation>
+        <translation>Обмеження за часом</translation>
     </message>
     <message>
-        <location filename="../inspector/inspector.cpp" line="878"/>
+        <location filename="../inspector/inspector.cpp" line="913"/>
         <source>UNFLAGGABLE</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">НЕПРАПОРОПОСТАВНИЙ</translation>
+        <translation>ЗАВЖДИ НЕЙТРАЛЬНИЙ</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="407"/>
+        <location filename="../mapcontroller.cpp" line="417"/>
         <source>Can&apos;t place object</source>
         <translation>Неможливо розмістити об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="584"/>
+        <location filename="../mapcontroller.cpp" line="594"/>
         <source>There can only be one grail object on the map.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">На карті може бути лише один Грааль.</translation>
+        <translation>На мапі може бути лише один Грааль.</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="639"/>
+        <location filename="../mapcontroller.cpp" line="649"/>
         <source> (submod of %1)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">(субмод моду %1)</translation>
+        <translation> -(вкладена модифікація %1)</translation>
     </message>
     <message>
-        <location filename="../mapcontroller.cpp" line="641"/>
+        <location filename="../mapcontroller.cpp" line="651"/>
         <source>The mod &apos;%1&apos;%2, is required by an object on the map.
 Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <comment>should be consistent with Map-&gt;General menu entry translation</comment>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мод &apos;%1&apos;%2 є обов&apos;язковим для об&apos;єкта на карті.
-Додайте його до списку обов&apos;язкових модів у Карта → Загальні налаштування.</translation>
+        <translation>Модифікація &apos;%1&apos;%2 є обов&apos;язковою для об&apos;єкта на мапі.
+Додайте його до списку обов&apos;язкових модифікацій у Мапа → Загальні налаштування.</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.cpp" line="217"/>
-        <location filename="../inspector/townspellswidget.cpp" line="177"/>
+        <location filename="../inspector/townspellswidget.cpp" line="178"/>
         <source>Custom Spells:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Користувацькі закляття:</translation>
+        <translation>Користувацькі закляття:</translation>
     </message>
     <message>
         <location filename="../inspector/herospellwidget.cpp" line="226"/>
-        <location filename="../inspector/townspellswidget.cpp" line="197"/>
+        <location filename="../inspector/townspellswidget.cpp" line="198"/>
         <source>Default Spells</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття за замовчуванням</translation>
+        <translation>Початкові закляття</translation>
     </message>
     <message>
+        <location filename="../inspector/abilitieswidget.cpp" line="217"/>
         <location filename="../inspector/portraitwidget.cpp" line="151"/>
         <source>Default</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Типово</translation>
+        <translation>Типово</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="447"/>
-        <source>Quest:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Квест:</translation>
+        <location filename="../inspector/abilitieswidget.cpp" line="219"/>
+        <source>Custom</source>
+        <translation type="unfinished">Користувацьке</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="448"/>
-        <source>Day of Week: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День тижня: %1</translation>
+        <source>Quest:</source>
+        <translation>Завдання:</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="449"/>
-        <source>Days Passed: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Минуло днів: %1</translation>
+        <source>Day of Week: %1</source>
+        <translation>День тижня: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="450"/>
-        <location filename="../inspector/rewardswidget.cpp" line="773"/>
-        <source>Hero Level: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівень героя: %1</translation>
+        <source>Days Passed: %1</source>
+        <translation>Минуло днів: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="451"/>
-        <location filename="../inspector/rewardswidget.cpp" line="774"/>
-        <source>Hero Experience: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Досвід героя: %1</translation>
+        <location filename="../inspector/rewardswidget.cpp" line="793"/>
+        <source>Hero Level: %1</source>
+        <translation>Рівень героя: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="452"/>
-        <source>Mana Points: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Очки мани: %1</translation>
+        <location filename="../inspector/rewardswidget.cpp" line="794"/>
+        <source>Hero Experience: %1</source>
+        <translation>Досвід героя: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="453"/>
-        <location filename="../inspector/rewardswidget.cpp" line="776"/>
-        <source>Mana Percentage: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відсоток мани: %1</translation>
+        <source>Mana Points: %1</source>
+        <translation>Очки мани: %1</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.cpp" line="454"/>
-        <location filename="../inspector/rewardswidget.cpp" line="779"/>
+        <location filename="../inspector/rewardswidget.cpp" line="796"/>
+        <source>Mana Percentage: %1</source>
+        <translation>Відсоток мани: %1</translation>
+    </message>
+    <message>
+        <location filename="../inspector/questwidget.cpp" line="455"/>
+        <location filename="../inspector/rewardswidget.cpp" line="799"/>
         <source>Primary Skills: %1/%2/%3/%4</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Основні навички: %1/%2/%3/%4</translation>
+        <translation>Основні навички: %1/%2/%3/%4</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="465"/>
-        <location filename="../inspector/rewardswidget.cpp" line="789"/>
+        <location filename="../inspector/questwidget.cpp" line="466"/>
+        <location filename="../inspector/rewardswidget.cpp" line="809"/>
         <source>Resources: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурси: %1</translation>
+        <translation>Ресурси: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="472"/>
-        <location filename="../inspector/rewardswidget.cpp" line="795"/>
+        <location filename="../inspector/questwidget.cpp" line="473"/>
+        <location filename="../inspector/rewardswidget.cpp" line="815"/>
         <source>Artifacts: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Артефакти: %1</translation>
+        <translation>Артефакти: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="479"/>
-        <location filename="../inspector/rewardswidget.cpp" line="801"/>
+        <location filename="../inspector/questwidget.cpp" line="480"/>
+        <location filename="../inspector/rewardswidget.cpp" line="821"/>
         <source>Spells: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття: %1</translation>
+        <translation>Закляття: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="486"/>
-        <location filename="../inspector/rewardswidget.cpp" line="807"/>
+        <location filename="../inspector/questwidget.cpp" line="487"/>
+        <location filename="../inspector/rewardswidget.cpp" line="827"/>
         <source>Secondary Skills: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вторинні навички: %1</translation>
+        <translation>Вторинні навички: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="493"/>
-        <location filename="../inspector/rewardswidget.cpp" line="813"/>
+        <location filename="../inspector/questwidget.cpp" line="494"/>
+        <location filename="../inspector/rewardswidget.cpp" line="833"/>
         <source>Creatures: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Істоти: %1</translation>
+        <translation>Істоти: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="500"/>
+        <location filename="../inspector/questwidget.cpp" line="501"/>
         <source>Heroes: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герої: %1</translation>
+        <translation>Герої: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="507"/>
+        <location filename="../inspector/questwidget.cpp" line="508"/>
         <source>Hero Classes: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Класи героїв: %1</translation>
+        <translation>Класи героїв: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="516"/>
+        <location filename="../inspector/questwidget.cpp" line="517"/>
         <source>Players: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравці: %1</translation>
+        <translation>Гравці: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="769"/>
+        <location filename="../inspector/rewardswidget.cpp" line="789"/>
         <source>Rewards:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Нагороди:</translation>
+        <translation>Нагороди:</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="772"/>
+        <location filename="../inspector/rewardswidget.cpp" line="792"/>
         <source>Reward Message: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Повідомлення про нагороду: %1</translation>
+        <translation>Повідомлення про нагороду: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="775"/>
+        <location filename="../inspector/rewardswidget.cpp" line="795"/>
         <source>Mana Diff: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Різниця мани: %1</translation>
+        <translation>Зміна мани: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="777"/>
+        <location filename="../inspector/rewardswidget.cpp" line="797"/>
         <source>Move Points: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Очки руху: %1</translation>
+        <translation>Очки руху: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="778"/>
+        <location filename="../inspector/rewardswidget.cpp" line="798"/>
         <source>Move Percentage: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відсоток руху: %1</translation>
+        <translation>Відсоток руху: %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="816"/>
+        <location filename="../inspector/rewardswidget.cpp" line="836"/>
         <source>Spell Cast: %1 (%2)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття застосовано: %1 (%2)</translation>
+        <translation>Накладання закляття: %1 (%2)</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="824"/>
+        <location filename="../inspector/rewardswidget.cpp" line="844"/>
         <source>Bonuses: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Бонуси: %1</translation>
+        <translation>Бонуси: %1</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="363"/>
         <source>Built buildings:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Побудовані будівлі:</translation>
+        <translation>Побудовані будівлі:</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="374"/>
         <source>Forbidden buildings:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені будівлі:</translation>
+        <translation>Заборонені будівлі:</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="183"/>
         <source>Town Events:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Події міста:</translation>
+        <translation>Події міста:</translation>
     </message>
     <message>
-        <location filename="../inspector/townspellswidget.cpp" line="178"/>
+        <location filename="../inspector/townspellswidget.cpp" line="179"/>
         <source>Required:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Необхідні:</translation>
+        <translation>Необхідні:</translation>
     </message>
     <message>
-        <location filename="../inspector/townspellswidget.cpp" line="185"/>
+        <location filename="../inspector/townspellswidget.cpp" line="186"/>
         <source>Possible:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Можливі:</translation>
+        <translation>Можливі:</translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/campaigneditor.cpp" line="236"/>
+        <source>Failed to open campaign</source>
+        <translation>Не вдалося відкрити кампанію</translation>
+    </message>
+    <message>
+        <location filename="../androidfilepicker.cpp" line="36"/>
+        <source>Where do you want to open the file from?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../androidfilepicker.cpp" line="37"/>
+        <location filename="../androidfilepicker.cpp" line="98"/>
+        <source>Internal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../androidfilepicker.cpp" line="38"/>
+        <location filename="../androidfilepicker.cpp" line="99"/>
+        <source>External</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../androidfilepicker.cpp" line="97"/>
+        <source>Where do you want to save the file?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2705,86 +2629,72 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../inspector/questwidget.ui" line="28"/>
         <source>Day of week</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День тижня</translation>
+        <translation>День тижня</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="45"/>
         <source>Days passed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Минуло днів</translation>
+        <translation>Минуло днів</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="79"/>
         <source>Hero level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівень героя</translation>
+        <translation>Рівень героя</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="96"/>
         <source>Hero experience</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Досвід героя</translation>
+        <translation>Досвід героя</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="136"/>
         <source>Spell points</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Очки заклять</translation>
+        <translation>Очки мани</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="156"/>
         <source>%</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">%</translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="183"/>
         <source>Kill hero/monster</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вбити героя/монстра</translation>
+        <translation>Вбити героя/істоту</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="197"/>
         <source>...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="206"/>
         <source>Primary skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Основні навички</translation>
+        <translation>Основні навички</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="221"/>
         <source>Attack</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Атака</translation>
+        <translation>Атака</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="231"/>
         <source>Defence</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Захист</translation>
+        <translation>Захист</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="241"/>
         <source>Spell power</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сила заклять</translation>
+        <translation>Сила магії</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="251"/>
         <source>Knowledge</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Знання</translation>
+        <translation>Знання</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="289"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../inspector/questwidget.ui" line="338"/>
@@ -2832,15 +2742,14 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <translation>Гравці</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="39"/>
+        <location filename="../inspector/questwidget.cpp" line="40"/>
         <source>None</source>
         <translation>Будь який</translation>
     </message>
     <message>
-        <location filename="../inspector/questwidget.cpp" line="41"/>
+        <location filename="../inspector/questwidget.cpp" line="42"/>
         <source>Day %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День %1</translation>
+        <translation>День %1</translation>
     </message>
 </context>
 <context>
@@ -2852,312 +2761,284 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="33"/>
-        <location filename="../inspector/rewardswidget.ui" line="706"/>
-        <location filename="../inspector/rewardswidget.ui" line="821"/>
-        <location filename="../inspector/rewardswidget.ui" line="1410"/>
+        <location filename="../inspector/rewardswidget.ui" line="726"/>
+        <location filename="../inspector/rewardswidget.ui" line="841"/>
+        <location filename="../inspector/rewardswidget.ui" line="1430"/>
         <source>Add</source>
         <translation>Додати</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="43"/>
-        <location filename="../inspector/rewardswidget.ui" line="713"/>
-        <location filename="../inspector/rewardswidget.ui" line="828"/>
-        <location filename="../inspector/rewardswidget.ui" line="1417"/>
+        <location filename="../inspector/rewardswidget.ui" line="733"/>
+        <location filename="../inspector/rewardswidget.ui" line="848"/>
+        <location filename="../inspector/rewardswidget.ui" line="1437"/>
         <source>Remove</source>
         <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="64"/>
         <source>Visit mode</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Режим візиту</translation>
+        <translation>Режим відвідування</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="85"/>
         <source>Select mode</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Режим вибору</translation>
+        <translation>Режим вибору</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="107"/>
         <source>On select text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст при виборі</translation>
+        <translation>Текст при виборі</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="114"/>
         <source>Can refuse</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Можна відмовитися</translation>
+        <translation>Можна відмовитися</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="121"/>
         <source>Reset parameters</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Скинути параметри</translation>
+        <translation>Параметри скидання</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="141"/>
         <source>Period</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Період</translation>
+        <translation>Період</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="148"/>
         <source> days</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">днів</translation>
+        <translation> -днів</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="160"/>
+        <location filename="../inspector/rewardswidget.ui" line="158"/>
+        <source> weeks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="168"/>
+        <source> months</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="180"/>
         <source>Reset visitors</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Скинути відвідувачів</translation>
+        <translation>Скидати відвідувачів</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="167"/>
+        <location filename="../inspector/rewardswidget.ui" line="187"/>
         <source>Reset rewards</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Скинути нагороди</translation>
-    </message>
-    <message>
-        <location filename="../inspector/rewardswidget.ui" line="179"/>
-        <source>Window type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тип вікна</translation>
+        <translation>Скидати нагороди</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="199"/>
+        <source>Window type</source>
+        <translation>Режим вікна</translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="219"/>
         <source>Event info</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Інформація про подію</translation>
+        <translation>Інформація про подію</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="217"/>
+        <location filename="../inspector/rewardswidget.ui" line="237"/>
         <source>Message to be displayed on granting of this reward</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Повідомлення, яке буде показано при наданні цієї нагороди</translation>
-    </message>
-    <message>
-        <location filename="../inspector/rewardswidget.ui" line="228"/>
-        <source>Reward</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Нагорода</translation>
+        <translation>Повідомлення, яке буде показано при отриманні цієї нагороди</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="248"/>
-        <location filename="../inspector/rewardswidget.ui" line="1035"/>
+        <source>Reward</source>
+        <translation>Нагорода</translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="268"/>
+        <location filename="../inspector/rewardswidget.ui" line="1055"/>
         <source>Hero level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівень героя</translation>
+        <translation>Рівень героя</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="265"/>
-        <location filename="../inspector/rewardswidget.ui" line="1052"/>
+        <location filename="../inspector/rewardswidget.ui" line="285"/>
+        <location filename="../inspector/rewardswidget.ui" line="1072"/>
         <source>Hero experience</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Досвід героя</translation>
+        <translation>Досвід героя</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="305"/>
-        <location filename="../inspector/rewardswidget.ui" line="1092"/>
-        <source>Spell points</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Очки заклять</translation>
-    </message>
-    <message>
-        <location filename="../inspector/rewardswidget.ui" line="328"/>
-        <location filename="../inspector/rewardswidget.ui" line="348"/>
-        <location filename="../inspector/rewardswidget.ui" line="382"/>
+        <location filename="../inspector/rewardswidget.ui" line="325"/>
         <location filename="../inspector/rewardswidget.ui" line="1112"/>
+        <source>Spell points</source>
+        <translation>Очки мани</translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="348"/>
+        <location filename="../inspector/rewardswidget.ui" line="368"/>
+        <location filename="../inspector/rewardswidget.ui" line="402"/>
+        <location filename="../inspector/rewardswidget.ui" line="1132"/>
         <source>%</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">%</translation>
+        <translation>%</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="341"/>
+        <location filename="../inspector/rewardswidget.ui" line="361"/>
         <source>Overflow</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Переповнення</translation>
+        <translation>Переповнення</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="365"/>
+        <location filename="../inspector/rewardswidget.ui" line="385"/>
         <source>Movement</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Переміщення</translation>
+        <translation>Переміщення</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="408"/>
+        <location filename="../inspector/rewardswidget.ui" line="428"/>
         <source>Remove object</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити об&apos;єкт</translation>
+        <translation>Видалити об&apos;єкт</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="417"/>
-        <location filename="../inspector/rewardswidget.ui" line="1137"/>
+        <location filename="../inspector/rewardswidget.ui" line="437"/>
+        <location filename="../inspector/rewardswidget.ui" line="1157"/>
         <source>Primary skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Основні навички</translation>
+        <translation>Основні навички</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="432"/>
-        <location filename="../inspector/rewardswidget.ui" line="1152"/>
-        <source>Attack</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Атака</translation>
-    </message>
-    <message>
-        <location filename="../inspector/rewardswidget.ui" line="446"/>
-        <location filename="../inspector/rewardswidget.ui" line="1162"/>
-        <source>Defence</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Захист</translation>
-    </message>
-    <message>
-        <location filename="../inspector/rewardswidget.ui" line="460"/>
+        <location filename="../inspector/rewardswidget.ui" line="452"/>
         <location filename="../inspector/rewardswidget.ui" line="1172"/>
-        <source>Spell power</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сила заклять</translation>
+        <source>Attack</source>
+        <translation>Атака</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="474"/>
+        <location filename="../inspector/rewardswidget.ui" line="466"/>
         <location filename="../inspector/rewardswidget.ui" line="1182"/>
+        <source>Defence</source>
+        <translation>Захист</translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="480"/>
+        <location filename="../inspector/rewardswidget.ui" line="1192"/>
+        <source>Spell power</source>
+        <translation>Сила магії</translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="494"/>
+        <location filename="../inspector/rewardswidget.ui" line="1202"/>
         <source>Knowledge</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Знання</translation>
+        <translation>Знання</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="504"/>
-        <location filename="../inspector/rewardswidget.ui" line="1208"/>
+        <location filename="../inspector/rewardswidget.ui" line="524"/>
+        <location filename="../inspector/rewardswidget.ui" line="1228"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="553"/>
-        <location filename="../inspector/rewardswidget.ui" line="1257"/>
+        <location filename="../inspector/rewardswidget.ui" line="573"/>
+        <location filename="../inspector/rewardswidget.ui" line="1277"/>
         <source>Artifacts</source>
         <translation>Артефакти</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="585"/>
-        <location filename="../inspector/rewardswidget.ui" line="1289"/>
+        <location filename="../inspector/rewardswidget.ui" line="605"/>
+        <location filename="../inspector/rewardswidget.ui" line="1309"/>
         <source>Spells</source>
         <translation>Закляття</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="617"/>
-        <location filename="../inspector/rewardswidget.ui" line="1321"/>
+        <location filename="../inspector/rewardswidget.ui" line="637"/>
+        <location filename="../inspector/rewardswidget.ui" line="1341"/>
         <source>Skills</source>
         <translation>Вміння</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="657"/>
-        <location filename="../inspector/rewardswidget.ui" line="1361"/>
+        <location filename="../inspector/rewardswidget.ui" line="677"/>
+        <location filename="../inspector/rewardswidget.ui" line="1381"/>
         <source>Creatures</source>
         <translation>Істоти</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="750"/>
+        <location filename="../inspector/rewardswidget.ui" line="770"/>
         <source>Bonuses</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Бонуси</translation>
+        <translation>Бонуси</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="767"/>
-        <location filename="../inspector/rewardswidget.ui" line="859"/>
+        <location filename="../inspector/rewardswidget.ui" line="787"/>
+        <location filename="../inspector/rewardswidget.ui" line="879"/>
         <source>Duration</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тривалість</translation>
+        <translation>Тривалість</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="777"/>
-        <location filename="../inspector/rewardswidget.ui" line="864"/>
+        <location filename="../inspector/rewardswidget.ui" line="797"/>
+        <location filename="../inspector/rewardswidget.ui" line="884"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="787"/>
-        <location filename="../inspector/rewardswidget.ui" line="869"/>
+        <location filename="../inspector/rewardswidget.ui" line="807"/>
+        <location filename="../inspector/rewardswidget.ui" line="889"/>
         <source>Value</source>
         <translation>Значення</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="878"/>
+        <location filename="../inspector/rewardswidget.ui" line="898"/>
         <source>Cast</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Застосувати</translation>
+        <translation>Накласти закляття</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="884"/>
+        <location filename="../inspector/rewardswidget.ui" line="904"/>
         <source>Cast an adventure map spell</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Застосувати закляття пригодницької карти</translation>
+        <translation>Застосувати закляття пригодницької мапи</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="893"/>
+        <location filename="../inspector/rewardswidget.ui" line="913"/>
         <source>Spell</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття</translation>
+        <translation>Закляття</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="914"/>
+        <location filename="../inspector/rewardswidget.ui" line="934"/>
         <source>Magic school level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівень школи магії</translation>
-    </message>
-    <message>
-        <location filename="../inspector/rewardswidget.ui" line="964"/>
-        <source>Limiter</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Обмежувач</translation>
+        <translation>Ранг школи магії</translation>
     </message>
     <message>
         <location filename="../inspector/rewardswidget.ui" line="984"/>
+        <source>Limiter</source>
+        <translation>Обмежувач</translation>
+    </message>
+    <message>
+        <location filename="../inspector/rewardswidget.ui" line="1004"/>
         <source>Day of week</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День тижня</translation>
+        <translation>День тижня</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="1001"/>
+        <location filename="../inspector/rewardswidget.ui" line="1021"/>
         <source>Days passed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Минуло днів</translation>
+        <translation>Минуло днів</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="1457"/>
+        <location filename="../inspector/rewardswidget.ui" line="1477"/>
         <source>Heroes</source>
         <translation>Герої</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="1489"/>
+        <location filename="../inspector/rewardswidget.ui" line="1509"/>
         <source>Hero classes</source>
         <translation>Класи героїв</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.ui" line="1521"/>
+        <location filename="../inspector/rewardswidget.ui" line="1541"/>
         <source>Players</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравці</translation>
+        <translation>Гравці</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="54"/>
+        <location filename="../inspector/rewardswidget.cpp" line="55"/>
         <source>None</source>
         <translation>Відсутня</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="56"/>
+        <location filename="../inspector/rewardswidget.cpp" line="57"/>
         <source>Day %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День %1</translation>
+        <translation>День %1</translation>
     </message>
     <message>
-        <location filename="../inspector/rewardswidget.cpp" line="247"/>
-        <location filename="../inspector/rewardswidget.cpp" line="618"/>
+        <location filename="../inspector/rewardswidget.cpp" line="250"/>
+        <location filename="../inspector/rewardswidget.cpp" line="623"/>
         <source>Reward %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Нагорода %1</translation>
+        <translation>Нагорода %1</translation>
     </message>
 </context>
 <context>
@@ -3165,14 +3046,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../mapsettings/rumorsettings.ui" line="14"/>
         <source>Form</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Форма</translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../mapsettings/rumorsettings.ui" line="37"/>
         <source>Tavern rumors</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Чутки в таверні</translation>
+        <translation>Чутки у корчмі</translation>
     </message>
     <message>
         <location filename="../mapsettings/rumorsettings.ui" line="63"/>
@@ -3187,350 +3066,304 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../mapsettings/rumorsettings.cpp" line="59"/>
         <source>New rumor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Нова чутка</translation>
+        <translation>Нова чутка</translation>
     </message>
 </context>
 <context>
     <name>ScenarioProperties</name>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="14"/>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="33"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="37"/>
         <source>Scenario Properties</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Властивості сценарію</translation>
+        <translation>Властивості сценарію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="30"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="36"/>
         <source>General</source>
         <translation>Загальний</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="36"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="42"/>
         <source>Region name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва регіону</translation>
+        <translation>Назва регіону</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="50"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="56"/>
         <source>Region color</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Колір регіону</translation>
+        <translation>Колір регіону</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="60"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="66"/>
         <source>Scenario name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва сценарію</translation>
+        <translation>Назва сценарію</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="74"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="80"/>
         <source>Map file</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Файл карти</translation>
+        <translation>Файл мапи</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="90"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="96"/>
         <source>Import...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Імпортувати...</translation>
+        <translation>Імпортувати...</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="97"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="103"/>
         <source>Export...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Експортувати...</translation>
+        <translation>Експортувати...</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="104"/>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="579"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="110"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="598"/>
         <source>Remove</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="113"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="119"/>
         <source>Default difficulty</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Складність за замовчуванням</translation>
+        <translation>Складність за замовчуванням</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="123"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="129"/>
         <source>Prerequisites</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Передумови</translation>
+        <translation>Передумови</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="133"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="139"/>
         <source>Region right-click text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст правої кнопки миші по регіону</translation>
-    </message>
-    <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="144"/>
-        <source>Prologue/Epilogue</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Пролог / Епілог</translation>
+        <translation>Текст при натисканні правої кнопки миші по регіону</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="150"/>
-        <source>Prologue</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Пролог</translation>
-    </message>
-    <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="156"/>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="250"/>
-        <source>Enabled</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Увімкнено</translation>
+        <source>Prologue/Epilogue</source>
+        <translation>Пролог / Епілог</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="168"/>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="262"/>
+        <source>Prologue</source>
+        <translation>Пролог</translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="180"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="276"/>
+        <source>Enabled</source>
+        <translation>Увімкнено</translation>
+    </message>
+    <message>
         <source>Video</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відео</translation>
+        <translation type="vanished">Відео</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="185"/>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="279"/>
         <source>Video 2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відео 2</translation>
+        <translation type="vanished">Відео 2</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="202"/>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="296"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="192"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="288"/>
+        <source>Videos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="212"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="308"/>
         <source>Music</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Музика</translation>
+        <translation>Музика</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="219"/>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="313"/>
-        <source>Voice</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Голос</translation>
-    </message>
-    <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="231"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="232"/>
         <location filename="../campaigneditor/scenarioproperties.ui" line="325"/>
+        <source>Voice</source>
+        <translation>Озвучення</translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="249"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="342"/>
         <source>Text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст</translation>
+        <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="244"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="264"/>
         <source>Epilogue</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Епілог</translation>
-    </message>
-    <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="339"/>
-        <source>Crossover</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Перенесення</translation>
-    </message>
-    <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="345"/>
-        <source>Crossover heroes retain</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зберігати при перенесенні героя:</translation>
-    </message>
-    <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="351"/>
-        <source>Experience</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Досвід</translation>
+        <translation>Епілог</translation>
     </message>
     <message>
         <location filename="../campaigneditor/scenarioproperties.ui" line="358"/>
+        <source>Crossover</source>
+        <translation>Перенесення</translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="364"/>
+        <source>Crossover heroes retain</source>
+        <translation>При перенесенні герої зберігають</translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="370"/>
+        <source>Experience</source>
+        <translation>Досвід</translation>
+    </message>
+    <message>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="377"/>
         <source>Primary skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Основні навички</translation>
+        <translation>Основні навички</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="365"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="384"/>
         <source>Secondary skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вторинні навички</translation>
+        <translation>Вторинні навички</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="372"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="391"/>
         <source>Spells</source>
         <translation>Закляття</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="379"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="398"/>
         <source>Artifacts</source>
         <translation>Артефакти</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="412"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="431"/>
         <source>All</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Усі</translation>
+        <translation>Усі</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="419"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="438"/>
         <source>None</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Жодні</translation>
+        <translation>Жодні</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="446"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="465"/>
         <source>Crossover artifacts</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Артефакти при перенесенні</translation>
+        <translation>Артефакти що переносяться</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="475"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="494"/>
         <source>Starting</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Початкові</translation>
+        <translation>Початкові</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="481"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="500"/>
         <source>Starting options are</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Початкові параметри:</translation>
+        <translation>Початкові параметри це</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="488"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="507"/>
         <source>Starting bonus options</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Початкові бонуси</translation>
+        <translation>Початковий бонус</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="495"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="514"/>
         <source>Hero crossover options</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Опції перенесення героя</translation>
+        <translation>Опції перенесення героя</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="502"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="521"/>
         <source>Starting hero options</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Опції початкового героя</translation>
+        <translation>Опції початкового героя</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="520"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="539"/>
         <source>Bonus</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Бонус</translation>
+        <translation>Бонус</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="526"/>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="458"/>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="468"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="545"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="474"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="484"/>
         <source>Player position</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Позиція гравця</translation>
+        <translation>Позиція гравця</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="536"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="555"/>
         <source>Starting bonus option</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Опція початкового бонусу</translation>
+        <translation>Налаштування початкового бонусу</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="547"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="566"/>
         <source>Crossover/ Starting hero</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Перенесений / Початковий герой</translation>
+        <translation>Перенесений / Початковий герой</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="565"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="584"/>
         <source>Add...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Додати...</translation>
+        <translation>Додати...</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.ui" line="572"/>
+        <location filename="../campaigneditor/scenarioproperties.ui" line="591"/>
         <source>Edit...</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редагувати...</translation>
+        <translation>Редагувати...</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="119"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="123"/>
         <source>Strongest</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Найсильніший</translation>
+        <translation>Найсильніший</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="120"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="124"/>
         <source>Generated</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Згенерований</translation>
+        <translation>Згенерований</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="121"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="125"/>
         <source>Random</source>
         <translation>Випадково</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="138"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="142"/>
         <source>No map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Немає карти</translation>
+        <translation>Немає мапи</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="181"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="185"/>
         <source>Player</source>
         <translation>Гравець</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="389"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="393"/>
         <source>Open map</source>
         <translation>Відкрити мапу</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="389"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="395"/>
         <source>All supported maps (*.vmap *.h3m);;VCMI maps(*.vmap);;HoMM3 maps(*.h3m)</source>
         <translation>Всі підтримувані мапи (*.vmap *.h3m);;Мапи VCMI (*.vmap);;Мапи HoMM3 (*.h3m)</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="396"/>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="429"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="404"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="443"/>
         <source>Error</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Помилка</translation>
+        <translation>Помилка</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="396"/>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="429"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="404"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="443"/>
         <source>Could not open the file.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Не вдалося відкрити файл.</translation>
+        <translation>Не вдалося відкрити файл.</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="422"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="431"/>
         <source>Save map</source>
         <translation>Зберегти мапу</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="422"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="433"/>
         <source>VCMI maps (*.vmap);</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Карти VCMI (*.vmap);</translation>
+        <translation>Мапи VCMI (*.vmap);</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="422"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="433"/>
         <source>HoMM3 maps (*.h3m);</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Карти HoMM3 (*.h3m);</translation>
+        <translation>Мапи HoMM3 (*.h3m);</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="458"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="474"/>
         <source>Source scenario</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Початковий сценарій</translation>
+        <translation>Сценарій-джерело</translation>
     </message>
     <message>
-        <location filename="../campaigneditor/scenarioproperties.cpp" line="468"/>
+        <location filename="../campaigneditor/scenarioproperties.cpp" line="484"/>
         <source>Hero</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герой</translation>
+        <translation>Герой</translation>
     </message>
 </context>
 <context>
@@ -3538,14 +3371,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="14"/>
         <source>Scenario Properties</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Властивості сценарію</translation>
+        <translation>Властивості сценарію</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="20"/>
         <source>Select a bonus type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть тип бонусу</translation>
+        <translation>Виберіть тип бонусу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="27"/>
@@ -3553,15 +3384,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="110"/>
         <location filename="../campaigneditor/startingbonus.ui" line="270"/>
         <source>Spell</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття</translation>
+        <translation>Закляття</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="34"/>
         <location filename="../campaigneditor/startingbonus.ui" line="134"/>
         <source>Creature</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Істота</translation>
+        <translation>Істота</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="41"/>
@@ -3569,8 +3398,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="190"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="363"/>
         <source>Building</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Будівля</translation>
+        <translation>Будівля</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="48"/>
@@ -3583,15 +3411,13 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="55"/>
         <location filename="../campaigneditor/startingbonus.ui" line="254"/>
         <source>Spell scroll</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сувій закляття</translation>
+        <translation>Сувій з закляттям</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="62"/>
         <location filename="../campaigneditor/startingbonus.ui" line="294"/>
         <source>Primary skill</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Основна навичка</translation>
+        <translation>Первинна навичка</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="69"/>
@@ -3599,16 +3425,14 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="380"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="387"/>
         <source>Secondary skill</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вторинна навичка</translation>
+        <translation>Вторинна навичка</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="76"/>
         <location filename="../campaigneditor/startingbonus.ui" line="414"/>
         <location filename="../campaigneditor/startingbonus.cpp" line="391"/>
         <source>Resource</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурс</translation>
+        <translation>Ресурс</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="100"/>
@@ -3618,75 +3442,63 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../campaigneditor/startingbonus.ui" line="300"/>
         <location filename="../campaigneditor/startingbonus.ui" line="370"/>
         <source>Recipient</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Одержувач</translation>
+        <translation>Одержувач</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="150"/>
         <source>Creature type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тип істоти</translation>
+        <translation>Тип істоти</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="160"/>
         <location filename="../campaigneditor/startingbonus.ui" line="430"/>
         <source>Quantity</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кількість</translation>
+        <translation>Кількість</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="310"/>
         <source>Attack skill</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Навичка атаки</translation>
+        <translation>Навичка атаки</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="320"/>
         <source>Defense skill</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Навичка захисту</translation>
+        <translation>Навичка захисту</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="330"/>
         <source>Spell power</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сила заклять</translation>
+        <translation>Сила магії</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="340"/>
         <source>Knowledge</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Знання</translation>
+        <translation>Знання</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="390"/>
         <source>Mastery</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Майстерність</translation>
+        <translation>Ранг</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.ui" line="420"/>
         <source>Resource type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тип ресурсу</translation>
+        <translation>Тип ресурсу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="34"/>
         <source>Edit Starting Bonus</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редагування початкового бонусу</translation>
+        <translation>Редагування початкового бонусу</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="62"/>
         <source>Strongest</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Найсильніший</translation>
+        <translation>Найсильніший</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="63"/>
         <source>Generated</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Згенерований</translation>
+        <translation>Згенерований</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="64"/>
@@ -3696,84 +3508,71 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="95"/>
         <source>Main town is of random faction</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Головне місто випадкової фракції</translation>
+        <translation>Головне місто належить до випадкової фракції</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="107"/>
         <source>Player does not have a main town!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравець не має головного міста!</translation>
+        <translation>Гравець не має головного міста!</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="132"/>
         <source>Common (%1 and %2)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Поширені (%1 та %2)</translation>
+        <translation>Поширені (%1 та %2)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="137"/>
         <source>Rare (%1, %2, %3, %4)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рідкісні (%1, %2, %3, %4)</translation>
+        <translation>Рідкісні (%1, %2, %3, %4)</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="319"/>
         <source>strongest hero</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">найсильніший герой</translation>
+        <translation>найсильніший герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="321"/>
         <source>generated hero</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">згенерований герой</translation>
+        <translation>створений герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="323"/>
         <source>random hero</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">випадковий герой</translation>
+        <translation>випадковий герой</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="354"/>
         <source>%1 spell for %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">%1 закляття для %2</translation>
+        <translation>Закляття %1 для %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="359"/>
         <source>%1 %2 for %3</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">%1 %2 для %3</translation>
+        <translation>%1 %2 для %3</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="368"/>
         <source>%1 artifact for %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">%1 артефакт для %2</translation>
+        <translation>Артефакт %1 для %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="373"/>
         <source>%1 spell scroll for %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">%1 сувій закляття для %2</translation>
+        <translation>Сувій з закляттям %1 для %2</translation>
     </message>
     <message>
         <location filename="../campaigneditor/startingbonus.cpp" line="378"/>
         <source>Primary skill (Attack: %1, Defense: %2, Spell: %3, Knowledge: %4) for %5</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Основна навичка (Атака: %1, Захист: %2, Магія: %3, Знання: %4) для %5</translation>
+        <translation>Основні навички (Атака: %1, Захист: %2, Сила Магії: %3, Знання: %4) для %5</translation>
     </message>
 </context>
 <context>
     <name>TemplateEditor</name>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="14"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="598"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="661"/>
         <source>VCMI Template Editor</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Редактор шаблонів VCMI</translation>
+        <translation>Редактор шаблонів VCMI</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="36"/>
@@ -3798,13 +3597,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="114"/>
         <source>Selected Template:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибраний шаблон:</translation>
+        <translation>Обраний шаблон:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="137"/>
         <location filename="../templateeditor/templateeditor.ui" line="1325"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="226"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="281"/>
         <source>Add</source>
         <translation>Додати</translation>
     </message>
@@ -3816,8 +3614,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="151"/>
         <source>Rename</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Перейменувати</translation>
+        <translation>Перейменувати</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="215"/>
@@ -3832,75 +3629,65 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="233"/>
         <source>Description</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Опис</translation>
+        <translation>Опис</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="245"/>
         <source>Min Size</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мін. розмір</translation>
+        <translation>Мін. розмір</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="264"/>
         <location filename="../templateeditor/templateeditor.ui" line="363"/>
         <location filename="../templateeditor/templateeditor.ui" line="585"/>
         <source>X</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="294"/>
         <location filename="../templateeditor/templateeditor.ui" line="393"/>
         <location filename="../templateeditor/templateeditor.ui" line="615"/>
         <source>Y</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Y</translation>
+        <translation>Y</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="324"/>
         <location filename="../templateeditor/templateeditor.ui" line="423"/>
         <location filename="../templateeditor/templateeditor.ui" line="1378"/>
         <source>Z</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Z</translation>
+        <translation>Z</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="344"/>
         <source>Max Size</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Макс. розмір</translation>
+        <translation>Макс. розмір</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="443"/>
         <location filename="../templateeditor/templateeditor.ui" line="449"/>
         <source>Players</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравці</translation>
+        <translation>Гравці</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="459"/>
         <source>Human</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Людина</translation>
+        <translation>Людина</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="472"/>
         <source>Allowed water content</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дозволений вміст води</translation>
+        <translation>Дозволений вміст води</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="478"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="364"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="377"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="419"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="432"/>
         <source>None</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Немає</translation>
+        <translation>Немає</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="485"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="380"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="435"/>
         <source>Normal</source>
         <translation>Типова</translation>
     </message>
@@ -3912,57 +3699,48 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="502"/>
         <source>Entities</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сутності</translation>
+        <translation>Сутності</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="508"/>
         <source>Banned Spells</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені заклинання</translation>
+        <translation>Заборонені закляття</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="515"/>
         <source>Banned Artifacts</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені артефакти</translation>
+        <translation>Заборонені артефакти</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="522"/>
         <source>Banned Skills</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені уміння</translation>
+        <translation>Заборонені вторинні вміння</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="529"/>
         <source>Banned Heroes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені герої</translation>
+        <translation>Заборонені герої</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="561"/>
         <source>Zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зона</translation>
+        <translation>Зона</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="567"/>
         <source>Visualisation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Візуалізація</translation>
+        <translation>Візуалізація</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="573"/>
         <source>Position</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Позиція</translation>
+        <translation>Позиція</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="645"/>
         <location filename="../templateeditor/templateeditor.ui" line="701"/>
         <source>Size</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Розмір</translation>
+        <translation>Розмір</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="673"/>
@@ -3971,7 +3749,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="689"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="396"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
@@ -3983,14 +3761,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="729"/>
         <source>Forced level</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Примусовий рівень</translation>
+        <translation>Фіксований рівень</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="741"/>
         <source>Zone link</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зв’язок зон</translation>
+        <translation>Сполучення зон</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="747"/>
@@ -4003,8 +3779,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../templateeditor/templateeditor.ui" line="754"/>
         <location filename="../templateeditor/templateeditor.ui" line="1267"/>
         <source>Custom objects</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Користувацькі об’єкти</translation>
+        <translation>Користувацькі об’єкти</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="761"/>
@@ -4016,29 +3791,25 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <location filename="../templateeditor/templateeditor.ui" line="768"/>
         <location filename="../templateeditor/templateeditor.ui" line="1109"/>
         <source>Terrain</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Місцевість</translation>
+        <translation>Ґрунт</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="785"/>
         <location filename="../templateeditor/templateeditor.ui" line="1229"/>
         <location filename="../templateeditor/templateeditor.ui" line="1235"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="339"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="394"/>
         <source>Treasure</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Скарб</translation>
+        <translation>Скарб</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="848"/>
         <source>Town info</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відомості про місто</translation>
+        <translation>Відомості про місто</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="854"/>
         <source>Town count</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кількість міст</translation>
+        <translation>Кількість міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="866"/>
@@ -4059,62 +3830,52 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="917"/>
         <source>Castle count</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Кількість замків</translation>
+        <translation>Кількість замків</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="980"/>
         <source>Town density</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Щільність міст</translation>
+        <translation>Щільність міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1043"/>
         <source>Castle density</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Щільність замків</translation>
+        <translation>Щільність замків</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1115"/>
         <source>Match terrain to town</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підігнати місцевість під місто</translation>
+        <translation>Ґрунт відповідає місту</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1122"/>
         <source>Terrain types</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Типи місцевості</translation>
+        <translation>Типи ґрунту</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1129"/>
         <source>Banned terrain types</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені типи місцевості</translation>
+        <translation>Заборонені типи ґрунту</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1145"/>
         <source>Towns are same type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Міста одного типу</translation>
+        <translation>Міста одного типу</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1152"/>
         <source>Allowed towns</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дозволені міста</translation>
+        <translation>Дозволені міста</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1159"/>
         <source>Banned towns</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені міста</translation>
+        <translation>Заборонені міста</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1166"/>
         <source>Town hints</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підказки щодо міст</translation>
+        <translation>Правила вибору міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1176"/>
@@ -4124,20 +3885,17 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1182"/>
         <source>Allowed monsters</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дозволені монстри</translation>
+        <translation>Дозволені монстри</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1189"/>
         <source>Banned monsters</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Заборонені монстри</translation>
+        <translation>Заборонені монстри</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1207"/>
         <source>Strength</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сила</translation>
+        <translation>Сила</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1261"/>
@@ -4147,8 +3905,7 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1299"/>
         <source>Connections</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">З’єднання</translation>
+        <translation>Сполучення</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1343"/>
@@ -4178,27 +3935,23 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1375"/>
         <source>Add zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Додати зону</translation>
+        <translation>Додати зону</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1386"/>
         <source>Remove zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити зону</translation>
+        <translation>Видалити зону</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1389"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="427"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="484"/>
         <source>Del</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1394"/>
         <source>Auto position</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Автоматичне розміщення</translation>
+        <translation>Автоматичне розміщення</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1397"/>
@@ -4228,14 +3981,12 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1418"/>
         <source>Zoom auto</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Автомасштаб</translation>
+        <translation>Автомасштаб</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1421"/>
         <source>Ctrl+Shift+:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ctrl+Shift+:</translation>
+        <translation>Ctrl+Shift+:</translation>
     </message>
     <message>
         <location filename="../templateeditor/templateeditor.ui" line="1426"/>
@@ -4248,255 +3999,262 @@ Add it to the map&apos;s required mods in Map-&gt;General settings.</source>
         <translation>Ctrl+Shift+=</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="197"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="252"/>
         <source>Min</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мін</translation>
+        <translation>Мін</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="197"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="252"/>
         <source>Max</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Макс</translation>
+        <translation>Макс</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="197"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="252"/>
         <source>Action</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="215"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="428"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="270"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="485"/>
         <source>Delete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="254"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="309"/>
         <source>ID: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">ID: %1</translation>
+        <translation>ІД: %1</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="256"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="311"/>
         <source>Max treasure: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Макс. скарб: %1</translation>
+        <translation>Макс. скарб: %1</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="337"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="392"/>
         <source>Player start</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Старт гравця</translation>
+        <translation>Старт гравця</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="338"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="393"/>
         <source>CPU start</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Старт ШІ</translation>
+        <translation>Старт ШІ</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="340"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="395"/>
         <source>Junction</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вузол</translation>
+        <translation>Розв&apos;язка</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="341"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="396"/>
         <source>Water</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вода</translation>
+        <translation>Вода</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="342"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="397"/>
         <source>Sealed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Запечатано</translation>
+        <translation>Закрите</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="369"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="424"/>
         <source>Automatic</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Автоматично</translation>
+        <translation>Автоматично</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="370"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="425"/>
         <source>Surface</source>
         <translation>Поверхня</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="371"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="426"/>
         <source>Underground</source>
         <translation>Підземелля</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="378"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="415"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="433"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="472"/>
         <source>Random</source>
         <translation>Випадково</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="379"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="434"/>
         <source>Weak</source>
         <translation>Слабкі</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="381"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="436"/>
         <source>Strong</source>
         <translation>Сильні</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="396"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Zone A</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зона A</translation>
+        <translation>Зона А</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="396"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Zone B</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зона B</translation>
+        <translation>Зона Б</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="396"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Guard</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Охорона</translation>
+        <translation>Охорона</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="396"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="453"/>
         <source>Road</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дорога</translation>
+        <translation>Дорога</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="410"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="467"/>
         <source>Guarded</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Під охороною</translation>
+        <translation>Під охороною</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="411"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="468"/>
         <source>Fictive</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Фіктивний</translation>
+        <translation>Фіктивне</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="412"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="469"/>
         <source>Repulsive</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відштовхувальний</translation>
+        <translation>Відштовхуюче</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="413"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="470"/>
         <source>Wide</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Широкий</translation>
+        <translation>Широке</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="414"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="471"/>
         <source>Force portal</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Примусовий портал</translation>
+        <translation>Примусовий портал</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="416"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="473"/>
         <source>Yes</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Так</translation>
+        <translation>Так</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="417"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="474"/>
         <source>No</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ні</translation>
+        <translation>Ні</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="526"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="589"/>
         <source>Zone A: %1
 Zone B: %2
 Guard: %3</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зона A: %1
-Зона B: %2
+        <translation>Зона А: %1
+Зона Б: %2
 Охорона: %3</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="586"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="649"/>
         <source>Confirmation</source>
         <translation>Підтвердження</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="586"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="649"/>
         <source>Unsaved changes will be lost, are you sure?</source>
         <translation>Незбережені зміни буде втрачено, ви впевнені?</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="630"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="673"/>
+        <source>Validation failed!</source>
+        <translation>Валідація не пройшла!</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="678"/>
+        <source>No player range defined.</source>
+        <translation>Не визначено кількість гравців.</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="685"/>
+        <source>Invalid range for players.</source>
+        <translation>Невірна кількість гравців.</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="693"/>
+        <source>Invalid range for human players.</source>
+        <translation>Невірна кількість гравців-людей.</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="708"/>
+        <source>Connection references non-existing zone(s): %1 - %2</source>
+        <translation>Сполучення посилається на неіснуючу(і) зону(и): %1 - %2</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="720"/>
+        <source>Zone %1 has no connections.</source>
+        <translation>Зона %1 не має сполучень з іншими зонами.</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="744"/>
+        <source>Player %1 must have exactly one player start zone (found %2).</source>
+        <translation>Гравець %1 повинен мати точно одну початкову зону (знайдено %2).</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="782"/>
         <source>Open template</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Відкрити шаблон</translation>
+        <translation>Відкрити шаблон</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="632"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="784"/>
         <source>VCMI templates(*.json)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Шаблони VCMI (*.json)</translation>
+        <translation>Шаблони VCMI (*.json)</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="645"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="802"/>
         <source>Save template</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Зберегти шаблон</translation>
+        <translation>Зберегти шаблон</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="645"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="803"/>
         <source>VCMI templates (*.json)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Шаблони VCMI (*.json)</translation>
+        <translation>Шаблони VCMI (*.json)</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="758"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="798"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="940"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="981"/>
         <source>Enter Name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Введіть ім’я</translation>
+        <translation>Введіть назву</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="758"/>
-        <location filename="../templateeditor/templateeditor.cpp" line="798"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="940"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="981"/>
         <source>Name:</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ім’я:</translation>
+        <translation>Назва:</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="765"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="947"/>
         <source>Already existing!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вже існує!</translation>
+        <translation>Вже існує!</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="765"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="947"/>
         <source>A template with this name is already existing.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Шаблон із такою назвою вже існує.</translation>
+        <translation>Шаблон із такою назвою вже існує.</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="781"/>
-        <source>To few templates!</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Замало шаблонів!</translation>
+        <location filename="../templateeditor/templateeditor.cpp" line="964"/>
+        <source>Too few templates!</source>
+        <translation>Недостатньо шаблонів!</translation>
     </message>
     <message>
-        <location filename="../templateeditor/templateeditor.cpp" line="781"/>
+        <location filename="../templateeditor/templateeditor.cpp" line="964"/>
         <source>At least one template should remain after removing.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Після видалення має лишитися щонайменше один шаблон.</translation>
+        <translation>Після видалення має лишитися щонайменше один шаблон.</translation>
     </message>
     <message>
-        <source>Error</source>
-        <translation type="obsolete">Помилка</translation>
+        <location filename="../templateeditor/templateeditor.cpp" line="1214"/>
+        <source>Too few zones</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/templateeditor.cpp" line="1214"/>
+        <source>Create at least two zones before adding a connection.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4504,74 +4262,62 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="17"/>
         <source>Timed event</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Подія за часом</translation>
+        <translation>Подія за часом</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="28"/>
         <source>Event name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва події</translation>
+        <translation>Назва події</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="35"/>
         <source>Type event message text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Введіть текст повідомлення події</translation>
+        <translation>Введіть текст повідомлення події</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="47"/>
         <source>affects human</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">впливає на гравця</translation>
+        <translation>Діє на гравця-людину</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="54"/>
         <source>affects AI</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">впливає на ІІ</translation>
+        <translation>діє на гравця-ШІ</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="70"/>
         <source>Day of first occurrence</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День першого спрацьовування</translation>
+        <translation>День першої активації</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="91"/>
         <source>Repeat after (0 = no repeat)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Повторювати через (0 = не повторювати)</translation>
+        <translation>Повторювати кожен... (0 = не повторювати)</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="112"/>
         <source>Affected players</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравці, на яких впливає</translation>
+        <translation>Гравці, на яких діє подія</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="135"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="194"/>
         <source>type</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">тип</translation>
+        <translation>тип</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="199"/>
         <source>qty</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">кільк.</translation>
+        <translation>кількість</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="211"/>
         <source>Objects to delete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Об&apos;єкти для видалення</translation>
+        <translation>Об&apos;єкти для видалення</translation>
     </message>
     <message>
         <location filename="../mapsettings/timedevent.ui" line="218"/>
@@ -4599,26 +4345,22 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="53"/>
         <source>Build all</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Побудувати все</translation>
+        <translation>Побудувати все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="60"/>
         <source>Demolish all</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Знести все</translation>
+        <translation>Знести все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="67"/>
         <source>Enable all</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Увімкнути все</translation>
+        <translation>Дозволити все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.ui" line="74"/>
         <source>Disable all</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вимкнути все</translation>
+        <translation>Заборонити все</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
@@ -4628,14 +4370,12 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Enabled</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Увімкнено</translation>
+        <translation>Дозволено</translation>
     </message>
     <message>
         <location filename="../inspector/townbuildingswidget.cpp" line="132"/>
         <source>Built</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Побудовано</translation>
+        <translation>Побудовано</translation>
     </message>
 </context>
 <context>
@@ -4643,8 +4383,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="23"/>
         <source>Town event</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Подія міста</translation>
+        <translation>Подія міста</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="42"/>
@@ -4654,50 +4393,42 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="57"/>
         <source>Event name</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва події</translation>
+        <translation>Назва події</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="64"/>
         <source>Type event message text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Введіть текст повідомлення події</translation>
+        <translation>Введіть текст повідомлення події</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="85"/>
         <source>Day of first occurrence</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День першого спрацьовування</translation>
+        <translation>День першої активації</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="99"/>
         <source>Repeat after (0 = no repeat)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Повторювати через (0 = не повторювати)</translation>
+        <translation>Повторювати кожен... (0 = не повторювати)</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="123"/>
         <source>Affected players</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравці, на яких впливає</translation>
+        <translation>Гравці, на яких діє подія</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="146"/>
         <source>affects human</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">впливає на гравця</translation>
+        <translation>Діє на гравця-людину</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="155"/>
         <source>affects AI</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">впливає на ІІ</translation>
+        <translation>діє на гравця-ШІ</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="166"/>
         <source>Resources</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ресурси</translation>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="198"/>
@@ -4712,20 +4443,17 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventdialog.ui" line="258"/>
         <source>OK</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гаразд</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.cpp" line="172"/>
         <source>Creature level %1 / Creature level %1 Upgrade</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівень істоти %1 / Покращення рівня істоти %1</translation>
+        <translation>істота %1го рівня / Покращена істота %1го рівня</translation>
     </message>
     <message>
         <location filename="../inspector/towneventdialog.cpp" line="214"/>
         <source>Day %1 - %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День %1 - %2</translation>
+        <translation>День %1 - %2</translation>
     </message>
 </context>
 <context>
@@ -4733,8 +4461,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="187"/>
         <source>Day %1 - %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День %1 - %2</translation>
+        <translation>День %1 - %2</translation>
     </message>
 </context>
 <context>
@@ -4742,8 +4469,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="29"/>
         <source>Town events</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Події міста</translation>
+        <translation>Події міста</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.ui" line="37"/>
@@ -4763,8 +4489,7 @@ Guard: %3</source>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="107"/>
         <source>Day %1 - %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">День %1 - %2</translation>
+        <translation>День %1 - %2</translation>
     </message>
     <message>
         <location filename="../inspector/towneventswidget.cpp" line="128"/>
@@ -4777,60 +4502,57 @@ Guard: %3</source>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="14"/>
         <source>Select Town hints</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть підказки міст</translation>
+        <translation>Виберіть підказки міст</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.ui" line="20"/>
         <source>Town hints</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підказки міст</translation>
+        <translation>Підказки міст</translation>
     </message>
     <message>
-        <location filename="../templateeditor/townhintselector.cpp" line="24"/>
+        <location filename="../templateeditor/townhintselector.cpp" line="23"/>
         <source>Town hint Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір підказок міст</translation>
+        <translation>Вибір підказок міст</translation>
     </message>
     <message>
-        <location filename="../templateeditor/townhintselector.cpp" line="30"/>
+        <location filename="../templateeditor/townhintselector.cpp" line="29"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../templateeditor/townhintselector.cpp" line="30"/>
+        <location filename="../templateeditor/townhintselector.cpp" line="29"/>
         <source>Value</source>
         <translation>Значення</translation>
     </message>
     <message>
-        <location filename="../templateeditor/townhintselector.cpp" line="30"/>
+        <location filename="../templateeditor/townhintselector.cpp" line="29"/>
         <source>Action</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/townhintselector.cpp" line="32"/>
+        <source>Like Zone</source>
+        <translation>Як зона</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="33"/>
-        <source>Like Zone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Як зона</translation>
+        <source>Not like zone (comma separated)</source>
+        <translation>Відмінно від зони (через кому)</translation>
     </message>
     <message>
         <location filename="../templateeditor/townhintselector.cpp" line="34"/>
-        <source>Not like zone (comma separated)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Не як зона (через кому)</translation>
-    </message>
-    <message>
-        <location filename="../templateeditor/townhintselector.cpp" line="35"/>
         <source>Related to zone terrain</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Пов’язано з місцевістю зони</translation>
+        <translation>Пов’язано з місцевістю зони</translation>
     </message>
     <message>
-        <location filename="../templateeditor/townhintselector.cpp" line="60"/>
+        <location filename="../templateeditor/townhintselector.cpp" line="59"/>
         <source>Delete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/townhintselector.cpp" line="98"/>
+        <source>Add</source>
+        <translation>Додати</translation>
     </message>
 </context>
 <context>
@@ -4857,8 +4579,7 @@ Guard: %3</source>
         <location filename="../inspector/townspellswidget.ui" line="231"/>
         <location filename="../inspector/townspellswidget.ui" line="277"/>
         <source>Spell that may appear in mage guild</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття, яке може з’явитися у гільдії магів</translation>
+        <translation>Закляття, яке може з’явитися у гільдії магів</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="100"/>
@@ -4867,8 +4588,7 @@ Guard: %3</source>
         <location filename="../inspector/townspellswidget.ui" line="238"/>
         <location filename="../inspector/townspellswidget.ui" line="284"/>
         <source>Spell that must appear in mage guild</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Закляття, яке обов’язково має бути у гільдії магів</translation>
+        <translation>Закляття, яке обов’язково має бути у гільдії магів</translation>
     </message>
     <message>
         <location filename="../inspector/townspellswidget.ui" line="122"/>
@@ -4896,51 +4616,43 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/translations.ui" line="14"/>
         <source>Map translations</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Переклади карти</translation>
+        <translation>Переклади мапи</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="31"/>
         <source>Language</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мова</translation>
+        <translation>Мова</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="48"/>
         <source>Supported</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підтримується</translation>
+        <translation>Підтримується</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="70"/>
         <source>String ID</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ідентифікатор рядка</translation>
+        <translation>Ідентифікатор рядка</translation>
     </message>
     <message>
         <location filename="../mapsettings/translations.ui" line="75"/>
         <source>Text</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Текст</translation>
+        <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../mapsettings/translations.cpp" line="162"/>
-        <location filename="../mapsettings/translations.cpp" line="166"/>
+        <location filename="../mapsettings/translations.cpp" line="177"/>
+        <location filename="../mapsettings/translations.cpp" line="181"/>
         <source>Remove translation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити переклад</translation>
+        <translation>Видалити переклад</translation>
     </message>
     <message>
-        <location filename="../mapsettings/translations.cpp" line="162"/>
+        <location filename="../mapsettings/translations.cpp" line="177"/>
         <source>Default language cannot be removed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мову за замовчуванням не можна видалити</translation>
+        <translation>Мову за замовчуванням не можна видалити</translation>
     </message>
     <message>
-        <location filename="../mapsettings/translations.cpp" line="166"/>
+        <location filename="../mapsettings/translations.cpp" line="181"/>
         <source>All existing text records for this language will be removed. Continue?</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Усі наявні текстові записи для цієї мови буде видалено. Продовжити?</translation>
+        <translation>Увесь наявний переклад на цю мову буде видалено. Продовжити?</translation>
     </message>
 </context>
 <context>
@@ -4949,76 +4661,69 @@ Guard: %3</source>
         <location filename="../templateeditor/treasureselector.ui" line="14"/>
         <location filename="../templateeditor/treasureselector.ui" line="20"/>
         <source>Select Treasures</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Виберіть скарби</translation>
+        <translation>Оберіть скарби</translation>
     </message>
     <message>
-        <location filename="../templateeditor/treasureselector.cpp" line="26"/>
+        <location filename="../templateeditor/treasureselector.cpp" line="25"/>
         <source>Treasure Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір скарбів</translation>
+        <translation>Вибір скарбів</translation>
     </message>
     <message>
-        <location filename="../templateeditor/treasureselector.cpp" line="32"/>
+        <location filename="../templateeditor/treasureselector.cpp" line="31"/>
         <source>Min</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Мін</translation>
+        <translation>Мін</translation>
     </message>
     <message>
-        <location filename="../templateeditor/treasureselector.cpp" line="32"/>
+        <location filename="../templateeditor/treasureselector.cpp" line="31"/>
         <source>Max</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Макс</translation>
+        <translation>Макс</translation>
     </message>
     <message>
-        <location filename="../templateeditor/treasureselector.cpp" line="32"/>
+        <location filename="../templateeditor/treasureselector.cpp" line="31"/>
         <source>Density</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Щільність</translation>
+        <translation>Щільність</translation>
     </message>
     <message>
-        <location filename="../templateeditor/treasureselector.cpp" line="32"/>
+        <location filename="../templateeditor/treasureselector.cpp" line="31"/>
         <source>Action</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
-        <location filename="../templateeditor/treasureselector.cpp" line="50"/>
+        <location filename="../templateeditor/treasureselector.cpp" line="49"/>
         <source>Delete</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
+    </message>
+    <message>
+        <location filename="../templateeditor/treasureselector.cpp" line="64"/>
+        <source>Add</source>
+        <translation>Додати</translation>
     </message>
 </context>
 <context>
     <name>Ts</name>
     <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="75"/>
+        <location filename="../templateeditor/entitiesselector.cpp" line="76"/>
         <source>Terrain Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір місцевості</translation>
+        <translation type="unfinished">Вибір ґрунту</translation>
     </message>
     <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="79"/>
+        <location filename="../templateeditor/entitiesselector.cpp" line="80"/>
         <source>Spell Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Вибір заклять</translation>
     </message>
     <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="83"/>
+        <location filename="../templateeditor/entitiesselector.cpp" line="84"/>
         <source>Artifact Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Вибір артефактів</translation>
     </message>
     <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="87"/>
+        <location filename="../templateeditor/entitiesselector.cpp" line="88"/>
         <source>Skill Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вибір умінь</translation>
+        <translation type="unfinished">Вибір вторинних навичок</translation>
     </message>
     <message>
-        <location filename="../templateeditor/entitiesselector.cpp" line="91"/>
+        <location filename="../templateeditor/entitiesselector.cpp" line="92"/>
         <source>Hero Type Selector</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
         <translation type="unfinished">Вибір типу героя</translation>
     </message>
 </context>
@@ -5027,139 +4732,122 @@ Guard: %3</source>
     <message>
         <location filename="../validator.ui" line="17"/>
         <source>Map validation results</source>
-        <translation>Результати валідації карти</translation>
+        <translation>Результати перевірки мапи</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="46"/>
+        <location filename="../validator.cpp" line="50"/>
         <source>Map is not loaded</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Карту не завантажено</translation>
+        <translation>Мапу не завантажено</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="68"/>
+        <location filename="../validator.cpp" line="72"/>
         <source>No factions allowed for player %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравцю %1 не дозволено жодної фракції</translation>
-    </message>
-    <message>
-        <location filename="../validator.cpp" line="71"/>
-        <source>No players allowed to play this map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Жодному гравцю не дозволено грати на цій карті</translation>
-    </message>
-    <message>
-        <location filename="../validator.cpp" line="73"/>
-        <source>Map is allowed for one player and cannot be started</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Карта дозволена лише для одного гравця і не може бути запущена</translation>
+        <translation>Гравцю %1 не дозволено жодної фракції</translation>
     </message>
     <message>
         <location filename="../validator.cpp" line="75"/>
+        <source>No players allowed to play this map</source>
+        <translation>Жодному гравцю не дозволено грати на цій мапі</translation>
+    </message>
+    <message>
+        <location filename="../validator.cpp" line="77"/>
+        <source>Map is allowed for one player and cannot be started</source>
+        <translation>Мапа дозволена лише для одного гравця і не може бути запущена</translation>
+    </message>
+    <message>
+        <location filename="../validator.cpp" line="79"/>
         <source>No human players allowed to play this map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Жодному людському гравцю не дозволено грати на цій карті</translation>
+        <translation>Жодному людському гравцю не дозволено грати на цій мапі</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="95"/>
+        <location filename="../validator.cpp" line="99"/>
         <source>Object %1 is assigned to non-playable player %2</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Об&apos;єкт %1 призначено недоступному для гри гравцю %2</translation>
+        <translation>Об&apos;єкт %1 належить недоступному для гри гравцю %2</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="140"/>
+        <location filename="../validator.cpp" line="144"/>
         <source>Spell scroll %1 doesn&apos;t have instance assigned and must be removed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сувій закляття %1 не має призначеного екземпляру й має бути видалений</translation>
+        <translation>Сувій закляття %1 не має призначеного екземпляру й має бути видалений</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="146"/>
+        <location filename="../validator.cpp" line="150"/>
         <source>Artifact %1 is prohibited by map settings</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Артефакт %1 заборонено у налаштуваннях карти</translation>
+        <translation>Артефакт %1 заборонено у налаштуваннях мапи</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="160"/>
+        <location filename="../validator.cpp" line="178"/>
         <source>Player %1 has no towns and heroes assigned</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравець %1 не має міст і героїв</translation>
+        <translation>%1 гравець не має міст і героїв</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="108"/>
+        <location filename="../validator.cpp" line="112"/>
         <source>Prison %1 must be a NEUTRAL</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Тюрма %1 має бути НЕЙТРАЛЬНОЮ</translation>
+        <translation>Тюрма %1 має бути НЕЙТРАЛЬНОЮ</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="89"/>
+        <location filename="../validator.cpp" line="93"/>
         <source>Ownable object %1 is UNFLAGGABLE but must have NEUTRAL or player owner</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Придатний до володіння об&apos;єкт %1 є НЕПРАПОРОПОСТАВНИМ, але має мати НЕЙТРАЛЬНОГО або ігрового власника</translation>
+        <translation>Придатний до володіння об&apos;єкт %1 є ЗАВЖДИ НЕЙТРАЛЬНИЙ, але має мати НЕЙТРАЛЬНОГО або ігрового власника</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="113"/>
+        <location filename="../validator.cpp" line="117"/>
         <source>Hero %1 must have an owner</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герой %1 має мати власника</translation>
+        <translation>Герой %1 має мати власника</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="120"/>
+        <location filename="../validator.cpp" line="124"/>
         <source>Hero %1 is prohibited by map settings</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Героя %1 заборонено у налаштуваннях карти</translation>
+        <translation>Героя %1 заборонено у налаштуваннях мапи</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="123"/>
+        <location filename="../validator.cpp" line="127"/>
         <source>Hero %1 has duplicate on map</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герой %1 дублюється на карті</translation>
+        <translation>Герой %1 дублюється на мапі</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="126"/>
+        <location filename="../validator.cpp" line="130"/>
         <source>Hero %1 has an empty type and must be removed</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Герой %1 має порожній тип і має бути видалений</translation>
+        <translation>Герой %1 має порожній тип і має бути видалений</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="137"/>
+        <location filename="../validator.cpp" line="141"/>
         <source>Spell scroll %1 is prohibited by map settings</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Сувій закляття %1 заборонено у налаштуваннях карти</translation>
+        <translation>Сувій закляття %1 заборонено у налаштуваннях мапи</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="162"/>
+        <location filename="../validator.cpp" line="163"/>
+        <source>A customized witch hut at x: %1 y: %2 on %3 layer does not hold a valid secondary skill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../validator.cpp" line="180"/>
         <source>Player %1 doesn&apos;t have any starting town</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравець %1 не має жодного стартового міста</translation>
+        <translation>Гравець %1 не має жодного стартового міста</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="168"/>
+        <location filename="../validator.cpp" line="186"/>
         <source>Map name is not specified</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Назва карти не вказана</translation>
+        <translation>Мапа не має назви</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="170"/>
+        <location filename="../validator.cpp" line="188"/>
         <source>Map description is not specified</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Опис карти не вказаний</translation>
+        <translation>Мапа не має опису</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="208"/>
+        <location filename="../validator.cpp" line="226"/>
         <source>The map is valid and has no issues.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Карта дійсна і не має проблем.</translation>
+        <translation>Мапа дійсна і не має проблем.</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="181"/>
+        <location filename="../validator.cpp" line="199"/>
         <source>Exception occurs during validation: %1</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Під час перевірки сталася помилка: %1</translation>
+        <translation>Під час перевірки сталася помилка: %1</translation>
     </message>
     <message>
-        <location filename="../validator.cpp" line="185"/>
+        <location filename="../validator.cpp" line="203"/>
         <source>Unknown exception occurs during validation</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Невідома помилка під час перевірки</translation>
+        <translation>Невідома помилка під час перевірки</translation>
     </message>
 </context>
 <context>
@@ -5167,8 +4855,7 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/victoryconditions.ui" line="14"/>
         <source>Form</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Форма</translation>
+        <translation>Вікно</translation>
     </message>
     <message>
         <location filename="../mapsettings/victoryconditions.ui" line="40"/>
@@ -5233,14 +4920,12 @@ Guard: %3</source>
     <message>
         <location filename="../mapsettings/victoryconditions.cpp" line="49"/>
         <source>Kill monster</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Вбити монстра</translation>
+        <translation>Вбити монстра</translation>
     </message>
     <message>
         <location filename="../mapsettings/victoryconditions.cpp" line="435"/>
         <source>Any town</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Будь-яке місто</translation>
+        <translation>Будь-яке місто</translation>
     </message>
 </context>
 <context>
@@ -5256,12 +4941,12 @@ Guard: %3</source>
         <translation>Розмір мапи</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="200"/>
+        <location filename="../windownewmap.ui" line="215"/>
         <source>Height</source>
         <translation>Висота</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="174"/>
+        <location filename="../windownewmap.ui" line="176"/>
         <source>Width</source>
         <translation>Ширина</translation>
     </message>
@@ -5271,258 +4956,250 @@ Guard: %3</source>
         <translation>ДВ (144x144)</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="328"/>
+        <location filename="../windownewmap.ui" line="357"/>
         <source>Random map</source>
         <translation>Випадкова мапа</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="340"/>
+        <location filename="../windownewmap.ui" line="369"/>
         <source>Players</source>
         <translation>Гравців</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="93"/>
         <source>S  (36x36)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">S  (36x36)</translation>
+        <translation>S  (36x36)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="98"/>
         <source>M  (72x72)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">M  (72x72)</translation>
+        <translation>M  (72x72)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="103"/>
         <source>L  (108x108)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">L  (108x108)</translation>
+        <translation>L  (108x108)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="113"/>
         <source>H  (180x180)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">H  (180x180)</translation>
+        <translation>H  (180x180)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="118"/>
         <source>XH (216x216)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">XH (216x216)</translation>
+        <translation>XH (216x216)</translation>
     </message>
     <message>
         <location filename="../windownewmap.ui" line="123"/>
         <source>G  (252x252)</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">G  (252x252)</translation>
+        <translation>G  (252x252)</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="286"/>
+        <location filename="../windownewmap.ui" line="312"/>
         <source>Levels</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Рівні</translation>
+        <translation>Рівнів</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="368"/>
-        <location filename="../windownewmap.ui" line="499"/>
-        <location filename="../windownewmap.ui" line="590"/>
-        <location filename="../windownewmap.ui" line="730"/>
+        <location filename="../windownewmap.ui" line="397"/>
+        <location filename="../windownewmap.ui" line="528"/>
+        <location filename="../windownewmap.ui" line="619"/>
+        <location filename="../windownewmap.ui" line="759"/>
         <source>Random</source>
         <translation>Випадково</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="460"/>
+        <location filename="../windownewmap.ui" line="489"/>
         <source>Human teams</source>
         <translation>Команди людей</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="447"/>
+        <location filename="../windownewmap.ui" line="476"/>
         <source>Computer teams</source>
         <translation>Команди комп&apos;ютерів</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="239"/>
+        <location filename="../windownewmap.ui" line="265"/>
         <source>Standard size</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Стандартний розмір</translation>
+        <translation>Стандартний розмір</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="264"/>
+        <location filename="../windownewmap.ui" line="290"/>
         <source>Custom size</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Користувацький розмір</translation>
+        <translation>Користувацький розмір</translation>
     </message>
     <message>
-        <source>Underground</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="obsolete">Підземелля</translation>
-    </message>
-    <message>
-        <location filename="../windownewmap.ui" line="428"/>
+        <location filename="../windownewmap.ui" line="457"/>
         <source>Humans</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Люди</translation>
+        <translation>Людей</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="491"/>
+        <location filename="../windownewmap.ui" line="520"/>
         <source>Computers</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Комп&apos;ютери</translation>
+        <translation>Штучних Інтелектів</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="557"/>
+        <location filename="../windownewmap.ui" line="586"/>
         <source>Monster strength</source>
         <translation>Сила монстрів</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="618"/>
+        <location filename="../windownewmap.ui" line="647"/>
         <source>Weak</source>
         <translation>Слабкі</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="643"/>
-        <location filename="../windownewmap.ui" line="783"/>
+        <location filename="../windownewmap.ui" line="672"/>
+        <location filename="../windownewmap.ui" line="812"/>
         <source>Normal</source>
         <translation>Типова</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="668"/>
+        <location filename="../windownewmap.ui" line="697"/>
         <source>Strong</source>
         <translation>Сильні</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="697"/>
+        <location filename="../windownewmap.ui" line="726"/>
         <source>Water content</source>
         <translation>Наявність води</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="758"/>
+        <location filename="../windownewmap.ui" line="787"/>
         <source>None</source>
         <translation>Відсутня</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="808"/>
+        <location filename="../windownewmap.ui" line="837"/>
         <source>Islands</source>
         <translation>Острови</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="837"/>
+        <location filename="../windownewmap.ui" line="866"/>
         <source>Roads</source>
         <translation>Шляхи</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="858"/>
+        <location filename="../windownewmap.ui" line="887"/>
         <source>Dirt</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Ґрунт</translation>
+        <translation>Грунтова</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="871"/>
+        <location filename="../windownewmap.ui" line="900"/>
         <source>Gravel</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гравій</translation>
+        <translation>Гравійна</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="884"/>
+        <location filename="../windownewmap.ui" line="913"/>
         <source>Cobblestone</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Бруківка</translation>
+        <translation>Бруківка</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="917"/>
-        <location filename="../windownewmap.ui" line="944"/>
+        <location filename="../windownewmap.ui" line="946"/>
+        <location filename="../windownewmap.ui" line="973"/>
         <source>Template</source>
         <translation>Шаблон</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="982"/>
+        <location filename="../windownewmap.ui" line="1011"/>
         <source>Custom seed</source>
         <translation>Користувацьке зерно</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="1013"/>
+        <location filename="../windownewmap.ui" line="1048"/>
         <source>Generate random map</source>
-        <translation>Згенерувати випадкову карту</translation>
+        <translation>Згенерувати випадкову мапу</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="1041"/>
+        <location filename="../windownewmap.ui" line="1076"/>
         <source>OK</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Гаразд</translation>
+        <translation>Гаразд</translation>
     </message>
     <message>
-        <location filename="../windownewmap.ui" line="1060"/>
+        <location filename="../windownewmap.ui" line="1095"/>
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../windownewmap.cpp" line="285"/>
+        <location filename="../windownewmap.cpp" line="297"/>
         <source>No template</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Шаблон відсутній</translation>
+        <translation>Шаблон відсутній</translation>
     </message>
     <message>
-        <location filename="../windownewmap.cpp" line="285"/>
+        <location filename="../windownewmap.cpp" line="297"/>
         <source>No template for parameters specified. Random map cannot be generated.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Немає шаблону для вказаних параметрів. Неможливо згенерувати випадкову карту.</translation>
+        <translation>Немає шаблону для вказаних параметрів. Неможливо згенерувати випадкову мапу.</translation>
     </message>
     <message>
-        <location filename="../windownewmap.cpp" line="307"/>
+        <location filename="../windownewmap.cpp" line="319"/>
         <source>RMG failure</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Помилка генерації випадкової карти</translation>
+        <translation>Помилка генерації випадкової мапи</translation>
     </message>
     <message>
-        <location filename="../windownewmap.cpp" line="334"/>
+        <location filename="../windownewmap.cpp" line="346"/>
         <source>Multilevel support</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підтримка кількох рівнів</translation>
+        <translation>Підтримка багаторівневих мап</translation>
     </message>
     <message>
-        <location filename="../windownewmap.cpp" line="334"/>
+        <location filename="../windownewmap.cpp" line="346"/>
         <source>Multilevel support is highly experimental yet. Expect issues.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Підтримка кількох рівнів поки що дуже експериментальна. Можливі проблеми.</translation>
+        <translation>Підтримка багаторівневих мап поки що дуже експериментальна. Можливі проблеми.</translation>
     </message>
     <message>
-        <location filename="../windownewmap.cpp" line="455"/>
+        <location filename="../windownewmap.cpp" line="467"/>
         <source>[default]</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">[типово]</translation>
+        <translation>[типово]</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
-        <location filename="../mainwindow.cpp" line="108"/>
+        <location filename="../mainwindow.cpp" line="195"/>
         <source>Filepath of the map to open.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Шлях до файлу карти, яку слід відкрити.</translation>
+        <translation>Шлях до файлу мапи, яку слід відкрити.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="111"/>
+        <location filename="../mainwindow.cpp" line="198"/>
         <source>Extract original H3 archives into a separate folder.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Розпакувати оригінальні архіви H3 у окрему папку.</translation>
+        <translation>Розпакувати оригінальні архіви H3 у окрему теку.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="112"/>
+        <location filename="../mainwindow.cpp" line="199"/>
         <source>From an extracted archive, it Splits TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 and Un44 into individual PNG&apos;s.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">З розпакованого архіву розділяє TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 та Un44 на окремі PNG&apos;шки.</translation>
+        <translation>З розпакованого архіву розділити TwCrPort, CPRSMALL, FlagPort, ITPA, ITPt, Un32 та Un44 на окремі PNG файли.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="113"/>
+        <location filename="../mainwindow.cpp" line="200"/>
         <source>From an extracted archive, Converts single Images (found in Images folder) from .pcx to png.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">З розпакованого архіву конвертує окремі зображення (з папки Images) з .pcx у .png.</translation>
+        <translation>З розпакованого архіву перетворити окремі зображення (з папки Images) з .pcx у .png.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="114"/>
+        <location filename="../mainwindow.cpp" line="201"/>
         <source>Delete original files, for the ones split / converted.</source>
-        <translatorcomment>AI-generated, needs review by native speaker; delete this comment afterwards</translatorcomment>
-        <translation type="unfinished">Видалити оригінальні файли для тих, які були розділені або конвертовані.</translation>
+        <translation>Видалити вихідні файли для тих, які були розділені або перетворені.</translation>
+    </message>
+</context>
+<context>
+    <name>std</name>
+    <message>
+        <source>Terrain Selector</source>
+        <translation type="vanished">Вибір ґрунту</translation>
+    </message>
+    <message>
+        <source>Spell Selector</source>
+        <translation type="vanished">Вибір заклять</translation>
+    </message>
+    <message>
+        <source>Artifact Selector</source>
+        <translation type="vanished">Вибір артефактів</translation>
+    </message>
+    <message>
+        <source>Skill Selector</source>
+        <translation type="vanished">Вибір вторинних навичок</translation>
+    </message>
+    <message>
+        <source>Hero Type Selector</source>
+        <translation type="vanished">Вибір типу героя</translation>
     </message>
 </context>
 </TS>

@@ -120,6 +120,14 @@ HeroTypeID MapReaderH3M::readHero()
 	return remapIdentifier(result);
 }
 
+HeroTypeID MapReaderH3M::readHero32()
+{
+	HeroTypeID result(reader->readInt32());
+
+	assert(result.getNum() < features.heroesCount);
+	return remapIdentifier(result);
+}
+
 HeroTypeID MapReaderH3M::readHeroPortrait()
 {
 	HeroTypeID result(reader->readUInt8());
@@ -136,7 +144,7 @@ HeroTypeID MapReaderH3M::readHeroPortrait()
 	return remapper.remapPortrait(result);
 }
 
-CreatureID MapReaderH3M::readCreature32()
+CreatureID MapReaderH3M::readCreature32(const std::string & context)
 {
 	CreatureID result(reader->readUInt32());
 
@@ -153,11 +161,14 @@ CreatureID MapReaderH3M::readCreature32()
 	if (randomIndex.getNum() > -16)
 		return randomIndex;
 
-	logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	if(context.empty())
+		logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	else
+		logGlobal->warn("Map contains invalid creature %d in %s. Will be removed!", result.getNum(), context);
 	return CreatureID::NONE;
 }
 
-CreatureID MapReaderH3M::readCreature()
+CreatureID MapReaderH3M::readCreature(const std::string & context)
 {
 	CreatureID result;
 
@@ -179,30 +190,81 @@ CreatureID MapReaderH3M::readCreature()
 	if (randomIndex.getNum() > -16)
 		return randomIndex;
 
-	logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	if(context.empty())
+		logGlobal->warn("Map contains invalid creature %d. Will be removed!", result.getNum());
+	else
+		logGlobal->warn("Map contains invalid creature %d in %s. Will be removed!", result.getNum(), context);
 	return CreatureID::NONE;
+}
+
+FactionID MapReaderH3M::readFaction32()
+{
+	FactionID result(readInt32());
+	assert(result.getNum() < features.factionsCount);
+	return remapIdentifier(result);
 }
 
 TerrainId MapReaderH3M::readTerrain()
 {
-	TerrainId result(readUInt8());
-	assert(result.getNum() < features.terrainsCount);
+	uint8_t raw = readUInt8();
+
+	if(raw >= features.terrainsCount)
+	{
+		// Map uses terrain index we don't support (e.g. extended terrain from other editor/mod)
+		// Fallback: clamp to last known terrain
+		logGlobal->warn(
+			"MapReaderH3M::readTerrain: map uses terrain %u but only %u types are supported. "
+			"Clamping to %u.",
+			raw, features.terrainsCount, features.terrainsCount ? features.terrainsCount - 1 : 0);
+
+		raw = features.terrainsCount ? features.terrainsCount - 1 : 0;
+	}
+
+	TerrainId result(raw);
 	return remapIdentifier(result);
 }
 
 RoadId MapReaderH3M::readRoad()
 {
-	RoadId result(readInt8());
-	assert(result.getNum() <= features.roadsCount);
-	return result;
+	const uint8_t raw = readInt8();
+	// Keep low 3 bits as road type; discard high-bit flags set by some editors (HotA?)
+	uint8_t type = raw & 0x07;
+
+	if(type > features.roadsCount)
+	{
+		// Map uses extended road type not supported by current config.
+		// Fallback: use the last supported road type (usually cobblestone).
+		logGlobal->warn(
+			"MapReaderH3M::readRoad: map uses road type %u but only %u types are supported. "
+			"Clamping to %u.",
+			type, features.roadsCount, features.roadsCount);
+
+		type = features.roadsCount;
+	}
+
+	return RoadId(type);
 }
 
 RiverId MapReaderH3M::readRiver()
 {
 	const uint8_t raw = readInt8();
-	// Keep low 3 bits as river type (0..4); discard high-bit flags set by some editors (HotA ?)
-	const uint8_t type = raw & 0x07;
-	assert(type <= features.riversCount);
+	// Keep low 3 bits as river type (0..7); discard high-bit flags set by some editors (HotA?)
+	uint8_t type = raw & 0x07;
+
+	if(type > features.riversCount)
+	{
+		// Map uses extended river type not supported by our config
+		// Fallback: clamp to last supported river type
+		const uint8_t fallback = features.riversCount ? features.riversCount : 0;
+
+		logGlobal->warn(
+			"MapReaderH3M::readRiver: map uses river type %u but only %u types are supported. "
+			"Clamping to %u.",
+			type, features.riversCount, fallback);
+
+		type = fallback;
+	}
+
 	return RiverId(type);
 }
 
@@ -213,9 +275,23 @@ PrimarySkill MapReaderH3M::readPrimary()
 	return result;
 }
 
+PrimarySkill MapReaderH3M::readPrimary32()
+{
+	PrimarySkill result(readInt32());
+	assert(result <= PrimarySkill::KNOWLEDGE );
+	return result;
+}
+
 SecondarySkill MapReaderH3M::readSkill()
 {
 	SecondarySkill result(readUInt8());
+	assert(result.getNum() < features.skillsCount);
+	return remapIdentifier(result);
+}
+
+SecondarySkill MapReaderH3M::readSkill32()
+{
+	SecondarySkill result(readInt32());
 	assert(result.getNum() < features.skillsCount);
 	return remapIdentifier(result);
 }
@@ -257,6 +333,13 @@ GameResID MapReaderH3M::readGameResID()
 	return result;
 }
 
+GameResID MapReaderH3M::readGameResID32()
+{
+	GameResID result(readInt32());
+	assert(result.getNum() < features.resourcesCount);
+	return result;
+}
+
 PlayerColor MapReaderH3M::readPlayer()
 {
 	uint8_t value = readUInt8();
@@ -287,6 +370,12 @@ PlayerColor MapReaderH3M::readPlayer32()
 	}
 
 	return PlayerColor(value);
+}
+
+BuildingID MapReaderH3M::readBuilding32(std::optional<FactionID> faction)
+{
+	uint32_t value = readUInt32();
+	return remapper.remapBuilding(faction, value);
 }
 
 void MapReaderH3M::readBitmaskBuildings(std::set<BuildingID> & dest, std::optional<FactionID> faction)
@@ -437,10 +526,17 @@ void MapReaderH3M::readResources(TResources & resources)
 
 bool MapReaderH3M::readBool()
 {
-	uint8_t result = readUInt8();
-	assert(result == 0 || result == 1);
+	const uint8_t raw = readUInt8();
 
-	return result != 0;
+	if(raw != 0 && raw != 1)
+	{
+		logGlobal->warn(
+			"MapReaderH3M: invalid bool value %u in H3M data, using LSB (%u) as value",
+			static_cast<unsigned>(raw),
+			static_cast<unsigned>(raw & 1));
+	}
+
+	return (raw & 1) != 0;
 }
 
 int8_t MapReaderH3M::readInt8Checked(int8_t lowerLimit, int8_t upperLimit)

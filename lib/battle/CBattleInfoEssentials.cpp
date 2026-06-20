@@ -13,6 +13,8 @@
 #include "../CStack.h"
 #include "BattleInfo.h"
 #include "CObstacleInstance.h"
+#include "GameLibrary.h"
+#include "IGameSettings.h"
 
 #include "../constants/EntityIdentifiers.h"
 #include "../entities/building/TownFortifications.h"
@@ -125,7 +127,7 @@ TStacks CBattleInfoEssentials::battleGetAllStacks(bool includeTurrets) const
 
 battle::Units CBattleInfoEssentials::battleGetAllUnits(bool includeTurrets) const
 {
-	return battleGetUnitsIf([=](const battle::Unit * unit)
+	return battleGetUnitsIf([includeTurrets](const battle::Unit * unit)
 	{
 		return !unit->isGhost() && (includeTurrets || !unit->isTurret());
 	});
@@ -182,6 +184,28 @@ const CGTownInstance * CBattleInfoEssentials::battleGetDefendedTown() const
 	return getBattle()->getDefendedTown();
 }
 
+bool CBattleInfoEssentials::hasFortifications() const
+{
+	const auto * town = battleGetDefendedTown();
+	return town != nullptr && town->fortificationsLevel().wallsHealth > 0;
+}
+
+bool CBattleInfoEssentials::hasMoat() const
+{
+	return battleGetFortifications().hasMoat;
+}
+
+BattleHex CBattleInfoEssentials::getTowerShooterHex(EWallPart part) const
+{
+	switch(part)
+	{
+		case EWallPart::KEEP:         return BattleHex(BattleHex::CASTLE_CENTRAL_TOWER);
+		case EWallPart::BOTTOM_TOWER: return BattleHex(BattleHex::CASTLE_BOTTOM_TOWER);
+		case EWallPart::UPPER_TOWER:  return BattleHex(BattleHex::CASTLE_UPPER_TOWER);
+		default:                      return BattleHex(BattleHex::INVALID);
+	}
+}
+
 BattleSide CBattleInfoEssentials::battleGetMySide() const
 {
 	RETURN_IF_NOT_BATTLE(BattleSide::INVALID);
@@ -228,6 +252,12 @@ BattleSide CBattleInfoEssentials::battleGetTacticsSide() const
 {
 	RETURN_IF_NOT_BATTLE(BattleSide::NONE);
 	return getBattle()->getTacticsSide();
+}
+
+int32_t CBattleInfoEssentials::battleGetRound() const
+{
+	RETURN_IF_NOT_BATTLE(-1);
+	return getBattle()->getRound();
 }
 
 const CGHeroInstance * CBattleInfoEssentials::battleGetFightingHero(BattleSide side) const
@@ -295,12 +325,17 @@ bool CBattleInfoEssentials::battleCanFlee(const PlayerColor & player) const
 
 	const CGHeroInstance * myHero = battleGetFightingHero(side);
 
-	//current player have no hero
+	//current player has no hero
 	if(!myHero)
 		return false;
 
-	//eg. one of heroes is wearing shakles of war
+	//eg. one of heroes is wearing shackles of war
 	if(myHero->hasBonusOfType(BonusType::BATTLE_NO_FLEEING) && battleHasHero(otherSide(side)))
+		return false;
+
+	//cannot flee after casting spell in X first turns as attacker
+	if(getBattle()->getRound() <= LIBRARY->engineSettings()->getInteger(EGameSettings::COMBAT_NO_SPELL_HIT_AND_RUN_ROUNDS)
+		&& side == BattleSide::ATTACKER &&  battleHasHero(otherSide(side)) && getBattle()->getCastSpells(side) >= 1)
 		return false;
 
 	//we are besieged defender
