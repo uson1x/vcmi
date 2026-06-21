@@ -113,6 +113,11 @@ class CServerHandler final : public IServerAPI, public LobbyInfo, public INetwor
 
 	std::atomic<EClientState> state;
 
+	// Set when the network thread terminates due to a GameShutdownException (e.g. an
+	// onlyAI/headless testmap game ending via player elimination). Headless mode has no
+	// GUI main loop to catch that exception, so EntryPoint's idle loop polls this to exit.
+	std::atomic<bool> gameplayShutdownReceived = false;
+
 	void threadRunNetwork();
 	void waitForServerShutdown();
 
@@ -169,6 +174,10 @@ public:
 
 	EClientState getState() const;
 	void setState(EClientState newState);
+
+	/// True once the network thread has caught a GameShutdownException (game ended).
+	/// Polled by the headless EntryPoint idle loop, which has no GUI loop to catch it.
+	bool wasGameplayShutdownReceived() const { return gameplayShutdownReceived; }
 
 	bool isHost() const;
 	bool isGuest() const;

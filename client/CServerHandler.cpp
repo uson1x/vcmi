@@ -146,6 +146,9 @@ void CServerHandler::threadRunNetwork()
 	{
 		// In debug-test / AI-only flows the client can request shutdown from netpack handling.
 		// This exception is control-flow and should terminate the network thread cleanly.
+		// Signal the headless idle loop (which has no GUI main loop to catch this exception)
+		// so an onlyAI testmap game that ends via elimination exits instead of hanging.
+		gameplayShutdownReceived = true;
 		SDL_TLSCleanup();
 		logGlobal->info("Game shutdown requested, terminating network thread");
 		return;

@@ -405,7 +405,12 @@ int main(int argc, char * argv[])
 			}
 			else
 			{
-				while(!headlessQuit)
+				// Headless has no GUI main loop to catch GameShutdownException, so exit
+				// when the game ends. The network thread sets gameplayShutdownReceived when
+				// it catches that exception (e.g. an onlyAI testmap game ending via
+				// elimination); without this the idle loop spins forever and the process
+				// hangs with the winner already decided.
+				while(!headlessQuit && !(GAME && GAME->server().wasGameplayShutdownReceived()))
 					std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -422,8 +427,14 @@ int main(int argc, char * argv[])
 	{
 		{
 			//aquire interfaceMutex to prevent undefined behavior on vstd::makeUnlockGuard(ENGINE->interfaceMutex)
-			std::scoped_lock interfaceLock(ENGINE->interfaceMutex);
-			GAME->server().endNetwork();
+			//ENGINE is null in headless mode, where there is no interface to protect.
+			if (ENGINE)
+			{
+				std::scoped_lock interfaceLock(ENGINE->interfaceMutex);
+				GAME->server().endNetwork();
+			}
+			else
+				GAME->server().endNetwork();
 		}
 
 		if(!settings["session"]["headless"].Bool())
@@ -445,7 +456,8 @@ int main(int argc, char * argv[])
 		}
 
 		// must be executed before reset - since unique_ptr resets pointer to null before calling destructor
-		ENGINE->async().wait();
+		if (ENGINE)
+			ENGINE->async().wait();
 
 		ENGINE.reset();
 
