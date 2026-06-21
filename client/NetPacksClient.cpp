@@ -433,6 +433,16 @@ void ApplyClientNetPackVisitor::visitPlayerEndsGame(PlayerEndsGame & pack)
 	{
 		logAi->info("Red player %s. Ending game.", pack.victoryLossCheckResult.victory() ? "won" : "lost");
 
+		// onlyAI / headless: the human end-game teardown above did not run, so any
+		// background AI turn threads (e.g. Nullkiller mid-turn or its level-up reply)
+		// are still active. onShutdownRequested() below throws GameShutdownException,
+		// which tears down the network thread; an AI worker blocked in
+		// sendRequest(waitTillRealize=true) would then be orphaned (its request can
+		// never be realized) and the process deadlocks. finishGameplay() releases the
+		// pending requests and interrupts/joins those worker threads first.
+		if(!(lastHumanEndsGame || localHumanWinsGame || pack.silentEnd))
+			cl.finishGameplay();
+
 		GAME->onShutdownRequested(settings["session"]["spectate"].Bool()); // if spectator is active ask to close client or not
 	}
 }
