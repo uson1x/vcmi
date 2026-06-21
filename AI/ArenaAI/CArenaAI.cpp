@@ -2,6 +2,7 @@
 #include "CArenaAI.h"
 
 #include "../../lib/callback/CCallback.h"
+#include "../../lib/ConditionalWait.h"
 #include "../../lib/battle/BattleAction.h"
 #include "../../lib/constants/Enumerations.h"
 #include "../../lib/GameConstants.h"
@@ -1427,6 +1428,12 @@ void CArenaAI::yourTurn(QueryID queryID)
 }
 
 void CArenaAI::runTurn(QueryID queryID)
+// Function-try-block: when the game ends (e.g. our own move gets red's last hero
+// killed -> elimination -> game-end teardown), finishGameplay() interrupts our
+// in-flight sendRequest, which throws TerminationRequestedException up this worker
+// thread. Without catching it the exception escapes the thread -> std::terminate
+// (process aborts with the winner already decided). Swallow it for a clean exit.
+try
 {
 	if(queryID.getNum() >= 0)
 		answerQuery(queryID, 0);
@@ -1488,6 +1495,11 @@ void CArenaAI::runTurn(QueryID queryID)
 
 	if(!aborting)
 		cb->endTurn();
+}
+catch(const TerminationRequestedException &)
+{
+	// Game ended while this turn was in flight; the worker is being joined. Exit cleanly.
+	logAi->info("ArenaAI: turn interrupted by game shutdown");
 }
 
 void CArenaAI::waitForBattles()
