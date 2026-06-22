@@ -36,6 +36,78 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/program_options.hpp>
 
+namespace
+{
+// Reads an integer environment variable. Returns true and writes `out` only when
+// the variable is set to a parseable integer; leaves `out` untouched otherwise.
+bool arenaEnvInt(const char * name, int & out)
+{
+	const char * raw = std::getenv(name);
+	if(raw == nullptr || raw[0] == '\0')
+		return false;
+	try
+	{
+		out = std::stoi(std::string(raw));
+		return true;
+	}
+	catch(const std::exception &)
+	{
+		return false;
+	}
+}
+
+// Arena benchmark hook: lets the headless harness weaken the AI opponent without
+// rebuilding the engine, by reading overrides from the environment just before the
+// game state is built. Only active when the corresponding env vars are set, so it
+// is a no-op for normal play.
+//
+//   ARENA_GAME_DIFFICULTY        global difficulty (0=easy .. 4=impossible)
+//   ARENA_DEFENDER_HANDICAP_INCOME  per-player income handicap (percent)
+//   ARENA_DEFENDER_HANDICAP_GROWTH  per-player creature-growth handicap (percent)
+//   ARENA_HANDICAP_PLAYER_INDEX     which player (color order) gets the handicap;
+//                                   default 1 = second player (blue / NK2 defender)
+//
+// The handicap targets a single player so the LLM-controlled side (red, index 0) is
+// untouched while the native opponent (blue, index 1) is throttled.
+void applyArenaHandicapFromEnv(StartInfo & si)
+{
+	int difficulty = 0;
+	if(arenaEnvInt("ARENA_GAME_DIFFICULTY", difficulty))
+	{
+		difficulty = std::clamp(difficulty, 0, 4);
+		si.difficulty = static_cast<ui8>(difficulty);
+		logGlobal->info("[arena] difficulty overridden to %d", difficulty);
+	}
+
+	int incomePct = 100;
+	int growthPct = 100;
+	const bool hasIncome = arenaEnvInt("ARENA_DEFENDER_HANDICAP_INCOME", incomePct);
+	const bool hasGrowth = arenaEnvInt("ARENA_DEFENDER_HANDICAP_GROWTH", growthPct);
+	if(!hasIncome && !hasGrowth)
+		return;
+
+	int targetIndex = 1;
+	arenaEnvInt("ARENA_HANDICAP_PLAYER_INDEX", targetIndex);
+
+	int idx = 0;
+	for(auto & playerInfo : si.playerInfos) // ordered by PlayerColor: 0=red, 1=blue, ...
+	{
+		if(idx == targetIndex)
+		{
+			Handicap & handicap = playerInfo.second.handicap;
+			if(hasIncome)
+				handicap.percentIncome = std::max(1, incomePct);
+			if(hasGrowth)
+				handicap.percentGrowth = std::max(1, growthPct);
+			logGlobal->info("[arena] handicap on player %s: income=%d%% growth=%d%%",
+				playerInfo.first.toString(), handicap.percentIncome, handicap.percentGrowth);
+			break;
+		}
+		++idx;
+	}
+}
+} // namespace
+
 class CVCMIServerPackVisitor : public VCMI_LIB_WRAP_NAMESPACE(ICPackVisitor)
 {
 private:
@@ -304,6 +376,7 @@ bool CVCMIServer::prepareToStartGame()
 			logNetwork->info("Preparing to start new game");
 			si->startTime = std::time(nullptr);
 			si->fileURI = mi->fileURI;
+			applyArenaHandicapFromEnv(*si);
 			newGH->init(si.get(), progressTracking);	// may throw
 			started = true;
 			break;
