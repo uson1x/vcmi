@@ -490,14 +490,20 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 	// destination tile. Surfaced on the move option so the model can compare it to its
 	// own army_power and refuse fights it can only win by bleeding out (the T1 failure
 	// mode: the hero won guard battles for territory but lost its army doing it).
-	auto guardPowerAt = [this](const int3 & pos, std::string & nameOut) -> long long {
+	auto guardPowerAt = [this](const int3 & pos, std::string & nameOut, long long & countOut) -> long long {
 		long long total = 0;
+		countOut = 0;
 		for(const auto * guard : cb->getGuardingCreatures(pos))
 		{
 			const auto * armed = dynamic_cast<const CArmedInstance *>(guard);
 			if(armed == nullptr)
 				continue;
 			total += static_cast<long long>(armed->getArmyStrength());
+			// Total creature head-count across the guard's stacks. The harness renders this as
+			// a fuzzy HoMM3 quantity descriptor ("a pack of Wolves") — what a real player sees,
+			// instead of the precise AI-value (which is not shown in-game).
+			for(const auto & slotPair : armed->Slots())
+				countOut += static_cast<long long>(armed->getStackCount(slotPair.first));
 			if(nameOut.empty())
 				nameOut = guard->getObjectName();
 		}
@@ -574,10 +580,12 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			option["turns_to_reach"].Integer() = 0;
 			option["move_remains"].Integer() = bestMoveRemains[oct];
 			std::string guardName;
-			const long long guardPower = guardPowerAt(dst, guardName);
+			long long guardCount = 0;
+			const long long guardPower = guardPowerAt(dst, guardName, guardCount);
 			if(guardPower > 0)
 			{
 				option["guard_power"].Integer() = guardPower;
+				option["guard_count"].Integer() = guardCount;
 				if(!guardName.empty())
 					option["guard_name"].String() = guardName;
 			}
@@ -652,10 +660,12 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			option["turns_to_reach"].Integer() = std::get<0>(target);
 			option["move_remains"].Integer() = std::get<1>(target);
 			std::string guardName;
-			const long long guardPower = guardPowerAt(opos, guardName);
+			long long guardCount = 0;
+			const long long guardPower = guardPowerAt(opos, guardName, guardCount);
 			if(guardPower > 0)
 			{
 				option["guard_power"].Integer() = guardPower;
+				option["guard_count"].Integer() = guardCount;
 				if(!guardName.empty())
 					option["guard_name"].String() = guardName;
 			}
