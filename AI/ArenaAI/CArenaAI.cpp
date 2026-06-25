@@ -412,6 +412,26 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		}
 		townNode["build_locked"] = buildLockedNodes;
 
+		// Optional diagnostic (env ARENA_DEBUG_BUILD_STATES=1): raw EBuildingState for every
+		// not-built building. Used to verify map facts like "dwellingLvl2-7 are FORBIDDEN on
+		// this map" — the skill requires proving structural claims, not inferring them. Off in
+		// production (no env), so it never reaches the model.
+		if(std::getenv("ARENA_DEBUG_BUILD_STATES") != nullptr)
+		{
+			JsonNode dbg;
+			dbg.setType(JsonNode::JsonType::DATA_VECTOR);
+			for(const auto & be : town->getTown()->buildings)
+			{
+				if(be.second.get() == nullptr || town->hasBuilt(be.first))
+					continue;
+				JsonNode n;
+				n["building"].String() = be.second->getJsonKey();
+				n["state_int"].Integer() = static_cast<int>(cb->canBuildStructure(town, be.first));
+				dbg.Vector().push_back(n);
+			}
+			townNode["build_all_states_DEBUG"] = dbg;
+		}
+
 		JsonNode recruitNodes;
 		recruitNodes.setType(JsonNode::JsonType::DATA_VECTOR);
 		for(size_t level = 0; level < town->creatures.size(); ++level)
