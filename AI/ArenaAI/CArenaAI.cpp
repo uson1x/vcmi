@@ -118,6 +118,24 @@ void pushResourceSnapshot(JsonNode & resourcesNode, const ResourceSet & resource
 	resourcesNode["gold"].Integer() = resources[EGameResID::GOLD];
 }
 
+// Emit only the NON-ZERO resource amounts of a building cost, the way the build
+// screen shows a price (e.g. {gold:1000, ore:5}). Lets the model see WHAT a
+// building costs and (combined with its resource bar) WHICH resource gates it.
+void pushBuildingCost(JsonNode & costNode, const ResourceSet & cost)
+{
+	static const std::pair<EGameResID, const char *> kinds[] = {
+		{EGameResID::WOOD, "wood"}, {EGameResID::MERCURY, "mercury"}, {EGameResID::ORE, "ore"},
+		{EGameResID::SULFUR, "sulfur"}, {EGameResID::CRYSTAL, "crystal"}, {EGameResID::GEMS, "gems"},
+		{EGameResID::GOLD, "gold"},
+	};
+	for(const auto & kind : kinds)
+	{
+		const int amount = cost[kind.first];
+		if(amount != 0)
+			costNode[kind.second].Integer() = amount;
+	}
+}
+
 // Render an army's stacks (hero or town garrison) so the model can reason about
 // specific creatures/counts instead of a single opaque army_power scalar. This is
 // the core of T2's "fight smart" visibility: knowing you have 5 weak stacks vs one
@@ -354,6 +372,45 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			buildingNodes.Vector().push_back(buildingNode);
 		}
 		townNode["buildings"] = buildingNodes;
+
+		// Build-screen view: buildings NOT yet built that are currently LOCKED — gated by
+		// missing RESOURCES or PREREQUISITES. A human reads this off the greyed-out build
+		// screen (each building shows its price and is greyed if unaffordable); without it
+		// the model cannot see WHICH resource gates its army (e.g. creature dwellings need
+		// ore), so it can never learn to go secure that resource. Each entry carries the
+		// full cost; the model compares it to its resource bar to see the shortfall.
+		JsonNode buildLockedNodes;
+		buildLockedNodes.setType(JsonNode::JsonType::DATA_VECTOR);
+		int lockedEmitted = 0;
+		for(const auto & buildingEntry : town->getTown()->buildings)
+		{
+			if(lockedEmitted >= MAX_BUILD_OPTIONS)
+				break;
+			const auto * building = buildingEntry.second.get();
+			if(building == nullptr)
+				continue;
+			if(town->hasBuilt(buildingEntry.first))
+				continue;
+			const auto state = cb->canBuildStructure(town, buildingEntry.first);
+			const char * stateStr = nullptr;
+			if(state == EBuildingState::NO_RESOURCES)
+				stateStr = "need_resources";
+			else if(state == EBuildingState::PREREQUIRES || state == EBuildingState::MISSING_BASE)
+				stateStr = "need_prereq";
+			else
+				continue; // ALLOWED is a legal action; skip FORBIDDEN/ALREADY_PRESENT/CANT_BUILD_TODAY/etc.
+
+			JsonNode node;
+			node["building"].String() = building->getJsonKey();
+			node["building_name"].String() = building->getNameTranslated();
+			node["state"].String() = stateStr;
+			JsonNode costNode;
+			pushBuildingCost(costNode, building->resources);
+			node["cost"] = costNode;
+			buildLockedNodes.Vector().push_back(node);
+			++lockedEmitted;
+		}
+		townNode["build_locked"] = buildLockedNodes;
 
 		JsonNode recruitNodes;
 		recruitNodes.setType(JsonNode::JsonType::DATA_VECTOR);
@@ -708,6 +765,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			option["town_id"].String() = townToken(town->id.getNum());
 			option["building"].String() = building->getJsonKey();
 			option["building_name"].String() = building->getNameTranslated();
+			JsonNode costNode;
+			pushBuildingCost(costNode, building->resources);
+			option["cost"] = costNode;
 			buildOptions.Vector().push_back(option);
 			++buildEmitted;
 		}
