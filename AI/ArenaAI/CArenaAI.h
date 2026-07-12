@@ -47,6 +47,16 @@ class CArenaAI : public CAdventureAI
 	// (which made the hero oscillate locally and never reach distant mines/towns).
 	std::map<int, int3> heroTravelGoals;
 
+	// The teleport exit the CURRENT move's path intends to come out of. Written by
+	// executeHeroMoveTo before it sends a move whose path transits a teleporter;
+	// consumed by showTeleportDialog to answer the exit-choice query with the
+	// pathfinder's exit instead of a blind first-option pick (which sent heroes out
+	// of the wrong monolith of a multi-exit channel and made them ping-pong between
+	// map pockets forever). Guarded by teleportExitMx: the dialog arrives on the
+	// network thread while the turn thread is still inside the move request.
+	std::mutex teleportExitMx;
+	int3 plannedTeleportExit = int3(-1, -1, -1);
+
 public:
 	~CArenaAI() override;
 	void initGameInterface(std::shared_ptr<Environment> env, std::shared_ptr<CCallback> callback) override;

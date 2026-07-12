@@ -30,6 +30,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <fstream>
 #include <limits>
 #include <set>
 #include <shared_mutex>
@@ -1665,8 +1666,44 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 	CGPath path;
 	std::vector<int3> tiles;
 	bool reachedDestination = false;
+	{
+		// New move, new intent: drop any stale exit choice from a previous move.
+		std::lock_guard<std::mutex> lock(teleportExitMx);
+		plannedTeleportExit = int3(-1, -1, -1);
+	}
+	const bool debugMove = []() {
+		const char * flag = std::getenv("ARENA_DEBUG_MOVE");
+		return flag != nullptr && flag[0] == '1';
+	}();
 	if(heroPaths.getPath(path, destination))
 	{
+		// Record which teleporter exit this path intends to come out of (the first
+		// teleport-action node), so the TeleportDialog that fires during the move —
+		// either from the immediate transit below or from WALKING onto the entrance
+		// later in the pack — is answered with the pathfinder's exit.
+		for(auto it = path.nodes.rbegin(); it != path.nodes.rend(); ++it)
+		{
+			if(it->coord != hero->visitablePos() && it->isTeleportAction())
+			{
+				std::lock_guard<std::mutex> lock(teleportExitMx);
+				plannedTeleportExit = it->coord;
+				break;
+			}
+		}
+		if(debugMove)
+		{
+			std::string nodesDump;
+			int dumped = 0;
+			for(auto it = path.nodes.rbegin(); it != path.nodes.rend() && dumped < 10; ++it, ++dumped)
+				nodesDump += it->coord.toString() + " a" + std::to_string(static_cast<int>(it->action))
+					+ " t" + std::to_string(static_cast<int>(it->turns)) + " | ";
+			std::ofstream dbg("/tmp/arena_move_debug.log", std::ios::app);
+			dbg << "move hero=" << hero->getNameTranslated()
+				<< " at=" << hero->visitablePos().toString()
+				<< " dest=" << destination.toString()
+				<< " stopBeforeCombat=" << stopBeforeCombat
+				<< " path: " << nodesDump << "\n";
+		}
 		// Mirror the client's HeroMovementController batch construction. Nodes are
 		// stored destination-first, so iterate in reverse (start -> destination).
 		// CRUCIAL: path coords are visitable positions; moveHero expects the hero's
@@ -1741,6 +1778,13 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 		}
 	}
 
+	if(debugMove)
+	{
+		std::ofstream dbg("/tmp/arena_move_debug.log", std::ios::app);
+		dbg << "  -> tiles=" << tiles.size()
+			<< " reached=" << reachedDestination
+			<< (path.nodes.empty() ? " NO_PATH" : "") << "\n";
+	}
 	if(!tiles.empty())
 		cb->moveHero(hero, tiles, false, EPathfindingLayer::AUTO);
 	return reachedDestination;
@@ -1953,17 +1997,37 @@ void CArenaAI::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID
 {
 	(void)hero;
 	(void)channel;
-	(void)impassable;
 
-	std::vector<int> options;
-	if(exits.empty())
-		options.push_back(0);
-	else
+	if(impassable || exits.empty())
+	{
+		answerQuery(askID, -1);
+		return;
+	}
+
+	// Prefer the exit the current move's path was computed through (mirrors the
+	// human client / NKAI). A blind first-option answer sent heroes out of the
+	// WRONG monolith of a multi-exit channel: the pathfinder re-planned through
+	// the teleporter, the dialog undid it again — a permanent cross-pocket
+	// ping-pong. -1 = let the server pick when we have no planned exit (manual
+	// model-driven entry with no teleport node in the path).
+	int3 wantedExit(-1, -1, -1);
+	{
+		std::lock_guard<std::mutex> lock(teleportExitMx);
+		wantedExit = plannedTeleportExit;
+		plannedTeleportExit = int3(-1, -1, -1);
+	}
+	if(wantedExit.isValid())
+	{
 		for(int idx = 0; idx < static_cast<int>(exits.size()); ++idx)
-			options.push_back(idx);
-
-	const int choice = chooseSelectionViaBridge(askID, "teleport_dialog", options, 0);
-	answerQuery(askID, choice);
+		{
+			if(exits[idx].second == wantedExit)
+			{
+				answerQuery(askID, idx);
+				return;
+			}
+		}
+	}
+	answerQuery(askID, -1);
 }
 
 void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle)
