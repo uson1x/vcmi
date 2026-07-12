@@ -107,6 +107,21 @@ std::string ownerRelation(const PlayerColor & owner, const PlayerColor & perspec
 	return "neutral";
 }
 
+// The contract's absolute owner naming: player 0 (red) is the attacker seat, player 1
+// (blue) the defender, matching the Python bridge's side aliases. Unowned/uncolored
+// objects are "neutral". Unlike `relation` this does not depend on whose turn it is,
+// so bots can compare it against acting_side directly.
+std::string ownerBridgeSide(const PlayerColor & owner)
+{
+	if(!owner.isValidPlayer())
+		return "neutral";
+	if(owner.getNum() == 0)
+		return "attacker";
+	if(owner.getNum() == 1)
+		return "defender";
+	return (owner.getNum() % 2 == 0) ? "attacker" : "defender";
+}
+
 void pushResourceSnapshot(JsonNode & resourcesNode, const ResourceSet & resources)
 {
 	resourcesNode["wood"].Integer() = resources[EGameResID::WOOD];
@@ -525,6 +540,7 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		node["y"].Integer() = pos.y;
 		node["z"].Integer() = pos.z;
 		node["relation"].String() = ownerRelation(object->tempOwner, playerID);
+		node["owner"].String() = ownerBridgeSide(object->tempOwner);
 		if(object->tempOwner.isValidPlayer())
 			node["owner_side"].String() = sideFromPlayer(object->tempOwner);
 		objectNodes.Vector().push_back(node);
@@ -570,11 +586,14 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 	auto guardPowerAt = [this](const int3 & pos, std::string & nameOut, long long & countOut) -> long long {
 		long long total = 0;
 		countOut = 0;
-		for(const auto * guard : cb->getGuardingCreatures(pos))
+		std::set<int> countedObjects;
+		auto addArmed = [&](const CGObjectInstance * obj)
 		{
-			const auto * armed = dynamic_cast<const CArmedInstance *>(guard);
+			const auto * armed = dynamic_cast<const CArmedInstance *>(obj);
 			if(armed == nullptr)
-				continue;
+				return;
+			if(!countedObjects.insert(obj->id.getNum()).second)
+				return; // same defender reachable twice (ZoC + on-tile) — count once
 			total += static_cast<long long>(armed->getArmyStrength());
 			// Total creature head-count across the guard's stacks. The harness renders this as
 			// a fuzzy HoMM3 quantity descriptor ("a pack of Wolves") — what a real player sees,
@@ -582,7 +601,23 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			for(const auto & slotPair : armed->Slots())
 				countOut += static_cast<long long>(armed->getStackCount(slotPair.first));
 			if(nameOut.empty())
-				nameOut = guard->getObjectName();
+				nameOut = obj->getObjectName();
+		};
+		// Wandering monsters whose zone of control covers the tile (on it or adjacent).
+		for(const auto * guard : cb->getGuardingCreatures(pos))
+			addArmed(guard);
+		// Armed DEFENDERS sitting on the tile itself: garrison objects, town garrisons
+		// (plus a visiting hero, a separate visitable at the same tile), enemy heroes,
+		// creature banks. getGuardingCreatures covers Obj::MONSTER only, so these were
+		// previously invisible — the offer carried null guard fields and heroes walked
+		// blind into e.g. a quadrant-gating garrison holding a 4x stronger army.
+		for(const auto * obj : cb->getVisitableObjs(pos, false))
+		{
+			if(obj == nullptr || obj->ID == Obj::MONSTER)
+				continue; // on-tile monsters are already in the ZoC list
+			if(obj->tempOwner == playerID)
+				continue; // own objects do not fight us
+			addArmed(obj);
 		}
 		return total;
 	};
@@ -677,7 +712,7 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		// object and visits it on arrival. The model maps these coords to entries in
 		// visible_state.map_objects_visible. Multi-turn targets (turns > 0) advance the
 		// hero as far as movement allows each turn and are re-offered until reached.
-		std::vector<std::tuple<int, int, int3>> objTargets; // (turns, moveRemains, pos)
+		std::vector<std::tuple<int, int, int3, bool>> objTargets; // (turns, moveRemains, pos, priority)
 		for(const auto * obj : visibleObjects)
 		{
 			if(obj == nullptr)
@@ -706,15 +741,24 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			const CGPathNode * onode = heroPaths.getPathInfo(opos);
 			if(onode == nullptr || !onode->reachable())
 				continue; // no path to this object at all
-			objTargets.emplace_back(static_cast<int>(onode->turns), onode->moveRemains, opos);
+			// A visible ENEMY town or hero is a win-condition target: it must never be
+			// crowded out of the MOVE options by nearby ordinary targets (mines,
+			// dwellings) under the closest-first cap ordering — which is exactly what
+			// happened during a long cross-map approach. Priority targets bypass the
+			// MAX_MOVE_OPTIONS cap (bounded anyway by the visible-object caps).
+			const bool enemyOwned = obj->tempOwner.isValidPlayer() && obj->tempOwner != playerID;
+			const bool priorityTarget = enemyOwned
+				&& (dynamic_cast<const CGTownInstance *>(obj) != nullptr
+					|| dynamic_cast<const CGHeroInstance *>(obj) != nullptr);
+			objTargets.emplace_back(static_cast<int>(onode->turns), onode->moveRemains, opos, priorityTarget);
 		}
 		std::sort(objTargets.begin(), objTargets.end(),
 			[](const auto & a, const auto & b) { return std::get<0>(a) < std::get<0>(b); });
 
 		for(const auto & target : objTargets)
 		{
-			if(emitted >= MAX_MOVE_OPTIONS)
-				break;
+			if(!std::get<3>(target) && emitted >= MAX_MOVE_OPTIONS)
+				continue; // cap ordinary targets only; enemy towns/heroes always emit
 			const int3 opos = std::get<2>(target);
 			bool duplicate = false;
 			for(int oct = 0; oct < 8; ++oct)
@@ -750,8 +794,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			++emitted;
 		}
 
-		if(emitted >= MAX_MOVE_OPTIONS)
-			break;
+		// No early break at the cap: later heroes still get their priority
+		// (enemy town/hero) targets emitted; their ordinary options are capped
+		// by the per-emission checks above.
 	}
 
 	if(!moveOptions.Vector().empty())
@@ -1633,7 +1678,34 @@ bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & desti
 			if(node.coord == hero->visitablePos())
 				continue; // start node = current hero position
 			if(node.isTeleportAction())
-				break; // pause at monolith / subterranean gate
+			{
+				// The path's next step is a teleport transit (hero stands ON the
+				// monolith / subterranean gate). Breaking here with zero tiles queued
+				// used to be a SILENT no-op: moveHero was never called, the hero
+				// spent no movement, yet the decision was logged as executed — heroes
+				// stranded on portal tiles forever. Mirror the client
+				// (HeroMovementController::sendMovementRequest): a move request onto
+				// the hero's own anchor tile re-visits the teleporter and carries the
+				// hero through; the TeleportDialog query is answered via the bridge.
+				// Movement resumes from the exit on the next decision / auto-advance.
+				if(tiles.empty() && node.turns == 0)
+				{
+					const bool exitStartsCombat = node.action == EPathNodeAction::TELEPORT_BATTLE
+						|| cb->guardingCreaturePosition(node.coord) != int3(-1, -1, -1);
+					if(stopBeforeCombat && exitStartsCombat)
+					{
+						if(blockedByGuard != nullptr)
+							*blockedByGuard = true;
+					}
+					else
+					{
+						cb->moveHero(hero, hero->pos, false, EPathfindingLayer::AUTO);
+						if(node.coord == destination)
+							reachedDestination = true;
+					}
+				}
+				break; // tiles already queued: walk them and stop before the portal
+			}
 			if(node.turns != 0)
 				break; // out of movement points this turn
 			// "Does stepping onto this node start a fight?" — use the engine's own
