@@ -740,6 +740,21 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			if(opos == from)
 				continue;
 			const CGPathNode * onode = heroPaths.getPathInfo(opos);
+			{
+				const char * dbgFlag = std::getenv("ARENA_DEBUG_MOVE");
+				if(dbgFlag != nullptr && dbgFlag[0] == '1'
+					&& obj->tempOwner.isValidPlayer() && obj->tempOwner != playerID
+					&& (dynamic_cast<const CGTownInstance *>(obj) != nullptr
+						|| dynamic_cast<const CGHeroInstance *>(obj) != nullptr))
+				{
+					std::ofstream dbg("/tmp/arena_move_debug.log", std::ios::app);
+					dbg << "offer? enemy " << obj->getObjectName() << " at " << opos.toString()
+						<< " hero at " << from.toString()
+						<< " node=" << (onode == nullptr ? "null" : "ok")
+						<< " turns=" << (onode ? static_cast<int>(onode->turns) : -1)
+						<< " action=" << (onode ? static_cast<int>(onode->action) : -1) << "\n";
+				}
+			}
 			if(onode == nullptr || !onode->reachable())
 				continue; // no path to this object at all
 			// A visible ENEMY town or hero is a win-condition target: it must never be
