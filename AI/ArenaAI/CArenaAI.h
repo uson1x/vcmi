@@ -101,7 +101,7 @@ private:
 	bool sendEnvelope(const std::string & msgType, const JsonNode & payload, JsonNode & responseOut);
 	bool applyTurnResponse(const JsonNode & responsePayload);
 	std::string selectedActionType(const JsonNode & responsePayload) const;
-	int chooseSelectionViaBridge(QueryID queryID, const std::string & queryType, const std::vector<int> & options, int defaultSelection);
+	int chooseSelectionViaBridge(QueryID queryID, const std::string & queryType, const std::vector<int> & options, int defaultSelection, const std::string & queryText = std::string());
 
 	const CGHeroInstance * findHeroById(int heroId) const;
 	const CGTownInstance * findTownById(int townId) const;

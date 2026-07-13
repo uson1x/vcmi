@@ -53,6 +53,37 @@ constexpr int MAX_RECRUIT_OPTIONS = 36;
 constexpr int MAX_RECRUIT_HERO_OPTIONS = 8;
 constexpr int MAX_MANAGE_ARMY_OPTIONS = 16;
 
+// "Gate-class" objects gate the map's topology (routes between quadrants/levels and the
+// win-condition targets): the pathfinding bottlenecks a policy MUST see to plan multi-turn
+// travel. On dense 72x72 maps the visible-object list far exceeds MAX_VISIBLE_OBJECTS, so a
+// blind cap can permanently hide a keymaster tent or subterranean gate even while its MOVE
+// offer (uncapped) exists. These are force-included ahead of ordinary objects under the cap,
+// and the remaining slots fill nearest-first (see the visibleObjects ordering below).
+bool isGateClassObject(const CGObjectInstance * obj)
+{
+	if(obj == nullptr)
+		return false;
+	switch(obj->ID.toEnum())
+	{
+	case Obj::BORDERGUARD:
+	case Obj::KEYMASTER:
+	case Obj::BORDER_GATE:
+	case Obj::QUEST_GUARD:
+	case Obj::SUBTERRANEAN_GATE:
+	case Obj::MONOLITH_ONE_WAY_ENTRANCE:
+	case Obj::MONOLITH_ONE_WAY_EXIT:
+	case Obj::MONOLITH_TWO_WAY:
+	case Obj::WHIRLPOOL:
+	case Obj::SHIPYARD:
+	case Obj::GARRISON:
+	case Obj::GARRISON2:
+	case Obj::TOWN:
+		return true;
+	default:
+		return false;
+	}
+}
+
 std::string sideFromPlayer(const PlayerColor & player)
 {
 	if(player.getNum() == 0)
@@ -305,10 +336,48 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		return left->id.getNum() < right->id.getNum();
 	});
 
-	std::sort(visibleObjects.begin(), visibleObjects.end(), [](const CGObjectInstance * left, const CGObjectInstance * right)
+	// Object emission ordering (fix 7): the old sort was purely by object id (map creation
+	// order), so on dense maps the MAX_VISIBLE_OBJECTS cap dropped whatever happened to have a
+	// high id — often the very tents/gates a policy needs to plan cross-map travel, hidden
+	// PERMANENTLY. Now: gate-class objects first (topology bottlenecks + win-condition
+	// targets), then everything else NEAREST-FIRST to the acting player's closest hero. Ties
+	// break by object id so the ordering stays deterministic for ranked replay. The cap then
+	// keeps the actionable near field plus all the gates instead of an id-arbitrary slice.
+	std::vector<int3> heroPositions;
+	for(const auto * h : heroes)
+		if(h != nullptr)
+			heroPositions.push_back(h->visitablePos());
+	auto distSqToNearestHero = [&heroPositions](const CGObjectInstance * obj) -> long long
+	{
+		if(obj == nullptr || heroPositions.empty())
+			return std::numeric_limits<long long>::max();
+		const int3 p = obj->visitablePos();
+		long long best = std::numeric_limits<long long>::max();
+		for(const int3 & hp : heroPositions)
+		{
+			// same-level distance only; cross-level objects rank last within their class,
+			// which is correct — you cannot walk to them without first taking a gate.
+			if(hp.z != p.z)
+				continue;
+			const long long dx = hp.x - p.x;
+			const long long dy = hp.y - p.y;
+			best = std::min(best, dx * dx + dy * dy);
+		}
+		return best;
+	};
+	std::sort(visibleObjects.begin(), visibleObjects.end(),
+		[&distSqToNearestHero](const CGObjectInstance * left, const CGObjectInstance * right)
 	{
 		if(left == nullptr || right == nullptr)
 			return left != nullptr;
+		const bool lg = isGateClassObject(left);
+		const bool rg = isGateClassObject(right);
+		if(lg != rg)
+			return lg; // gate-class objects sort ahead of ordinary ones
+		const long long ld = distSqToNearestHero(left);
+		const long long rd = distSqToNearestHero(right);
+		if(ld != rd)
+			return ld < rd; // then nearest-first to the acting player's closest hero
 		return left->id.getNum() < right->id.getNum();
 	});
 
@@ -1524,7 +1593,7 @@ std::string CArenaAI::selectedActionType(const JsonNode & responsePayload) const
 	return "";
 }
 
-int CArenaAI::chooseSelectionViaBridge(QueryID queryID, const std::string & queryType, const std::vector<int> & options, int defaultSelection)
+int CArenaAI::chooseSelectionViaBridge(QueryID queryID, const std::string & queryType, const std::vector<int> & options, int defaultSelection, const std::string & queryText)
 {
 	if(!bridgeEnabled || options.empty())
 		return defaultSelection;
@@ -1533,6 +1602,8 @@ int CArenaAI::chooseSelectionViaBridge(QueryID queryID, const std::string & quer
 	payload["query_id"].String() = std::to_string(queryID.getNum());
 	payload["query_type"].String() = queryType;
 	payload["acting_side"].String() = sideName;
+	if(!queryText.empty())
+		payload["query_text"].String() = queryText;
 
 	JsonNode optionNodes;
 	optionNodes.setType(JsonNode::JsonType::DATA_VECTOR);
@@ -1986,7 +2057,6 @@ void CArenaAI::commanderGotLevel(const CCommanderInstance * commander, std::vect
 
 void CArenaAI::showBlockingDialog(const std::string & text, const std::vector<Component> & components, QueryID askID, const int soundID, bool selection, bool cancel, bool safeToAutoaccept)
 {
-	(void)text;
 	(void)soundID;
 	(void)safeToAutoaccept;
 
@@ -1998,13 +2068,26 @@ void CArenaAI::showBlockingDialog(const std::string & text, const std::vector<Co
 		for(int idx = 0; idx < static_cast<int>(components.size()); ++idx)
 			options.push_back(idx + 1);
 	}
+	else if(cancel)
+	{
+		// Fix 6: a yes/no dialog (selection == false, cancel == true) — e.g. a border guard
+		// "do you wish to pass?", a creature "fight/flee/join?", a mine/dwelling flag prompt.
+		// The engine interprets answer != 0 as "yes"/accept (CGBorderGuard::blockingDialogAnswered
+		// removeObject if(answer); CGCreature routes it to join/flee). We previously offered only
+		// {0} = permanent "no", so the bot could never pass a border guard even holding the key.
+		// Now emit BOTH so the policy can accept — the default remains 0 (lowest option id) so
+		// entrants that don't override query handling keep today's decline-everything behavior.
+		options.push_back(0);
+		options.push_back(1);
+	}
 	else
 	{
-		options.push_back(cancel ? 0 : 0);
+		// OK-only informational dialog: a single acknowledgement.
+		options.push_back(0);
 	}
 
 	const int defaultSelection = cancel ? 0 : (selection ? 1 : 0);
-	const int choice = chooseSelectionViaBridge(askID, "blocking_dialog", options, defaultSelection);
+	const int choice = chooseSelectionViaBridge(askID, "blocking_dialog", options, defaultSelection, text);
 	answerQuery(askID, choice);
 }
 
