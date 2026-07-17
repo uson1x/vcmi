@@ -2155,6 +2155,13 @@ void CArenaAI::showMapObjectSelectDialog(QueryID askID, const Component & icon, 
 	answerQuery(askID, choice);
 }
 
+void CArenaAI::showMarketWindow(const IMarket * market, const CGHeroInstance * visitor, QueryID queryID)
+{
+	(void)market;
+	(void)visitor;
+	answerQuery(queryID, 0);
+}
+
 std::optional<BattleAction> CArenaAI::makeSurrenderRetreatDecision(const BattleID & battleID, const BattleStateInfoForRetreat & battleState)
 {
 	(void)battleID;
