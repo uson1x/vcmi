@@ -1,0 +1,98 @@
+{
+	// HoMM3 LLM Arena tuned 2-player template. Fork of vcmi:2SM2b with:
+	//  - connection guards lowered (stock 3000/12500 sits above arena bot army
+	//    curves, so contact/elimination never fires - the Hatchet failure mode,
+	//    but here it is a JSON knob);
+	//  - playerStart monsters weak, treasure zones normal (stock strong);
+	//  - neutral towns moved from zones 5+6 to the contested corridors 3+6.
+	//    Stock 2SM2b puts both neutral towns cheap-side for player 2 only
+	//    (zones 5/6 are blue-cheap; zone 4/5 are private pockets). One town in
+	//    each corridor mirrors the access cost: each player cheap-reaches
+	//    exactly one neutral town and expensive-reaches the other.
+	// Zone mirror pairs: (1,2) player starts, (3,5) and (4,6) mines/treasure.
+	"arena2p" :
+	{
+		"minSize" : "s", "maxSize" : "m+u",
+		"players" : "2",
+		"zones" :
+		{
+			"1" :
+			{
+				"type" : "playerStart",
+				"size" : 11,
+				"owner" : 1,
+				"monsters" : "weak",
+				"playerTowns" : { "castles" : 1 },
+				"mines" : { "wood" : 1, "ore" : 1 },
+				"treasure" :
+				[
+					{ "min" : 10000, "max" : 15000, "density" : 1 },
+					{ "min" : 3000, "max" : 6000, "density" : 6 },
+					{ "min" : 500, "max" : 3000, "density" : 9 }
+				]
+			},
+			"2" :
+			{
+				"type" : "playerStart",
+				"size" : 11,
+				"owner" : 2,
+				"monsters" : "weak",
+				"playerTowns" : { "castles" : 1 },
+				"minesLikeZone" : 1,
+				"treasureLikeZone" : 1
+			},
+			"3" :
+			{
+				"type" : "treasure",
+				"size" : 11,
+				"monsters" : "normal",
+				"neutralTowns" : { "towns" : 1 },
+				"matchTerrainToTown" : false,
+				"mines" : { "mercury" : 1, "sulfur" : 1, "gold" : 1 },
+				"treasure" :
+				[
+					{ "min" : 15000, "max" : 20000, "density" : 1 },
+					{ "min" : 10000, "max" : 15000, "density" : 6 },
+					{ "min" : 3000, "max" : 6000, "density" : 9 }
+				]
+			},
+			"4" :
+			{
+				"type" : "treasure",
+				"size" : 11,
+				"monsters" : "normal",
+				"matchTerrainToTown" : false,
+				"mines" : { "crystal" : 1, "gems" : 1, "gold" : 1 },
+				"treasureLikeZone" : 3
+			},
+			"5" :
+			{
+				"type" : "treasure",
+				"size" : 11,
+				"monsters" : "normal",
+				"matchTerrainToTown" : false,
+				"minesLikeZone" : 3,
+				"treasureLikeZone" : 3
+			},
+			"6" :
+			{
+				"type" : "treasure",
+				"size" : 11,
+				"monsters" : "normal",
+				"neutralTowns" : { "towns" : 1 },
+				"matchTerrainToTown" : false,
+				"minesLikeZone" : 4,
+				"treasureLikeZone" : 3
+			}
+		},
+		"connections" :
+		[
+			{ "a" : "1", "b" : "3", "guard" : 750 },
+			{ "a" : "1", "b" : "4", "guard" : 750 },
+			{ "a" : "1", "b" : "6", "guard" : 2500 },
+			{ "a" : "2", "b" : "3", "guard" : 2500 },
+			{ "a" : "2", "b" : "5", "guard" : 750 },
+			{ "a" : "2", "b" : "6", "guard" : 750 }
+		]
+	}
+}
