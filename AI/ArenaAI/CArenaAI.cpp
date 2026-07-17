@@ -19,8 +19,11 @@
 #include "../../lib/mapObjects/army/CCreatureSet.h"
 #include "../../lib/mapping/TerrainTile.h"
 #include "../../lib/networkPacks/Component.h"
+#include "../../lib/networkPacks/PacksForClient.h"
+#include "../../lib/networkPacks/PacksForServer.h"
 #include "../../lib/pathfinder/CGPathNode.h"
 #include "../../lib/pathfinder/PathfinderOptions.h"
+#include "../../lib/serializer/CTypeList.h"
 
 #include <algorithm>
 #include <array>
@@ -296,6 +299,7 @@ CArenaAI::~CArenaAI()
 {
 	aborting = true;
 	battleCv.notify_all();
+	queryCv.notify_all();
 	if(turnThread.joinable())
 		turnThread.join();
 }
@@ -1644,6 +1648,7 @@ void CArenaAI::yourTurn(QueryID queryID)
 	// PackageApplied acks that unblock waitTillRealize'd requests. Running the loop
 	// here (on the network thread) would deadlock the instant a blocking request is
 	// issued — the thread would wait on a pack only it can process.
+	queryStarted(queryID);
 	if(turnThread.joinable())
 		turnThread.join();
 	turnThread = std::thread(&CArenaAI::runTurn, this, queryID);
@@ -1667,6 +1672,7 @@ try
 	// thread can take the exclusive lock to apply packs. Without holding it here, that
 	// unlock_shared underflows the reader count and the network thread deadlocks.
 	std::shared_lock<std::shared_mutex> gsLock(CGameState::mutex);
+	waitForQueries();
 
 	if(bridgeEnabled)
 	{
@@ -1712,6 +1718,7 @@ try
 			// the next action so the bridge sees a clean post-battle state (and so we
 			// don't fire actions the server would reject while a CBattleQuery is open).
 			waitForBattles();
+			waitForQueries();
 		}
 	}
 
@@ -1736,6 +1743,54 @@ void CArenaAI::waitForBattles()
 	battleCv.wait_until(lock, deadline, [this]() {
 		return battlesInProgress == 0 || aborting.load();
 	});
+}
+
+void CArenaAI::queryStarted(QueryID queryID)
+{
+	if(queryID.getNum() < 0)
+		return;
+
+	std::lock_guard<std::mutex> lock(queryMx);
+	pendingQueries.insert(queryID);
+	queryCv.notify_all();
+}
+
+void CArenaAI::deferQueryAnswer(QueryID queryID, int choice)
+{
+	if(queryID.getNum() < 0)
+		return;
+
+	std::lock_guard<std::mutex> lock(queryMx);
+	deferredQueryAnswers[queryID] = choice;
+	queryCv.notify_all();
+}
+
+void CArenaAI::waitForQueries()
+{
+	// Query callbacks and PackageApplied confirmations are delivered by the network
+	// thread, which needs the exclusive game-state lock while applying their packs.
+	auto gsUnlock = vstd::makeUnlockSharedGuard(CGameState::mutex);
+	std::unique_lock<std::mutex> lock(queryMx);
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(180);
+	while(!pendingQueries.empty() && !aborting.load())
+	{
+		if(!deferredQueryAnswers.empty())
+		{
+			const auto answers = std::move(deferredQueryAnswers);
+			deferredQueryAnswers.clear();
+			lock.unlock();
+			for(const auto & answer : answers)
+				answerQuery(answer.first, answer.second);
+			lock.lock();
+			continue;
+		}
+
+		if(queryCv.wait_until(lock, deadline) == std::cv_status::timeout)
+		{
+			logAi->error("ArenaAI: timed out waiting for %d server queries to close", static_cast<int>(pendingQueries.size()));
+			break;
+		}
+	}
 }
 
 bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination,
@@ -1932,6 +1987,7 @@ void CArenaAI::advanceTravelGoals()
 		// per-action loop uses — never leave a CBattleQuery open while we hold the
 		// shared game-state lock (that is the deadlock this guards against).
 		waitForBattles();
+		waitForQueries();
 		if(reached || blockedByGuard || unownedObjectAt(goal) == nullptr)
 			it = heroTravelGoals.erase(it);
 		else
@@ -1988,6 +2044,36 @@ void CArenaAI::answerQuery(QueryID queryID, int choice)
 	cb->waitTillRealize = prev;
 }
 
+void CArenaAI::requestSent(const CPackForServer * pack, int requestID)
+{
+	const auto * reply = dynamic_cast<const QueryReply *>(pack);
+	if(reply == nullptr)
+		return;
+
+	std::lock_guard<std::mutex> lock(queryMx);
+	if(pendingQueries.contains(reply->qid))
+		queryReplyRequests[requestID] = reply->qid;
+}
+
+void CArenaAI::requestRealized(PackageApplied * pack)
+{
+	if(pack->packType != CTypeList::getInstance().getTypeID<QueryReply>(nullptr))
+		return;
+
+	std::lock_guard<std::mutex> lock(queryMx);
+	const auto request = queryReplyRequests.find(static_cast<int>(pack->requestID));
+	if(request == queryReplyRequests.end())
+		return;
+
+	const QueryID queryID = request->second;
+	queryReplyRequests.erase(request);
+	if(pack->result)
+		pendingQueries.erase(queryID);
+	else
+		logAi->error("ArenaAI: server rejected reply to query %d", queryID.getNum());
+	queryCv.notify_all();
+}
+
 void CArenaAI::battleStart(const BattleID & battleID, const CCreatureSet * army1, const CCreatureSet * army2, int3 tile, const CGHeroInstance * hero1, const CGHeroInstance * hero2, BattleSide side, bool replayAllowed)
 {
 	{
@@ -2021,11 +2107,13 @@ void CArenaAI::gameOver(PlayerColor player, const EVictoryLossCheckResult & vict
 	{
 		aborting = true;
 		battleCv.notify_all();
+		queryCv.notify_all();
 	}
 }
 
 void CArenaAI::heroGotLevel(const CGHeroInstance * hero, PrimarySkill pskill, std::vector<SecondarySkill> & skills, QueryID queryID)
 {
+	queryStarted(queryID);
 	(void)hero;
 	(void)pskill;
 	if(skills.empty())
@@ -2042,6 +2130,7 @@ void CArenaAI::heroGotLevel(const CGHeroInstance * hero, PrimarySkill pskill, st
 
 void CArenaAI::commanderGotLevel(const CCommanderInstance * commander, std::vector<ui32> skills, QueryID queryID)
 {
+	queryStarted(queryID);
 	(void)commander;
 	if(skills.empty())
 	{
@@ -2057,6 +2146,7 @@ void CArenaAI::commanderGotLevel(const CCommanderInstance * commander, std::vect
 
 void CArenaAI::showBlockingDialog(const std::string & text, const std::vector<Component> & components, QueryID askID, const int soundID, bool selection, bool cancel, bool safeToAutoaccept)
 {
+	queryStarted(askID);
 	(void)soundID;
 	(void)safeToAutoaccept;
 
@@ -2093,6 +2183,7 @@ void CArenaAI::showBlockingDialog(const std::string & text, const std::vector<Co
 
 void CArenaAI::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID channel, TTeleportExitsList exits, bool impassable, QueryID askID)
 {
+	queryStarted(askID);
 	(void)hero;
 	(void)channel;
 
@@ -2130,6 +2221,7 @@ void CArenaAI::showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID
 
 void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle)
 {
+	queryStarted(queryID);
 	(void)up;
 	(void)down;
 	(void)removableUnits;
@@ -2144,6 +2236,7 @@ void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstanc
 
 void CArenaAI::showMapObjectSelectDialog(QueryID askID, const Component & icon, const MetaString & title, const MetaString & description, const std::vector<ObjectInstanceID> & objects)
 {
+	queryStarted(askID);
 	(void)icon;
 	(void)title;
 	(void)description;
@@ -2159,10 +2252,47 @@ void CArenaAI::showMapObjectSelectDialog(QueryID askID, const Component & icon, 
 	answerQuery(askID, choice);
 }
 
+void CArenaAI::heroExchangeStarted(ObjectInstanceID hero1, ObjectInstanceID hero2, QueryID queryID)
+{
+	(void)hero1;
+	(void)hero2;
+	queryStarted(queryID);
+	// heroExchange broadcasts ExchangeDialog before adding its server query. Send
+	// the fixed close answer from waitForQueries, after the triggering MoveHero ack,
+	// so the reply can never overtake QueriesProcessor::addQuery.
+	deferQueryAnswer(queryID, 0);
+}
+
+void CArenaAI::showRecruitmentDialog(const CGDwelling * dwelling, const CArmedInstance * dst, int level, QueryID queryID)
+{
+	(void)dwelling;
+	(void)dst;
+	(void)level;
+	queryStarted(queryID);
+	answerQuery(queryID, 0);
+}
+
+void CArenaAI::showTavernWindow(const CGObjectInstance * object, const CGHeroInstance * visitor, QueryID queryID)
+{
+	(void)object;
+	(void)visitor;
+	queryStarted(queryID);
+	answerQuery(queryID, 0);
+}
+
+void CArenaAI::showUniversityWindow(const IMarket * market, const CGHeroInstance * visitor, QueryID queryID)
+{
+	(void)market;
+	(void)visitor;
+	queryStarted(queryID);
+	answerQuery(queryID, 0);
+}
+
 void CArenaAI::showMarketWindow(const IMarket * market, const CGHeroInstance * visitor, QueryID queryID)
 {
 	(void)market;
 	(void)visitor;
+	queryStarted(queryID);
 	answerQuery(queryID, 0);
 }
 

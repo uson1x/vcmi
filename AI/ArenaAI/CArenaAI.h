@@ -8,6 +8,7 @@
 #include <map>
 #include <mutex>
 #include <optional>
+#include <set>
 #include <string>
 #include <thread>
 #include <vector>
@@ -16,7 +17,10 @@ class JsonNode;
 class CGTownInstance;
 class CGHeroInstance;
 class CGObjectInstance;
+class CGDwelling;
 class IMarket;
+struct CPackForServer;
+struct PackageApplied;
 
 class CArenaAI : public CAdventureAI
 {
@@ -41,6 +45,15 @@ class CArenaAI : public CAdventureAI
 	std::condition_variable battleCv;
 	int battlesInProgress = 0;
 	std::atomic<bool> aborting{false};
+
+	// Server-query handshake. Dialog callbacks run on the network thread, so their
+	// replies must be sent without waitTillRealize; the turn worker instead waits
+	// here until PackageApplied confirms that every reply removed its server query.
+	std::mutex queryMx;
+	std::condition_variable queryCv;
+	std::set<QueryID> pendingQueries;
+	std::map<int, QueryID> queryReplyRequests;
+	std::map<QueryID, int> deferredQueryAnswers;
 
 	// T1 persistent MOVE_TO intent: when the model aims a hero at a still-distant
 	// unowned object, we remember the destination (per hero id) and keep advancing
@@ -74,12 +87,21 @@ public:
 	void showTeleportDialog(const CGHeroInstance * hero, TeleportChannelID channel, TTeleportExitsList exits, bool impassable, QueryID askID) override;
 	void showGarrisonDialog(const CArmedInstance * up, const CGHeroInstance * down, bool removableUnits, QueryID queryID, const MetaString & customTitle) override;
 	void showMapObjectSelectDialog(QueryID askID, const Component & icon, const MetaString & title, const MetaString & description, const std::vector<ObjectInstanceID> & objects) override;
+	void heroExchangeStarted(ObjectInstanceID hero1, ObjectInstanceID hero2, QueryID queryID) override;
+	void showRecruitmentDialog(const CGDwelling * dwelling, const CArmedInstance * dst, int level, QueryID queryID) override;
+	void showTavernWindow(const CGObjectInstance * object, const CGHeroInstance * visitor, QueryID queryID) override;
+	void showUniversityWindow(const IMarket * market, const CGHeroInstance * visitor, QueryID queryID) override;
 	void showMarketWindow(const IMarket * market, const CGHeroInstance * visitor, QueryID queryID) override;
+	void requestSent(const CPackForServer * pack, int requestID) override;
+	void requestRealized(PackageApplied * pack) override;
 	std::optional<BattleAction> makeSurrenderRetreatDecision(const BattleID & battleID, const BattleStateInfoForRetreat & battleState) override;
 
 private:
 	void runTurn(QueryID queryID);
 	void waitForBattles();
+	void queryStarted(QueryID queryID);
+	void deferQueryAnswer(QueryID queryID, int choice);
+	void waitForQueries();
 	void answerQuery(QueryID queryID, int choice);
 
 	// Execute the engine-pathed move toward `destination` for this turn; returns
