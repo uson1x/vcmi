@@ -2134,8 +2134,12 @@ void CArenaAI::showGarrisonDialog(const CArmedInstance * up, const CGHeroInstanc
 	(void)down;
 	(void)removableUnits;
 	(void)customTitle;
-	const int choice = chooseSelectionViaBridge(queryID, "garrison_dialog", {0}, 0);
-	answerQuery(queryID, choice);
+	// Answer immediately: the only selectable option is 0, and a bridge
+	// round-trip here opens a race window — this query can arrive after the
+	// triggering move already reported complete, so the turn loop issues its
+	// next action against the pending query and the headless session tears
+	// down ("Player X has to answer queries"), parking the client forever.
+	answerQuery(queryID, 0);
 }
 
 void CArenaAI::showMapObjectSelectDialog(QueryID askID, const Component & icon, const MetaString & title, const MetaString & description, const std::vector<ObjectInstanceID> & objects)
