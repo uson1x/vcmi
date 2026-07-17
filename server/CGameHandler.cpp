@@ -569,6 +569,24 @@ void CGameHandler::init(StartInfo *si, Load::ProgressAccumulator & progressTrack
 	CMapService mapService;
 	gs = std::make_shared<CGameState>();
 	int requestedSeed = settings["server"]["seed"].Integer();
+	// Arena benchmark hook: per-process seed override so parallel harness games can
+	// each pin their own match RNG without sharing settings.json. Unset/invalid/
+	// non-positive values fall through to stock behavior (settings seed, else time).
+	if (const char * envSeed = std::getenv("ARENA_MATCH_SEED"))
+	{
+		try
+		{
+			int parsedSeed = std::stoi(envSeed);
+			if (parsedSeed > 0)
+			{
+				requestedSeed = parsedSeed;
+				logGlobal->info("Using ARENA_MATCH_SEED from environment: %d", parsedSeed);
+			}
+		}
+		catch (const std::exception &)
+		{
+		}
+	}
 	randomizer = std::make_unique<GameRandomizer>(*gs);
 	if (requestedSeed != 0)
 		randomizer->setSeed(requestedSeed);
