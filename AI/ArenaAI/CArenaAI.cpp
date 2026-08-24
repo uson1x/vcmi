@@ -480,6 +480,8 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				continue;
 			if(town->hasBuilt(buildingEntry.first))
 				continue;
+			if(building->mode != CBuilding::BUILD_NORMAL)
+				continue; // never normally buildable — showing it as "locked" would mislead
 			const auto state = cb->canBuildStructure(town, buildingEntry.first);
 			const char * stateStr = nullptr;
 			if(state == EBuildingState::NO_RESOURCES)
@@ -910,6 +912,11 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				break;
 			const auto * building = buildingEntry.second.get();
 			if(building == nullptr)
+				continue;
+			// Only BUILD_NORMAL is accepted by the server's build handler; GRAIL/AUTO/SPECIAL
+			// pass canBuildStructure (it never checks mode, and the Grail costs nothing) but
+			// the build request is always refused — offering them creates a no-op action.
+			if(building->mode != CBuilding::BUILD_NORMAL)
 				continue;
 			if(cb->canBuildStructure(town, buildingEntry.first) != EBuildingState::ALLOWED)
 				continue;
@@ -1381,6 +1388,9 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 			return false;
 
 		const BuildingID buildType(*buildingId);
+		const auto buildIt = town->getTown()->buildings.find(buildType);
+		if(buildIt == town->getTown()->buildings.end() || !buildIt->second || buildIt->second->mode != CBuilding::BUILD_NORMAL)
+			return false; // GRAIL/AUTO/SPECIAL: server would refuse; reject cleanly instead of no-op
 		if(cb->canBuildStructure(town, buildType) != EBuildingState::ALLOWED)
 			return false;
 		return cb->buildBuilding(town, buildType);
