@@ -1150,11 +1150,15 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			++manageEmitted;
 		};
 
-		// Pickup: each garrison stack -> hero.
+		// Pickup: each garrison stack -> hero, if the hero has room for it (a matching stack
+		// or a free slot); otherwise the executor refuses and the option was a no-op.
 		for(const auto & slot : town->Slots())
 		{
 			if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
 				break;
+			const CCreature * cre = town->getCreature(slot.first);
+			if(cre == nullptr || !visiting->getSlotFor(cre).validSlot())
+				continue;
 			pushManageOption(0, *town, slot.first);
 		}
 		// Deposit: each hero stack -> garrison, but never offer a move that empties the
@@ -1789,8 +1793,10 @@ try
 				break;
 			if(actionType == "END_TURN")
 				break;
+			// An action the executor cannot apply is a no-op, not the end of the turn: the
+			// bridge sees the unchanged state (no_effect) and the bot keeps its turn.
 			if(!applyTurnResponse(responsePayload))
-				break;
+				logAi->warn("ArenaAI: could not apply %s; turn continues", actionType);
 
 			// A move can start a battle, and a won battle opens a level-up query; settle
 			// both before issuing the next action so the bridge sees a clean post-battle
