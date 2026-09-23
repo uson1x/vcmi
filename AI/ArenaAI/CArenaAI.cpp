@@ -1026,6 +1026,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				const int recruitCount = std::min(available, affordable);
 				if(recruitCount <= 0)
 					continue;
+				// Recruits land in the town garrison: with 7 stacks and none of this unit
+				// there is no room (HoMM3 rule), and the server ignores the request.
+				if(!town->getSlotFor(creature).validSlot())
+					continue;
 
 				JsonNode option;
 				option["option_id"].String() = "recruit_t_" + std::to_string(town->id.getNum())
@@ -1169,6 +1173,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			{
 				if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
 					break;
+				const CCreature * cre = visiting->getCreature(slot.first);
+				if(cre == nullptr || !town->getSlotFor(cre).validSlot())
+					continue; // no room in the garrison for this stack: a no-op
 				pushManageOption(1, *visiting, slot.first);
 			}
 		}
@@ -1556,6 +1563,9 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 
 		if(!creatureId || matchedLevel < 0 || maxLegalCount <= 0)
 			return false;
+
+		if(!town->getSlotFor(CreatureID(*creatureId)).validSlot())
+			return false; // garrison full: the server would ignore it
 
 		int finalCount = requestedCount.value_or(maxLegalCount);
 		finalCount = std::max(1, std::min(finalCount, maxLegalCount));
