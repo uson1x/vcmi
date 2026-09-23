@@ -659,7 +659,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		townNode["x"].Integer() = pos.x;
 		townNode["y"].Integer() = pos.y;
 		townNode["z"].Integer() = pos.z;
-		townNode["army_power"].Integer() = static_cast<si64>(town->getArmyStrength());
+		// The defending army: the garrison hero's when one holds the slot (that hero is hidden from
+		// the map, so it is not in enemy_visible.heroes). Friendly towns keep their own troops only,
+		// since a friendly garrison hero is listed (and scored) under friendly.heroes.
+		townNode["army_power"].Integer() = static_cast<si64>(town->getUpperArmy()->getArmyStrength());
 		enemyTownNodes.Vector().push_back(townNode);
 	}
 	payload["visible_state"]["enemy_visible"]["towns"] = enemyTownNodes;
@@ -730,6 +733,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		auto addArmed = [&](const CGObjectInstance * obj)
 		{
 			const auto * armed = dynamic_cast<const CArmedInstance *>(obj);
+			// A town is defended by its garrison hero's army when a hero holds that slot (the hero
+			// is hidden from the map and the town's own slots are empty) — what the town info shows.
+			if(const auto * town = dynamic_cast<const CGTownInstance *>(obj))
+				armed = town->getUpperArmy();
 			if(armed == nullptr)
 				return;
 			if(!countedObjects.insert(obj->id.getNum()).second)
@@ -1100,10 +1107,11 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 	JsonNode recruitHeroOptions;
 	recruitHeroOptions.setType(JsonNode::JsonType::DATA_VECTOR);
 	int recruitHeroEmitted = 0;
-	const int heroCount = cb->getHeroCount(playerID, true);
+	// The server's hire caps (HeroPoolProcessor): wandering heroes vs the on-map cap, all heroes
+	// (garrisoned included) vs the total cap.
 	const int onMapCap = cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_ON_MAP_CAP);
 	const int totalCap = cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_TOTAL_CAP);
-	const bool heroCapReached = heroCount >= onMapCap || heroCount >= totalCap;
+	const bool heroCapReached = cb->getHeroCount(playerID, false) >= onMapCap || cb->getHeroCount(playerID, true) >= totalCap;
 	const bool canAffordHero = cb->getResourceAmount(EGameResID::GOLD) >= GameConstants::HERO_GOLD_COST;
 	if(canAffordHero && !heroCapReached)
 	{
@@ -1299,6 +1307,33 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 	upgradeOptions.setType(JsonNode::JsonType::DATA_VECTOR);
 	auto pushUpgradeOptions = [&](const CArmedInstance * army, bool isHero)
 	{
+		// Where the upgrade happens (it sets the price): the town, a map object under the hero
+		// (Hill Fort), or otherwise the hero's own specialty. Mirrors fillUpgradeInfo's sources.
+		JsonNode site;
+		if(!isHero)
+		{
+			site["at"].String() = "town";
+			site["town_id"].String() = townToken(army->id.getNum());
+		}
+		else if(const auto * siteTown = dynamic_cast<const CGHeroInstance *>(army)->getVisitedTown())
+		{
+			site["at"].String() = "town";
+			site["town_id"].String() = townToken(siteTown->id.getNum());
+		}
+		else
+		{
+			const auto * front = vstd::frontOrNull(cb->getVisitableObjs(army->visitablePos()));
+			if(front != nullptr && front != army && dynamic_cast<const ICreatureUpgrader *>(front) != nullptr)
+			{
+				site["at"].String() = "map_object";
+				site["object_id"].String() = objectToken(front->id.getNum());
+				site["object_name"].String() = front->getObjectName();
+			}
+			else
+			{
+				site["at"].String() = "hero_specialty";
+			}
+		}
 		for(const auto & slot : army->Slots())
 		{
 			if(upgradeOptions.Vector().size() >= static_cast<size_t>(MAX_UPGRADE_OPTIONS))
@@ -1330,6 +1365,8 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 					+ "_c_" + std::to_string(upgrades[idx].getNum());
 				option["army_id"].String() = isHero ? heroToken(armyIdNum) : townToken(armyIdNum);
 				option["army"].String() = isHero ? "hero" : "garrison";
+				for(const auto & field : site.Struct())
+					option[field.first] = field.second;
 				option["slot"].Integer() = slot.first.getNum();
 				option["unit"].String() = creature->getJsonKey();
 				option["unit_name"].String() = creature->getNameSingularTranslated();
