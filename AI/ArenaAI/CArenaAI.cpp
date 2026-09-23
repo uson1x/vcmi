@@ -11,6 +11,7 @@
 #include "../../lib/entities/building/CBuilding.h"
 #include "../../lib/entities/hero/CHero.h"
 #include "../../lib/gameState/CGameState.h"
+#include "../../lib/gameState/UpgradeInfo.h"
 #include "../../lib/json/JsonNode.h"
 #include "../../lib/mapObjects/CGHeroInstance.h"
 #include "../../lib/mapObjects/CGObjectInstance.h"
@@ -57,6 +58,26 @@ constexpr int MAX_BUILD_OPTIONS = 36;
 constexpr int MAX_RECRUIT_OPTIONS = 36;
 constexpr int MAX_RECRUIT_HERO_OPTIONS = 8;
 constexpr int MAX_MANAGE_ARMY_OPTIONS = 16;
+constexpr int MAX_GARRISON_HERO_OPTIONS = 12;
+constexpr int MAX_UPGRADE_OPTIONS = 24;
+
+// GARRISON_HERO operations, in option ids as "_op_<n>".
+constexpr int GARRISON_OP_VISITING_TO_GARRISON = 0;
+constexpr int GARRISON_OP_GARRISON_TO_VISITING = 1;
+constexpr int GARRISON_OP_SWAP = 2;
+
+const char * garrisonOpName(int op)
+{
+	switch(op)
+	{
+	case GARRISON_OP_VISITING_TO_GARRISON:
+		return "visiting_to_garrison";
+	case GARRISON_OP_GARRISON_TO_VISITING:
+		return "garrison_to_visiting";
+	default:
+		return "swap";
+	}
+}
 
 // "Gate-class" objects gate the map's topology (routes between quadrants/levels and the
 // win-condition targets): the pathfinding bottlenecks a policy MUST see to plan multi-turn
@@ -427,6 +448,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		heroNode["army_power"].Integer() = static_cast<si64>(hero->getTotalStrength());
 		heroNode["level"].Integer() = hero->level;
 		heroNode["mana"].Integer() = hero->mana;
+		// A garrisoned hero holds the town's garrison slot: it defends the town and cannot move.
+		heroNode["in_garrison"].Bool() = hero->isGarrisoned();
+		if(const auto * inTown = hero->getVisitedTown())
+			heroNode["town_id"].String() = townToken(inTown->id.getNum());
 		JsonNode heroArmyNodes;
 		pushArmyStacks(heroArmyNodes, *hero);
 		heroNode["army"] = heroArmyNodes;
@@ -451,6 +476,12 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		townNode["y"].Integer() = pos.y;
 		townNode["z"].Integer() = pos.z;
 		townNode["army_power"].Integer() = static_cast<si64>(town->getArmyStrength());
+		// The town's two hero slots. While a hero holds the garrison slot, the town's own troops
+		// have merged into its army, so `garrison` below is empty and that hero defends the town.
+		if(const auto * visitingHero = town->getVisitingHero())
+			townNode["visiting_hero"].String() = heroToken(visitingHero->id.getNum());
+		if(const auto * garrisonHero = town->getGarrisonHero())
+			townNode["garrison_hero"].String() = heroToken(garrisonHero->id.getNum());
 
 		JsonNode buildingNodes;
 		buildingNodes.setType(JsonNode::JsonType::DATA_VECTOR);
@@ -740,6 +771,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		// used to fill the options with far multi-turn targets).
 		if(hero->movementPointsRemaining() <= 0)
 			continue;
+		// A garrisoned hero cannot move ("Can not move garrisoned hero!"); GARRISON_HERO steps it out.
+		if(hero->isGarrisoned())
+			continue;
 		const int3 from = hero->visitablePos();
 
 		// T0: drive movement options off the engine's own pathfinder rather than the
@@ -840,10 +874,11 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			if(obj->tempOwner == playerID)
 			{
 				const auto * ownTown = dynamic_cast<const CGTownInstance *>(obj);
+				// A garrison hero must keep one stack, so it only has something to hand over from 2 up.
 				const bool collectableGarrison =
 					ownTown != nullptr
 					&& ownTown->getUpperArmy() != nullptr
-					&& ownTown->getUpperArmy()->stacksCount() > 0
+					&& ownTown->getUpperArmy()->stacksCount() > (ownTown->getGarrisonHero() ? 1 : 0)
 					&& ownTown->getVisitingHero() == nullptr;
 				if(!collectableGarrison)
 					continue;
@@ -1026,9 +1061,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				const int recruitCount = std::min(available, affordable);
 				if(recruitCount <= 0)
 					continue;
-				// Recruits land in the town garrison: with 7 stacks and none of this unit
-				// there is no room (HoMM3 rule), and the server ignores the request.
-				if(!town->getSlotFor(creature).validSlot())
+				// Recruits land in the town garrison (the garrison hero's army when a hero holds
+				// that slot): with 7 stacks and none of this unit there is no room (HoMM3 rule),
+				// and the server ignores the request.
+				if(!town->getUpperArmy()->getSlotFor(creature).validSlot())
 					continue;
 
 				JsonNode option;
@@ -1133,6 +1169,10 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			continue;
 		const int townIdNum = town->id.getNum();
 		const int heroIdNum = visiting->id.getNum();
+		// The garrison side: the town's own troops, or the garrison hero's army when a hero holds
+		// that slot (the town's troops merged into it). A hero may never be left with no stack.
+		const CArmedInstance * garrisonArmy = town->getUpperArmy();
+		const CGHeroInstance * garrisonHero = town->getGarrisonHero();
 
 		auto pushManageOption = [&](int direction, const CCreatureSet & srcArmy, const SlotID & slotId)
 		{
@@ -1146,6 +1186,8 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				+ "_s_" + std::to_string(slotId.getNum());
 			option["town_id"].String() = townToken(townIdNum);
 			option["hero_id"].String() = heroToken(heroIdNum);
+			if(garrisonHero != nullptr)
+				option["garrison_hero_id"].String() = heroToken(garrisonHero->id.getNum());
 			option["direction"].String() = direction == 0 ? "garrison_to_hero" : "hero_to_garrison";
 			option["unit"].String() = creature->getJsonKey();
 			option["unit_name"].String() = creature->getNameSingularTranslated();
@@ -1156,14 +1198,17 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 
 		// Pickup: each garrison stack -> hero, if the hero has room for it (a matching stack
 		// or a free slot); otherwise the executor refuses and the option was a no-op.
-		for(const auto & slot : town->Slots())
+		if(garrisonHero == nullptr || garrisonArmy->stacksCount() >= 2)
 		{
-			if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
-				break;
-			const CCreature * cre = town->getCreature(slot.first);
-			if(cre == nullptr || !visiting->getSlotFor(cre).validSlot())
-				continue;
-			pushManageOption(0, *town, slot.first);
+			for(const auto & slot : garrisonArmy->Slots())
+			{
+				if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
+					break;
+				const CCreature * cre = garrisonArmy->getCreature(slot.first);
+				if(cre == nullptr || !visiting->getSlotFor(cre).validSlot())
+					continue;
+				pushManageOption(0, *garrisonArmy, slot.first);
+			}
 		}
 		// Deposit: each hero stack -> garrison, but never offer a move that empties the
 		// hero of its last stack (the engine forbids it and it would be suicidal anyway).
@@ -1174,7 +1219,7 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				if(manageEmitted >= MAX_MANAGE_ARMY_OPTIONS)
 					break;
 				const CCreature * cre = visiting->getCreature(slot.first);
-				if(cre == nullptr || !town->getSlotFor(cre).validSlot())
+				if(cre == nullptr || !garrisonArmy->getSlotFor(cre).validSlot())
 					continue; // no room in the garrison for this stack: a no-op
 				pushManageOption(1, *visiting, slot.first);
 			}
@@ -1186,6 +1231,131 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 	{
 		manageGroup["options"] = manageOptions;
 		legalActions.Vector().push_back(manageGroup);
+	}
+
+	// GARRISON_HERO: the town screen's hero swap (CGameHandler::garrisonSwap). The visiting hero
+	// moves into the garrison slot (the town's troops merge into its army; it defends the town and
+	// frees the visiting slot, e.g. for RECRUIT_HERO), a garrison hero steps out, or the two swap.
+	// Offered only when the server accepts it.
+	JsonNode garrisonGroup;
+	garrisonGroup["type"].String() = "GARRISON_HERO";
+	JsonNode garrisonOptions;
+	garrisonOptions.setType(JsonNode::JsonType::DATA_VECTOR);
+	const int wanderingHeroes = cb->getHeroCount(playerID, false);
+	for(const auto * town : towns)
+	{
+		if(town == nullptr || garrisonOptions.Vector().size() >= static_cast<size_t>(MAX_GARRISON_HERO_OPTIONS))
+			continue;
+		const CGHeroInstance * visitingHero = town->getVisitingHero();
+		const CGHeroInstance * garrisonHero = town->getGarrisonHero();
+		if(visitingHero != nullptr && visitingHero->tempOwner != playerID)
+			continue;
+		int op = -1;
+		if(visitingHero != nullptr && garrisonHero == nullptr)
+		{
+			if(visitingHero->canBeMergedWith(*town))
+				op = GARRISON_OP_VISITING_TO_GARRISON;
+		}
+		else if(visitingHero == nullptr && garrisonHero != nullptr)
+		{
+			if(wanderingHeroes < onMapCap)
+				op = GARRISON_OP_GARRISON_TO_VISITING;
+		}
+		else if(visitingHero != nullptr && garrisonHero != nullptr)
+		{
+			op = GARRISON_OP_SWAP;
+		}
+		if(op < 0)
+			continue;
+
+		const int townIdNum = town->id.getNum();
+		JsonNode option;
+		option["option_id"].String() = "garrison_t_" + std::to_string(townIdNum) + "_op_" + std::to_string(op);
+		option["town_id"].String() = townToken(townIdNum);
+		option["op"].String() = garrisonOpName(op);
+		// After the action: the visiting hero (if any) sits in the garrison and the garrison hero (if any)
+		// stands in the visiting slot.
+		if(visitingHero != nullptr)
+			option["to_garrison_hero_id"].String() = heroToken(visitingHero->id.getNum());
+		if(garrisonHero != nullptr)
+			option["to_visiting_hero_id"].String() = heroToken(garrisonHero->id.getNum());
+		garrisonOptions.Vector().push_back(option);
+	}
+	if(!garrisonOptions.Vector().empty())
+	{
+		garrisonGroup["options"] = garrisonOptions;
+		legalActions.Vector().push_back(garrisonGroup);
+	}
+
+	// UPGRADE: upgrade a whole stack, as the garrison/hero screen does. The engine's own upgrade
+	// rules decide what is possible (CGameInfoCallback::fillUpgradeInfo): in a town whose upgraded
+	// dwelling of that creature is built (the town's troops, and a visiting or garrisoned hero's
+	// army), at a Hill Fort the hero stands on, or through a hero specialty. Offered only when the
+	// whole stack is affordable. The server does not check that the target creature is one of the
+	// legal upgrades, so only the upgrades fillUpgradeInfo lists are offered and executed.
+	JsonNode upgradeGroup;
+	upgradeGroup["type"].String() = "UPGRADE";
+	JsonNode upgradeOptions;
+	upgradeOptions.setType(JsonNode::JsonType::DATA_VECTOR);
+	auto pushUpgradeOptions = [&](const CArmedInstance * army, bool isHero)
+	{
+		for(const auto & slot : army->Slots())
+		{
+			if(upgradeOptions.Vector().size() >= static_cast<size_t>(MAX_UPGRADE_OPTIONS))
+				return;
+			const CCreature * creature = army->getCreature(slot.first);
+			if(creature == nullptr)
+				continue;
+			UpgradeInfo info(creature->getId());
+			cb->fillUpgradeInfo(army, slot.first, info);
+			if(!info.canUpgrade())
+				continue;
+			const int count = army->getStackCount(slot.first);
+			const auto & upgrades = info.getAvailableUpgrades();
+			const auto & costs = info.getAvailableUpgradeCosts();
+			for(size_t idx = 0; idx < upgrades.size() && idx < costs.size(); ++idx)
+			{
+				if(upgradeOptions.Vector().size() >= static_cast<size_t>(MAX_UPGRADE_OPTIONS))
+					return;
+				const auto * target = upgrades[idx].toCreature();
+				if(target == nullptr)
+					continue;
+				const ResourceSet totalCost = costs[idx] * count;
+				if(!resources.canAfford(totalCost))
+					continue;
+				const int armyIdNum = army->id.getNum();
+				JsonNode option;
+				option["option_id"].String() = "upgrade_a_" + std::to_string(armyIdNum)
+					+ "_s_" + std::to_string(slot.first.getNum())
+					+ "_c_" + std::to_string(upgrades[idx].getNum());
+				option["army_id"].String() = isHero ? heroToken(armyIdNum) : townToken(armyIdNum);
+				option["army"].String() = isHero ? "hero" : "garrison";
+				option["slot"].Integer() = slot.first.getNum();
+				option["unit"].String() = creature->getJsonKey();
+				option["unit_name"].String() = creature->getNameSingularTranslated();
+				option["count"].Integer() = count;
+				option["upgrade_to"].String() = target->getJsonKey();
+				option["upgrade_to_name"].String() = target->getNameSingularTranslated();
+				JsonNode costEach;
+				pushBuildingCost(costEach, costs[idx]);
+				option["cost_each"] = costEach;
+				JsonNode costTotal;
+				pushBuildingCost(costTotal, totalCost);
+				option["cost_total"] = costTotal;
+				upgradeOptions.Vector().push_back(option);
+			}
+		}
+	};
+	for(const auto * hero : heroes)
+		if(hero != nullptr)
+			pushUpgradeOptions(hero, true);
+	for(const auto * town : towns)
+		if(town != nullptr)
+			pushUpgradeOptions(town, false);
+	if(!upgradeOptions.Vector().empty())
+	{
+		upgradeGroup["options"] = upgradeOptions;
+		legalActions.Vector().push_back(upgradeGroup);
 	}
 
 	payload["legal_actions"] = legalActions;
@@ -1564,12 +1734,14 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 		if(!creatureId || matchedLevel < 0 || maxLegalCount <= 0)
 			return false;
 
-		if(!town->getSlotFor(CreatureID(*creatureId)).validSlot())
+		// HoMM3: recruits join the garrison hero's army when a hero holds the garrison slot.
+		const CArmedInstance * recruitTo = town->getUpperArmy();
+		if(!recruitTo->getSlotFor(CreatureID(*creatureId)).validSlot())
 			return false; // garrison full: the server would ignore it
 
 		int finalCount = requestedCount.value_or(maxLegalCount);
 		finalCount = std::max(1, std::min(finalCount, maxLegalCount));
-		cb->recruitCreatures(town, town, CreatureID(*creatureId), static_cast<ui32>(finalCount), matchedLevel);
+		cb->recruitCreatures(town, recruitTo, CreatureID(*creatureId), static_cast<ui32>(finalCount), matchedLevel);
 		return true;
 	}
 
@@ -1648,6 +1820,9 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 		// Both armies must be co-located (hero visiting the town) for a transfer.
 		if(town->getVisitingHero() != hero)
 			return false;
+		// The garrison side is the garrison hero's army when a hero holds that slot.
+		const CArmedInstance * garrisonArmy = town->getUpperArmy();
+		const bool garrisonIsHero = town->getGarrisonHero() != nullptr;
 
 		const SlotID slot(*srcSlot);
 		if(*direction == 0)
@@ -1659,20 +1834,97 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 			// of a stack forever; the model then loops on "pick up the remaining unit" and
 			// the whole game stalls (observed: army frozen for 18 turns). Move the entire
 			// stack into the hero's matching slot (merge) or a free slot (swap) instead.
-			const CCreature * cre = town->getCreature(slot);
+			const CCreature * cre = garrisonArmy->getCreature(slot);
 			if(cre == nullptr)
 				return false;
+			if(garrisonIsHero && garrisonArmy->stacksCount() < 2)
+				return false; // would leave the garrison hero with no troops
 			const SlotID dstSlot = hero->getSlotFor(cre);
 			if(!dstSlot.validSlot())
 				return false; // hero army full with no matching slot — cannot pick up
-			cb->mergeOrSwapStacks(town, hero, slot, dstSlot); // garrison stack -> hero, in full
+			cb->mergeOrSwapStacks(garrisonArmy, hero, slot, dstSlot); // garrison stack -> hero, in full
 		}
 		else
 		{
-			// hero -> garrison: bulkMoveArmy's leave-one rule is DESIRABLE here (never empty
-			// the hero), so keep it for deposits.
-			cb->bulkMoveArmy(hero->id, town->id, slot);
+			// hero -> garrison: exactly the offered stack, in full. (bulkMoveArmy, used before
+			// the S9 pin, moves the hero's WHOLE army minus one creature, whatever stack the
+			// option named.) Never the hero's last stack.
+			const CCreature * cre = hero->getCreature(slot);
+			if(cre == nullptr || hero->stacksCount() < 2)
+				return false;
+			const SlotID dstSlot = garrisonArmy->getSlotFor(cre);
+			if(!dstSlot.validSlot())
+				return false; // garrison full with no matching stack
+			cb->mergeOrSwapStacks(hero, garrisonArmy, slot, dstSlot);
 		}
+		return true;
+	}
+
+	if(actionType == "GARRISON_HERO")
+	{
+		std::optional<int> townId = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_t_") : std::nullopt;
+		std::optional<int> op = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_op_") : std::nullopt;
+		if(!townId && selectedAction.isStruct() && selectedAction["town_id"].isString())
+			townId = parseOptionValue(selectedAction["town_id"].String());
+		if(!townId || !op)
+			return false;
+		const CGTownInstance * town = findTownById(*townId);
+		if(town == nullptr)
+			return false;
+		// Re-check the slots: the option must still describe the town (same checks as the offer).
+		const CGHeroInstance * visitingHero = town->getVisitingHero();
+		const CGHeroInstance * garrisonHero = town->getGarrisonHero();
+		if(*op == GARRISON_OP_VISITING_TO_GARRISON)
+		{
+			if(visitingHero == nullptr || garrisonHero != nullptr || visitingHero->tempOwner != playerID
+				|| !visitingHero->canBeMergedWith(*town))
+				return false;
+		}
+		else if(*op == GARRISON_OP_GARRISON_TO_VISITING)
+		{
+			const int onMapCap = cb->getSettings().getInteger(EGameSettings::HEROES_PER_PLAYER_ON_MAP_CAP);
+			if(visitingHero != nullptr || garrisonHero == nullptr || cb->getHeroCount(playerID, false) >= onMapCap)
+				return false;
+		}
+		else if(*op == GARRISON_OP_SWAP)
+		{
+			if(visitingHero == nullptr || garrisonHero == nullptr || visitingHero->tempOwner != playerID)
+				return false;
+		}
+		else
+		{
+			return false;
+		}
+		cb->swapGarrisonHero(town);
+		return true;
+	}
+
+	if(actionType == "UPGRADE")
+	{
+		std::optional<int> armyId = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_a_") : std::nullopt;
+		std::optional<int> srcSlot = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_s_") : std::nullopt;
+		std::optional<int> upgradeId = (!optionId.empty()) ? parseTaggedOptionValue(optionId, "_c_") : std::nullopt;
+		if(!armyId || !srcSlot || !upgradeId)
+			return false;
+		const auto * army = dynamic_cast<const CArmedInstance *>(cb->getObj(ObjectInstanceID(*armyId), false));
+		if(army == nullptr || army->tempOwner != playerID)
+			return false;
+		const SlotID slot(*srcSlot);
+		const CCreature * creature = army->getCreature(slot);
+		if(creature == nullptr)
+			return false;
+		UpgradeInfo info(creature->getId());
+		cb->fillUpgradeInfo(army, slot, info);
+		if(!info.canUpgrade())
+			return false;
+		const CreatureID target(*upgradeId);
+		const auto & upgrades = info.getAvailableUpgrades();
+		if(std::find(upgrades.begin(), upgrades.end(), target) == upgrades.end())
+			return false; // not a legal upgrade here (the server would not check it)
+		const ResourceSet totalCost = info.getUpgradeCostsFor(target) * army->getStackCount(slot);
+		if(!cb->getResourceAmount().canAfford(totalCost))
+			return false;
+		cb->upgradeCreature(army, slot, target);
 		return true;
 	}
 
@@ -2116,8 +2368,9 @@ void CArenaAI::advanceTravelGoals()
 		const CGHeroInstance * hero = findHeroById(it->first);
 		const int3 goal = it->second;
 		// Drop the goal if the hero is gone or the target is no longer a worthwhile
-		// (unowned) object -- e.g. we already captured it or it was consumed.
-		if(hero == nullptr || unownedObjectAt(goal) == nullptr)
+		// (unowned) object -- e.g. we already captured it or it was consumed. A hero that
+		// went into a town garrison cannot move, so its goal ends too.
+		if(hero == nullptr || hero->isGarrisoned() || unownedObjectAt(goal) == nullptr)
 		{
 			it = heroTravelGoals.erase(it);
 			continue;
