@@ -86,6 +86,16 @@ public:
 	void castSpell(const CGHeroInstance *hero, SpellID spellID, const int3 &pos = int3(-1, -1, -1)) override;
 	void requestStatistic() override;
 
+	// Headless-AI helpers that never read the shared waitTillRealize flag (a battle AI or a
+	// network-thread dialog callback may be toggling it on another thread at the same moment).
+	// Query reply that never waits: safe to send from the network thread.
+	int sendQueryReplyNoWait(std::optional<int32_t> reply, QueryID queryID);
+	// Round-trip a no-op pack through the server and block until it is realized. The server handles
+	// one connection's packs in order and the client applies incoming packs in order, so on return
+	// every pack the server produced in reaction to this player's earlier requests (battle start,
+	// level-up, visit dialogs) has already been delivered to the player interface.
+	int syncWithServer();
+
 //friends
 	friend class CClient;
 };

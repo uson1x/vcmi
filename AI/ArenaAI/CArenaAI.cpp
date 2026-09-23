@@ -1682,7 +1682,7 @@ try
 	// thread can take the exclusive lock to apply packs. Without holding it here, that
 	// unlock_shared underflows the reader count and the network thread deadlocks.
 	std::shared_lock<std::shared_mutex> gsLock(CGameState::mutex);
-	waitForQueries();
+	drainServer();
 
 	if(bridgeEnabled)
 	{
@@ -1724,16 +1724,15 @@ try
 			if(!applyTurnResponse(responsePayload))
 				break;
 
-			// A move can start a battle; wait for it to auto-resolve before issuing
-			// the next action so the bridge sees a clean post-battle state (and so we
-			// don't fire actions the server would reject while a CBattleQuery is open).
-			waitForBattles();
-			waitForQueries();
+			// A move can start a battle, and a won battle opens a level-up query; settle
+			// both before issuing the next action so the bridge sees a clean post-battle
+			// state and the server never refuses our next request over an open query.
+			drainServer();
 		}
 	}
 
 	if(!aborting)
-		cb->endTurn();
+		endTurnVerified();
 }
 catch(const TerminationRequestedException &)
 {
@@ -1801,6 +1800,70 @@ void CArenaAI::waitForQueries()
 			break;
 		}
 	}
+}
+
+void CArenaAI::drainServer()
+{
+	// The level-up deadlock (S8: 29.6% of league games frozen): a won battle ends with
+	// battleEnd, but its CHeroLevelUpDialogQuery reaches us one pack LATER. waitForBattles
+	// returned, pendingQueries was still empty, so waitForQueries returned too and the next
+	// action (often END_TURN) went out while the server held the level-up open. The server
+	// refused it ("has to answer queries"); a refused END_TURN never ends the turn.
+	// A server round-trip closes that window: once syncWithServer returns, every pack the
+	// server produced in reaction to our earlier requests has been handled, so any battle
+	// or query it opened is already registered here. Loop until a round-trip finds both
+	// quiet — answering one level-up can open the next, a closed dialog can start a battle.
+	for(int round = 0; round < 64; ++round)
+	{
+		if(aborting)
+			return;
+		waitForBattles();
+		if(aborting)
+			return;
+		cb->syncWithServer(); // releases our shared game-state lock while it waits (see runTurn)
+		bool quiet = false;
+		{
+			std::lock_guard<std::mutex> lock(battleMx);
+			quiet = battlesInProgress == 0;
+		}
+		{
+			std::lock_guard<std::mutex> lock(queryMx);
+			quiet = quiet && pendingQueries.empty() && deferredQueryAnswers.empty();
+		}
+		if(quiet)
+			return;
+		waitForQueries();
+	}
+	logAi->error("ArenaAI: server did not settle after 64 sync rounds");
+}
+
+void CArenaAI::endTurnVerified()
+{
+	// EndTurn is refused (PackageApplied false) only while a server query blocks the player.
+	// Drain and retry instead of leaving the turn open forever. No round-trip AFTER a
+	// successful EndTurn: our next yourTurn may join this worker on the network thread.
+	for(int attempt = 0; attempt < 8 && !aborting; ++attempt)
+	{
+		drainServer();
+		if(aborting)
+			return;
+		cb->endTurn();
+		std::optional<bool> accepted;
+		{
+			std::lock_guard<std::mutex> lock(queryMx);
+			const auto it = endTurnResults.find(lastEndTurnRequest);
+			if(it != endTurnResults.end())
+			{
+				accepted = it->second;
+				endTurnResults.erase(it);
+			}
+		}
+		if(accepted.value_or(true))
+			return;
+		logAi->error("ArenaAI: server refused EndTurn (attempt %d), draining and retrying", attempt + 1);
+	}
+	if(!aborting)
+		logAi->error("ArenaAI: EndTurn still refused after 8 attempts");
 }
 
 bool CArenaAI::executeHeroMoveTo(const CGHeroInstance * hero, const int3 & destination,
@@ -1992,12 +2055,11 @@ void CArenaAI::advanceTravelGoals()
 		bool blockedByGuard = false;
 		const bool reached = executeHeroMoveTo(hero, goal, /*stopBeforeCombat=*/true, &blockedByGuard);
 		// Defense-in-depth: stepBeforeCombat above should keep auto-advance battle-free,
-		// but if a battle ever slips through (e.g. a path node the pathfinder did not
-		// classify as BATTLE), drain it with the same release-lock/wait handshake the
-		// per-action loop uses — never leave a CBattleQuery open while we hold the
-		// shared game-state lock (that is the deadlock this guards against).
-		waitForBattles();
-		waitForQueries();
+		// but a fight can still start from a visit dialog (creature bank "attack the
+		// guards?") the pathfinder does not mark as BATTLE. Drain it, and the level-up
+		// after it, with the same handshake the per-action loop uses — never leave a
+		// battle or query open while we hold the shared game-state lock.
+		drainServer();
 		if(reached || blockedByGuard || unownedObjectAt(goal) == nullptr)
 			it = heroTravelGoals.erase(it);
 		else
@@ -2045,35 +2107,62 @@ void CArenaAI::answerQuery(QueryID queryID, int choice)
 		return;
 
 	// Query replies arrive on the network thread (post-battle level-up, mid-move
-	// blocking dialogs, ...). With waitTillRealize=true a blocking reply would wedge
-	// the network thread waiting on a PackageApplied only it can deliver, so send the
-	// reply without waiting (mirrors CBattleAI's temporary waitTillRealize toggle).
-	const bool prev = cb->waitTillRealize;
-	cb->waitTillRealize = false;
-	cb->selectionMade(choice, queryID);
-	cb->waitTillRealize = prev;
+	// blocking dialogs, ...). A blocking reply would wedge the network thread waiting
+	// on a PackageApplied only it can deliver, so never wait. Explicitly, not by
+	// toggling the shared waitTillRealize flag: the turn worker may be reading it.
+	cb->sendQueryReplyNoWait(choice, queryID);
 }
 
 void CArenaAI::requestSent(const CPackForServer * pack, int requestID)
 {
+	if(dynamic_cast<const EndTurn *>(pack) != nullptr)
+	{
+		std::lock_guard<std::mutex> lock(queryMx);
+		lastEndTurnRequest = requestID;
+		return;
+	}
+
 	const auto * reply = dynamic_cast<const QueryReply *>(pack);
 	if(reply == nullptr)
 		return;
 
 	std::lock_guard<std::mutex> lock(queryMx);
-	if(pendingQueries.contains(reply->qid))
+	if(!pendingQueries.contains(reply->qid))
+		return;
+	const auto early = earlyRealizedReplies.find(requestID);
+	if(early == earlyRealizedReplies.end())
+	{
 		queryReplyRequests[requestID] = reply->qid;
+		return;
+	}
+	// The ack beat us here (reply sent from the worker, acked on the network thread).
+	if(early->second)
+		pendingQueries.erase(reply->qid);
+	earlyRealizedReplies.erase(early);
+	queryCv.notify_all();
 }
 
 void CArenaAI::requestRealized(PackageApplied * pack)
 {
+	if(pack->packType == CTypeList::getInstance().getTypeID<EndTurn>(nullptr))
+	{
+		std::lock_guard<std::mutex> lock(queryMx);
+		endTurnResults[static_cast<int>(pack->requestID)] = pack->result;
+		return;
+	}
 	if(pack->packType != CTypeList::getInstance().getTypeID<QueryReply>(nullptr))
 		return;
 
 	std::lock_guard<std::mutex> lock(queryMx);
 	const auto request = queryReplyRequests.find(static_cast<int>(pack->requestID));
 	if(request == queryReplyRequests.end())
+	{
+		// Also collects acks of replies we never track (e.g. the battle AI's); keep it bounded.
+		earlyRealizedReplies[static_cast<int>(pack->requestID)] = pack->result;
+		if(earlyRealizedReplies.size() > 256)
+			earlyRealizedReplies.erase(earlyRealizedReplies.begin());
 		return;
+	}
 
 	const QueryID queryID = request->second;
 	queryReplyRequests.erase(request);

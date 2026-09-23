@@ -54,6 +54,11 @@ class CArenaAI : public CAdventureAI
 	std::set<QueryID> pendingQueries;
 	std::map<int, QueryID> queryReplyRequests;
 	std::map<QueryID, int> deferredQueryAnswers;
+	// PackageApplied can be handled on the network thread before the worker that sent the
+	// request reaches requestSent(); these park such early acks until requestSent claims them.
+	std::map<int, bool> earlyRealizedReplies;
+	std::map<int, bool> endTurnResults; // EndTurn requestID -> accepted (false = blocked by a query)
+	int lastEndTurnRequest = -1;
 
 	// T1 persistent MOVE_TO intent: when the model aims a hero at a still-distant
 	// unowned object, we remember the destination (per hero id) and keep advancing
@@ -102,6 +107,11 @@ private:
 	void queryStarted(QueryID queryID);
 	void deferQueryAnswer(QueryID queryID, int choice);
 	void waitForQueries();
+	// Settle everything the server opened in reaction to our requests (battles, the level-ups
+	// that follow them, visit dialogs) before the next request goes out. See drainServer().
+	void drainServer();
+	// End the turn and confirm the server accepted it; re-drain and retry if a query refused it.
+	void endTurnVerified();
 	void answerQuery(QueryID queryID, int choice);
 
 	// Execute the engine-pathed move toward `destination` for this turn; returns

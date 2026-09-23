@@ -26,6 +26,7 @@ class DLL_LINKAGE CBattleCallback : public IBattleCallback
 
 protected:
 	int sendRequest(const CPackForServer & request); //returns requestID (that'll be matched to requestID in PackageApplied)
+	int sendRequest(const CPackForServer & request, bool waitTillRealize); //same, with an explicit wait instead of the shared flag
 
 public:
 	CBattleCallback(std::optional<PlayerColor> player, IClient * C);

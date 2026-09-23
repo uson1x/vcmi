@@ -97,4 +97,9 @@ int CBattleCallback::sendRequest(const CPackForServer & request)
 	return cl->sendRequest(request, *getPlayerID(), waitTillRealize);
 }
 
+int CBattleCallback::sendRequest(const CPackForServer & request, bool waitTillRealize)
+{
+	return cl->sendRequest(request, *getPlayerID(), waitTillRealize);
+}
+
 VCMI_LIB_NAMESPACE_END

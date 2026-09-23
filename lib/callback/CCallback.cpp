@@ -59,6 +59,29 @@ int CCallback::sendQueryReply(std::optional<int32_t> reply, QueryID queryID)
 	return sendRequest(pack);
 }
 
+int CCallback::sendQueryReplyNoWait(std::optional<int32_t> reply, QueryID queryID)
+{
+	ASSERT_IF_CALLED_WITH_PLAYER
+	if(queryID == QueryID(-1))
+	{
+		logGlobal->error("Cannot answer the query -1!");
+		return -1;
+	}
+
+	QueryReply pack(queryID, reply);
+	pack.player = *getPlayerID();
+	return CBattleCallback::sendRequest(pack, false);
+}
+
+int CCallback::syncWithServer()
+{
+	// AdvInterfaceReady is exempt from query blocking and is a no-op once the player's
+	// interface has announced itself (the client sends it once per player at game start).
+	AdvInterfaceReady pack;
+	pack.player = *getPlayerID();
+	return CBattleCallback::sendRequest(pack, true);
+}
+
 void CCallback::recruitCreatures(const CGDwelling * obj, const CArmedInstance * dst, CreatureID ID, ui32 amount, si32 level)
 {
 	// TODO exception for neutral dwellings shouldn't be hardcoded
