@@ -50,7 +50,9 @@ constexpr int MAX_FRIENDLY_TOWNS = 12;
 constexpr int MAX_ENEMY_HEROES = 12;
 constexpr int MAX_ENEMY_TOWNS = 12;
 constexpr int MAX_VISIBLE_OBJECTS = 48;
-constexpr int MAX_MOVE_OPTIONS = 24;
+// Ordinary (non-priority) object targets per hero, on top of its 8 exploration tiles. Per hero,
+// not shared: one global cap of 24 let heroes[0] fill every slot and hired heroes got no moves.
+constexpr int MAX_OBJECT_MOVES_PER_HERO = 12;
 constexpr int MAX_BUILD_OPTIONS = 36;
 constexpr int MAX_RECRUIT_OPTIONS = 36;
 constexpr int MAX_RECRUIT_HERO_OPTIONS = 8;
@@ -178,6 +180,7 @@ void pushBuildingCost(JsonNode & costNode, const ResourceSet & cost)
 		{EGameResID::SULFUR, "sulfur"}, {EGameResID::CRYSTAL, "crystal"}, {EGameResID::GEMS, "gems"},
 		{EGameResID::GOLD, "gold"},
 	};
+	costNode.setType(JsonNode::JsonType::DATA_STRUCT); // a free building is {}, not null
 	for(const auto & kind : kinds)
 	{
 		const int amount = cost[kind.first];
@@ -498,6 +501,28 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			JsonNode costNode;
 			pushBuildingCost(costNode, building->resources);
 			node["cost"] = costNode;
+			if(state == EBuildingState::PREREQUIRES || state == EBuildingState::MISSING_BASE)
+			{
+				// The not-yet-built buildings that would satisfy the requirement (what the
+				// build screen's "Requires:" line names), one level deep.
+				JsonNode missingNodes;
+				missingNodes.setType(JsonNode::JsonType::DATA_VECTOR);
+				const auto missing = town->genBuildingRequirements(buildingEntry.first, false).getFulfillmentCandidates(
+					[town](const BuildingID & id) { return town->hasBuilt(id); });
+				std::set<BuildingID> seen;
+				for(const auto & missingId : missing)
+				{
+					if(!seen.insert(missingId).second)
+						continue;
+					const auto missingIt = town->getTown()->buildings.find(missingId);
+					if(missingIt == town->getTown()->buildings.end() || !missingIt->second)
+						continue;
+					JsonNode missingNode;
+					missingNode.String() = missingIt->second->getJsonKey();
+					missingNodes.Vector().push_back(missingNode);
+				}
+				node["missing_prereqs"] = missingNodes;
+			}
 			buildLockedNodes.Vector().push_back(node);
 			++lockedEmitted;
 		}
@@ -530,16 +555,24 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			const auto & entry = town->creatures[level];
 			if(entry.first <= 0 || entry.second.empty())
 				continue;
-			const auto creatureId = entry.second.front();
-			const auto * creature = creatureId.toCreature();
-			if(creature == nullptr)
-				continue;
-			JsonNode recruitNode;
-			recruitNode["unit"].String() = creature->getJsonKey();
-			recruitNode["name"].String() = creature->getNameSingularTranslated();
-			recruitNode["available"].Integer() = static_cast<si64>(entry.first);
-			recruitNode["level"].Integer() = static_cast<si64>(level + 1);
-			recruitNodes.Vector().push_back(recruitNode);
+			// Every creature the built dwellings of this level allow (base first, then the
+			// upgrade); they share one weekly pool, so `available` repeats per entry.
+			for(size_t tier = 0; tier < entry.second.size(); ++tier)
+			{
+				const auto * creature = entry.second[tier].toCreature();
+				if(creature == nullptr)
+					continue;
+				JsonNode recruitNode;
+				recruitNode["unit"].String() = creature->getJsonKey();
+				recruitNode["name"].String() = creature->getNameSingularTranslated();
+				recruitNode["available"].Integer() = static_cast<si64>(entry.first);
+				recruitNode["level"].Integer() = static_cast<si64>(level + 1);
+				recruitNode["upgraded"].Bool() = tier > 0;
+				JsonNode costNode;
+				pushBuildingCost(costNode, creature->getFullRecruitCost());
+				recruitNode["cost_each"] = costNode;
+				recruitNodes.Vector().push_back(recruitNode);
+			}
 		}
 		townNode["recruit_pool"] = recruitNodes;
 
@@ -698,10 +731,14 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 		return total;
 	};
 
-	int emitted = 0;
 	for(const auto * hero : heroes)
 	{
 		if(hero == nullptr)
+			continue;
+		// A hero that cannot take a single step this turn gets no move options at all: every
+		// one of them would be a no-op the server accepts and ignores (heroes with 0 movement
+		// used to fill the options with far multi-turn targets).
+		if(hero->movementPointsRemaining() <= 0)
 			continue;
 		const int3 from = hero->visitablePos();
 
@@ -754,8 +791,6 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 
 		for(int oct = 0; oct < 8; ++oct)
 		{
-			if(emitted >= MAX_MOVE_OPTIONS)
-				break;
 			if(bestDistSq[oct] < 0)
 				continue;
 			const int3 dst = bestTile[oct];
@@ -778,7 +813,6 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 					option["guard_name"].String() = guardName;
 			}
 			moveOptions.Vector().push_back(option);
-			++emitted;
 		}
 
 		// T0b: also offer reachable VISIBLE OBJECTS as move destinations (closest
@@ -801,13 +835,16 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			// on it — so its recruited army strands at home (observed: 7500-power garrison
 			// idle vs a 2256 roaming hero). Once the hero arrives, auto-collect / MANAGE_ARMY
 			// grabs the garrison.
+			// Not while another friendly hero is parked in that town: the move would turn into a
+			// hero exchange (auto-closed), a no-op.
 			if(obj->tempOwner == playerID)
 			{
 				const auto * ownTown = dynamic_cast<const CGTownInstance *>(obj);
 				const bool collectableGarrison =
 					ownTown != nullptr
 					&& ownTown->getUpperArmy() != nullptr
-					&& ownTown->getUpperArmy()->stacksCount() > 0;
+					&& ownTown->getUpperArmy()->stacksCount() > 0
+					&& ownTown->getVisitingHero() == nullptr;
 				if(!collectableGarrison)
 					continue;
 			}
@@ -832,23 +869,39 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			}
 			if(onode == nullptr || !onode->reachable())
 				continue; // no path to this object at all
+			if(onode->turns > 0)
+			{
+				// A multi-turn target is only a real move if the hero can take the path's
+				// first step now; otherwise the server gets no tiles and nothing happens.
+				CGPath path;
+				if(!heroPaths.getPath(path, opos) || path.nodes.size() < 2
+					|| path.nodes[path.nodes.size() - 2].turns != 0)
+					continue;
+			}
 			// A visible ENEMY town or hero is a win-condition target: it must never be
 			// crowded out of the MOVE options by nearby ordinary targets (mines,
 			// dwellings) under the closest-first cap ordering — which is exactly what
 			// happened during a long cross-map approach. Priority targets bypass the
-			// MAX_MOVE_OPTIONS cap (bounded anyway by the visible-object caps).
+			// per-hero cap (bounded anyway by the visible-object caps).
 			const bool enemyOwned = obj->tempOwner.isValidPlayer() && obj->tempOwner != playerID;
 			const bool priorityTarget = enemyOwned
 				&& (dynamic_cast<const CGTownInstance *>(obj) != nullptr
 					|| dynamic_cast<const CGHeroInstance *>(obj) != nullptr);
 			objTargets.emplace_back(static_cast<int>(onode->turns), onode->moveRemains, opos, priorityTarget);
 		}
-		std::sort(objTargets.begin(), objTargets.end(),
-			[](const auto & a, const auto & b) { return std::get<0>(a) < std::get<0>(b); });
+		// Fewest turns first, then the most movement left on arrival (= nearest); stable, so
+		// ties keep the deterministic visible-object order.
+		std::stable_sort(objTargets.begin(), objTargets.end(), [](const auto & a, const auto & b)
+		{
+			if(std::get<0>(a) != std::get<0>(b))
+				return std::get<0>(a) < std::get<0>(b);
+			return std::get<1>(a) > std::get<1>(b);
+		});
 
+		int objectMovesEmitted = 0;
 		for(const auto & target : objTargets)
 		{
-			if(!std::get<3>(target) && emitted >= MAX_MOVE_OPTIONS)
+			if(!std::get<3>(target) && objectMovesEmitted >= MAX_OBJECT_MOVES_PER_HERO)
 				continue; // cap ordinary targets only; enemy towns/heroes always emit
 			const int3 opos = std::get<2>(target);
 			bool duplicate = false;
@@ -882,12 +935,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 					option["guard_name"].String() = guardName;
 			}
 			moveOptions.Vector().push_back(option);
-			++emitted;
+			if(!std::get<3>(target))
+				++objectMovesEmitted;
 		}
-
-		// No early break at the cap: later heroes still get their priority
-		// (enemy town/hero) targets emitted; their ordinary options are capped
-		// by the per-emission checks above.
 	}
 
 	if(!moveOptions.Vector().empty())
@@ -959,28 +1009,42 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 			const auto & entry = town->creatures[level];
 			if(entry.first <= 0 || entry.second.empty())
 				continue;
-			const auto creatureId = entry.second.front();
-			const auto * creature = creatureId.toCreature();
-			if(creature == nullptr)
-				continue;
+			// Base AND upgraded creature when the upgraded dwelling is built (the old code
+			// offered entry.second.front() only, so upgrades could never be recruited).
+			for(size_t tier = 0; tier < entry.second.size(); ++tier)
+			{
+				if(recruitEmitted >= MAX_RECRUIT_OPTIONS)
+					break;
+				const auto creatureId = entry.second[tier];
+				const auto * creature = creatureId.toCreature();
+				if(creature == nullptr)
+					continue;
 
-			const int available = static_cast<int>(entry.first);
-			const int affordable = creature->maxAmount(resources);
-			const int recruitCount = std::min(available, affordable);
-			if(recruitCount <= 0)
-				continue;
+				const int available = static_cast<int>(entry.first);
+				const int affordable = creature->maxAmount(resources);
+				// RECRUIT always buys this many: the most the pool and the treasury allow.
+				const int recruitCount = std::min(available, affordable);
+				if(recruitCount <= 0)
+					continue;
 
-			JsonNode option;
-			option["option_id"].String() = "recruit_t_" + std::to_string(town->id.getNum())
-				+ "_c_" + std::to_string(creatureId.getNum())
-				+ "_l_" + std::to_string(static_cast<int>(level))
-				+ "_n_" + std::to_string(recruitCount);
-			option["town_id"].String() = townToken(town->id.getNum());
-			option["unit"].String() = creature->getJsonKey();
-			option["unit_name"].String() = creature->getNameSingularTranslated();
-			option["count"].Integer() = recruitCount;
-			recruitOptions.Vector().push_back(option);
-			++recruitEmitted;
+				JsonNode option;
+				option["option_id"].String() = "recruit_t_" + std::to_string(town->id.getNum())
+					+ "_c_" + std::to_string(creatureId.getNum())
+					+ "_l_" + std::to_string(static_cast<int>(level))
+					+ "_n_" + std::to_string(recruitCount);
+				option["town_id"].String() = townToken(town->id.getNum());
+				option["unit"].String() = creature->getJsonKey();
+				option["unit_name"].String() = creature->getNameSingularTranslated();
+				option["level"].Integer() = static_cast<si64>(level + 1);
+				option["upgraded"].Bool() = tier > 0;
+				option["count"].Integer() = recruitCount;
+				option["available"].Integer() = available;
+				JsonNode costNode;
+				pushBuildingCost(costNode, creature->getFullRecruitCost());
+				option["cost_each"] = costNode;
+				recruitOptions.Vector().push_back(option);
+				++recruitEmitted;
+			}
 		}
 		if(recruitEmitted >= MAX_RECRUIT_OPTIONS)
 			break;
@@ -1009,7 +1073,9 @@ JsonNode CArenaAI::buildTurnRequestPayload(QueryID queryID, int actionIndex, int
 				continue;
 			if(!town->hasBuilt(BuildingID::TAVERN))
 				continue;
-			if(town->getVisitingHero() && town->getUpperArmy() && town->getUpperArmy()->stacksCount() > 0)
+			// The server refuses a hire while ANY hero is visiting the town (the new hero
+			// appears in the visiting slot; HeroPoolProcessor "no place"), so don't offer it.
+			if(town->getVisitingHero())
 				continue;
 
 			const auto offeredHeroes = cb->getAvailableHeroes(town);
@@ -1461,22 +1527,26 @@ bool CArenaAI::applyTurnResponse(const JsonNode & responsePayload)
 				if(levelHint && static_cast<int>(level) != *levelHint)
 					continue;
 
-				const auto candidateId = entry.second.front();
-				const auto * candidate = candidateId.toCreature();
-				if(candidate == nullptr)
-					continue;
-				if(!unitToken.empty() && unitToken != candidate->getJsonKey() && unitToken != candidate->getNameSingularTranslated())
-					continue;
+				for(const auto & candidateId : entry.second)
+				{
+					const auto * candidate = candidateId.toCreature();
+					if(candidate == nullptr)
+						continue;
+					if(!unitToken.empty() && unitToken != candidate->getJsonKey() && unitToken != candidate->getNameSingularTranslated())
+						continue;
 
-				const int available = static_cast<int>(entry.first);
-				const int affordable = candidate->maxAmount(cb->getResourceAmount());
-				const int legalCount = std::min(available, affordable);
-				if(legalCount <= 0)
-					continue;
-				creatureId = candidateId.getNum();
-				maxLegalCount = legalCount;
-				matchedLevel = static_cast<int>(level);
-				break;
+					const int available = static_cast<int>(entry.first);
+					const int affordable = candidate->maxAmount(cb->getResourceAmount());
+					const int legalCount = std::min(available, affordable);
+					if(legalCount <= 0)
+						continue;
+					creatureId = candidateId.getNum();
+					maxLegalCount = legalCount;
+					matchedLevel = static_cast<int>(level);
+					break;
+				}
+				if(creatureId)
+					break;
 			}
 		}
 
@@ -1686,10 +1756,8 @@ try
 
 	if(bridgeEnabled)
 	{
-		// Collect any garrison troops into a visiting hero FIRST, so recruited
-		// reinforcements join the field army before the hero ventures out (the model
-		// recruits remotely but often never returns to collect — observed a 7500-power
-		// garrison stranded idle vs a 2256-power roaming hero).
+		// Opt-in legacy behaviour (ARENA_ENABLE_AUTO_COLLECT=1): collect garrison troops
+		// into a visiting hero before the model decides.
 		autoCollectGarrisons();
 		// T1: before asking the model, continue any standing travel goals so a
 		// multi-turn "go take that object" intent actually completes across turns
@@ -2069,7 +2137,12 @@ void CArenaAI::advanceTravelGoals()
 
 void CArenaAI::autoCollectGarrisons()
 {
-	// Kill-switch (mirrors auto-advance), in case it ever needs disabling without a rebuild.
+	// OFF by default since the S9 pin: moving the whole garrison onto whichever hero happens
+	// to stand in town (a parked scout included) is not HoMM3 behaviour; bots pull troops with
+	// MANAGE_ARMY. ARENA_ENABLE_AUTO_COLLECT=1 restores the S3-S8 behaviour for replays.
+	const char * enable = std::getenv("ARENA_ENABLE_AUTO_COLLECT");
+	if(enable == nullptr || enable[0] != '1')
+		return;
 	if(const char * disable = std::getenv("ARENA_DISABLE_AUTO_COLLECT"))
 		if(disable[0] == '1')
 			return;
